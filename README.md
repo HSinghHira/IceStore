@@ -2,27 +2,27 @@
 
 3rd-Party Community AppStore for Zima OS, Casa OS and Homeio.
 
-This repository holds the apps and the website that lists them. The website is generated from the `apps/` folder by a script and published with GitHub Pages. Adding an app is a matter of adding a folder.
+This repository holds the apps and the website that lists them. The website is generated from the `Apps/` folder by a script and published with GitHub Pages. Adding an app is a matter of adding a folder.
 
 ## Layout
 
 ```
 IceStore/
-├── apps/
+├── Apps/
 │   └── appflowy/
 │       ├── docker-compose.yml     required
 │       ├── README.md              optional, becomes the Introduction tab
 │       ├── icon.png               optional, falls back to a letter tile
 │       └── screenshot-1.png       optional, screenshot-2.png, screenshot-3.png ...
 ├── site/
-│   ├── build.py                   scans apps/ and writes the site into _site/
+│   ├── build.py                   scans Apps/ and writes the site into _site/
 │   ├── site.json                  site name, tagline, links, base URL
 │   ├── requirements.txt
 │   └── templates/
 │       ├── index.html             home page
 │       └── app.html               one app page
 ├── .github/workflows/release-store.yml
-├── store.json                     store definition for Zima OS
+├── store-config.json              store identity, read by the store build
 └── supported-languages.json
 ```
 
@@ -57,7 +57,7 @@ Available service icons are `globe`, `server`, `mail` and `monitor`. The URL on 
 
 ### Secrets
 
-Values of variables whose names contain `password`, `secret`, `token` or `key` are replaced with `change-me` on the site, in both the Variables table and the Docker Compose tab. The compose file in `apps/` is not changed.
+Values of variables whose names contain `password`, `secret`, `token` or `key` are replaced with `change-me` on the site, in both the Variables table and the Docker Compose tab. The compose file in `Apps/` is not changed.
 
 ## Build locally
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the IceStore website from the apps/ folder.
+"""Build the IceStore website from the Apps/ folder.
 
     pip install -r site/requirements.txt
     python site/build.py            # writes ./_site
@@ -7,7 +7,7 @@
 
     python site/build.py --out dist --no-clean   # add the site to an existing store bundle
 
-Every folder in apps/ becomes a page at apps/<folder>/. What is read from it:
+Every folder in Apps/ becomes a page at app/<folder>/. What is read from it:
 
   docker-compose.yml  name, tagline, image, ports, variables, category (x-casaos block)
   README.md           the Introduction tab; optional front matter (see README)
@@ -147,14 +147,14 @@ def load_app(folder):
     if body.strip():
         intro = render_md(body)
     else:
-        warn(f"apps/{folder.name}: no README.md, using the description from x-casaos")
+        warn(f"Apps/{folder.name}: no README.md, using the description from x-casaos")
         intro = render_md(desc_md) if desc_md else f"<p>{html.escape(tagline or name)}</p>"
     tagline = tagline or re.sub(r"\s+", " ", desc_md)[:160]
 
     image, version = split_image(str(main["image"]))
     ports = published_ports(main)
     if not ports:
-        warn(f"apps/{folder.name}: no ports found")
+        warn(f"Apps/{folder.name}: no ports found")
 
     # variable descriptions live in the service's own x-casaos block (the top-level one is also checked)
     svc_meta = main.get("x-casaos") or {}
@@ -175,9 +175,9 @@ def load_app(folder):
     icon = next((p for p in sorted(folder.glob("icon.*"), key=natural) if p.suffix.lower() in IMG_EXT), None)
     shots = [p for p in sorted(folder.glob("screenshot*"), key=natural) if p.suffix.lower() in IMG_EXT]
     if not icon:
-        warn(f"apps/{folder.name}: no icon.png, using a letter tile")
+        warn(f"Apps/{folder.name}: no icon.png, using a letter tile")
     if not shots:
-        warn(f"apps/{folder.name}: no screenshot-*.png, the slider is hidden")
+        warn(f"Apps/{folder.name}: no screenshot-*.png, the slider is hidden")
 
     return {
         "slug": slug, "folder": folder, "icon": icon, "shots": shots,
@@ -222,11 +222,11 @@ def main():
         cfg[key] = cfg["base_url"] + name
 
     apps, errors = [], []
-    for folder in sorted(p for p in (ROOT / "apps").iterdir() if p.is_dir() and not p.name.startswith(".")):
+    for folder in sorted(p for p in (ROOT / "Apps").iterdir() if p.is_dir() and not p.name.startswith(".")):
         try:
             apps.append(load_app(folder))
         except Exception as e:  # report every broken app at once
-            errors.append(f"apps/{folder.name}: {e}")
+            errors.append(f"Apps/{folder.name}: {e}")
     if errors:
         for e in errors:
             print(f"::error::{e}")
@@ -244,14 +244,14 @@ def main():
 
     cards = []
     for a in apps:
-        dest = out / "apps" / a["slug"]
+        dest = out / "app" / a["slug"]
         dest.mkdir(parents=True, exist_ok=True)
         for f in ([a["icon"]] if a["icon"] else []) + a["shots"]:
             shutil.copy(f, dest / f.name)
         p = a["page"]
         page = render(tpl_app, "/*APP*/{}", p, {**base, "app_name": p["name"], "desc": p["desc"]})
         (dest / "index.html").write_text(page, encoding="utf-8")
-        cards.append([p["name"], f"apps/{a['slug']}/{p['icon']}" if p["icon"] else "", a["slug"]])
+        cards.append([p["name"], f"app/{a['slug']}/{p['icon']}" if p["icon"] else "", a["slug"]])
 
     (out / "index.html").write_text(
         render(tpl_index, "/*APPS*/[]", cards, base, js_tokens=("zimaos_url", "casaos_url", "homeio_url")), encoding="utf-8")

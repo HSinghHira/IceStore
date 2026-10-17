@@ -43,6 +43,7 @@ jobs:
 
       - name: Add one link per OS
         run: |
+          ls -la dist
           test -f dist/store.json || { echo "::error::dist/store.json was not built"; exit 1; }
           cp dist/store.json dist/ZimaOS
           cp dist/latest.zip dist/CasaOS

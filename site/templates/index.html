@@ -184,7 +184,7 @@ if(hi>=0){sel(hi);$("#stores").scrollIntoView()}
 function draw(q=""){
   const l=APPS.filter(a=>a[0].toLowerCase().includes(q.toLowerCase()));
   $("#grid").innerHTML=l.map(a=>{
-    return `<a class="card" href="apps/${a[2]}/">${ic(a)}<h3>${a[0]}</h3></a>`}).join("");
+    return `<a class="card" href="app/${a[2]}/">${ic(a)}<h3>${a[0]}</h3></a>`}).join("");
   $("#none").style.display=l.length?"none":"block";
 }
 $("#q").oninput=e=>draw(e.target.value);
