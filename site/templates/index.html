@@ -137,19 +137,19 @@ footer a{color:#fff;border-bottom:1px solid var(--ac)}
 
 <script>
 const APPS=/*APPS*/[];
-const ST="{{store_url}}";
+const ST={zimaos:"{{zimaos_url}}",casaos:"{{casaos_url}}",homeio:"{{homeio_url}}"};
 const TABS=[
- {id:"zimaos",n:"ZimaOS",l:"store.json URL",u:ST+"store.json",
+ {id:"zimaos",n:"ZimaOS",l:"Store URL",u:ST.zimaos,
   s:["Open the <b>ZimaOS</b> dashboard.","Go to <b>App Store</b> and click <b>Community store</b> (the gear icon).","Click the <b>+</b> icon.","Paste the store URL.","Click <b>Add</b>, then refresh the App Store page."],
-  cli:['curl -s -X POST \\','  -H "Authorization: $TOKEN" \\',"  -H 'Content-Type: application/json' \\",`  -d '{"url":"${ST}store.json"}' \\`,'  "http://localhost/v3/app_store/repo"'].join("\n"),
+  cli:['curl -s -X POST \\','  -H "Authorization: $TOKEN" \\',"  -H 'Content-Type: application/json' \\",`  -d '{"url":"${ST.zimaos}"}' \\`,'  "http://localhost/v3/app_store/repo"'].join("\n"),
   t:"If the store doesn’t show up right away, refresh or restart the App Store service. ZimaOS sometimes caches store sources."},
- {id:"casaos",n:"CasaOS",l:"Store archive URL (zip)",u:ST+"latest.zip",
+ {id:"casaos",n:"CasaOS",l:"Store URL",u:ST.casaos,
   s:["Open the <b>CasaOS</b> dashboard.","Go to <b>App Store</b>.","Click <b>+ Add Source</b>.","Paste the store archive URL.","Click <b>Add</b>."],
-  cli:`sudo casaos-cli app-management register app-store ${ST}latest.zip\nsudo casaos-cli app-management list app-stores`,
-  t:"CasaOS can’t read store.json, so it uses a zip archive. latest.zip always points to the newest build, so the link never needs updating."},
- {id:"homeio",n:"Homeio",l:"Store archive URL (zip)",u:ST+"latest.zip",
+  cli:`sudo casaos-cli app-management register app-store ${ST.casaos}\nsudo casaos-cli app-management list app-stores`,
+  t:"This link always serves the newest build, so it never needs updating when apps are added."},
+ {id:"homeio",n:"Homeio",l:"Store URL",u:ST.homeio,
   s:["Open the <b>Homeio</b> dashboard.","Click <b>App Store</b>.","Click the <b>+ Install</b> button.","Go to <b>Manage Sources</b>.","Paste the store URL.","Enter a name, for example “Hira’s App Store”.","Click <b>Add Source</b>."],
-  cli:"",t:"latest.zip always points to the newest build, so the link never needs updating."}
+  cli:"",t:"This link always serves the newest build, so it never needs updating when apps are added."}
 ];
 const TI={zimaos:"https://www.zimaspace.com/apple-touch-icon.png",casaos:"https://casaos.zimaspace.com/favicon/apple-touch-icon.png",homeio:"https://homeio.app/icon.webp"};
 const $=s=>document.querySelector(s);

@@ -5,6 +5,8 @@
     python site/build.py            # writes ./_site
     python -m http.server -d _site  # preview at http://localhost:8000
 
+    python site/build.py --out dist --no-clean   # add the site to an existing store bundle
+
 Every folder in apps/ becomes a page at apps/<folder>/. What is read from it:
 
   docker-compose.yml  name, tagline, image, ports, variables, category (x-casaos block)
@@ -31,7 +33,7 @@ DEFAULTS = {
     "site_name": "IceStore",
     "tagline": "3rd-Party Community AppStore for Zima OS, Casa OS and Homeio",
     "repo": "https://github.com/HSinghHira/IceStore",
-    "store_url": "https://ZimaOS.HSinghHira.me/",
+    "base_url": "https://git.hsinghhira.me/IceStore/",
     "author": "Harman Singh Hira",
     "author_url": "https://github.com/HSinghHira",
 }
@@ -207,12 +209,17 @@ def render(tpl, marker, data, tokens, js_tokens=()):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(ROOT / "_site"))
-    out = Path(ap.parse_args().out)
+    ap.add_argument("--no-clean", action="store_true", help="keep what is already in the output folder")
+    args = ap.parse_args()
+    out = Path(args.out)
 
     cfg = dict(DEFAULTS)
     if (HERE / "site.json").exists():
         cfg.update(json.loads((HERE / "site.json").read_text(encoding="utf-8")))
-    cfg["store_url"] = cfg["store_url"].rstrip("/") + "/"
+    cfg["base_url"] = cfg["base_url"].rstrip("/") + "/"
+    # one short link per OS; the workflow publishes the matching file under each name
+    for key, name in (("zimaos_url", "ZimaOS"), ("casaos_url", "CasaOS"), ("homeio_url", "Homeio")):
+        cfg[key] = cfg["base_url"] + name
 
     apps, errors = [], []
     for folder in sorted(p for p in (ROOT / "apps").iterdir() if p.is_dir() and not p.name.startswith(".")):
@@ -226,21 +233,19 @@ def main():
         sys.exit(1)
     apps.sort(key=lambda a: a["page"]["name"].lower())
 
-    if out.exists():
+    if out.exists() and not args.no_clean:
         shutil.rmtree(out)
-    out.mkdir(parents=True)
+    out.mkdir(parents=True, exist_ok=True)
     (out / ".nojekyll").write_text("")
-    if (ROOT / "store.json").exists():
-        shutil.copy(ROOT / "store.json", out / "store.json")
 
     tpl_index = (HERE / "templates" / "index.html").read_text(encoding="utf-8")
     tpl_app = (HERE / "templates" / "app.html").read_text(encoding="utf-8")
-    base = {k: cfg[k] for k in ("site_name", "tagline", "repo", "store_url", "author", "author_url")}
+    base = {k: cfg[k] for k in ("site_name", "tagline", "repo", "author", "author_url", "zimaos_url", "casaos_url", "homeio_url")}
 
     cards = []
     for a in apps:
         dest = out / "apps" / a["slug"]
-        dest.mkdir(parents=True)
+        dest.mkdir(parents=True, exist_ok=True)
         for f in ([a["icon"]] if a["icon"] else []) + a["shots"]:
             shutil.copy(f, dest / f.name)
         p = a["page"]
@@ -249,7 +254,7 @@ def main():
         cards.append([p["name"], f"apps/{a['slug']}/{p['icon']}" if p["icon"] else "", a["slug"]])
 
     (out / "index.html").write_text(
-        render(tpl_index, "/*APPS*/[]", cards, base, js_tokens=("store_url",)), encoding="utf-8")
+        render(tpl_index, "/*APPS*/[]", cards, base, js_tokens=("zimaos_url", "casaos_url", "homeio_url")), encoding="utf-8")
     print(f"Built {len(apps)} app page(s) into {out}")
 
 

@@ -2,7 +2,7 @@
   "site_name": "IceStore",
   "tagline": "3rd-Party Community AppStore for Zima OS, Casa OS and Homeio",
   "repo": "https://github.com/HSinghHira/IceStore",
-  "store_url": "https://ZimaOS.HSinghHira.me/",
+  "base_url": "https://git.hsinghhira.me/IceStore/",
   "author": "Harman Singh Hira",
   "author_url": "https://github.com/HSinghHira"
 }

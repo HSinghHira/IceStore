@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "store_id": "com.icestore",
+  "name": "IceStore",
+  "description": "3rd-Party Community AppStore for Zima OS, Casa OS and Homeio",
+  "maintainer": "Harman Singh Hira",
+  "url": "https://github.com/HSinghHira/IceStore/"
+}
