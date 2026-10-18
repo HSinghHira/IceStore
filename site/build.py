@@ -428,8 +428,6 @@ def app_page(a, cfg, tpl, layout):
             for k, p, ic in a["svcs"])
         details = (
             '\n    <section class="sec" style="padding-left:0;padding-right:0" aria-labelledby="det-h">\n'
-            '      <h2 id="det-h">App details</h2>\n'
-            '      <p class="note">Replace localhost with your device’s IP address.</p>\n'
             f'      <div class="svs">{cards}</div>\n    </section>')
 
     tabs = [("intro", "info", "Introduction", f'<div class="md">{a["intro"]}</div>')]
