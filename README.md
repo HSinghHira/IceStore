@@ -71,22 +71,22 @@ Open http://localhost:8000. The build prints a warning for a missing icon or scr
 
 ## Store links
 
-Each OS gets its own short link, all under the base URL in `site/site.json`:
+Each OS gets its own file under the base URL in `site/site.json`. `store.json` and `latest.zip` are also published as the originals:
 
 | OS | Link | What it serves |
 | --- | --- | --- |
-| Zima OS | https://git.hsinghhira.me/IceStore/ZimaOS | a copy of `store.json` |
-| Casa OS | https://git.hsinghhira.me/IceStore/CasaOS | a copy of `latest.zip` |
-| Homeio | https://git.hsinghhira.me/IceStore/Homeio | a copy of `latest.zip` |
+| Zima OS | https://git.hsinghhira.me/IceStore/zimaos.json | a copy of `store.json` |
+| Casa OS | https://git.hsinghhira.me/IceStore/casaos.zip | a copy of `latest.zip` |
+| Homeio | https://git.hsinghhira.me/IceStore/homeio.zip | a copy of `latest.zip` |
 
-The website shows these links in its three tabs. To move the store to another address, change `base_url` in `site/site.json`. The tabs, the terminal commands and the store bundle all follow it.
+The website shows these links in its three tabs. To move the store to another address, change `base_url` in `site/site.json`.
 
 ## Publish with GitHub Pages
 
 The **Build and publish app store** workflow (`release-store.yml`) does everything on each push to `main`:
 
 1. Builds the store bundle with `IceWhaleTech/build-appstore-action` into `dist/`.
-2. Adds `latest.zip`, then the `ZimaOS`, `CasaOS` and `Homeio` link files.
+2. Adds `latest.zip`, then copies the originals to `zimaos.json`, `casaos.zip` and `homeio.zip`.
 3. Runs `site/build.py --out dist --no-clean`, which adds the website to the same folder.
 4. Deploys `dist/` to GitHub Pages.
 

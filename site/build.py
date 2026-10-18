@@ -217,9 +217,10 @@ def main():
     if (HERE / "site.json").exists():
         cfg.update(json.loads((HERE / "site.json").read_text(encoding="utf-8")))
     cfg["base_url"] = cfg["base_url"].rstrip("/") + "/"
-    # one short link per OS; the workflow publishes the matching file under each name
-    for key, name in (("zimaos_url", "ZimaOS"), ("casaos_url", "CasaOS"), ("homeio_url", "Homeio")):
-        cfg[key] = cfg["base_url"] + name
+    # real files with real extensions, so GitHub Pages serves the right content type
+    cfg["zimaos_url"] = cfg["base_url"] + "zimaos.json"
+    cfg["casaos_url"] = cfg["base_url"] + "casaos.zip"
+    cfg["homeio_url"] = cfg["base_url"] + "homeio.zip"
 
     apps, errors = [], []
     for folder in sorted(p for p in (ROOT / "Apps").iterdir() if p.is_dir() and not p.name.startswith(".")):

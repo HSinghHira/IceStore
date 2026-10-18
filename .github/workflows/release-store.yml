@@ -41,13 +41,14 @@ jobs:
             -x "_site/*" \
             -x "site/*"
 
-      - name: Add one link per OS
+      - name: Add one file per OS
         run: |
-          ls -la dist
           test -f dist/store.json || { echo "::error::dist/store.json was not built"; exit 1; }
-          cp dist/store.json dist/ZimaOS
-          cp dist/latest.zip dist/CasaOS
-          cp dist/latest.zip dist/Homeio
+          test -f dist/latest.zip || { echo "::error::dist/latest.zip was not built"; exit 1; }
+          cp dist/store.json dist/zimaos.json
+          cp dist/latest.zip dist/casaos.zip
+          cp dist/latest.zip dist/homeio.zip
+          ls -la dist
 
       - uses: actions/setup-python@v5
         with:
