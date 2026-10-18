@@ -1,0 +1,203 @@
+name: affine
+
+services:
+  affine:
+    image: ghcr.io/hsinghhira/affine:latest
+    container_name: affine
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6102
+      - MAILER_HOST=
+      - MAILER_PORT=
+      - MAILER_USER=
+      - MAILER_PASSWORD=
+      - MAILER_SENDER=
+    ports:
+      - target: 8080
+        published: "6102"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/info"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/affine/icon.png
+    x-casaos:
+      id: com.icestore.affine
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you type in your browser. It starts as localhost,
+              which only works on this device. For other devices, change
+              `localhost` to your ZimaOS IP. Keep the port at 6102. Links in
+              emails and shared pages use this address.
+        - container: MAILER_HOST
+          description:
+            en_US: >-
+              Optional. Your email server, like smtp.gmail.com. Leave blank
+              if you don't want AFFiNE to send emails (invites, password
+              resets).
+        - container: MAILER_PORT
+          description:
+            en_US: >-
+              Optional. Your email server port, usually 465 or 587. Leave
+              blank if MAILER_HOST is blank.
+        - container: MAILER_USER
+          description:
+            en_US: Optional. The username for your email server.
+        - container: MAILER_PASSWORD
+          description:
+            en_US: >-
+              Optional. The password for your email server. For Gmail, use an
+              app password.
+        - container: MAILER_SENDER
+          description:
+            en_US: >-
+              Optional. The "from" address on emails, like
+              AFFiNE <you@example.com>.
+      ports:
+        - container: "8080"
+          description:
+            en_US: AFFiNE web app, admin panel (/admin) and API, published on host as 6102
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything AFFiNE keeps: the database, uploaded files,
+              config.json, the server key and the database passwords.
+
+x-casaos:
+  id: com.icestore.affine
+  architectures:
+    - amd64
+    - arm64
+  main: affine
+  author: HSinghHira
+  category: Productivity
+  developer: Toeverything
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/affine/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/affine/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/affine/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/affine/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/affine/screenshot-4.png
+  title:
+    en_US: AFFiNE
+  tagline:
+    en_US: Docs, whiteboards and databases in one local-first workspace
+  description:
+    en_US: >-
+      AFFiNE is an open-source workspace that puts documents, an endless
+      whiteboard and databases in one editor, like Notion and Miro together.
+      This is AFFiNE in a single container, with one port and one data folder.
+      Database passwords and the server key are made for you on first start.
+
+
+      **Features**
+
+
+      - Rich documents for notes, wikis and knowledge bases
+
+      - An endless canvas for whiteboards, brainstorming and planning
+
+      - Databases with table and kanban views
+
+      - Real-time collaboration and sharing
+
+      - Built-in search across all your workspaces
+
+      - Admin panel for users, settings, email and AI (bring your own key)
+
+      - PostgreSQL with pgvector and Redis inside, nothing else to install
+
+
+      **How to use?**
+
+
+      1. Open AFFiNE from the Zima OS dashboard.
+
+
+      2. The first time, AFFiNE asks you to create the admin account. Fill in
+         your name, email and a password.
+
+
+      3. Sign in and create your first workspace.
+
+
+      4. Change server settings, email and AI any time in the admin panel at
+         http://your-zimaos-ip:6102/admin.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6102.
+
+
+        3. To use AFFiNE on other devices, change localhost to your ZimaOS
+           IP address.
+
+
+        4. If you want AFFiNE to send emails, fill in the MAILER boxes. You
+           can skip this.
+
+
+        5. Start the installation.
+
+
+        6. Wait about 5 minutes. The first start sets up the database.
+
+
+        7. Open AFFiNE from the Zima OS dashboard.
+
+
+        8. Make your admin account. Pick a name, your email and a password.
+
+
+        9. Sign in and start writing.
+
+
+        10. The admin panel is at http://your-zimaos-ip:6102/admin.
+  index: /
+  port_map: "6102"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.27.4"
+  update_at: "2026-10-18"
+  release_notes:
+    en_US: |-
+      - Single-container AFFiNE with one port (6102) and one data folder
+      - The migration job runs inside the container before every start, so updates migrate by themselves
+      - Database passwords are made on first start, so each install gets its own
+      - Optional email settings (MAILER_*) in the app settings
+      - ghcr.io/toeverything/affine 0.27.4
+      - PostgreSQL 16 with pgvector and Redis from Debian trixie
+  repo: "https://github.com/toeverything/AFFiNE"
+  support: "https://github.com/toeverything/AFFiNE/issues"
+  docs: "https://docs.affine.pro/self-host-affine"
