@@ -32,22 +32,20 @@ jobs:
           output: dist
           base-url: ${{ steps.cfg.outputs.base }}
 
-      - name: Add latest.zip
+      - name: Add store.zip
         run: |
-          zip -r dist/latest.zip . \
+          zip -r dist/store.zip . \
             -x ".git/*" \
             -x ".github/*" \
             -x "dist/*" \
             -x "_site/*" \
             -x "site/*"
 
-      - name: Add one file per OS
+      - name: Check the store files
         run: |
           test -f dist/store.json || { echo "::error::dist/store.json was not built"; exit 1; }
-          test -f dist/latest.zip || { echo "::error::dist/latest.zip was not built"; exit 1; }
-          cp dist/store.json dist/zimaos.json
-          cp dist/latest.zip dist/casaos.zip
-          cp dist/latest.zip dist/homeio.zip
+          test -f dist/store.zip || { echo "::error::dist/store.zip was not built"; exit 1; }
+          cp dist/store.zip dist/latest.zip   # old name, kept as a fallback
           ls -la dist
 
       - uses: actions/setup-python@v5
