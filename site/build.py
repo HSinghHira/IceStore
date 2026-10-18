@@ -265,6 +265,22 @@ def load_app(folder):
     notes = {e.get("container"): text(e.get("description")) for e in envs if isinstance(e, dict)}
     env = [(k, redact(k, v), notes.get(k, "")) for k, v in env_pairs(main.get("environment"))]
 
+    # more settings: README front matter `variables:` (not in the compose file, so
+    # people add them in the app settings themselves). Grouped by `group`.
+    in_compose = {k for k, _, _ in env}
+    more = []
+    for i, x in enumerate(fm.get("variables") or []):
+        if not isinstance(x, dict) or not x.get("name"):
+            warn(f"Apps/{folder.name}: README variables item {i + 1} has no name")
+            continue
+        k = str(x["name"]).strip()
+        if k in in_compose:
+            warn(f"Apps/{folder.name}: README variable {k} is also in docker-compose.yml; shown once")
+            continue
+        dv = x.get("default", "")
+        dv = "" if dv is None else (str(dv).lower() if isinstance(dv, bool) else str(dv))
+        more.append((str(x.get("group") or "More settings"), k, dv, text(x.get("description"))))  # defaults, not secrets
+
     path = str(meta.get("index") or "/")
     default_svcs = [["Web UI", path, "globe"]] if ports else []
     svcs = []
@@ -292,7 +308,7 @@ def load_app(folder):
         "slug": slug, "folder": folder, "icon": icon, "shots": shots,
         "name": name, "desc": tagline, "image": image, "version": version, "ports": ports,
         "category": str(fm.get("category") or text(meta.get("category"))),
-        "site": site, "src": repo or site, "svcs": svcs, "env": env, "captions": captions,
+        "site": site, "src": repo or site, "svcs": svcs, "env": env, "more": more, "captions": captions,
         "compose": redact_text(raw).rstrip(), "intro": intro,
     }
 
@@ -431,12 +447,30 @@ def app_page(a, cfg, tpl, layout):
             f'      <div class="svs">{cards}</div>\n    </section>')
 
     tabs = [("intro", "info", "Introduction", f'<div class="md">{a["intro"]}</div>')]
-    if a["env"]:
-        rows = "".join(
-            f'<tr><td><code>{e(k)}</code></td><td><code>{e(v) or "—"}</code></td><td>{code_ticks(d)}</td></tr>'
-            for k, v, d in a["env"])
+    if a["env"] or a["more"]:
+        def row(k, v, d):
+            return f'<tr><td><code>{e(k)}</code></td><td><code>{e(v) or "—"}</code></td><td>{code_ticks(d)}</td></tr>'
+
+        def head(t):
+            return f'<tr class="grp"><th colspan="3">{e(t)}</th></tr>'
+
+        rows = ""
+        if a["env"]:
+            if a["more"]:
+                rows += head("In the app settings")
+            rows += "".join(row(k, v, d) for k, v, d in a["env"])
+        groups = {}
+        for g, k, v, d in a["more"]:
+            groups.setdefault(g, []).append((k, v, d))
+        for g, items in groups.items():
+            rows += head(g) + "".join(row(k, v, d) for k, v, d in items)
+        note = ""
+        if a["more"]:
+            note = ('<p class="vnote">The settings at the top are already in the app settings. To use any other one, '
+                    'open the app settings, add the variable with your value, save, and the app restarts with it. '
+                    'A setting you leave out uses its default.</p>')
         tabs.append(("vars", "table", "Variables",
-                     '<div class="tw"><table><thead><tr><th>Variable</th><th>Default value</th><th>Description</th></tr>'
+                     f'{note}<div class="tw"><table><thead><tr><th>Variable</th><th>Default value</th><th>Description</th></tr>'
                      f'</thead><tbody>{rows}</tbody></table></div>'))
     tabs.append(("compose", "file-code", "Docker Compose",
                  f'<div class="code"><div class="chrome"><i></i><i></i><i></i><span>docker-compose.yml</span>'

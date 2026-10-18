@@ -157,7 +157,7 @@ write_env affine "$TZV" \
   "LISTEN_ADDR=127.0.0.1" \
   "AFFINE_SERVER_PORT=3010"
 
-# ---- settings from the app's environment: list (Apps/affine/docker-compose.yml) ----
+# ---- settings: the compose environment: plus the README variables: list (Apps/affine/) ----
 # AFFiNE reads env vars only as defaults: a value in config.json wins over them,
 # and older versions copied env values into config.json once. So every setting
 # is written into config.json here, on every start.

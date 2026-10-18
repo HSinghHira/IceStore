@@ -4,6 +4,117 @@ services:
   - { name: Web App, path: /, icon: globe }
   - { name: Admin Console, path: /console, icon: server }
   - { name: Mail Viewer, path: /mail, icon: mail }
+variables:
+  - name: GOTRUE_DISABLE_SIGNUP
+    group: Sign-up and accounts
+    default: 'false'
+    description: >-
+      Set to true so only people you invite can join. Default: anyone who can
+      open the page can sign up.
+  - name: GOTRUE_MAILER_AUTOCONFIRM
+    group: Sign-up and accounts
+    default: 'true'
+    description: >-
+      Set to false to make new users click a link in an email before they can
+      sign in. Needs a real email server (SMTP_HOST). Default: no email check.
+  - name: GOTRUE_JWT_EXP
+    group: Sign-up and accounts
+    default: '604800'
+    description: >-
+      How long people stay signed in, in seconds. Default: 7 days.
+  - name: SMTP_HOST
+    group: Email (SMTP)
+    default: ""
+    description: >-
+      Your email server, like smtp.gmail.com. AppFlowy uses email for sign-in
+      links, invites and password resets. Leave it out and emails go to the
+      built-in mail viewer at /mail and never leave your server.
+  - name: SMTP_PORT
+    group: Email (SMTP)
+    default: '465'
+    description: >-
+      Your email server port, usually 465 or 587.
+  - name: SMTP_USER
+    group: Email (SMTP)
+    default: ""
+    description: >-
+      The username for your email server.
+  - name: SMTP_PASS
+    group: Email (SMTP)
+    default: ""
+    description: >-
+      The password for your email server. For Gmail, use an app password.
+  - name: SMTP_EMAIL
+    group: Email (SMTP)
+    default: ""
+    description: >-
+      The "from" address on emails. Leave it out to use SMTP_USER.
+  - name: SMTP_TLS
+    group: Email (SMTP)
+    default: ""
+    description: >-
+      How AppFlowy talks to your email server: wrapper (port 465), required
+      (STARTTLS, port 587), opportunistic or none. Leave it out to use wrapper
+      on port 465 and required on any other port.
+  - name: APPFLOWY_NOTIFICATION_ENABLE_EMAIL
+    group: Email (SMTP)
+    default: 'false'
+    description: >-
+      Set to true to send people email notifications (mentions, invites).
+      Needs SMTP_HOST.
+  - name: GOTRUE_EXTERNAL_GOOGLE_ENABLED
+    group: Sign in with Google, GitHub or Discord
+    default: 'false'
+    description: >-
+      Set to true to turn on "Sign in with Google". In Google Cloud, set the
+      redirect URL to your PUBLIC_URL followed by /gotrue/callback.
+  - name: GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID
+    group: Sign in with Google, GitHub or Discord
+    default: ""
+    description: >-
+      Client ID for Google sign-in.
+  - name: GOTRUE_EXTERNAL_GOOGLE_SECRET
+    group: Sign in with Google, GitHub or Discord
+    default: ""
+    description: >-
+      Client secret for Google sign-in.
+  - name: GOTRUE_EXTERNAL_GITHUB_ENABLED
+    group: Sign in with Google, GitHub or Discord
+    default: 'false'
+    description: >-
+      Set to true to turn on "Sign in with GitHub". In GitHub, set the
+      callback URL to your PUBLIC_URL followed by /gotrue/callback.
+  - name: GOTRUE_EXTERNAL_GITHUB_CLIENT_ID
+    group: Sign in with Google, GitHub or Discord
+    default: ""
+    description: >-
+      Client ID for GitHub sign-in.
+  - name: GOTRUE_EXTERNAL_GITHUB_SECRET
+    group: Sign in with Google, GitHub or Discord
+    default: ""
+    description: >-
+      Client secret for GitHub sign-in.
+  - name: GOTRUE_EXTERNAL_DISCORD_ENABLED
+    group: Sign in with Google, GitHub or Discord
+    default: 'false'
+    description: >-
+      Set to true to turn on "Sign in with Discord". In Discord, set the
+      redirect URL to your PUBLIC_URL followed by /gotrue/callback.
+  - name: GOTRUE_EXTERNAL_DISCORD_CLIENT_ID
+    group: Sign in with Google, GitHub or Discord
+    default: ""
+    description: >-
+      Client ID for Discord sign-in.
+  - name: GOTRUE_EXTERNAL_DISCORD_SECRET
+    group: Sign in with Google, GitHub or Discord
+    default: ""
+    description: >-
+      Client secret for Discord sign-in.
+  - name: RUST_LOG
+    group: Logs
+    default: info
+    description: >-
+      How much the app writes to its log: error, warn, info or debug.
 ---
 
 # AppFlowy
@@ -21,7 +132,7 @@ AppFlowy is an open-source workspace for notes, docs, wikis and projects. This i
 - Admin console to manage users and workspaces
 - Bundled Mailpit catches all email, such as invites and password resets, or use your own email server
 - Sign in with Google, GitHub or Discord
-- Turn sign-up, email checks and notifications on or off right in the app settings
+- Change sign-up rules, email and more by adding a setting in the app settings
 
 ## How to use
 
@@ -34,4 +145,4 @@ AppFlowy is an open-source workspace for notes, docs, wikis and projects. This i
 
 ## Before you install
 
-Set `ADMIN_EMAIL` to your own email. Leave `ADMIN_PASSWORD` blank to get a random one, shown in the app log as "admin password is". To use AppFlowy from other devices, change `localhost` in `PUBLIC_URL` to your server's IP address. Every other setting is optional: leave it blank to keep the default (the Variables tab says what each default is). Fill in the `SMTP_` settings to send real email instead of using the built-in mail viewer, and set `GOTRUE_DISABLE_SIGNUP` to `true` after you made your account if only invited people should join. The first start takes about four minutes.
+Set `ADMIN_EMAIL` to your own email. Leave `ADMIN_PASSWORD` blank to get a random one, shown in the app log as "admin password is". To use AppFlowy from other devices, change `localhost` in `PUBLIC_URL` to your server's IP address. Every other setting is optional and listed in the Variables tab. To use one, add it in the app settings with your value; a setting you leave out keeps its default. Add the `SMTP_` settings to send real email instead of using the built-in mail viewer, and add `GOTRUE_DISABLE_SIGNUP=true` after you made your account if only invited people should join. The first start takes about four minutes.

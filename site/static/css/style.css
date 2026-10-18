@@ -224,6 +224,9 @@ th{border-top:0;color:var(--mut);font-weight:500}
 td code{font:500 13px var(--mono);word-break:break-all}
 td:first-child code{color:var(--ac2)}
 td:last-child{color:var(--mut)}
+tr.grp th{padding-top:24px;color:#fff;font-weight:600;border-top:1px solid var(--line)}
+tbody tr.grp:first-child th{border-top:0}
+.vnote{margin:0 0 16px;color:var(--mut);font-size:14px;line-height:1.6}
 .code{border:1px solid var(--line);border-radius:24px;overflow:hidden;background:#080808}
 .code .chrome span{margin-left:10px}
 .code .chrome .btn{margin-left:auto}
