@@ -130,42 +130,7 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        1. Open the app configuration before you install.
-
-
-        2. Find PUBLIC_URL. It starts as http://localhost:6102.
-
-
-        3. To use AFFiNE on other devices, change localhost to your ZimaOS
-           IP address.
-
-
-        4. More settings, like email, sign-up rules and sign-in with
-           Google, are listed on the AFFiNE page at
-           https://git.hsinghhira.me/IceStore/app/affine/ (Variables tab). You can
-           add them now or later in the app settings.
-
-
-        5. Start the installation.
-
-
-        6. Wait about 5 minutes. The first start sets up the database.
-
-
-        7. Open AFFiNE from the Zima OS dashboard.
-
-
-        8. Make your admin account. Pick a name, your email and a password.
-
-
-        9. Sign in and start writing.
-
-
-        10. Want only invited people to join? Add AFFINE_ALLOW_SIGNUP=false
-            in the app settings after you made your account.
-
-
-        11. The admin panel is at http://your-zimaos-ip:6102/admin.
+        Visit: https://icestore.hsinghhira.me/app/appflowy/
   index: /
   port_map: "6102"
   scheme: http

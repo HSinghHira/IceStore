@@ -4,7 +4,7 @@
   "title": "IceStore – Community AppStore for ZimaOS, CasaOS & Homeio",
   "description": "Browse self-hosted apps and add the IceStore community app store to ZimaOS, CasaOS or Homeio with one link. Free, open source and community maintained.",
   "repo": "https://github.com/HSinghHira/IceStore",
-  "base_url": "https://git.hsinghhira.me/IceStore/",
+  "base_url": "https://icestore.hsinghhira.me/",
   "author": "Harman Singh Hira",
   "author_url": "https://github.com/HSinghHira"
 }

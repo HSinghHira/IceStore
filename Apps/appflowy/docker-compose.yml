@@ -10,8 +10,6 @@ services:
     environment:
       - TZ=$TZ
       - PUBLIC_URL=http://localhost:6101
-      - ADMIN_EMAIL=CHANGEME@example.com
-      - ADMIN_PASSWORD=
     ports:
       - target: 8080
         published: "6101"
@@ -52,18 +50,6 @@ services:
               The address you type in your browser. It starts as localhost,
               which only works on this device. For other devices, change
               `localhost` to your ZimaOS IP. Keep the port at 6101.
-        - container: ADMIN_EMAIL
-          description:
-            en_US: >-
-              The email for the admin account. Put your own email here. It
-              is used to sign in to the admin console.
-        - container: ADMIN_PASSWORD
-          description:
-            en_US: >-
-              The password for the admin account. Leave it blank and the app
-              makes a random one on first start. It is shown in the app log
-              and saved in the data folder. Or type your own. It is only used
-              on the first start; after that, change it in the admin console.
       ports:
         - container: "8080"
           description:
@@ -139,54 +125,8 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        1. Open the app configuration before you install.
-
-
-        2. Find ADMIN_EMAIL. Set it to your own email.
-
-
-        3. Leave ADMIN_PASSWORD blank to get a random one. Or type your own.
-
-
-        4. Find PUBLIC_URL. It starts as http://localhost:6101.
-
-
-        5. To use AppFlowy on other devices, change localhost to your ZimaOS
-           IP address.
-
-
-        6. More settings, like email, sign-up rules and sign-in with
-           Google, are listed on the AppFlowy page at
-           https://git.hsinghhira.me/IceStore/app/appflowy/ (Variables tab). You can
-           add them now or later in the app settings.
-
-
-        7. Start the installation.
-
-
-        8. Wait about four minutes for all parts to start.
-
-
-        9. If you left ADMIN_PASSWORD blank, open the app log. Find the line
-           that says "admin password is".
-
-
-        10. Open AppFlowy from the Zima OS dashboard.
-
-
-        11. Sign up and create your first workspace.
-
-
-        12. If you did not add SMTP_HOST, read AppFlowy email at
-            http://your-zimaos-ip:6101/mail.
-
-
-        13. Want only invited people to join? Add GOTRUE_DISABLE_SIGNUP=true
-            in the app settings after you made your account.
-
-
-        14. Open the admin console at http://your-zimaos-ip:6101/console.
-            Sign in with your admin email and password.
+        Visit: https://icestore.hsinghhira.me/app/appflowy/
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/screenshot-1.png
   index: /
   port_map: "6101"
   scheme: http

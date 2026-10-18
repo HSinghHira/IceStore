@@ -226,6 +226,7 @@ td:first-child code{color:var(--ac2)}
 td:last-child{color:var(--mut)}
 tr.grp th{padding-top:24px;color:#fff;font-weight:600;border-top:1px solid var(--line)}
 tbody tr.grp:first-child th{border-top:0}
+td:first-child code,td:nth-child(2) code{word-break:normal;overflow-wrap:anywhere}
 .vnote{margin:0 0 16px;color:var(--mut);font-size:14px;line-height:1.6}
 .code{border:1px solid var(--line);border-radius:24px;overflow:hidden;background:#080808}
 .code .chrome span{margin-left:10px}
@@ -268,3 +269,10 @@ tbody tr.grp:first-child th{border-top:0}
 #stores>h2,#stores>.sub{text-align:center;margin-left:auto;margin-right:auto}#stores>.sub{margin-bottom:28px}
 /* app page without screenshots: one column */
 .ahero.solo{grid-template-columns:1fr}
+
+/* 404 page */
+.nf{text-align:center;padding-top:64px}
+.nf-code{margin:0;font:800 clamp(72px,18vw,160px)/1 var(--display);color:var(--ac);text-shadow:0 0 60px rgba(76,201,240,.35)}
+.nf h1{margin:16px 0 8px}
+.nf .lead{max-width:520px;margin:0 auto 24px;color:var(--mut)}
+.nf-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}

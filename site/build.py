@@ -59,7 +59,7 @@ DEFAULTS = {
     "description": "Browse self-hosted apps and add the IceStore community app store to ZimaOS, CasaOS "
                    "or Homeio with one link. Free, open source and community maintained.",
     "repo": "https://github.com/HSinghHira/IceStore",
-    "base_url": "https://git.hsinghhira.me/IceStore/",
+    "base_url": "https://icestore.hsinghhira.me/",
     "author": "Harman Singh Hira",
     "author_url": "https://github.com/HSinghHira",
 }
@@ -449,7 +449,8 @@ def app_page(a, cfg, tpl, layout):
     tabs = [("intro", "info", "Introduction", f'<div class="md">{a["intro"]}</div>')]
     if a["env"] or a["more"]:
         def row(k, v, d):
-            return f'<tr><td><code>{e(k)}</code></td><td><code>{e(v) or "—"}</code></td><td>{code_ticks(d)}</td></tr>'
+            name = e(k).replace("_", "_<wbr>")  # break long names at underscores, not mid-word
+            return f'<tr><td><code>{name}</code></td><td><code>{e(v) or "—"}</code></td><td>{code_ticks(d)}</td></tr>'
 
         def head(t):
             return f'<tr class="grp"><th colspan="3">{e(t)}</th></tr>'
@@ -537,6 +538,46 @@ def manifest(cfg):
     }, indent=2, ensure_ascii=False) + "\n"
 
 
+def not_found_page(apps, cfg, layout):
+    """404.html. GitHub Pages serves it for any missing path, so every link is absolute."""
+    base = cfg["base_url"]
+    cards = "".join(
+        f'<a class="card" href="{base}app/{a["slug"]}/" data-name="{e(a["name"].lower())}">'
+        f'{ph(a["name"], base + a["icon_url"] if a["icon_url"] else "")}<h3>{e(a["name"])}</h3></a>'
+        for a in apps)
+    content = (
+        '<div class="wrap">\n'
+        f'  <div class="top"><a class="logo" href="{base}">{e(cfg["site_name"])}</a>'
+        f'<a class="back" href="{base}#apps">{icon("arrow-left")}All apps</a></div>\n'
+        '  <main id="main" tabindex="-1" data-page="404">\n'
+        '    <section class="sec nf" aria-labelledby="nf-h">\n'
+        '      <p class="nf-code" aria-hidden="true">404</p>\n'
+        '      <h1 id="nf-h">Page not found</h1>\n'
+        '      <p class="lead">This page does not exist, or it moved. Try one of the apps below, or go back to the start.</p>\n'
+        f'      <p class="nf-links"><a class="btn p" href="{base}">{icon("arrow-left")}Go to the homepage</a>'
+        f'<a class="btn" href="{base}#apps">{icon("grid")}Browse all apps</a></p>\n'
+        '    </section>\n'
+        + (f'    <section class="sec" aria-label="Apps"><div class="grid">{cards}</div></section>\n' if cards else "")
+        + '  </main>\n</div>')
+    ld = {"@context": "https://schema.org", "@type": "WebPage", "name": "Page not found", "url": base + "404.html"}
+    head = {**cfg, "root": base, "url": base, "og_image": base + "img/og.png",
+            "title": f'Page not found – {cfg["site_name"]}', "description": "This page does not exist.",
+            "og_alt": cfg["site_name"], "jsonld": js(ld)}
+    html_out = page(layout, content, head)
+    return html_out.replace('<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">',
+                            '<meta name="robots" content="noindex">')
+
+
+def redirect_page(target, base):
+    """A tiny page that sends the visitor on, for folders that have no page of their own."""
+    t = e(target)
+    return ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+            f'<title>Redirecting…</title>\n<meta name="robots" content="noindex">\n'
+            f'<link rel="canonical" href="{e(base)}">\n<meta http-equiv="refresh" content="0; url={t}">\n'
+            f'<script>location.replace("{t}")</script>\n</head>\n'
+            f'<body><p><a href="{t}">Go to the homepage</a></p></body>\n</html>\n')
+
+
 # ---------------------------------------------------------------- main
 
 def main():
@@ -587,6 +628,14 @@ def main():
         (dest / "index.html").write_text(app_page(a, cfg, tpl_app, layout), encoding="utf-8")
 
     (out / "index.html").write_text(home_page(apps, cfg, tpl_index, layout), encoding="utf-8")
+    (out / "404.html").write_text(not_found_page(apps, cfg, layout), encoding="utf-8")
+    # /app/ has no page of its own: send people to the homepage
+    (out / "app").mkdir(parents=True, exist_ok=True)
+    (out / "app" / "index.html").write_text(redirect_page("../", cfg["base_url"]), encoding="utf-8")
+    # custom domain: keep it with the site (GitHub Pages reads it from the repo settings too)
+    host = re.match(r"https?://([^/]+)/$", cfg["base_url"])
+    if host and not host.group(1).endswith("github.io"):
+        (out / "CNAME").write_text(host.group(1) + "\n", encoding="utf-8")
     (out / "sitemap.xml").write_text(sitemap(apps, cfg["base_url"]), encoding="utf-8")
     (out / "robots.txt").write_text(f'User-agent: *\nAllow: /\n\nSitemap: {cfg["base_url"]}sitemap.xml\n', encoding="utf-8")
     (out / "manifest.webmanifest").write_text(manifest(cfg), encoding="utf-8")
