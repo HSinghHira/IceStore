@@ -1,17 +1,15 @@
-name: appflowy-aio
+name: appflowy
 
 services:
-  appflowy-aio:
-    image: ghcr.io/hsinghhira/appflowy-aio:1.0.1
-    container_name: appflowy-aio
+  appflowy:
+    image: ghcr.io/hsinghhira/appflowy:latest
+    container_name: appflowy
     restart: unless-stopped
     stop_grace_period: 90s
     privileged: true
     environment:
       - TZ=$TZ
       - PUBLIC_URL=http://localhost:8481
-      - ADMIN_EMAIL=CHANGEME@example.com
-      - ADMIN_PASSWORD=JcHD23%RF#DSFKmh7qw2
     ports:
       - target: 8080
         published: "8481"
@@ -77,13 +75,13 @@ x-casaos:
   architectures:
     - amd64
     - arm64
-  main: appflowy-aio
+  main: appflowy
   author: HSinghHira
   category: Productivity
   developer: AppFlowy-IO
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/ZimaAppStore@main/Apps/AppFlowy/icon.png
   title:
-    en_US: AppFlowy AIO
+    en_US: AppFlowy
   tagline:
     en_US: Open-source Notion alternative in one container. Notes, docs, wikis and projects that you own.
   description:
@@ -116,7 +114,7 @@ x-casaos:
 
       **How to use?**
 
-      1. Open AppFlowy AIO from the Zima OS dashboard.
+      1. Open AppFlowy from the Zima OS dashboard.
 
       2. Sign up with your email and password.
 
@@ -158,7 +156,7 @@ x-casaos:
            that says "admin password is".
 
 
-        9. Open AppFlowy AIO from the Zima OS dashboard.
+        9. Open AppFlowy from the Zima OS dashboard.
 
 
         10. Sign up and create your first workspace.

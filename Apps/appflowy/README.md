@@ -6,7 +6,7 @@ services:
   - { name: Mail Viewer, path: /mail, icon: mail }
 ---
 
-# AppFlowy AIO
+# AppFlowy
 
 AppFlowy is an open-source workspace for notes, docs, wikis and projects. This is the self-hosted AppFlowy Cloud in a single container, with one port and one data folder. Secret keys are made for you on first start.
 
@@ -23,7 +23,7 @@ AppFlowy is an open-source workspace for notes, docs, wikis and projects. This i
 
 ## How to use
 
-1. Open AppFlowy AIO from your dashboard.
+1. Open AppFlowy from your dashboard.
 2. Sign up with your email and password.
 3. Create your first workspace and page.
 4. To use the AppFlowy desktop or mobile app, choose the self-hosted server option and enter your address with port `8481`.
