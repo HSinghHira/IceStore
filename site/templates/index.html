@@ -1,210 +1,65 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{site_name}}: {{tagline}}</title>
-<meta name="description" content="{{tagline}}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#000;--card:rgba(255,255,255,.035);--line:rgba(255,255,255,.09);--mut:rgba(255,255,255,.55);--ac:#4cc9f0;--ac2:#a5e8ff}
-*{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:#fff;font:400 16px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-a{color:inherit;text-decoration:none}
-.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;--mx:70vw;--my:25vh}
-.bg:before{content:"";position:absolute;inset:0;background:radial-gradient(520px circle at var(--mx) var(--my),rgba(76,201,240,.2),transparent 65%)}
-.bg:after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.4) 1px,transparent 1.5px);background-size:30px 30px;-webkit-mask-image:radial-gradient(300px circle at var(--mx) var(--my),#000,transparent);mask-image:radial-gradient(300px circle at var(--mx) var(--my),#000,transparent)}
-.bg i{position:absolute;top:-120px;left:-120px;width:520px;height:520px;border-radius:50%;filter:blur(110px);background:rgba(76,201,240,.1);animation:d 22s ease-in-out infinite alternate}
-.bg i+i{top:auto;left:auto;right:-120px;bottom:-160px;background:rgba(165,232,255,.08);animation-duration:28s;animation-direction:alternate-reverse}
-@keyframes d{to{transform:translate(18vw,12vh) scale(1.2)}}
-@media(prefers-reduced-motion:reduce){.bg i{animation:none}}
-.mob{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;background:rgba(0,0,0,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);text-align:center}
-.mob>div{max-width:360px;display:grid;justify-items:center;gap:16px}
-.mob .i{width:52px;height:52px;color:var(--ac2);stroke-width:1.5}
-.mob h2{margin:0;font-size:26px}
-.mob p{color:var(--mut)}
-:focus-visible{outline:2px solid var(--ac2);outline-offset:3px}
-.wrap{max-width:1180px;margin:auto;padding:0 24px}
-nav{display:flex;align-items:center;justify-content:space-between;padding:20px 0;position:relative;z-index:2}
-.logo{font-weight:700;font-size:20px;letter-spacing:-.02em}
-.links{display:flex;gap:32px;font-size:14px;color:var(--mut)}
-.links a:hover{color:#fff}
-@media(max-width:640px){.links{display:none}}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;height:50px;padding:0 28px;border-radius:99px;font:600 15px Inter,sans-serif;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#fff;cursor:pointer;transition:background .2s}
-.btn:hover{background:rgba(255,255,255,.11)}
-.btn.p{color:#031219;background:var(--ac);border-color:var(--ac);box-shadow:0 0 30px rgba(76,201,240,.35)}
-.btn.p:hover{background:#2fb4dc}
-.btn.s{height:38px;padding:0 18px;font-size:13px}
-.hero{position:relative;text-align:center;padding:72px 0 56px;min-height:max(480px,calc(100svh - 250px));display:flex;flex-direction:column;align-items:center;justify-content:center}
-.hero:before{content:"";position:absolute;left:50%;top:-140px;width:1000px;max-width:100vw;height:620px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(76,201,240,.3),transparent);pointer-events:none}
-.pill{position:relative;display:inline-flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border:1px solid var(--line);background:var(--card);border-radius:99px;font-size:13px;color:var(--mut);margin-bottom:28px}
-.pill b{background:var(--ac);color:#031219;border-radius:99px;padding:2px 10px;font-weight:600;font-size:12px}
-h1{position:relative;font-size:clamp(44px,8vw,88px);line-height:1.07;letter-spacing:-.035em;font-weight:600;max-width:840px;margin:0 auto 20px}
-.hero p{position:relative;color:var(--mut);max-width:560px;margin:0 auto 36px;font-size:17px}
-.cta{position:relative;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.mq{overflow:hidden;padding:8px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.row{display:flex;width:max-content;animation:l 70s linear infinite}
-.row.r{animation-direction:reverse;animation-duration:85s}
-.mq:hover .row{animation-play-state:paused}
-@keyframes l{to{transform:translateX(-50%)}}
-.tile{margin:0 14px 8px 0;padding:9px;border:1px solid var(--line);background:var(--card);border-radius:24px;transition:border-color .2s}
-.tile:hover{border-color:rgba(76,201,240,.6)}
-.ph{display:grid;place-items:center;flex:none;width:var(--s,48px);height:var(--s,48px);border-radius:12px;background:linear-gradient(135deg,hsl(calc(188 + var(--h) * .5) 85% 44%),hsl(calc(212 + var(--h) * .4) 80% 34%));color:#fff;font-weight:700;font-size:calc(var(--s,48px)*.42)}.tile{--s:76px}
-.ph{position:relative;overflow:hidden}.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0d1317}
-@media(prefers-reduced-motion:reduce){.row{animation:none}.mq{overflow-x:auto}}
-.sec{padding:96px 24px 0}
-h2{font-size:clamp(30px,5vw,48px);line-height:1.1;letter-spacing:-.03em;font-weight:500;margin-bottom:12px}
-.sub{color:var(--mut);margin-bottom:36px;max-width:560px}
-.tabs{display:inline-flex;gap:6px;padding:6px;border:1px solid var(--line);background:var(--card);border-radius:99px;margin-bottom:20px;flex-wrap:wrap}
-.tab{display:flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:99px;border:0;background:none;color:var(--mut);font:500 14px Inter,sans-serif;cursor:pointer;transition:.2s}
-.tab img{width:28px;height:28px;border-radius:6px;object-fit:cover}
-.tab[aria-selected=true]{background:#fff;color:#000}
-.panel{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:40px;border:1px solid var(--line);border-radius:28px;background:var(--card)}
-@media(max-width:820px){.panel{grid-template-columns:1fr;padding:26px}}
-.panel ol{padding-left:22px;display:grid;gap:14px;color:rgba(255,255,255,.8)}
-.panel li::marker{color:var(--ac2);font-weight:600}
-.panel b{color:#fff;font-weight:600}
-.lab{font-size:13px;color:var(--mut);margin-bottom:8px}
-.box{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:8px 8px 8px 18px;border:1px solid rgba(76,201,240,.4);background:rgba(76,201,240,.08);border-radius:16px;margin-bottom:24px}
-code,pre{font:500 13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}
-.box code{overflow-x:auto;white-space:nowrap}
-.cl{position:relative;margin-bottom:24px}
-.cl pre{margin:0;padding-right:60px}
-.ic{position:absolute;top:10px;right:10px;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--mut);cursor:pointer;transition:.2s}
-.ic:hover{color:#fff;background:rgba(255,255,255,.12)}
-.ic .i{width:16px;height:16px}
-pre{padding:18px 20px;border:1px solid var(--line);background:#0a0a0a;border-radius:16px;overflow-x:auto;color:rgba(255,255,255,.75);margin-bottom:24px}
-.tip{display:flex;gap:10px;font-size:14px;color:var(--mut);border-left:2px solid var(--ac);padding-left:14px}
-.srch{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:24px}
-.sf{position:relative;width:min(100%,360px)}.sf .i{position:absolute;left:18px;top:15px;color:var(--mut)}
-input{height:48px;width:100%;padding:0 20px 0 48px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:#fff;font:500 15px Inter,sans-serif}
-input::placeholder{color:rgba(255,255,255,.35)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
-.card{--s:64px;display:flex;align-items:center;gap:16px;padding:18px 22px;border:1px solid var(--line);background:var(--card);border-radius:22px;transition:border-color .2s,background .2s}
-.card:hover{border-color:rgba(76,201,240,.55);background:rgba(76,201,240,.05)}
-.card .h{display:flex;gap:14px;align-items:center}
-.card h3{font-size:18px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
-.card small{color:var(--mut);font-size:12px;word-break:break-all}
-.ports{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
-.ports span{font:500 12px ui-monospace,monospace;padding:3px 10px;border-radius:99px;border:1px solid var(--line);color:rgba(255,255,255,.7)}
-.none{display:none;color:var(--mut);padding:40px 0}
-.help{display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;padding:40px;border:1px solid rgba(76,201,240,.35);border-radius:28px;background:radial-gradient(60% 140% at 0 100%,rgba(76,201,240,.22),transparent),var(--card)}
-footer{margin-top:96px;border-top:1px solid var(--line);padding:40px 0 56px;color:var(--mut);font-size:14px}
-footer .wrap{text-align:center;display:grid;gap:6px}
-footer .m{color:rgba(255,255,255,.85);font-size:15px}
-footer a{color:#fff;border-bottom:1px solid var(--ac)}
-</style>
-</head>
-<body>
-<div class="bg" aria-hidden="true"><i></i><i></i></div>
-<div class="wrap">
+<main id="main" tabindex="-1" data-page="home">
   <header class="hero">
-    <div class="pill"><b id="n1">47</b>community apps, ready to install</div>
-    <h1>{{site_name}}</h1>
-    <p>{{tagline}}</p>
-    <div class="cta"><a class="btn p" data-i="plus" href="#stores">Add the store</a><a class="btn" data-i="grid" href="#apps">Browse apps</a></div>
+    <div class="pill"><b>{{app_count}}</b>community apps, ready to install</div>
+    <h1 class="ice-title"><span class="ice-word" data-text="{{site_name}}">{{site_name}}</span><svg class="icicles" viewBox="0 0 600 76" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".55" stop-color="#9fe3fa" stop-opacity=".75"/><stop offset="1" stop-color="#4cc9f0" stop-opacity=".1"/></linearGradient></defs><polygon points="0,0 4.0,5 20.0,36 36.0,5 44.0,5 60.0,26 76.0,5 84.0,5 100.0,48 116.0,5 124.0,5 140.0,72 156.0,5 164.0,5 180.0,18 196.0,5 204.0,5 220.0,18 236.0,5 244.0,5 260.0,60 276.0,5 284.0,5 300.0,18 316.0,5 324.0,5 340.0,36 356.0,5 364.0,5 380.0,60 396.0,5 404.0,5 420.0,18 436.0,5 444.0,5 460.0,60 476.0,5 484.0,5 500.0,26 516.0,5 524.0,5 540.0,18 556.0,5 564.0,5 580.0,18 596.0,5 600,0" fill="url(#ig)"/></svg><i class="spark" style="left:-3%;top:-12%;animation-delay:0s"></i><i class="spark" style="left:23%;top:-20%;animation-delay:0.9s"></i><i class="spark" style="left:47%;top:-24%;animation-delay:1.7s"></i><i class="spark" style="left:72%;top:-16%;animation-delay:0.4s"></i><i class="spark" style="left:99%;top:-10%;animation-delay:2.2s"></i><i class="spark" style="left:60%;top:118%;animation-delay:1.3s"></i></h1>
+    <p class="lead">{{tagline}}</p>
+    <div class="cta"><a class="btn p" href="#stores">{{icon:plus}}Add the store</a><a class="btn" href="#apps">{{icon:grid}}Browse apps</a></div>
   </header>
-</div>
-<div class="mq" aria-hidden="true"><div class="row" id="m1"></div></div>
-<div class="mq" aria-hidden="true"><div class="row r" id="m2"></div></div>
+{{{marquee}}}
 
-<section class="wrap sec" id="stores">
-  <h2>Add the store to your dashboard</h2>
-  <p class="sub">Each OS reads the store from a different link. Pick yours and follow the steps.</p>
-  <div class="tabs" role="tablist" id="tabs"></div>
-  <div class="panel" role="tabpanel" id="panel"></div>
-</section>
+  <section class="wrap sec" id="stores" aria-labelledby="stores-h">
+    <h2 id="stores-h">Add {{site_name}} to your OS</h2>
+    <p class="sub">Pick your system, copy the link and add it as a community store. It takes about a minute.</p>
+    <div class="stabs"><div class="tabs" role="tablist" aria-label="Choose your system">{{{os_tabs}}}</div></div>
+    <div class="panel sp" role="tabpanel" id="p-zimaos" aria-labelledby="zimaos"><div class="stores">
+      <article class="store">
+  <header><img src="{{zimaos_logo}}" alt="" width="48" height="48" loading="lazy"><div><h3>ZimaOS</h3><p>Reads the store listing directly.</p></div></header>
+  <div class="url"><div><span class="ft">store.json</span><code>{{{zimaos_url_wbr}}}</code></div><button class="ic" type="button" data-copy="{{zimaos_url}}" aria-label="Copy ZimaOS store URL">{{icon:copy}}</button></div>
+  <ol class="steps"><li><span>Open <b>App Store</b> in the ZimaOS dashboard.</span></li><li><span>Click the <b>Community store</b> icon, then&nbsp;<b>+</b>.</span></li><li><span>Paste the store URL above.</span></li><li><span>Click <b>Add</b> and refresh the page.</span></li></ol>
+  <div class="fn">{{icon:info}}<span>Not showing up? Refresh or restart the App Store service.</span></div>
+</article>
+      <div class="term"><header><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@zimaos: ~</span><button class="ic" type="button" data-copy-from="#cmd-zima" aria-label="Copy ZimaOS terminal command">{{icon:copy}}</button></header><pre><span class="pr"><span class="u">user@zimaos</span>:<span class="d">~</span>$</span> <code id="cmd-zima">curl -s -X POST \
+  -H &quot;Authorization: $TOKEN&quot; \
+  -H &#x27;Content-Type: application/json&#x27; \
+  -d &#x27;{&quot;url&quot;:&quot;{{zimaos_url}}&quot;}&#x27; \
+  &quot;http://localhost/v3/app_store/repo&quot;</code>
+<span class="pr"><span class="u">user@zimaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre></div>
+    </div></div>
+    <div class="panel sp" role="tabpanel" id="p-casaos" aria-labelledby="casaos" hidden><div class="stores">
+      <article class="store">
+  <header><img src="{{casaos_logo}}" alt="" width="48" height="48" loading="lazy"><div><h3>CasaOS</h3><p>Uses a zip archive of the store.</p></div></header>
+  <div class="url"><div><span class="ft">store.zip</span><code>{{{casaos_url_wbr}}}</code></div><button class="ic" type="button" data-copy="{{casaos_url}}" aria-label="Copy CasaOS store URL">{{icon:copy}}</button></div>
+  <ol class="steps"><li><span>Open <b>App Store</b> in the CasaOS dashboard.</span></li><li><span>Click <b>+ Add Source</b>.</span></li><li><span>Paste the store URL above.</span></li><li><span>Click <b>Add</b>.</span></li></ol>
+  <div class="fn">{{icon:info}}<span>The link stays the same when new apps are added.</span></div>
+</article>
+      <div class="tstack"><div class="tstep"><span>1</span>Add the store</div><div class="term"><header><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@casaos: ~</span><button class="ic" type="button" data-copy-from="#cmd-casa-add" aria-label="Copy CasaOS register command">{{icon:copy}}</button></header><pre><span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <code id="cmd-casa-add">sudo casaos-cli app-management \
+  register app-store \
+  {{casaos_url}}</code>
+<span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre></div><div class="tstep"><span>2</span>Check it was added</div><div class="term"><header><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@casaos: ~</span><button class="ic" type="button" data-copy-from="#cmd-casa-list" aria-label="Copy CasaOS list command">{{icon:copy}}</button></header><pre><span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <code id="cmd-casa-list">sudo casaos-cli app-management list app-stores</code>
+<span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre></div></div>
+    </div></div>
+    <div class="panel sp" role="tabpanel" id="p-homeio" aria-labelledby="homeio" hidden><div class="stores">
+      <article class="store">
+  <header><img src="{{homeio_logo}}" alt="" width="48" height="48" loading="lazy"><div><h3>Homeio</h3><p>Uses the same zip as CasaOS.</p></div></header>
+  <div class="url"><div><span class="ft">store.zip</span><code>{{{homeio_url_wbr}}}</code></div><button class="ic" type="button" data-copy="{{homeio_url}}" aria-label="Copy Homeio store URL">{{icon:copy}}</button></div>
+  <ol class="steps"><li><span>Open <b>App Store</b> in the Homeio dashboard.</span></li><li><span>Click <b>+ Install</b>, then <b>Manage Sources</b>.</span></li><li><span>Paste the URL and name it, for example “{{site_name}}”.</span></li><li><span>Click <b>Add Source</b>.</span></li></ol>
+  <div class="fn">{{icon:info}}<span>The link stays the same when new apps are added.</span></div>
+</article>
+      <div class="tip"><header><span>Good to know</span></header><ul><li>Homeio and CasaOS share one link, so a single zip serves both.</li><li>Apps appear in the App Store a few seconds after the source is added.</li><li>If the source is rejected, try <code>latest.zip</code> in place of <code>store.zip</code>.</li></ul></div>
+    </div></div>
+  </section>
 
-<section class="wrap sec" id="apps">
-  <div class="srch">
-    <div><h2 style="margin:0">All apps</h2><p class="sub" style="margin:8px 0 0"><span id="n2"></span> apps and counting.</p></div>
-    <div class="sf"><span data-i="search"></span><input id="q" type="search" placeholder="Search apps" aria-label="Search apps"></div>
-  </div>
-  <div class="grid" id="grid"></div>
-  <p class="none" id="none">No app matches that search.</p>
-</section>
+  <section class="wrap sec" id="apps" aria-labelledby="apps-h">
+    <div class="srch">
+      <div><h2 id="apps-h">All apps</h2><p class="sub" id="count">{{app_count}} apps and counting.</p></div>
+      <div class="sf">{{icon:search}}<input id="q" type="search" placeholder="Search apps" aria-label="Search apps" autocomplete="off"></div>
+    </div>
+    <div class="grid">{{{cards}}}</div>
+    <p class="none" id="none" hidden>No app matches that search.</p>
+  </section>
 
-<section class="wrap sec" id="help"><div class="help"><div><h2 style="margin:0 0 8px">Missing an app?</h2><p class="sub" style="margin:0">Ask for it, report a bug, or browse the code.</p></div>
-  <div class="cta"><a class="btn p" data-i="plus-circle" href="{{repo}}/issues/new">Request an App</a><a class="btn" data-i="issues" href="{{repo}}/issues">Issues</a><a class="btn" data-i="github" href="{{repo}}">GitHub</a></div></div></section>
-
-<footer><div class="wrap">
-  <p class="m">Made with 🩵 by <a href="{{author_url}}">{{author}}</a></p>
-  <p>A community project, not affiliated with Zima OS, Casa OS and Homeio.</p>
-</div></footer>
-
-<script>
-const APPS=/*APPS*/[];
-const ST={zimaos:"{{zimaos_url}}",casaos:"{{casaos_url}}",homeio:"{{homeio_url}}"};
-const TABS=[
- {id:"zimaos",n:"ZimaOS",l:"Store URL",u:ST.zimaos,
-  s:["Open the <b>ZimaOS</b> dashboard.","Go to <b>App Store</b> and click <b>Community store</b> (the gear icon).","Click the <b>+</b> icon.","Paste the store URL.","Click <b>Add</b>, then refresh the App Store page."],
-  cli:['curl -s -X POST \\','  -H "Authorization: $TOKEN" \\',"  -H 'Content-Type: application/json' \\",`  -d '{"url":"${ST.zimaos}"}' \\`,'  "http://localhost/v3/app_store/repo"'].join("\n"),
-  t:"If the store doesn’t show up right away, refresh or restart the App Store service. ZimaOS sometimes caches store sources."},
- {id:"casaos",n:"CasaOS",l:"Store URL",u:ST.casaos,
-  s:["Open the <b>CasaOS</b> dashboard.","Go to <b>App Store</b>.","Click <b>+ Add Source</b>.","Paste the store archive URL.","Click <b>Add</b>."],
-  cli:`sudo casaos-cli app-management register app-store ${ST.casaos}\nsudo casaos-cli app-management list app-stores`,
-  t:"This link always serves the newest build, so it never needs updating when apps are added."},
- {id:"homeio",n:"Homeio",l:"Store URL",u:ST.homeio,
-  s:["Open the <b>Homeio</b> dashboard.","Click <b>App Store</b>.","Click the <b>+ Install</b> button.","Go to <b>Manage Sources</b>.","Paste the store URL.","Enter a name, for example “Hira’s App Store”.","Click <b>Add Source</b>."],
-  cli:"",t:"This link always serves the newest build, so it never needs updating when apps are added."}
-];
-const TI={zimaos:"https://www.zimaspace.com/apple-touch-icon.png",casaos:"https://casaos.zimaspace.com/favicon/apple-touch-icon.png",homeio:"https://homeio.app/icon.webp"};
-const $=s=>document.querySelector(s);
-const IC={github:'<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',plus:'<path d="M5 12h14M12 5v14"/>',"plus-circle":'<circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/>',issues:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',check:'<path d="M20 6 9 17l-5-5"/>',search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',"external-link":'<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',code:'<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',"arrow-left":'<path d="M19 12H5M12 19l-7-7 7-7"/>',package:'<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73zM12 22V12M3.3 7 12 12l8.7-5"/>',tag:'<path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.41l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5"/>',plug:'<path d="M12 22v-5M9 8V2M15 8V2M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/>',monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'};
-const I=n=>`<svg class="i" viewBox="0 0 24 24">${IC[n]}</svg>`;
-const ic=a=>`<span class="ph" style="--h:${[...a[0]].reduce((x,c)=>x+c.charCodeAt(0),0)%40}">${a[0][0].toUpperCase()}${a[1]?`<img src="${a[1]}" alt="" loading="lazy" onerror="this.remove()">`:""}</span>`;
-document.querySelectorAll("[data-i]").forEach(e=>e.insertAdjacentHTML("afterbegin",I(e.dataset.i)));
-$("#n1").textContent=$("#n2").textContent=APPS.length;
-// marquee: two rows moving in opposite directions, list doubled for a seamless loop
-const half=Math.ceil(APPS.length/2);
-[[APPS.slice(0,half),"#m1"],[APPS.slice(half),"#m2"]].forEach(([l,id])=>{
-  const h=l.map(a=>`<div class="tile">${ic(a)}</div>`).join("");
-  $(id).innerHTML=h+h;
-});
-// tabs
-function sel(i){
-  const t=TABS[i];
-  document.querySelectorAll(".tab").forEach((b,j)=>b.setAttribute("aria-selected",j==i));
-  $("#panel").innerHTML=`<ol>${t.s.map(x=>`<li>${x}</li>`).join("")}</ol>
-  <div><div class="lab">${t.l}</div>
-  <div class="box"><code>${t.u}</code><button class="btn p s" id="cp">${I("copy")}Copy</button></div>
-  ${t.cli?`<div class="lab">Or use the terminal</div><div class="cl"><pre>${t.cli.replace(/&/g,"&amp;")}</pre><button class="ic" id="cc" aria-label="Copy command">${I("copy")}</button></div>`:""}
-  <p class="tip">${I("info")}<span>${t.t}</span></p></div>`;
-  $("#cp").onclick=async e=>{const b=e.currentTarget;try{await navigator.clipboard.writeText(t.u);b.innerHTML=I("check")+"Copied"}catch(_){b.textContent="Press Ctrl+C"}setTimeout(()=>b.innerHTML=I("copy")+"Copy",1800)};
-  if($("#cc"))$("#cc").onclick=async e=>{const b=e.currentTarget;try{await navigator.clipboard.writeText(t.cli);b.innerHTML=I("check")}catch(_){}setTimeout(()=>b.innerHTML=I("copy"),1500)};
-}
-$("#tabs").innerHTML=TABS.map((t,i)=>`<button class="tab" role="tab" data-i="${i}"><img src="${TI[t.id]}" alt="">${t.n}</button>`).join("");
-$("#tabs").onclick=e=>{const b=e.target.closest(".tab");if(b)sel(+b.dataset.i)};
-sel(0);
-const hi=TABS.findIndex(t=>t.id==location.hash.slice(1));
-if(hi>=0){sel(hi);$("#stores").scrollIntoView()}
-function draw(q=""){
-  const l=APPS.filter(a=>a[0].toLowerCase().includes(q.toLowerCase()));
-  $("#grid").innerHTML=l.map(a=>{
-    return `<a class="card" href="app/${a[2]}/">${ic(a)}<h3>${a[0]}</h3></a>`}).join("");
-  $("#none").style.display=l.length?"none":"block";
-}
-$("#q").oninput=e=>draw(e.target.value);
-draw();
-
-// cursor-follow background
-(()=>{const bg=document.querySelector(".bg");let x=innerWidth*.7,y=innerHeight*.25,tx=x,ty=y;
-const set=()=>{bg.style.setProperty("--mx",x+"px");bg.style.setProperty("--my",y+"px")};set();
-if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
-addEventListener("pointermove",e=>{tx=e.clientX;ty=e.clientY});
-(function f(){x+=(tx-x)*.08;y+=(ty-y)*.08;set();requestAnimationFrame(f)})()})();
-// small-screen notice with a way through
-(()=>{let seen;try{seen=sessionStorage.getItem("desk")}catch(_){}
-if(innerWidth>480||seen)return;
-const m=document.createElement("div");m.className="mob";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","mt");
-m.innerHTML=`<div>${I("monitor")}<h2 id="mt">Best viewed on desktop</h2><p>This site works best on a larger screen. For the full experience, open it on a desktop or laptop.</p><button class="btn p">View Anyway</button></div>`;
-document.body.append(m);document.body.style.overflow="hidden";
-const b=m.querySelector("button");b.focus();
-b.onclick=()=>{m.remove();document.body.style.overflow="";try{sessionStorage.setItem("desk","1")}catch(_){}};
-})();
-</script>
-</body>
-</html>
+  <section class="wrap sec" aria-labelledby="help-h">
+    <div class="help"><div><h2 id="help-h">Missing an app?</h2><p class="sub">Ask for it, report a bug, or browse the code.</p></div>
+    <div class="cta"><a class="btn p" href="{{repo}}/issues/new">{{icon:plus-circle}}Request an App</a><a class="btn" href="{{repo}}/issues">{{icon:issues}}Issues</a><a class="btn" href="{{repo}}">{{icon:github}}GitHub</a></div></div>
+  </section>
+</main>

@@ -1,221 +1,29 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{app_name}} on {{site_name}}</title>
-<meta name="description" content="{{desc}}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#000;--card:rgba(255,255,255,.035);--line:rgba(255,255,255,.09);--mut:rgba(255,255,255,.55);--ac:#4cc9f0;--ac2:#a5e8ff}
-*{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:#fff;font:400 16px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-a{color:inherit;text-decoration:none}
-.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;--mx:70vw;--my:25vh}
-.bg:before{content:"";position:absolute;inset:0;background:radial-gradient(520px circle at var(--mx) var(--my),rgba(76,201,240,.2),transparent 65%)}
-.bg:after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.4) 1px,transparent 1.5px);background-size:30px 30px;-webkit-mask-image:radial-gradient(300px circle at var(--mx) var(--my),#000,transparent);mask-image:radial-gradient(300px circle at var(--mx) var(--my),#000,transparent)}
-.bg i{position:absolute;top:-120px;left:-120px;width:520px;height:520px;border-radius:50%;filter:blur(110px);background:rgba(76,201,240,.1);animation:d 22s ease-in-out infinite alternate}
-.bg i+i{top:auto;left:auto;right:-120px;bottom:-160px;background:rgba(165,232,255,.08);animation-duration:28s;animation-direction:alternate-reverse}
-@keyframes d{to{transform:translate(18vw,12vh) scale(1.2)}}
-@media(prefers-reduced-motion:reduce){.bg i{animation:none}}
-.mob{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;background:rgba(0,0,0,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);text-align:center}
-.mob>div{max-width:360px;display:grid;justify-items:center;gap:16px}
-.mob .i{width:52px;height:52px;color:var(--ac2);stroke-width:1.5}
-.mob h2{margin:0;font-size:26px}
-.mob p{color:var(--mut)}
-:focus-visible{outline:2px solid var(--ac2);outline-offset:3px}
-.wrap{max-width:1180px;margin:auto;padding:0 24px}
-nav{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
-.logo{font-weight:700;font-size:20px;letter-spacing:-.02em}
-.back{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--mut)}.back:hover{color:#fff}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:50px;padding:0 28px;border-radius:99px;font:600 15px Inter,sans-serif;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#fff;transition:background .2s}
-.btn:hover{background:rgba(255,255,255,.11)}
-.btn.p{color:#031219;background:var(--ac);border-color:var(--ac);box-shadow:0 0 30px rgba(76,201,240,.35)}
-.btn.p:hover{background:#2fb4dc}
-.hero{position:relative;display:grid;grid-template-columns:5fr 6fr;gap:56px;align-items:center;padding:64px 0 24px}
-.hero:before{content:"";position:absolute;right:-10%;top:-80px;width:760px;max-width:100vw;height:560px;background:radial-gradient(closest-side,rgba(76,201,240,.26),transparent);pointer-events:none}
-.hero>*{position:relative}
-@media(max-width:900px){.hero{grid-template-columns:1fr;gap:40px}}
-.ph{display:grid;place-items:center;flex:none;width:96px;height:96px;border-radius:12px;background:linear-gradient(135deg,hsl(calc(188 + var(--h) * .5) 85% 44%),hsl(calc(212 + var(--h) * .4) 80% 34%));color:#fff;font-weight:700;font-size:calc(96px*.42)}.ph{border-radius:18px;margin-bottom:24px}
-.ph{position:relative;overflow:hidden}.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0d1317}
-h1{font-size:clamp(44px,7vw,72px);line-height:1.02;letter-spacing:-.04em;font-weight:600;margin-bottom:18px}
-.lead{color:var(--mut);font-size:17px;max-width:480px;margin-bottom:28px}
-.chips .i{width:15px;height:15px;color:var(--ac2)}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
-.chips span{display:inline-flex;align-items:center;gap:8px;font:500 13px ui-monospace,monospace;padding:6px 14px;border-radius:99px;border:1px solid var(--line);color:rgba(255,255,255,.75)}
-.cta{display:flex;gap:12px;flex-wrap:wrap}
-.shot{border:1px solid var(--line);border-radius:24px;background:#0d0c0e;overflow:hidden;box-shadow:0 30px 90px rgba(76,201,240,.2)}
-.bar{display:flex;gap:6px;padding:14px 18px;border-bottom:1px solid var(--line)}
-.bar i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.14)}
-.shot{position:relative}
-.bar span{margin-left:auto;font:500 12px ui-monospace,monospace;color:var(--mut)}
-.sl{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;scroll-behavior:smooth}
-.sl::-webkit-scrollbar{display:none}
-.sl>*{flex:0 0 100%;width:100%;scroll-snap-align:center;aspect-ratio:16/10;object-fit:cover;display:block}
-.ph2{display:grid;place-items:center;align-content:center;gap:10px;color:var(--mut);font-size:14px;background:linear-gradient(135deg,rgba(76,201,240,.16),rgba(76,201,240,.03)),#0d0c0e}
-.nav{position:absolute;top:50%;margin-top:4px;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:background .2s}
-.nav:hover{background:var(--ac);color:#031219;border-color:var(--ac)}
-.nav.l{left:14px}.nav.r{right:14px}
-.dots{display:flex;gap:8px;justify-content:center;padding:14px}
-.dots button{width:8px;height:8px;padding:0;border-radius:99px;border:0;background:rgba(255,255,255,.25);cursor:pointer;transition:.25s}
-.dots button[aria-current=true]{width:24px;background:var(--ac)}
-@media(prefers-reduced-motion:reduce){.sl{scroll-behavior:auto}}
-.sec{padding:88px 24px 0}
-h2{font-size:clamp(28px,4.5vw,42px);line-height:1.1;letter-spacing:-.03em;font-weight:500;margin-bottom:28px}
-.os{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.os a{display:block;padding:26px;border:1px solid var(--line);background:var(--card);border-radius:22px;transition:border-color .2s,background .2s}
-.os a:hover{border-color:rgba(76,201,240,.55);background:rgba(76,201,240,.05)}
-.os h3{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:600;margin-bottom:8px}
-.os img{width:32px;height:32px;border-radius:7px;object-fit:cover}
-.os p{color:var(--mut);font-size:14px}
-.tw{overflow-x:auto;border:1px solid var(--line);border-radius:24px;background:var(--card)}
-table{width:100%;min-width:600px;border-collapse:collapse}
-th,td{text-align:left;padding:16px 24px;border-top:1px solid var(--line);font-size:14px;vertical-align:top}
-th{border-top:0;color:var(--mut);font-weight:500}
-td code{font:500 13px ui-monospace,monospace;word-break:break-all}
-td:first-child code{color:var(--ac2)}
-td:last-child{color:var(--mut)}
-.note{color:var(--mut);margin:-12px 0 24px}
-.btn.s{height:38px;padding:0 18px;font-size:13px}
-.svs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
-.sv{display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid var(--line);border-radius:20px;background:radial-gradient(120% 90% at 0 0,rgba(76,201,240,.12),transparent 60%),var(--card);transition:transform .25s,border-color .25s}
-.sv:hover{transform:translateY(-3px);border-color:rgba(76,201,240,.55)}
-.sv .t{display:flex;justify-content:space-between;align-items:center}
-.bd{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:10px;background:rgba(76,201,240,.14);border:1px solid rgba(76,201,240,.3);color:var(--ac2)}
-.bd .i{width:17px;height:17px}
-.pt{font:500 12px ui-monospace,monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
-.sv h3{font-size:17px;font-weight:600;letter-spacing:-.01em}
-.sv .u{display:flex;align-items:center;gap:10px;padding:6px 6px 6px 6px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.35)}
-.sv code{flex:1;min-width:0;white-space:normal;word-break:break-all;font:500 13px ui-monospace,monospace;color:var(--ac2)}
-.sv .u button{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:10px;border:0;background:rgba(255,255,255,.07);color:#fff;cursor:pointer}
-.sv .u button:hover{background:rgba(255,255,255,.14)}
-.tabs{display:inline-flex;gap:6px;padding:6px;border:1px solid var(--line);background:var(--card);border-radius:99px;margin-bottom:24px}
-.tab{display:flex;align-items:center;gap:10px;height:46px;padding:0 24px;border-radius:99px;border:0;background:none;color:var(--mut);font:500 14px Inter,sans-serif;cursor:pointer;transition:.2s}
-.tab[aria-selected=true]{background:#fff;color:#000}
-.code{text-align:left;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:#080808}
-.code .bar{align-items:center}
-.code .bar span{margin-left:10px}
-.code .bar .btn{margin-left:auto}
-.code pre{margin:0;padding:22px 24px;overflow:auto;max-height:560px;font:500 13px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;color:rgba(255,255,255,.82)}
-.code .k{color:var(--ac2)}.code .s{color:#a7f3d0}.code .c{color:rgba(255,255,255,.4)}
-footer .wrap{text-align:center;display:grid;gap:6px}
-footer .m{color:rgba(255,255,255,.85);font-size:15px}
-[hidden]{display:none!important}
-.intro{text-align:left;display:grid;gap:26px;padding:32px;border:1px solid var(--line);border-radius:24px;background:var(--card)}
-.md{display:grid;gap:14px;color:rgba(255,255,255,.78)}
-.md h1{display:none}
-.md h2,.md h3{color:#fff;font-weight:600;letter-spacing:-.01em;margin:10px 0 0}
-.md h2{font-size:22px}.md h3{font-size:18px}
-.md p{max-width:72ch}
-.md ul,.md ol{padding-left:22px;display:grid;gap:8px}
-.md li::marker{color:var(--ac2)}
-.md strong{color:#fff}
-.md a{color:var(--ac2);border-bottom:1px solid rgba(76,201,240,.5)}
-.md code{font:500 13px ui-monospace,monospace;background:rgba(255,255,255,.08);padding:2px 7px;border-radius:6px}
-footer{margin-top:112px;border-top:1px solid var(--line);padding:40px 0 56px;color:var(--mut);font-size:14px}
-footer a{color:#fff;border-bottom:1px solid var(--ac)}
-</style>
-</head>
-<body>
-<div class="bg" aria-hidden="true"><i></i><i></i></div>
 <div class="wrap">
-  <nav><a class="logo" href="../../">{{site_name}}</a><a class="back" data-i="arrow-left" href="../../#apps">All apps</a></nav>
-  <header class="hero">
-    <div>
-      <span class="ph" id="ico"></span>
-      <h1 id="name"></h1>
-      <p class="lead" id="desc"></p>
-      <div class="chips" id="chips"></div>
-      <div class="cta"><a class="btn p" data-i="external-link" id="site" rel="noopener">Visit project site</a><a class="btn" data-i="code" id="src" rel="noopener">View source</a></div>
+  <div class="top"><a class="logo" href="../../">{{site_name}}</a><a class="back" href="../../#apps">{{icon:arrow-left}}All apps</a></div>
+  <main id="main" tabindex="-1" data-page="app">
+    <div class="{{hero_class}}">
+      <div>
+        <nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="../../">{{site_name}}</a></li><li><a href="../../#apps">Apps</a></li><li aria-current="page">{{app_name}}</li></ol></nav>
+        {{{icon}}}
+        <h1>{{app_name}}</h1>
+        <p class="lead">{{desc}}</p>
+        <ul class="chips">{{{chips}}}</ul>
+        {{{links}}}
+      </div>
+{{{shots}}}
     </div>
-    <div class="shot"><div class="bar"><i></i><i></i><i></i><span id="cnt"></span></div><div class="sl" id="sl" tabindex="0" aria-label="Screenshots"></div><button class="nav l" data-i="arrow-left" aria-label="Previous screenshot"></button><button class="nav r" data-i="arrow-right" aria-label="Next screenshot"></button><div class="dots" id="dots"></div></div>
-  </header>
+{{{details}}}
 
-  <section class="sec" id="details">
-    <h2>App details</h2>
-    <p class="note">Replace localhost with your device’s IP address.</p>
-    <div class="svs" id="svc"></div>
-  </section>
+    <section class="sec" style="padding-left:0;padding-right:0;text-align:center" aria-labelledby="gs-h">
+      <h2 id="gs-h">Get started</h2>
+      <p class="note" style="margin:-12px auto 28px">Read from this app’s folder in the repository.</p>
+      <div class="tabs" role="tablist" aria-label="App information">{{{tabs}}}</div>
+{{{panels}}}
+    </section>
 
-  <section class="sec" style="text-align:center">
-    <h2>Get started</h2>
-    <p class="note" style="margin:-12px auto 28px">Read from this app’s folder in the repository.</p>
-    <div class="tabs" role="tablist" id="ct"></div>
-    <div id="pi" class="intro"></div>
-    <div id="pv" style="text-align:left" hidden><div class="tw"><table><thead><tr><th>Variable</th><th>Default value</th><th>Description</th></tr></thead><tbody id="env"></tbody></table></div></div>
-    <div id="pc" class="code" hidden><div class="bar"><i></i><i></i><i></i><span>docker-compose.yml</span><button class="btn p s" id="cpy"></button></div><pre><code id="yml"></code></pre></div>
-  </section>
-
-  <section class="sec">
-    <h2 id="oh"></h2>
-    <div class="os" id="os"></div>
-  </section>
+    <section class="sec" style="padding-left:0;padding-right:0" aria-labelledby="inst-h">
+      <h2 id="inst-h">Install {{app_name}} on your server</h2>
+      <div class="os">{{{install}}}</div>
+    </section>
+  </main>
 </div>
-<footer><div class="wrap">
-  <p class="m">Made with 🩵 by <a href="{{author_url}}">{{author}}</a></p>
-  <p>A community project, not affiliated with Zima OS, Casa OS and Homeio.</p>
-</div></footer>
-
-<script>
-const A=/*APP*/{};
-const $=s=>document.querySelector(s);
-const IC={github:'<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',plus:'<path d="M5 12h14M12 5v14"/>',"plus-circle":'<circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/>',issues:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',check:'<path d="M20 6 9 17l-5-5"/>',search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',"external-link":'<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',code:'<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',"arrow-left":'<path d="M19 12H5M12 19l-7-7 7-7"/>',"arrow-right":'<path d="M5 12h14M12 5l7 7-7 7"/>',package:'<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73zM12 22V12M3.3 7 12 12l8.7-5"/>',tag:'<path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.41l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5"/>',plug:'<path d="M12 22v-5M9 8V2M15 8V2M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/>',monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',table:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>',"file-code":'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M10 13l-2 2 2 2M14 13l2 2-2 2"/>',server:'<rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/>',mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',globe:'<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/>'};
-const I=n=>`<svg class="i" viewBox="0 0 24 24">${IC[n]}</svg>`;
-const ports=A.ports;
-document.querySelectorAll("[data-i]").forEach(e=>e.insertAdjacentHTML("afterbegin",I(e.dataset.i)));
-document.title=A.name+" on {{site_name}}";
-$("#ico").style.setProperty("--h",[...A.name].reduce((x,c)=>x+c.charCodeAt(0),0)%40);$("#ico").textContent=A.name[0].toUpperCase();if(A.icon)$("#ico").insertAdjacentHTML("beforeend",`<img src="${A.icon}" alt="" onerror="this.remove()">`);
-$("#name").textContent=A.name;
-$("#desc").textContent=A.desc;
-const shots=A.shots,n=shots.length,sl=$("#sl");
-if(!n){$(".shot").hidden=true;$(".hero").style.gridTemplateColumns="1fr"}
-sl.innerHTML=shots.map((s,i)=>`<img src="${s}" alt="${A.name} screenshot ${i+1}" onerror="this.outerHTML='<div class=ph2>Screenshot unavailable</div>'">`).join("");
-const cur=()=>Math.round(sl.scrollLeft/sl.clientWidth),go=i=>sl.scrollTo({left:sl.clientWidth*((i+n)%n)});
-$("#dots").innerHTML=shots.map((_,i)=>`<button aria-label="Go to screenshot ${i+1}"></button>`).join("");
-const upd=()=>{const c=cur();document.querySelectorAll("#dots button").forEach((b,i)=>b.setAttribute("aria-current",i==c));$("#cnt").textContent=(c+1)+" / "+n};
-sl.onscroll=upd;upd();
-$("#dots").onclick=e=>{const b=e.target.closest("button");if(b)go([...$("#dots").children].indexOf(b))};
-$(".nav.l").onclick=()=>go(cur()-1);$(".nav.r").onclick=()=>go(cur()+1);
-sl.onkeydown=e=>{if(e.key=="ArrowRight"||e.key=="ArrowLeft"){e.preventDefault();go(cur()+(e.key=="ArrowRight"?1:-1))}};
-const SV=A.svcs??[["Web UI","/","globe"]];
-$("#details").hidden=!SV.length;
-$("#svc").innerHTML=SV.map(([k,p,ic])=>{const u=`http://localhost:${ports[0]}${p}`;return `<div class="sv"><div class="t"><h3>${k}</h3><span class="pt">${p}</span></div><div class="u"><span class="bd">${I(ic||"globe")}</span><code>${u}</code><button aria-label="Copy ${k} URL" data-u="${u}">${I("copy")}</button></div></div>`}).join("");
-$("#svc").onclick=async e=>{const b=e.target.closest("button");if(!b)return;try{await navigator.clipboard.writeText(b.dataset.u);b.innerHTML=I("check")}catch(_){}setTimeout(()=>b.innerHTML=I("copy"),1500)};
-$("#chips").innerHTML=[["package",A.image+":"+A.version],...ports.map(p=>["plug","port "+p]),...(A.category?[["tag",A.category]]:[])].map(([i,x])=>`<span>${I(i)}${x}</span>`).join("");
-$("#site").href=A.site;$("#src").href=A.src;
-const ENV=A.env;
-$("#env").innerHTML=ENV.map(([k,v,d])=>`<tr><td><code>${k}</code></td><td><code>${v||"—"}</code></td><td>${d}</td></tr>`).join("");
-const YML=A.compose;
-const hl=l=>{l=l.replace(/&/g,"&amp;").replace(/</g,"&lt;");if(/^\s*#/.test(l))return `<span class="c">${l}</span>`;return l.replace(/("[^"]*")/g,'<span class="s">$1</span>').replace(/^(\s*(?:- )?)([\w.-]+)(:)/,'$1<span class="k">$2</span>$3')};
-$("#yml").innerHTML=YML.split("\n").map(hl).join("\n");
-$("#cpy").innerHTML=I("copy")+"Copy";
-$("#cpy").onclick=async e=>{const b=e.currentTarget;try{await navigator.clipboard.writeText(YML);b.innerHTML=I("check")+"Copied"}catch(_){b.textContent="Press Ctrl+C"}setTimeout(()=>b.innerHTML=I("copy")+"Copy",1800)};
-$("#pi").innerHTML=`<div class="md">${A.intro}</div>`;
-const CT=[["info","Introduction","pi"],["table","Variables","pv"],["file-code","Docker Compose","pc"]].filter(c=>c[2]!="pv"||ENV.length);
-$("#ct").innerHTML=CT.map(([i,n,id],j)=>`<button class="tab" role="tab" aria-selected="${!j}" aria-controls="${id}">${I(i)}${n}</button>`).join("");
-$("#ct").onclick=e=>{const b=e.target.closest(".tab");if(!b)return;document.querySelectorAll("#ct .tab").forEach(x=>x.setAttribute("aria-selected",x==b));CT.forEach(([,,id])=>$("#"+id).hidden=id!=b.getAttribute("aria-controls"))};
-$("#oh").textContent="Install "+A.name+" on your server";
-$("#os").innerHTML=[["ZimaOS","https://www.zimaspace.com/apple-touch-icon.png","zimaos"],["CasaOS","https://casaos.zimaspace.com/favicon/apple-touch-icon.png","casaos"],["Homeio","https://homeio.app/icon.webp","homeio"]].map(([n,c,id])=>
- `<a href="../../#${id}"><h3><img src="${c}" alt="">${n}</h3><p>Add the store link, then find ${A.name} in the App Store and install it.</p></a>`).join("");
-
-// cursor-follow background
-(()=>{const bg=document.querySelector(".bg");let x=innerWidth*.7,y=innerHeight*.25,tx=x,ty=y;
-const set=()=>{bg.style.setProperty("--mx",x+"px");bg.style.setProperty("--my",y+"px")};set();
-if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
-addEventListener("pointermove",e=>{tx=e.clientX;ty=e.clientY});
-(function f(){x+=(tx-x)*.08;y+=(ty-y)*.08;set();requestAnimationFrame(f)})()})();
-// small-screen notice with a way through
-(()=>{let seen;try{seen=sessionStorage.getItem("desk")}catch(_){}
-if(innerWidth>480||seen)return;
-const m=document.createElement("div");m.className="mob";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","mt");
-m.innerHTML=`<div>${I("monitor")}<h2 id="mt">Best viewed on desktop</h2><p>This site works best on a larger screen. For the full experience, open it on a desktop or laptop.</p><button class="btn p">View Anyway</button></div>`;
-document.body.append(m);document.body.style.overflow="hidden";
-const b=m.querySelector("button");b.focus();
-b.onclick=()=>{m.remove();document.body.style.overflow="";try{sessionStorage.setItem("desk","1")}catch(_){}};
-})();
-</script>
-</body>
-</html>
