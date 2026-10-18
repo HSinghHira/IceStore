@@ -14,7 +14,7 @@ GATEWAY_PORT=8080
 
 log() { echo "[init] $*"; }
 
-PUBLIC_URL=${PUBLIC_URL:-http://localhost:8481}
+PUBLIC_URL=${PUBLIC_URL:-http://localhost:6101}
 PUBLIC_URL=${PUBLIC_URL%/}
 case $PUBLIC_URL in
   http://*|https://*) ;;
@@ -137,12 +137,25 @@ write_env mailpit "$TZV" \
   "MP_SMTP_BIND_ADDR=127.0.0.1:1025" \
   "MP_WEBROOT=/mail/"
 
-SMTP_HOST=${SMTP_HOST:-${GOTRUE_SMTP_HOST:-appflowy-mailpit}}
-SMTP_PORT=${SMTP_PORT:-${GOTRUE_SMTP_PORT:-1025}}
+# Email: blank SMTP_HOST = the built-in mail viewer at /mail (nothing leaves
+# the box). With a real server, the port defaults to 465 and the TLS mode to
+# what that port needs. Blank values always mean "use the default" (:-).
+SMTP_HOST=${SMTP_HOST:-${GOTRUE_SMTP_HOST:-}}
+if [ -z "$SMTP_HOST" ]; then
+  SMTP_HOST=appflowy-mailpit
+  SMTP_PORT=1025
+  SMTP_TLS=none
+else
+  SMTP_PORT=${SMTP_PORT:-${GOTRUE_SMTP_PORT:-465}}
+  if [ "$SMTP_PORT" = 465 ]; then SMTP_TLS=${SMTP_TLS:-wrapper}; else SMTP_TLS=${SMTP_TLS:-required}; fi
+fi
 SMTP_USER=${SMTP_USER:-${GOTRUE_SMTP_USER:-}}
 SMTP_PASS=${SMTP_PASS:-${GOTRUE_SMTP_PASS:-}}
-SMTP_EMAIL=${SMTP_EMAIL:-${GOTRUE_SMTP_ADMIN_EMAIL:-noreply@appflowy.local}}
-SMTP_TLS=${SMTP_TLS:-none}
+SMTP_EMAIL=${SMTP_EMAIL:-${GOTRUE_SMTP_ADMIN_EMAIL:-${SMTP_USER:-noreply@appflowy.local}}}
+case $SMTP_TLS in
+  none|wrapper|required|opportunistic) ;;
+  *) log "SMTP_TLS must be none, wrapper, required or opportunistic (got: $SMTP_TLS); using wrapper"; SMTP_TLS=wrapper ;;
+esac
 
 write_env gotrue "$TZV" \
   "GOTRUE_ADMIN_EMAIL=$ADMIN_EMAIL" \
@@ -168,7 +181,11 @@ write_env gotrue "$TZV" \
   "GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE=/gotrue/verify" \
   "GOTRUE_SMTP_MAX_FREQUENCY=1ns" \
   "GOTRUE_RATE_LIMIT_EMAIL_SENT=${GOTRUE_RATE_LIMIT_EMAIL_SENT:-100}" \
-  "GOTRUE_MAILER_AUTOCONFIRM=${GOTRUE_MAILER_AUTOCONFIRM:-true}"
+  "GOTRUE_MAILER_AUTOCONFIRM=${GOTRUE_MAILER_AUTOCONFIRM:-true}" \
+  "GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI=${GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI:-$PUBLIC_URL/gotrue/callback}" \
+  "GOTRUE_EXTERNAL_GITHUB_REDIRECT_URI=${GOTRUE_EXTERNAL_GITHUB_REDIRECT_URI:-$PUBLIC_URL/gotrue/callback}" \
+  "GOTRUE_EXTERNAL_DISCORD_REDIRECT_URI=${GOTRUE_EXTERNAL_DISCORD_REDIRECT_URI:-$PUBLIC_URL/gotrue/callback}" \
+  "GOTRUE_EXTERNAL_APPLE_REDIRECT_URI=${GOTRUE_EXTERNAL_APPLE_REDIRECT_URI:-$PUBLIC_URL/gotrue/callback}"
 
 write_env cloud "$TZV" \
   "RUST_LOG=${RUST_LOG:-info}" \
@@ -191,6 +208,7 @@ write_env cloud "$TZV" \
   "APPFLOWY_MAILER_SMTP_PASSWORD=${APPFLOWY_MAILER_SMTP_PASSWORD:-$SMTP_PASS}" \
   "APPFLOWY_MAILER_SMTP_TLS_KIND=${APPFLOWY_MAILER_SMTP_TLS_KIND:-$SMTP_TLS}" \
   "APPFLOWY_ACCESS_CONTROL=${APPFLOWY_ACCESS_CONTROL:-true}" \
+  "APPFLOWY_NOTIFICATION_ENABLE_EMAIL=${APPFLOWY_NOTIFICATION_ENABLE_EMAIL:-false}" \
   "APPFLOWY_DATABASE_MAX_CONNECTIONS=${APPFLOWY_DATABASE_MAX_CONNECTIONS:-40}" \
   "APPFLOWY_WEB_URL=$PUBLIC_URL" \
   "APPFLOWY_BASE_URL=$PUBLIC_URL" \
@@ -249,12 +267,20 @@ write_env web "$TZV" \
   "APPFLOWY_GOTRUE_BASE_URL=$PUBLIC_URL/gotrue" \
   "APPFLOWY_WS_BASE_URL=$WS_URL"
 
-# Pass through any custom GOTRUE_*, APPFLOWY_*, MP_*, or SILO_/MINIO_ variables set in the container environment
-env | grep -E '^GOTRUE_' >> "$RUN/gotrue.env" || true
-env | grep -E '^APPFLOWY_' >> "$RUN/cloud.env" || true
-env | grep -E '^APPFLOWY_WORKER_' >> "$RUN/worker.env" || true
-env | grep -E '^MP_' >> "$RUN/mailpit.env" || true
-env | grep -E '^(MINIO_|SILO_)' >> "$RUN/silo.env" || true
+# pass_env <service> <regex>: copy container variables whose NAME matches the
+# regex into that service's env file. Blank values are skipped, so an empty box
+# in the app settings means "use the default" instead of "set it to nothing".
+pass_env() { env | grep -E "^($2)=." >> "$RUN/$1.env" || true; }
+
+# Upstream names the services read themselves: sign-in providers and any other
+# GOTRUE_* setting go to gotrue, APPFLOWY_* to the API (worker settings to the
+# worker), MP_* to the mail viewer, MINIO_*/SILO_* to file storage.
+pass_env gotrue  'GOTRUE_[A-Z0-9_]+'
+pass_env cloud   'APPFLOWY_[A-Z0-9_]+'
+pass_env worker  'APPFLOWY_WORKER_[A-Z0-9_]+'
+pass_env mailpit 'MP_[A-Z0-9_]+'
+pass_env silo    '(MINIO|SILO)_[A-Z0-9_]+'
+
 
 for f in "$STATE"/overrides/*.env; do
   [ -f "$f" ] || continue

@@ -157,9 +157,89 @@ write_env affine "$TZV" \
   "LISTEN_ADDR=127.0.0.1" \
   "AFFINE_SERVER_PORT=3010"
 
-# Pass through mail and AFFINE_* settings set on the container. Empty values
-# are skipped, so a blank MAILER_PORT in the app settings changes nothing.
-env | grep -E '^(MAILER|AFFINE)_[A-Z0-9_]+=.' | grep -vE '^AFFINE_(SERVER_PORT|SERVER_EXTERNAL_URL)=' >> "$RUN/affine.env" || true
+# ---- settings from the app's environment: list (Apps/affine/docker-compose.yml) ----
+# AFFiNE reads env vars only as defaults: a value in config.json wins over them,
+# and older versions copied env values into config.json once. So every setting
+# is written into config.json here, on every start.
+# Blank = default: a blank setting is left alone, unless this script wrote it
+# on an earlier start; then it is taken out again so AFFiNE's default returns.
+# Keys you edit by hand in config.json and never set here are never touched.
+CFG=$DATA/affine/config/config.json
+APPLIED=$STATE/settings-applied
+touch "$APPLIED"
+
+# set_json <VAR> <module> <key> <str|bool|int> [<field> <base object>]
+#   writes $VAR to .<module>["<key>"] (AFFiNE's flat key style, like "SMTP.host"),
+#   or to .<module>["<key>"].<field> on top of <base object> when a field is given.
+set_json() {
+  local var=$1 m=$2 k=$3 type=$4 field=${5:-} base=${6:-'{}'} val v tmp
+  val=${!var:-}
+  if [ -z "$val" ]; then
+    grep -qx "$var" "$APPLIED" || return 0
+    tmp=$(mktemp "$CFG.XXXXXX")
+    if [ -n "$field" ]; then
+      jq --arg m "$m" --arg k "$k" --arg f "$field" --argjson b "$base" \
+        'if .[$m][$k] then .[$m][$k][$f] = $b[$f] else . end' "$CFG" > "$tmp"
+    else
+      jq --arg m "$m" --arg k "$k" 'if .[$m] then del(.[$m][$k]) else . end' "$CFG" > "$tmp"
+    fi
+    chmod 600 "$tmp"; mv "$tmp" "$CFG"
+    sed -i "/^$var\$/d" "$APPLIED"
+    log "$var is blank now; AFFiNE's default is back"
+    return 0
+  fi
+  case $type in
+    bool) case ${val,,} in
+            true|1|yes|on) v=true ;;
+            false|0|no|off) v=false ;;
+            *) log "ignoring $var=$val (use true or false)"; return 0 ;;
+          esac ;;
+    int)  [[ $val =~ ^[0-9]+$ ]] || { log "ignoring $var=$val (use a whole number)"; return 0; }
+          v=$val ;;
+    *)    v=$(jq -Rn --arg s "$val" '$s') ;;
+  esac
+  tmp=$(mktemp "$CFG.XXXXXX")
+  if [ -n "$field" ]; then
+    jq --arg m "$m" --arg k "$k" --arg f "$field" --argjson v "$v" --argjson b "$base" \
+      '.[$m] = ((.[$m] // {}) | .[$k] = ($b + (.[$k] // {}) + {($f): $v}))' "$CFG" > "$tmp"
+  else
+    jq --arg m "$m" --arg k "$k" --argjson v "$v" \
+      '.[$m] = ((.[$m] // {}) | .[$k] = $v)' "$CFG" > "$tmp"
+  fi
+  chmod 600 "$tmp"
+  mv "$tmp" "$CFG"
+  grep -qx "$var" "$APPLIED" || echo "$var" >> "$APPLIED"
+}
+
+if ! jq -e . "$CFG" >/dev/null 2>&1; then
+  log "WARNING: $CFG is not valid JSON; settings from the app environment were not applied"
+else
+  AFFINE_EXTERNAL_URL=$PUBLIC_URL
+  set_json AFFINE_EXTERNAL_URL                 server  externalUrl                str
+  set_json AFFINE_SERVER_NAME                  server  name                       str
+  set_json AFFINE_ALLOW_SIGNUP                 auth    allowSignup                bool
+  set_json AFFINE_ALLOW_SIGNUP_FOR_OAUTH       auth    allowSignupForOauth        bool
+  set_json AFFINE_PASSWORD_MIN_LENGTH          auth    passwordRequirements       int  min '{"min":8,"max":32}'
+  set_json AFFINE_PASSWORD_MAX_LENGTH          auth    passwordRequirements       int  max '{"min":8,"max":32}'
+  set_json AFFINE_ALLOW_GUEST_DEMO_WORKSPACE   flags   allowGuestDemoWorkspace    bool
+  set_json MAILER_HOST                         mailer  SMTP.host                  str
+  set_json MAILER_PORT                         mailer  SMTP.port                  int
+  set_json MAILER_USER                         mailer  SMTP.username              str
+  set_json MAILER_PASSWORD                     mailer  SMTP.password              str
+  set_json MAILER_SENDER                       mailer  SMTP.sender                str
+  set_json MAILER_IGNORE_TLS                   mailer  SMTP.ignoreTLS             bool
+  set_json MAILER_SERVERNAME                   mailer  SMTP.name                  str
+  set_json AFFINE_OAUTH_GOOGLE_CLIENT_ID       oauth   providers.google           str  clientId     '{"clientId":"","clientSecret":""}'
+  set_json AFFINE_OAUTH_GOOGLE_CLIENT_SECRET   oauth   providers.google           str  clientSecret '{"clientId":"","clientSecret":""}'
+  set_json AFFINE_OAUTH_GITHUB_CLIENT_ID       oauth   providers.github           str  clientId     '{"clientId":"","clientSecret":""}'
+  set_json AFFINE_OAUTH_GITHUB_CLIENT_SECRET   oauth   providers.github           str  clientSecret '{"clientId":"","clientSecret":""}'
+  set_json AFFINE_OAUTH_OIDC_ISSUER            oauth   providers.oidc             str  issuer       '{"clientId":"","clientSecret":"","issuer":"","args":{}}'
+  set_json AFFINE_OAUTH_OIDC_CLIENT_ID         oauth   providers.oidc             str  clientId     '{"clientId":"","clientSecret":"","issuer":"","args":{}}'
+  set_json AFFINE_OAUTH_OIDC_CLIENT_SECRET     oauth   providers.oidc             str  clientSecret '{"clientId":"","clientSecret":"","issuer":"","args":{}}'
+  set_json AFFINE_COPILOT_ENABLED              copilot enabled                    bool
+  set_json AFFINE_COPILOT_ALLOW_CUSTOM_ENDPOINT copilot byok.allowCustomEndpoint  bool
+  set_json AFFINE_INDEXER_ENABLED              indexer enabled                    bool
+fi
 
 # Files in /data/state/overrides/<service>.env are appended last, so users can
 # change any service setting without rebuilding the image.

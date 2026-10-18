@@ -9,10 +9,32 @@ services:
     privileged: true
     environment:
       - TZ=$TZ
-      - PUBLIC_URL=http://localhost:8481
+      - PUBLIC_URL=http://localhost:6101
+      - ADMIN_EMAIL=CHANGEME@example.com
+      - ADMIN_PASSWORD=
+      - GOTRUE_DISABLE_SIGNUP=
+      - GOTRUE_MAILER_AUTOCONFIRM=
+      - GOTRUE_JWT_EXP=
+      - SMTP_HOST=
+      - SMTP_PORT=
+      - SMTP_USER=
+      - SMTP_PASS=
+      - SMTP_EMAIL=
+      - SMTP_TLS=
+      - APPFLOWY_NOTIFICATION_ENABLE_EMAIL=
+      - GOTRUE_EXTERNAL_GOOGLE_ENABLED=
+      - GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID=
+      - GOTRUE_EXTERNAL_GOOGLE_SECRET=
+      - GOTRUE_EXTERNAL_GITHUB_ENABLED=
+      - GOTRUE_EXTERNAL_GITHUB_CLIENT_ID=
+      - GOTRUE_EXTERNAL_GITHUB_SECRET=
+      - GOTRUE_EXTERNAL_DISCORD_ENABLED=
+      - GOTRUE_EXTERNAL_DISCORD_CLIENT_ID=
+      - GOTRUE_EXTERNAL_DISCORD_SECRET=
+      - RUST_LOG=
     ports:
       - target: 8080
-        published: "8481"
+        published: "6101"
         protocol: tcp
     volumes:
       - type: bind
@@ -35,9 +57,9 @@ services:
           cpus: "0.00"
           memory: 512M
     labels:
-      icon: https://cdn.jsdelivr.net/gh/HSinghHira/ZimaAppStore@main/Apps/AppFlowy/icon.png
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/icon.png
     x-casaos:
-      id: com.hiraappstore.appflowyaio
+      id: com.icestore.appflowy
       envs:
         - container: TZ
           description:
@@ -49,7 +71,7 @@ services:
             en_US: >-
               The address you type in your browser. It starts as localhost,
               which only works on this device. For other devices, change
-              `localhost` to your ZimaOS IP. Keep the port at 8481.
+              `localhost` to your ZimaOS IP. Keep the port at 6101.
         - container: ADMIN_EMAIL
           description:
             en_US: >-
@@ -60,18 +82,118 @@ services:
             en_US: >-
               The password for the admin account. Leave it blank and the app
               makes a random one on first start. It is shown in the app log
-              and saved in the data folder. Or type your own.
+              and saved in the data folder. Or type your own. It is only used
+              on the first start; after that, change it in the admin console.
+        - container: GOTRUE_DISABLE_SIGNUP
+          description:
+            en_US: >-
+              Set to true so only people you invite can join. Blank = false
+              (anyone who can open the page can sign up).
+        - container: GOTRUE_MAILER_AUTOCONFIRM
+          description:
+            en_US: >-
+              Set to false to make new users click a link in an email before
+              they can sign in. Needs a real email server (SMTP_HOST). Blank =
+              true (no email check).
+        - container: GOTRUE_JWT_EXP
+          description:
+            en_US: >-
+              How long people stay signed in, in seconds. Blank = 604800 (7
+              days).
+        - container: SMTP_HOST
+          description:
+            en_US: >-
+              Optional. Your email server, like smtp.gmail.com. AppFlowy uses
+              email for sign-in links, invites and password resets. Blank =
+              emails go to the built-in mail viewer at /mail and never leave
+              your server.
+        - container: SMTP_PORT
+          description:
+            en_US: >-
+              Optional. Your email server port, usually 465 or 587. Blank =
+              465.
+        - container: SMTP_USER
+          description:
+            en_US: >-
+              Optional. The username for your email server. Blank = none.
+        - container: SMTP_PASS
+          description:
+            en_US: >-
+              Optional. The password for your email server. For Gmail, use an
+              app password. Blank = none.
+        - container: SMTP_EMAIL
+          description:
+            en_US: >-
+              Optional. The "from" address on emails. Blank = SMTP_USER.
+        - container: SMTP_TLS
+          description:
+            en_US: >-
+              Optional. How AppFlowy talks to your email server: wrapper (port
+              465), required (STARTTLS, port 587), opportunistic or none.
+              Blank = wrapper on port 465, required on any other port.
+        - container: APPFLOWY_NOTIFICATION_ENABLE_EMAIL
+          description:
+            en_US: >-
+              Set to true to send people email notifications (mentions,
+              invites). Needs SMTP_HOST. Blank = false.
+        - container: GOTRUE_EXTERNAL_GOOGLE_ENABLED
+          description:
+            en_US: >-
+              Set to true to turn on "Sign in with Google". In Google Cloud,
+              set the redirect URL to your PUBLIC_URL followed by
+              /gotrue/callback. Blank = false.
+        - container: GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID
+          description:
+            en_US: >-
+              Optional. Client ID for Google sign-in. Blank = none.
+        - container: GOTRUE_EXTERNAL_GOOGLE_SECRET
+          description:
+            en_US: >-
+              Optional. Client secret for Google sign-in. Blank = none.
+        - container: GOTRUE_EXTERNAL_GITHUB_ENABLED
+          description:
+            en_US: >-
+              Set to true to turn on "Sign in with GitHub". In GitHub, set the
+              callback URL to your PUBLIC_URL followed by /gotrue/callback.
+              Blank = false.
+        - container: GOTRUE_EXTERNAL_GITHUB_CLIENT_ID
+          description:
+            en_US: >-
+              Optional. Client ID for GitHub sign-in. Blank = none.
+        - container: GOTRUE_EXTERNAL_GITHUB_SECRET
+          description:
+            en_US: >-
+              Optional. Client secret for GitHub sign-in. Blank = none.
+        - container: GOTRUE_EXTERNAL_DISCORD_ENABLED
+          description:
+            en_US: >-
+              Set to true to turn on "Sign in with Discord". In Discord, set
+              the redirect URL to your PUBLIC_URL followed by
+              /gotrue/callback. Blank = false.
+        - container: GOTRUE_EXTERNAL_DISCORD_CLIENT_ID
+          description:
+            en_US: >-
+              Optional. Client ID for Discord sign-in. Blank = none.
+        - container: GOTRUE_EXTERNAL_DISCORD_SECRET
+          description:
+            en_US: >-
+              Optional. Client secret for Discord sign-in. Blank = none.
+        - container: RUST_LOG
+          description:
+            en_US: >-
+              How much the app writes to its log: error, warn, info or debug.
+              Blank = info.
       ports:
         - container: "8080"
           description:
-            en_US: AppFlowy web app, API, sign-in, admin console (/console) and mail viewer (/mail), published on host as 8481
+            en_US: AppFlowy web app, API, sign-in, admin console (/console) and mail viewer (/mail), published on host as 6101
       volumes:
         - container: /data
           description:
             en_US: The database, files, search index, secret keys and settings.
 
 x-casaos:
-  id: com.hiraappstore.appflowyaio
+  id: com.icestore.appflowy
   architectures:
     - amd64
     - arm64
@@ -79,7 +201,7 @@ x-casaos:
   author: HSinghHira
   category: Productivity
   developer: AppFlowy-IO
-  icon: https://cdn.jsdelivr.net/gh/HSinghHira/ZimaAppStore@main/Apps/AppFlowy/icon.png
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/icon.png
   title:
     en_US: AppFlowy
   tagline:
@@ -109,7 +231,13 @@ x-casaos:
 
       - Admin console to manage users and workspaces
 
-      - Bundled Mailpit catches all email (invites, password resets)
+      - Bundled Mailpit catches all email (invites, password resets), or use
+        your own email server
+
+      - Sign in with Google, GitHub or Discord
+
+      - Turn sign-up, email checks and notifications on or off right in the
+        app settings
 
 
       **How to use?**
@@ -121,7 +249,7 @@ x-casaos:
       3. Create your first workspace and page.
 
       4. To use the AppFlowy desktop or mobile app, choose the self-hosted
-         server option and enter your AppFlowy address with port 8481.
+         server option and enter your AppFlowy address with port 6101.
 
       5. Manage users at `/console`. Sign in with the admin email and
          password.
@@ -139,46 +267,58 @@ x-casaos:
         3. Leave ADMIN_PASSWORD blank to get a random one. Or type your own.
 
 
-        4. Find PUBLIC_URL. It starts as http://localhost:8481.
+        4. Find PUBLIC_URL. It starts as http://localhost:6101.
 
 
         5. To use AppFlowy on other devices, change localhost to your ZimaOS
            IP address.
 
 
-        6. Start the installation.
+        6. Every other box is optional. Leave a box blank to keep its
+           default. Each box says what blank means.
 
 
-        7. Wait about four minutes for all parts to start.
+        7. Start the installation.
 
 
-        8. If you left ADMIN_PASSWORD blank, open the app log. Find the line
+        8. Wait about four minutes for all parts to start.
+
+
+        9. If you left ADMIN_PASSWORD blank, open the app log. Find the line
            that says "admin password is".
 
 
-        9. Open AppFlowy from the Zima OS dashboard.
+        10. Open AppFlowy from the Zima OS dashboard.
 
 
-        10. Sign up and create your first workspace.
+        11. Sign up and create your first workspace.
 
 
-        11. Read AppFlowy email at http://your-zimaos-ip:8481/mail.
+        12. If you left SMTP_HOST blank, read AppFlowy email at
+            http://your-zimaos-ip:6101/mail.
 
 
-        12. Open the admin console at http://your-zimaos-ip:8481/console.
+        13. Want only invited people to join? Set GOTRUE_DISABLE_SIGNUP to
+            true after you made your account, and restart the app.
+
+
+        14. Open the admin console at http://your-zimaos-ip:6101/console.
             Sign in with your admin email and password.
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/thumbnail.png
   index: /
-  port_map: "8481"
+  port_map: "6101"
   scheme: http
   is_uncontrolled: false
   version: "0.19.2"
-  update_at: "2026-10-14"
+  update_at: "2026-10-18"
   release_notes:
     en_US: |-
-      - Single-container AppFlowy with one port (8481) and one data folder
+      - Single-container AppFlowy with one port (6101) and one data folder
       - Secret keys are made on first start, so each install gets its own
       - appflowy_cloud 0.19.2, appflowy_web 0.19.8, appflowy_worker 0.18.8, appflowy_search 0.18.8, gotrue 0.18.8, admin_frontend 0.18.1
       - File storage uses Silo (pgsty/silo), the community fork of MinIO
+      - Every common setting is in the app settings: sign-up rules, email (SMTP), Google/GitHub/Discord sign-in, notifications, log level
+      - Blank settings keep their defaults; they are no longer forwarded as empty values
       - AI service and pgAdmin are not included
   repo: "https://github.com/AppFlowy-IO/AppFlowy-Cloud"
   support: "https://github.com/AppFlowy-IO/AppFlowy-Cloud/issues"

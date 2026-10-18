@@ -5,11 +5,15 @@ on:
     branches: [main]
     paths:
       - "docker/appflowy/**"
+      - ".github/workflows/build-appflowy.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
   packages: write
+
+env:
+  AIO_VERSION: "1.1.0"
 
 jobs:
   build:
@@ -38,8 +42,8 @@ jobs:
           context: docker/appflowy
           platforms: linux/amd64,linux/arm64
           push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=appflowy
+          cache-to: type=gha,mode=max,scope=appflowy
           tags: |
-            ${{ env.IMAGE }}:1.0.1
+            ${{ env.IMAGE }}:${{ env.AIO_VERSION }}
             ${{ env.IMAGE }}:latest

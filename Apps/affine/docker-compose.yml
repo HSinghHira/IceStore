@@ -10,11 +10,29 @@ services:
     environment:
       - TZ=$TZ
       - PUBLIC_URL=http://localhost:6102
+      - AFFINE_SERVER_NAME=
+      - AFFINE_ALLOW_SIGNUP=
+      - AFFINE_ALLOW_SIGNUP_FOR_OAUTH=
+      - AFFINE_PASSWORD_MIN_LENGTH=
+      - AFFINE_PASSWORD_MAX_LENGTH=
+      - AFFINE_ALLOW_GUEST_DEMO_WORKSPACE=
       - MAILER_HOST=
       - MAILER_PORT=
       - MAILER_USER=
       - MAILER_PASSWORD=
       - MAILER_SENDER=
+      - MAILER_IGNORE_TLS=
+      - MAILER_SERVERNAME=
+      - AFFINE_OAUTH_GOOGLE_CLIENT_ID=
+      - AFFINE_OAUTH_GOOGLE_CLIENT_SECRET=
+      - AFFINE_OAUTH_GITHUB_CLIENT_ID=
+      - AFFINE_OAUTH_GITHUB_CLIENT_SECRET=
+      - AFFINE_OAUTH_OIDC_ISSUER=
+      - AFFINE_OAUTH_OIDC_CLIENT_ID=
+      - AFFINE_OAUTH_OIDC_CLIENT_SECRET=
+      - AFFINE_COPILOT_ENABLED=
+      - AFFINE_COPILOT_ALLOW_CUSTOM_ENDPOINT=
+      - AFFINE_INDEXER_ENABLED=
     ports:
       - target: 8080
         published: "6102"
@@ -56,30 +74,126 @@ services:
               which only works on this device. For other devices, change
               `localhost` to your ZimaOS IP. Keep the port at 6102. Links in
               emails and shared pages use this address.
+        - container: AFFINE_SERVER_NAME
+          description:
+            en_US: >-
+              The name shown when you connect from the AFFiNE desktop or
+              mobile app. Blank = AFFiNE Self Hosted Server.
+        - container: AFFINE_ALLOW_SIGNUP
+          description:
+            en_US: >-
+              Set to false so only people you invite can join. Blank = true
+              (anyone who can open the page can sign up).
+        - container: AFFINE_ALLOW_SIGNUP_FOR_OAUTH
+          description:
+            en_US: >-
+              Set to false to stop new accounts made with Google, GitHub or
+              OIDC sign-in. Blank = true.
+        - container: AFFINE_PASSWORD_MIN_LENGTH
+          description:
+            en_US: >-
+              The shortest password people may choose. Blank = 8.
+        - container: AFFINE_PASSWORD_MAX_LENGTH
+          description:
+            en_US: >-
+              The longest password people may choose. Blank = 32.
+        - container: AFFINE_ALLOW_GUEST_DEMO_WORKSPACE
+          description:
+            en_US: >-
+              Set to false so visitors who are not signed in can't make a demo
+              workspace. Blank = true.
         - container: MAILER_HOST
           description:
             en_US: >-
-              Optional. Your email server, like smtp.gmail.com. Leave blank
-              if you don't want AFFiNE to send emails (invites, password
-              resets).
+              Optional. Your email server, like smtp.gmail.com. AFFiNE uses
+              email for invites, sign-in links and password resets. Blank = no
+              emails are sent.
         - container: MAILER_PORT
           description:
             en_US: >-
-              Optional. Your email server port, usually 465 or 587. Leave
-              blank if MAILER_HOST is blank.
+              Optional. Your email server port, usually 465 or 587. Blank =
+              465.
         - container: MAILER_USER
           description:
-            en_US: Optional. The username for your email server.
+            en_US: >-
+              Optional. The username for your email server. Blank = none.
         - container: MAILER_PASSWORD
           description:
             en_US: >-
               Optional. The password for your email server. For Gmail, use an
-              app password.
+              app password. Blank = none.
         - container: MAILER_SENDER
           description:
             en_US: >-
-              Optional. The "from" address on emails, like
-              AFFiNE <you@example.com>.
+              Optional. The "from" address on emails, like AFFiNE
+              <you@example.com>. Blank = AFFiNE Self Hosted
+              <noreply@example.com>.
+        - container: MAILER_IGNORE_TLS
+          description:
+            en_US: >-
+              Set to true if your email server uses a self-signed certificate.
+              Blank = false.
+        - container: MAILER_SERVERNAME
+          description:
+            en_US: >-
+              Optional. The name AFFiNE gives itself when it talks to the
+              email server (HELO), like mail.example.com. Blank = the
+              container's hostname.
+        - container: AFFINE_OAUTH_GOOGLE_CLIENT_ID
+          description:
+            en_US: >-
+              Optional. Client ID for "Sign in with Google". In Google Cloud,
+              set the redirect URL to your PUBLIC_URL followed by
+              /oauth/callback. Blank = Google sign-in is off.
+        - container: AFFINE_OAUTH_GOOGLE_CLIENT_SECRET
+          description:
+            en_US: >-
+              Optional. Client secret for "Sign in with Google". Blank = none.
+        - container: AFFINE_OAUTH_GITHUB_CLIENT_ID
+          description:
+            en_US: >-
+              Optional. Client ID for "Sign in with GitHub". In GitHub, set
+              the callback URL to your PUBLIC_URL followed by /oauth/callback.
+              Blank = GitHub sign-in is off.
+        - container: AFFINE_OAUTH_GITHUB_CLIENT_SECRET
+          description:
+            en_US: >-
+              Optional. Client secret for "Sign in with GitHub". Blank = none.
+        - container: AFFINE_OAUTH_OIDC_ISSUER
+          description:
+            en_US: >-
+              Optional. The issuer URL of your own sign-in service (Authentik,
+              Keycloak, Pocket ID...), like
+              https://auth.example.com/application/o/affine/. Blank = OIDC
+              sign-in is off.
+        - container: AFFINE_OAUTH_OIDC_CLIENT_ID
+          description:
+            en_US: >-
+              Optional. Client ID from your OIDC sign-in service. Set its
+              redirect URL to your PUBLIC_URL followed by /oauth/callback.
+              Blank = none.
+        - container: AFFINE_OAUTH_OIDC_CLIENT_SECRET
+          description:
+            en_US: >-
+              Optional. Client secret from your OIDC sign-in service. Blank =
+              none.
+        - container: AFFINE_COPILOT_ENABLED
+          description:
+            en_US: >-
+              Set to true to turn on AI features. Each workspace owner then
+              adds their own AI provider key in Workspace Settings,
+              Integrations, AI BYOK. Blank = false.
+        - container: AFFINE_COPILOT_ALLOW_CUSTOM_ENDPOINT
+          description:
+            en_US: >-
+              Set to true to let workspace owners use a custom AI endpoint
+              (like a local Ollama or an OpenAI-compatible server). Blank =
+              false.
+        - container: AFFINE_INDEXER_ENABLED
+          description:
+            en_US: >-
+              Set to false to turn off full-text search across documents.
+              Blank = true.
       ports:
         - container: "8080"
           description:
@@ -131,6 +245,10 @@ x-casaos:
 
       - Built-in search across all your workspaces
 
+      - Sign in with Google, GitHub or your own OIDC service (Authentik, Keycloak...)
+
+      - Turn sign-up, email, AI and search on or off right in the app settings
+
       - Admin panel for users, settings, email and AI (bring your own key)
 
       - PostgreSQL with pgvector and Redis inside, nothing else to install
@@ -164,26 +282,34 @@ x-casaos:
            IP address.
 
 
-        4. If you want AFFiNE to send emails, fill in the MAILER boxes. You
+        4. Every other box is optional. Leave a box blank to keep its
+           default. Each box says what blank means.
+
+
+        5. If you want AFFiNE to send emails, fill in the MAILER boxes. You
            can skip this.
 
 
-        5. Start the installation.
+        6. Start the installation.
 
 
-        6. Wait about 5 minutes. The first start sets up the database.
+        7. Wait about 5 minutes. The first start sets up the database.
 
 
-        7. Open AFFiNE from the Zima OS dashboard.
+        8. Open AFFiNE from the Zima OS dashboard.
 
 
-        8. Make your admin account. Pick a name, your email and a password.
+        9. Make your admin account. Pick a name, your email and a password.
 
 
-        9. Sign in and start writing.
+        10. Sign in and start writing.
 
 
-        10. The admin panel is at http://your-zimaos-ip:6102/admin.
+        11. Want only invited people to join? Set AFFINE_ALLOW_SIGNUP to
+            false after you made your account, and restart the app.
+
+
+        12. The admin panel is at http://your-zimaos-ip:6102/admin.
   index: /
   port_map: "6102"
   scheme: http
@@ -195,7 +321,8 @@ x-casaos:
       - Single-container AFFiNE with one port (6102) and one data folder
       - The migration job runs inside the container before every start, so updates migrate by themselves
       - Database passwords are made on first start, so each install gets its own
-      - Optional email settings (MAILER_*) in the app settings
+      - Every common setting is in the app settings: sign-up rules, password length, email (SMTP), Google/GitHub/OIDC sign-in, AI and search
+      - Settings are written into AFFiNE's config.json on every start, so changing them later works; blank ones keep the default
       - ghcr.io/toeverything/affine 0.27.4
       - PostgreSQL 16 with pgvector and Redis from Debian trixie
   repo: "https://github.com/toeverything/AFFiNE"

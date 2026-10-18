@@ -84,7 +84,7 @@ RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc
 
 LABEL org.opencontainers.image.title="appflowy" \
       org.opencontainers.image.description="Self-hosted AppFlowy Cloud in a single container" \
-      org.opencontainers.image.source="https://github.com/HSinghHira/ZimaAppStore"
+      org.opencontainers.image.source="https://github.com/HSinghHira/IceStore"
 
 EXPOSE 8080
 STOPSIGNAL SIGTERM

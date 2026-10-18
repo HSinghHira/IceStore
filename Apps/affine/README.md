@@ -17,6 +17,8 @@ AFFiNE is an open-source workspace that puts documents, an endless whiteboard an
 - Databases with table and kanban views
 - Real-time collaboration and sharing
 - Built-in search across all your workspaces
+- Sign in with Google, GitHub or your own OIDC service (Authentik, Keycloak...)
+- Turn sign-up, email, AI and search on or off right in the app settings
 - Admin panel for users, settings, email and AI (bring your own key)
 - PostgreSQL with pgvector and Redis inside, nothing else to install
 
@@ -29,4 +31,4 @@ AFFiNE is an open-source workspace that puts documents, an endless whiteboard an
 
 ## Before you install
 
-To use AFFiNE from other devices, change `localhost` in `PUBLIC_URL` to your server's IP address. Fill in the `MAILER_` settings only if you want AFFiNE to send emails. The first start takes about 5 minutes while the database is set up. There is no default password: you make the admin account the first time you open AFFiNE.
+To use AFFiNE from other devices, change `localhost` in `PUBLIC_URL` to your server's IP address. Every other setting is optional: leave it blank to keep the default (the Variables tab says what each default is). Fill in the `MAILER_` settings if you want AFFiNE to send emails, and set `AFFINE_ALLOW_SIGNUP` to `false` after you made your account if only invited people should join. The first start takes about 5 minutes while the database is set up. There is no default password: you make the admin account the first time you open AFFiNE.

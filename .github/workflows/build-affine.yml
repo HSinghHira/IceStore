@@ -13,7 +13,7 @@ permissions:
   packages: write
 
 env:
-  AIO_VERSION: "1.0.0"
+  AIO_VERSION: "1.1.0"
 
 jobs:
   build:
