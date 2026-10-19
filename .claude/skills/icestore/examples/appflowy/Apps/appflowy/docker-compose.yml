@@ -1,0 +1,161 @@
+name: appflowy
+
+services:
+  appflowy:
+    image: ghcr.io/hsinghhira/appflowy:latest
+    container_name: appflowy
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6101
+      - ADMIN_EMAIL=CHANGEME@example.com
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6101"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/icon.png
+    x-casaos:
+      id: com.icestore.appflowy
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you type in your browser. It starts as localhost,
+              which only works on this device. For other devices, change
+              `localhost` to your ZimaOS IP. Keep the port at 6101.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email for the admin account. Put your own email here. It
+              is used to sign in to the admin console.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password for the admin account. Leave it blank and the app
+              makes a random one on first start. It is shown in the app log
+              and saved in the data folder. Or type your own. It is only used
+              on the first start; after that, change it in the admin console.
+      ports:
+        - container: "8080"
+          description:
+            en_US: AppFlowy web app, API, sign-in, admin console (/console) and mail viewer (/mail), published on host as 6101
+      volumes:
+        - container: /data
+          description:
+            en_US: The database, files, search index, secret keys and settings.
+
+x-casaos:
+  id: com.icestore.appflowy
+  architectures:
+    - amd64
+    - arm64
+  main: appflowy
+  author: HSinghHira
+  category: Productivity
+  developer: AppFlowy-IO
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/icon.png
+  title:
+    en_US: AppFlowy
+  tagline:
+    en_US: Open-source Notion alternative in one container. Notes, docs, wikis and projects that you own.
+  description:
+    en_US: >-
+      AppFlowy is an open-source workspace for notes, docs, wikis and
+      projects. This is the self-hosted AppFlowy Cloud in a single
+      container, with one port and one data folder. Secret keys are made
+      for you on first start.
+
+
+      **Features**
+
+
+      - Docs, databases, boards, calendars and wikis in one workspace
+
+      - Real-time sync and teamwork across web, desktop and mobile apps
+
+      - Workspaces, members, guests and sharing with access control
+
+      - Publish pages to the web
+
+      - Built-in keyword search
+
+      - PostgreSQL with pgvector, Redis and Silo file storage inside
+
+      - Admin console to manage users and workspaces
+
+      - Bundled Mailpit catches all email (invites, password resets), or use
+        your own email server
+
+      - Sign in with Google, GitHub or Discord
+
+      - Change sign-up rules, email and more by adding a setting in the app
+        settings
+
+
+      **How to use?**
+
+      1. Open AppFlowy from the Zima OS dashboard.
+
+      2. Sign up with your email and password.
+
+      3. Create your first workspace and page.
+
+      4. To use the AppFlowy desktop or mobile app, choose the self-hosted
+         server option and enter your AppFlowy address with port 6101.
+
+      5. Manage users at `/console`. Sign in with the admin email and
+         password.
+
+      6. Read the email AppFlowy sends at `/mail`.
+  tips:
+    before_install:
+      en_US: >-
+        Visit: https://icestore.hsinghhira.me/app/appflowy/
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/screenshot-1.png
+  index: /
+  port_map: "6101"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.19.2"
+  update_at: "2026-10-18"
+  release_notes:
+    en_US: |-
+      - Single-container AppFlowy with one port (6101) and one data folder
+      - Secret keys are made on first start, so each install gets its own
+      - appflowy_cloud 0.19.2, appflowy_web 0.19.8, appflowy_worker 0.18.8, appflowy_search 0.18.8, gotrue 0.18.8, admin_frontend 0.18.1
+      - File storage uses Silo (pgsty/silo), the community fork of MinIO
+      - The app settings stay short; every other setting is listed on the IceStore app page (Variables tab) and can be added in the app settings
+      - Blank or missing settings keep their defaults; they are no longer forwarded as empty values
+      - AI service and pgAdmin are not included
+  repo: "https://github.com/AppFlowy-IO/AppFlowy-Cloud"
+  support: "https://github.com/AppFlowy-IO/AppFlowy-Cloud/issues"
+  docs: "https://github.com/AppFlowy-IO/AppFlowy-Cloud/tree/main/doc"

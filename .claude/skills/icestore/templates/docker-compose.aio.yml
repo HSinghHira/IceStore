@@ -1,0 +1,159 @@
+name: __APP__
+
+services:
+  __APP__:
+    image: ghcr.io/hsinghhira/__APP__:latest
+    container_name: __APP__
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:__PORT__
+      - ADMIN_EMAIL=CHANGEME@example.com
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "__PORT__"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080__HEALTH_PATH__"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/__APP__/icon.png
+    x-casaos:
+      id: com.icestore.__APP__
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you type in your browser. It starts as localhost,
+              which only works on this device. For other devices, change
+              `localhost` to your ZimaOS IP. Keep the port at __PORT__.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email for the admin account. Put your own email here.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password for the admin account. Leave it blank and the app
+              makes a random one on first start. It is shown in the app log
+              and saved in the data folder. Or type your own.
+      ports:
+        - container: "8080"
+          description:
+            en_US: __TITLE__ web app and API, published on host as __PORT__
+      volumes:
+        - container: /data
+          description:
+            en_US: The database, files, secret keys and settings.
+
+x-casaos:
+  id: com.icestore.__APP__
+  architectures:
+    - amd64
+    - arm64
+  main: __APP__
+  author: HSinghHira
+  category: __CATEGORY__
+  developer: __DEVELOPER__
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/__APP__/icon.png
+  title:
+    en_US: __TITLE__
+  tagline:
+    en_US: __TAGLINE__
+  description:
+    en_US: >-
+      __PITCH__ This is __TITLE__ in a single container, with one port and
+      one data folder. Secret keys are made for you on first start.
+
+
+      **Features**
+
+
+      - __FEATURE__
+
+      - __FEATURE__
+
+      - PostgreSQL and Redis inside
+
+
+      **How to use?**
+
+      1. Open __TITLE__ from the Zima OS dashboard.
+
+      2. Sign in with the admin email and password.
+
+      3. __FIRST_ACTION__
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find ADMIN_EMAIL. Set it to your own email.
+
+
+        3. Leave ADMIN_PASSWORD blank to get a random one. Or type your own.
+
+
+        4. Find PUBLIC_URL. It starts as http://localhost:__PORT__.
+
+
+        5. To use __TITLE__ on other devices, change localhost to your ZimaOS
+           IP address.
+
+
+        6. More settings, like email and sign-up rules, are listed on the
+           __TITLE__ page at https://icestore.hsinghhira.me/app/__APP__/
+           (Variables tab). You can add them now or later in the app settings.
+
+
+        7. Start the installation.
+
+
+        8. Wait a few minutes for all parts to start.
+
+
+        9. If you left ADMIN_PASSWORD blank, open the app log. Find the line
+           that says "admin password is".
+
+
+        10. Open __TITLE__ from the Zima OS dashboard.
+  index: /
+  port_map: "__PORT__"
+  scheme: http
+  is_uncontrolled: false
+  version: "__UPSTREAM_TAG__"
+  update_at: "__DATE__"
+  release_notes:
+    en_US: |-
+      - Single-container __TITLE__ with one port (__PORT__) and one data folder
+      - Secret keys are made on first start, so each install gets its own
+      - __UPSTREAM_IMAGE__ __UPSTREAM_TAG__
+  repo: "__REPO_URL__"
+  support: "__REPO_URL__/issues"
+  docs: "__DOCS_URL__"

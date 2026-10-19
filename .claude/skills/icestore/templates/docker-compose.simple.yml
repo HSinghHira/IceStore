@@ -1,0 +1,99 @@
+name: __APP__
+
+services:
+  __APP__:
+    image: __UPSTREAM_IMAGE__:__UPSTREAM_TAG__
+    container_name: __APP__
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: __CONTAINER_PORT__
+        published: "__PORT__"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: __DATA_PATH__
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/__APP__/icon.png
+    x-casaos:
+      id: com.icestore.__APP__
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "__CONTAINER_PORT__"
+          description:
+            en_US: Web UI, published on host as __PORT__
+      volumes:
+        - container: __DATA_PATH__
+          description:
+            en_US: __WHAT_IS_STORED__
+
+x-casaos:
+  id: com.icestore.__APP__
+  architectures:
+    - amd64
+    - arm64
+  main: __APP__
+  author: HSinghHira
+  category: __CATEGORY__
+  developer: __DEVELOPER__
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/__APP__/icon.png
+  title:
+    en_US: __TITLE__
+  tagline:
+    en_US: __TAGLINE__
+  description:
+    en_US: >-
+      __PITCH__
+
+
+      **Features**
+
+
+      - __FEATURE__
+
+      - __FEATURE__
+
+
+      **How to use?**
+
+      1. Open __TITLE__ from the Zima OS dashboard.
+
+      2. __FIRST_ACTION__
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation.
+
+
+        2. Open __TITLE__ from the Zima OS dashboard.
+  index: /
+  port_map: "__PORT__"
+  scheme: http
+  is_uncontrolled: false
+  version: "__UPSTREAM_TAG__"
+  update_at: "__DATE__"
+  release_notes:
+    en_US: |-
+      - Initial version
+  repo: "__REPO_URL__"
+  support: "__REPO_URL__/issues"
+  docs: "__DOCS_URL__"
