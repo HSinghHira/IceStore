@@ -1,0 +1,208 @@
+name: helix
+
+services:
+  helix:
+    image: ghcr.io/unifiedkings/helix:0.3.0
+    container_name: helix
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - HELIX_COOKIE_SECURE=false
+    ports:
+      - target: 8000
+        published: "6105"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/inbound_yt
+        target: /inbound_yt
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/beets_config
+        target: /data/helix/beets
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/custom_stations
+        target: /data/plugins/stations
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media/Music
+        target: /data/music
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/icon.png
+    x-casaos:
+      id: com.icestore.helix
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: HELIX_COOKIE_SECURE
+          description:
+            en_US: Keep this false when you open Helix with http://, as you do on ZimaOS. Set it to true only when Helix is behind HTTPS, or login will not stick.
+      ports:
+        - container: "8000"
+          description:
+            en_US: Helix web interface, published on host as 6105.
+      volumes:
+        - container: /data
+          description:
+            en_US: "Helix's own data: its database, logs, stream cache and station cover art."
+        - container: /inbound_yt
+          description:
+            en_US: Staging folder for tracks Helix downloads before they are imported into your library.
+        - container: /data/helix/beets
+          description:
+            en_US: Beets settings Helix uses to fix metadata and import tracks into your library.
+        - container: /data/plugins/stations
+          description:
+            en_US: Optional folder for custom Python station plugins. Only used when HELIX_ENABLE_CUSTOM_STATION_TYPES is true.
+        - container: /data/music
+          description:
+            en_US: Your music library, the same folder your Navidrome or Subsonic server reads. Change the host path to match your setup, or remove this mount if you won't use Helix's import features.
+
+x-casaos:
+  id: com.icestore.helix
+  architectures:
+    - amd64
+  main: helix
+  author: HSinghHira
+  category: Media
+  developer: UnifiedKings
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-2.gif
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-3.gif
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-4.gif
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-5.gif
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-6.gif
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-7.gif
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-8.gif
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-9.gif
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/screenshot-10.gif
+  title:
+    en_US: Helix
+  tagline:
+    en_US: A self-hosted Pandora or Spotify built on your own music library.
+  description:
+    en_US: >-
+      Helix is a self-hosted music player, discovery tool and shared
+      listening space built around a Subsonic-compatible music library, such
+      as Navidrome.
+
+
+      **Features**
+
+
+      - Search and play music from your Subsonic-compatible library
+
+      - Stations made from artists, artist collections or tags, which keep
+        filling the queue
+
+      - Import playlists from Helix, YouTube Music, Spotify and Pandora, with
+        a review step before anything is added
+
+      - Shared listening lobbies: join with a 5-letter code, with an optional
+        password, and everyone hears the same thing
+
+      - Optional fulfillment: ask for music you don't have yet, and Helix
+        fetches it, fixes its metadata and adds it to your library
+
+      - Optional sign-in with authentik or another OpenID Connect provider
+
+      - Custom station providers through a Python plugin system
+
+      - Still works, with fewer features, without a Subsonic server
+
+
+      **How to use?**
+
+
+      1. Open Helix from the Zima OS dashboard.
+
+
+      2. Create the admin account on first launch.
+
+
+      3. If you run Navidrome or another Subsonic server, add its address,
+         username and password on Helix's Settings page.
+
+
+      4. Search your library, start a station or build a queue.
+
+
+      5. Start a lobby to listen with others. Share the 5-letter code so
+         they can join.
+
+
+      6. Turn on fulfillment and import only after your beets settings and
+         music folder are set up the way you want.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app settings before you install.
+
+
+        2. Find the /data/music folder. It points at /DATA/Media/Music.
+
+
+        3. Change it to the folder where your music lives, the same one
+           Navidrome uses. If you won't import music, you can remove it.
+
+
+        4. More settings, like your Subsonic server and sign-in options,
+           are listed on the Helix page at
+           https://icestore.hsinghhira.me/app/helix/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Install Helix. The first start takes about a minute.
+
+
+        6. Open Helix from the Zima OS dashboard.
+
+
+        7. Create your account. The first account is the admin.
+
+
+        8. Put Helix behind HTTPS before you share it outside your home.
+           Then set HELIX_COOKIE_SECURE to true.
+  index: /
+  port_map: "6105"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.3.0"
+  update_at: "2026-10-19"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore and pinned to ghcr.io/unifiedkings/helix:0.3.0.
+      - Port changed from 8440 to 6105.
+      - Added HELIX_COOKIE_SECURE=false so login works over plain http. Helix 0.3.0 defaults it to true.
+      - New in 0.3.0: redesigned login page, OpenID Connect (authentik) sign-in and optional Unsplash login backgrounds.
+      - Optional settings moved to the Variables tab on the IceStore website.
+      - amd64 only: the 0.3.0 image is not published for arm64.
+      - The optional slskd quality-upgrade companion is not bundled.
+  repo: "https://github.com/UnifiedKings/helix"
+  support: "https://github.com/UnifiedKings/helix/issues"
+  docs: "https://github.com/UnifiedKings/helix#readme"

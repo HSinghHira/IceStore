@@ -1,0 +1,183 @@
+name: claudecode
+
+services:
+  claudecode:
+    image: ghcr.io/worph/claude-code-container:1.0.28
+    container_name: claudecode
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - ANTHROPIC_API_KEY=
+      - AUTH_PASSWORD=63f7ceb7d737278469bf7ae0fc650f12fa7e36738e8e6534
+      - MCP_ENABLED=false
+      - CLAUDE_CONFIG_DIR=/home/claude/.claude
+    ports:
+      - target: 8080
+        published: "6104"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/workspace
+        target: /home/claude/workspace
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /home/claude/.claude
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/claudecode/icon.png
+    x-casaos:
+      id: com.icestore.claudecode
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: ANTHROPIC_API_KEY
+          description:
+            en_US: Your Anthropic API key. Leave it empty to sign in with a Claude Pro or Max subscription instead. A one-time sign-in link appears the first time you open the web terminal.
+        - container: AUTH_PASSWORD
+          description:
+            en_US: Pre-filled with a random value. This is the password for the web terminal login page and the Bearer token for the MCP API. You can replace it with your own.
+        - container: MCP_ENABLED
+          description:
+            en_US: Keep this false unless another Claude or automation tool needs to send prompts to this container through /mcp. Turning it on also starts a network beacon that shares AUTH_PASSWORD with other containers on the same Docker network.
+        - container: CLAUDE_CONFIG_DIR
+          description:
+            en_US: Where Claude Code keeps its settings and sign-in. It points at the config folder so your sign-in survives a restart. Leave it as it is.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Web terminal running Claude Code, published on host as 6104.
+      volumes:
+        - container: /home/claude/workspace
+          description:
+            en_US: Your project files. Everything Claude Code reads and writes lives here.
+        - container: /home/claude/.claude
+          description:
+            en_US: Claude Code's settings, sign-in and conversation history.
+
+x-casaos:
+  id: com.icestore.claudecode
+  architectures:
+    - amd64
+    - arm64
+  main: claudecode
+  author: HSinghHira
+  category: Developer
+  developer: worph
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/claudecode/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/claudecode/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/claudecode/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/claudecode/screenshot-2.png
+  title:
+    en_US: Claude Code
+  tagline:
+    en_US: Anthropic's Claude Code CLI in a browser terminal, with an optional API for automation.
+  description:
+    en_US: >-
+      Run Claude Code, Anthropic's AI coding assistant, in a browser
+      terminal that stays open. Reach it from any device and pick up in the
+      same workspace where you left off.
+
+
+      **Features**
+
+
+      - Browser terminal for Claude Code (ttyd) with a login page
+
+      - Your session keeps running when you close the tab, and you reconnect
+        to the same one when you come back
+
+      - Optional MCP JSON-RPC API so other Claude or automation tools can
+        send it prompts (off by default, see MCP_ENABLED)
+
+      - Optional OpenAI-compatible /v1/chat/completions endpoint that uses
+        the same sign-in
+
+      - Your project files, settings, sign-in and history are kept in
+        /DATA/AppData/$AppID
+
+      - Works on amd64 and arm64
+
+
+      **How to use?**
+
+
+      1. Open Claude Code from the Zima OS dashboard.
+
+
+      2. Enter the AUTH_PASSWORD from the app settings on the login page.
+
+
+      3. You are now in a terminal running `claude` in
+         /home/claude/workspace.
+
+
+      4. If you left ANTHROPIC_API_KEY empty, open the one-time link Claude
+         Code shows and sign in with your Claude Pro or Max subscription.
+
+
+      5. Closing the tab does not end your session. Opening the app again
+         takes you back to it, until it has been idle for 30 minutes.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app settings before you install.
+
+
+        2. If you have an Anthropic API key, put it in ANTHROPIC_API_KEY.
+           If not, leave it empty. You will sign in with your Claude
+           subscription later.
+
+
+        3. AUTH_PASSWORD already has a random password. You can change it
+           to your own. Write it down. You need it to log in.
+
+
+        4. Leave MCP_ENABLED set to false.
+
+
+        5. More settings are listed on the Claude Code page at
+           https://icestore.hsinghhira.me/app/claudecode/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        6. Install Claude Code. It is ready in under a minute.
+
+
+        7. Open Claude Code from the Zima OS dashboard and log in with your
+           AUTH_PASSWORD.
+
+
+        8. Only use this app on your home network. Anyone who reaches it
+           gets a terminal on your server.
+  index: /
+  port_map: "6104"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.0.28"
+  update_at: "2026-10-19"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore and pinned to ghcr.io/worph/claude-code-container:1.0.28.
+      - Port changed from 8443 to 6104.
+      - ANTHROPIC_API_KEY is now empty by default, which is what the image expects for subscription sign-in.
+      - Sign-in state is kept in the config folder through CLAUDE_CONFIG_DIR, instead of a separate .claude.json file mount that became a folder on a fresh install.
+      - MCP automation endpoint (/mcp) stays off by default (MCP_ENABLED=false). Turning it on also starts a UDP beacon that shares AUTH_PASSWORD with containers on the same Docker network.
+      - Only the web terminal port is published. Upstream protects it with a separate Caddy forward-auth container, which is not bundled here, so keep the port on your home network.
+  repo: "https://github.com/worph/claude-code-container"
+  support: "https://github.com/worph/claude-code-container/issues"
+  docs: "https://github.com/worph/claude-code-container/tree/main/docs"

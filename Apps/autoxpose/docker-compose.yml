@@ -1,0 +1,175 @@
+name: autoxpose
+
+services:
+  autoxpose:
+    image: mostafawahied/autoxpose:0.6.0
+    container_name: autoxpose
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - SERVER_IP=CHANGEME_PUBLIC_IP
+      - LAN_IP=CHANGEME_LAN_IP
+    ports:
+      - target: 3000
+        published: "6103"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/packages/backend/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        bind:
+          create_host_path: false
+        read_only: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/autoxpose/icon.png
+    x-casaos:
+      id: com.icestore.autoxpose
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: SERVER_IP
+          description:
+            en_US: Your public IP address or hostname. AutoXpose points new DNS A records at it. Replace CHANGEME_PUBLIC_IP before you install.
+        - container: LAN_IP
+          description:
+            en_US: The local IP address of your ZimaOS box, like 192.168.1.10. Your reverse proxy sends traffic here. Replace CHANGEME_LAN_IP before you install.
+      ports:
+        - container: "3000"
+          description:
+            en_US: AutoXpose web interface, published on host as 6103.
+      volumes:
+        - container: /app/packages/backend/data
+          description:
+            en_US: The SQLite database with your provider settings and exposed services.
+        - container: /var/run/docker.sock
+          description:
+            en_US: Read-only access to Docker, used to find other containers and read their autoxpose labels.
+
+x-casaos:
+  id: com.icestore.autoxpose
+  architectures:
+    - amd64
+    - arm64
+  main: autoxpose
+  author: HSinghHira
+  category: Networking
+  developer: mostafa-wahied
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/autoxpose/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/autoxpose/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/autoxpose/screenshot-1.png
+  title:
+    en_US: AutoXpose
+  tagline:
+    en_US: Label a container, and AutoXpose builds the DNS record and reverse proxy for it.
+  description:
+    en_US: >-
+      AutoXpose watches your Docker containers. When it finds one with an
+      autoxpose label, it creates the DNS record and sets up your reverse
+      proxy with HTTPS for you.
+
+
+      **Features**
+
+
+      - Finds running containers that have autoxpose labels and lists them
+
+      - Creates and removes DNS records, and checks that they work, on
+        Cloudflare, Netlify, DigitalOcean, Porkbun, Aliyun or Tencent Cloud
+        DNSPod
+
+      - Sets up Nginx Proxy Manager or Caddy as the reverse proxy, and
+        detects HTTP or HTTPS on its own
+
+      - Auto-expose mode (`autoxpose.enable=auto`) skips the "Expose" click
+
+      - Attach an existing Nginx Proxy Manager access list with a label
+
+      - Finds and removes old DNS records and proxy hosts left behind by
+        removed containers
+
+      - One container with a built-in SQLite database, no extra database
+        needed
+
+
+      **How to use?**
+
+
+      1. Open AutoXpose from the Zima OS dashboard.
+
+
+      2. Go to Settings and add a DNS provider and a proxy provider
+         (Nginx Proxy Manager or Caddy).
+
+
+      3. Add the label `autoxpose.enable=true` (or `auto`) to a container
+         you want to reach from the internet. Add
+         `autoxpose.subdomain=myapp` to pick its name. Then recreate that
+         container.
+
+
+      4. Open AutoXpose again. The container shows up under Discovered
+         Services. Click "Expose" if you used `enable=true`.
+
+
+      5. You can change provider settings, SERVER_IP and LAN_IP later from
+         Settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app settings before you install.
+
+
+        2. Change SERVER_IP to your public IP address.
+
+
+        3. Change LAN_IP to the local IP address of your ZimaOS box.
+
+
+        4. More settings are listed on the AutoXpose page at
+           https://icestore.hsinghhira.me/app/autoxpose/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        5. Install AutoXpose. It is ready in a few seconds.
+
+
+        6. Open AutoXpose from the Zima OS dashboard.
+
+
+        7. Go to Settings and add your DNS provider and proxy provider.
+
+
+        8. Add an autoxpose.enable label to a container you want to share,
+           then recreate that container.
+  index: /
+  port_map: "6103"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.6.0"
+  update_at: "2026-10-19"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore and pinned to mostafawahied/autoxpose:0.6.0.
+      - New in 0.6.0: attach Nginx Proxy Manager access lists with the autoxpose.npm.access_list label, and Caddy start/stop fixes.
+      - Data now lives in /DATA/AppData/$AppID/data.
+      - LOG_LEVEL and DOCKER_HOST moved to the Variables tab on the IceStore website.
+  repo: "https://github.com/mostafa-wahied/autoxpose"
+  support: "https://github.com/mostafa-wahied/autoxpose/issues"
+  docs: "https://github.com/mostafa-wahied/autoxpose#readme"
