@@ -10,6 +10,7 @@ services:
     environment:
       - TZ=$TZ
       - PUBLIC_URL=http://localhost:6101
+      - MP_UI_AUTH=username:password
     ports:
       - target: 8080
         published: "6101"
@@ -50,6 +51,12 @@ services:
               The address you type in your browser. It starts as localhost,
               which only works on this device. For other devices, change
               `localhost` to your ZimaOS IP. Keep the port at 6101.
+        - container: MP_UI_AUTH
+          description:
+            en_US: >-
+              The username and password for the mail viewer at /mail, written
+              as `username:password`. Change both before you install. Remove
+              it to open the mail viewer without a password.
       ports:
         - container: "8080"
           description:
@@ -121,7 +128,8 @@ x-casaos:
       5. Manage users at `/console`. Sign in with the admin email and
          password.
 
-      6. Read the email AppFlowy sends at `/mail`.
+      6. Read the email AppFlowy sends at `/mail`. Sign in with the
+         username and password from MP_UI_AUTH.
   tips:
     before_install:
       en_US: >-

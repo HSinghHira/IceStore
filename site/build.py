@@ -452,27 +452,26 @@ def app_page(a, cfg, tpl, layout):
             name = e(k).replace("_", "_<wbr>")  # break long names at underscores, not mid-word
             return f'<tr><td><code>{name}</code></td><td><code>{e(v) or "—"}</code></td><td>{code_ticks(d)}</td></tr>'
 
-        def head(t):
-            return f'<tr class="grp"><th colspan="3">{e(t)}</th></tr>'
+        def table(title, items):
+            """One table per group; the same column widths keep the tables lined up."""
+            h = f'<h3 class="vgh">{e(title)}</h3>' if title else ""
+            return (f'<div class="vg">{h}<div class="tw"><table>'
+                    '<colgroup><col class="c1"><col class="c2"><col class="c3"></colgroup>'
+                    '<thead><tr><th>Variable</th><th>Default value</th><th>Description</th></tr></thead>'
+                    f'<tbody>{"".join(row(k, v, d) for k, v, d in items)}</tbody></table></div></div>')
 
-        rows = ""
-        if a["env"]:
-            if a["more"]:
-                rows += head("In the app settings")
-            rows += "".join(row(k, v, d) for k, v, d in a["env"])
         groups = {}
+        if a["env"]:
+            groups["In the app settings" if a["more"] else ""] = list(a["env"])
         for g, k, v, d in a["more"]:
             groups.setdefault(g, []).append((k, v, d))
-        for g, items in groups.items():
-            rows += head(g) + "".join(row(k, v, d) for k, v, d in items)
         note = ""
         if a["more"]:
-            note = ('<p class="vnote">The settings at the top are already in the app settings. To use any other one, '
+            note = ('<p class="vnote">The settings in the first table are already in the app settings. To use any other one, '
                     'open the app settings, add the variable with your value, save, and the app restarts with it. '
                     'A setting you leave out uses its default.</p>')
         tabs.append(("vars", "table", "Variables",
-                     f'{note}<div class="tw"><table><thead><tr><th>Variable</th><th>Default value</th><th>Description</th></tr>'
-                     f'</thead><tbody>{rows}</tbody></table></div>'))
+                     f'{note}<div class="vgs">{"".join(table(g, items) for g, items in groups.items())}</div>'))
     tabs.append(("compose", "file-code", "Docker Compose",
                  f'<div class="code"><div class="chrome"><i></i><i></i><i></i><span>docker-compose.yml</span>'
                  f'<button class="btn p s" type="button" data-copy-from="#yml" data-done="Copied">{icon("copy")}Copy</button></div>'
