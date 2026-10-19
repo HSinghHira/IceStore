@@ -1,63 +1,223 @@
 <main id="main" tabindex="-1" data-page="home">
   <header class="hero">
     <div class="pill"><b>{{app_count}}</b>community apps, ready to install</div>
-    <h1 class="ice-title"><span class="ice-word" data-text="{{site_name}}">{{site_name}}</span><svg class="icicles" viewBox="0 0 600 76" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".55" stop-color="#9fe3fa" stop-opacity=".75"/><stop offset="1" stop-color="#4cc9f0" stop-opacity=".1"/></linearGradient></defs><polygon points="0,0 4.0,5 20.0,36 36.0,5 44.0,5 60.0,26 76.0,5 84.0,5 100.0,48 116.0,5 124.0,5 140.0,72 156.0,5 164.0,5 180.0,18 196.0,5 204.0,5 220.0,18 236.0,5 244.0,5 260.0,60 276.0,5 284.0,5 300.0,18 316.0,5 324.0,5 340.0,36 356.0,5 364.0,5 380.0,60 396.0,5 404.0,5 420.0,18 436.0,5 444.0,5 460.0,60 476.0,5 484.0,5 500.0,26 516.0,5 524.0,5 540.0,18 556.0,5 564.0,5 580.0,18 596.0,5 600,0" fill="url(#ig)"/></svg><i class="spark" style="left:-3%;top:-12%;animation-delay:0s"></i><i class="spark" style="left:23%;top:-20%;animation-delay:0.9s"></i><i class="spark" style="left:47%;top:-24%;animation-delay:1.7s"></i><i class="spark" style="left:72%;top:-16%;animation-delay:0.4s"></i><i class="spark" style="left:99%;top:-10%;animation-delay:2.2s"></i><i class="spark" style="left:60%;top:118%;animation-delay:1.3s"></i></h1>
+    <h1 class="ice-title">
+      <span class="ice-word" data-text="{{site_name}}">{{site_name}}</span><svg class="icicles" viewBox="0 0 600 76"
+        preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="ig" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity=".95" />
+            <stop offset=".55" stop-color="#9fe3fa" stop-opacity=".75" />
+            <stop offset="1" stop-color="#4cc9f0" stop-opacity=".1" />
+          </linearGradient>
+        </defs>
+        <polygon
+          points="0,0 4.0,5 20.0,36 36.0,5 44.0,5 60.0,26 76.0,5 84.0,5 100.0,48 116.0,5 124.0,5 140.0,72 156.0,5 164.0,5 180.0,18 196.0,5 204.0,5 220.0,18 236.0,5 244.0,5 260.0,60 276.0,5 284.0,5 300.0,18 316.0,5 324.0,5 340.0,36 356.0,5 364.0,5 380.0,60 396.0,5 404.0,5 420.0,18 436.0,5 444.0,5 460.0,60 476.0,5 484.0,5 500.0,26 516.0,5 524.0,5 540.0,18 556.0,5 564.0,5 580.0,18 596.0,5 600,0"
+          fill="url(#ig)" />
+      </svg><i class="spark" style="left: -3%; top: -12%; animation-delay: 0s"></i><i class="spark"
+        style="left: 23%; top: -20%; animation-delay: 0.9s"></i><i class="spark"
+        style="left: 47%; top: -24%; animation-delay: 1.7s"></i><i class="spark"
+        style="left: 72%; top: -16%; animation-delay: 0.4s"></i><i class="spark"
+        style="left: 99%; top: -10%; animation-delay: 2.2s"></i><i class="spark"
+        style="left: 60%; top: 118%; animation-delay: 1.3s"></i>
+    </h1>
     <p class="lead">{{tagline}}</p>
-    <div class="cta"><a class="btn p" href="#stores">{{icon:plus}}Add the store</a><a class="btn" href="#apps">{{icon:grid}}Browse apps</a></div>
+    <div class="cta">
+      <a class="btn p" href="#stores">{{icon:plus}}Add the store</a><a class="btn" href="#apps">{{icon:grid}}Browse
+        apps</a>
+    </div>
   </header>
-{{{marquee}}}
+  {{{marquee}}}
 
   <section class="wrap sec" id="stores" aria-labelledby="stores-h">
     <h2 id="stores-h">Add {{site_name}} to your OS</h2>
-    <p class="sub">Pick your system, copy the link and add it as a community store. It takes about a minute.</p>
-    <div class="stabs"><div class="tabs" role="tablist" aria-label="Choose your system">{{{os_tabs}}}</div></div>
-    <div class="panel sp" role="tabpanel" id="p-zimaos" aria-labelledby="zimaos"><div class="stores">
-      <article class="store">
-  <header><img src="{{zimaos_logo}}" alt="" width="48" height="48" loading="lazy"><div><h3>ZimaOS</h3><p>Reads the store listing directly.</p></div></header>
-  <div class="url"><div><span class="ft">store.json</span><code>{{{zimaos_url_wbr}}}</code></div><button class="ic" type="button" data-copy="{{zimaos_url}}" aria-label="Copy ZimaOS store URL">{{icon:copy}}</button></div>
-  <ol class="steps"><li><span>Open <b>App Store</b> in the ZimaOS dashboard.</span></li><li><span>Click the <b>Community store</b> icon, then&nbsp;<b>+</b>.</span></li><li><span>Paste the store URL above.</span></li><li><span>Click <b>Add</b> and refresh the page.</span></li></ol>
-  <div class="fn">{{icon:info}}<span>Not showing up? Refresh or restart the App Store service.</span></div>
-</article>
-      <div class="term"><header><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@zimaos: ~</span><button class="ic" type="button" data-copy-from="#cmd-zima" aria-label="Copy ZimaOS terminal command">{{icon:copy}}</button></header><pre><span class="pr"><span class="u">user@zimaos</span>:<span class="d">~</span>$</span> <code id="cmd-zima">curl -s -X POST \
+    <p class="sub">
+      Pick your system, copy the link and add it as a community store. It takes
+      about a minute.
+    </p>
+    <div class="stabs">
+      <div class="tabs" role="tablist" aria-label="Choose your system">
+        {{{os_tabs}}}
+      </div>
+    </div>
+    <div class="panel sp" role="tabpanel" id="p-zimaos" aria-labelledby="zimaos">
+      <div class="stores">
+        <article class="store">
+          <header>
+            <img src="{{zimaos_logo}}" alt="" width="48" height="48" loading="lazy" />
+            <div>
+              <h3>ZimaOS</h3>
+              <p>Reads the store listing directly.</p>
+            </div>
+          </header>
+          <div class="url">
+            <div><code>{{{zimaos_url_wbr}}}</code></div>
+            <button class="ic" type="button" data-copy="{{zimaos_url}}" aria-label="Copy ZimaOS store URL">
+              {{icon:copy}}
+            </button>
+          </div>
+          <ol class="steps">
+            <li>
+              <span>Open <b>App Store</b> in the ZimaOS dashboard.</span>
+            </li>
+            <li>
+              <span>Click the <b>Community store</b> icon,
+                then&nbsp;<b>+</b>.</span>
+            </li>
+            <li><span>Paste the store URL above.</span></li>
+            <li>
+              <span>Click <b>Add</b> and refresh the page.</span>
+            </li>
+          </ol>
+          <div class="fn">
+            {{icon:info}}<span>Not showing up? Refresh or restart the App Store service.</span>
+          </div>
+        </article>
+        <div class="term">
+          <header>
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@zimaos:
+              ~</span><button class="ic" type="button" data-copy-from="#cmd-zima"
+              aria-label="Copy ZimaOS terminal command">
+              {{icon:copy}}
+            </button>
+          </header>
+          <pre><span class="pr"><span class="u">user@zimaos</span>:<span class="d">~</span>$</span> <code id="cmd-zima">curl -s -X POST \
   -H &quot;Authorization: $TOKEN&quot; \
   -H &#x27;Content-Type: application/json&#x27; \
   -d &#x27;{&quot;url&quot;:&quot;{{zimaos_url}}&quot;}&#x27; \
   &quot;http://localhost/v3/app_store/repo&quot;</code>
-<span class="pr"><span class="u">user@zimaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre></div>
-    </div></div>
-    <div class="panel sp" role="tabpanel" id="p-casaos" aria-labelledby="casaos" hidden><div class="stores">
-      <article class="store">
-  <header><img src="{{casaos_logo}}" alt="" width="48" height="48" loading="lazy"><div><h3>CasaOS</h3><p>Uses a zip archive of the store.</p></div></header>
-  <div class="url"><div><span class="ft">store.zip</span><code>{{{casaos_url_wbr}}}</code></div><button class="ic" type="button" data-copy="{{casaos_url}}" aria-label="Copy CasaOS store URL">{{icon:copy}}</button></div>
-  <ol class="steps"><li><span>Open <b>App Store</b> in the CasaOS dashboard.</span></li><li><span>Click <b>+ Add Source</b>.</span></li><li><span>Paste the store URL above.</span></li><li><span>Click <b>Add</b>.</span></li></ol>
-  <div class="fn">{{icon:info}}<span>The link stays the same when new apps are added.</span></div>
-</article>
-      <div class="tstack"><div class="term"><header><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@casaos: ~</span><button class="ic" type="button" data-copy-from="#cmd-casa-add" aria-label="Copy CasaOS register command">{{icon:copy}}</button></header><pre><span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <code id="cmd-casa-add">sudo casaos-cli app-management register app-store {{casaos_url}}</code>
-<span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre></div><div class="term"><header><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@casaos: ~</span><button class="ic" type="button" data-copy-from="#cmd-casa-list" aria-label="Copy CasaOS list command">{{icon:copy}}</button></header><pre><span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <code id="cmd-casa-list">sudo casaos-cli app-management list app-stores</code>
-<span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre></div></div>
-    </div></div>
-    <div class="panel sp" role="tabpanel" id="p-homeio" aria-labelledby="homeio" hidden><div class="stores">
-      <article class="store">
-  <header><img src="{{homeio_logo}}" alt="" width="48" height="48" loading="lazy"><div><h3>Homeio</h3><p>Uses the same zip as CasaOS.</p></div></header>
-  <div class="url"><div><span class="ft">store.zip</span><code>{{{homeio_url_wbr}}}</code></div><button class="ic" type="button" data-copy="{{homeio_url}}" aria-label="Copy Homeio store URL">{{icon:copy}}</button></div>
-  <ol class="steps"><li><span>Open <b>App Store</b> in the Homeio dashboard.</span></li><li><span>Click <b>+ Install</b>, then <b>Manage Sources</b>.</span></li><li><span>Paste the URL and name it, for example “{{site_name}}”.</span></li><li><span>Click <b>Add Source</b>.</span></li></ol>
-  <div class="fn">{{icon:info}}<span>The link stays the same when new apps are added.</span></div>
-</article>
-      <div class="tip"><header><span>Good to know</span></header><ul><li>Homeio and CasaOS share one link, so a single zip serves both.</li><li>Apps appear in the App Store a few seconds after the source is added.</li><li>If the source is rejected, try <code>latest.zip</code> in place of <code>store.zip</code>.</li></ul></div>
-    </div></div>
+<span class="pr"><span class="u">user@zimaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre>
+        </div>
+      </div>
+    </div>
+    <div class="panel sp" role="tabpanel" id="p-casaos" aria-labelledby="casaos" hidden>
+      <div class="stores">
+        <article class="store">
+          <header>
+            <img src="{{casaos_logo}}" alt="" width="48" height="48" loading="lazy" />
+            <div>
+              <h3>CasaOS</h3>
+              <p>Uses a zip archive of the store.</p>
+            </div>
+          </header>
+          <div class="url">
+            <div><code>{{{casaos_url_wbr}}}</code></div>
+            <button class="ic" type="button" data-copy="{{casaos_url}}" aria-label="Copy CasaOS store URL">
+              {{icon:copy}}
+            </button>
+          </div>
+          <ol class="steps">
+            <li>
+              <span>Open <b>App Store</b> in the CasaOS dashboard.</span>
+            </li>
+            <li>
+              <span>Click <b>+ Add Source</b>.</span>
+            </li>
+            <li><span>Paste the store URL above.</span></li>
+            <li>
+              <span>Click <b>Add</b>.</span>
+            </li>
+          </ol>
+          <div class="fn">
+            {{icon:info}}<span>The link stays the same when new apps are added.</span>
+          </div>
+        </article>
+        <div class="tstack">
+          <div class="term">
+            <header>
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="ttl">user@casaos: ~</span>
+              <button class="ic" type="button" data-copy-from="#cmd-casa-commands"
+                aria-label="Copy CasaOS app store commands">
+                {{icon:copy}}
+              </button>
+            </header>
+            <pre><span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <code id="cmd-casa-commands">sudo casaos-cli app-management register app-store {{casaos_url}}
+sudo casaos-cli app-management list app-stores</code>
+<span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel sp" role="tabpanel" id="p-homeio" aria-labelledby="homeio" hidden>
+      <div class="stores">
+        <article class="store">
+          <header>
+            <img src="{{homeio_logo}}" alt="" width="48" height="48" loading="lazy" />
+            <div>
+              <h3>Homeio</h3>
+              <p>Uses the same zip as CasaOS.</p>
+            </div>
+          </header>
+          <div class="url">
+            <div><code>{{{homeio_url_wbr}}}</code></div>
+            <button class="ic" type="button" data-copy="{{homeio_url}}" aria-label="Copy Homeio store URL">
+              {{icon:copy}}
+            </button>
+          </div>
+          <ol class="steps">
+            <li>
+              <span>Open <b>App Store</b> in the Homeio dashboard.</span>
+            </li>
+            <li>
+              <span>Click <b>+ Install</b>, then <b>Manage Sources</b>.</span>
+            </li>
+            <li>
+              <span>Paste the URL and name it, for example “{{site_name}}”.</span>
+            </li>
+            <li>
+              <span>Click <b>Add Source</b>.</span>
+            </li>
+          </ol>
+          <div class="fn">
+            {{icon:info}}<span>The link stays the same when new apps are added.</span>
+          </div>
+        </article>
+        <div class="tip">
+          <header><span>Good to know</span></header>
+          <ul>
+            <li>
+              Homeio and CasaOS share one link, so a single zip serves both.
+            </li>
+            <li>
+              Apps appear in the App Store a few seconds after the source is
+              added.
+            </li>
+            <li>
+              If the source is rejected, try <code>latest.zip</code> in place of
+              <code>store.zip</code>.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="wrap sec" id="apps" aria-labelledby="apps-h">
     <div class="srch">
-      <div><h2 id="apps-h">All apps</h2><p class="sub" id="count">{{app_count}} apps and counting.</p></div>
-      <div class="sf">{{icon:search}}<input id="q" type="search" placeholder="Search apps" aria-label="Search apps" autocomplete="off"></div>
+      <div>
+        <h2 id="apps-h">All apps</h2>
+        <p class="sub" id="count">{{app_count}} apps and counting.</p>
+      </div>
+      <div class="sf">
+        {{icon:search}}<input id="q" type="search" placeholder="Search apps" aria-label="Search apps"
+          autocomplete="off" />
+      </div>
     </div>
     <div class="grid">{{{cards}}}</div>
     <p class="none" id="none" hidden>No app matches that search.</p>
   </section>
 
   <section class="wrap sec" aria-labelledby="help-h">
-    <div class="help"><div><h2 id="help-h">Missing an app?</h2><p class="sub">Ask for it, report a bug, or browse the code.</p></div>
-    <div class="cta"><a class="btn p" href="{{repo}}/issues/new">{{icon:plus-circle}}Request an App</a><a class="btn" href="{{repo}}/issues">{{icon:issues}}Issues</a><a class="btn" href="{{repo}}">{{icon:github}}GitHub</a></div></div>
+    <div class="help">
+      <div>
+        <h2 id="help-h">Missing an app?</h2>
+        <p class="sub">Ask for it, report a bug, or browse the code.</p>
+      </div>
+      <div class="cta">
+        <a class="btn p" href="{{repo}}/issues/new">{{icon:plus-circle}}Request an App</a><a class="btn"
+          href="{{repo}}/issues">{{icon:issues}}Issues</a><a class="btn" href="{{repo}}">{{icon:github}}GitHub</a>
+      </div>
+    </div>
   </section>
 </main>
