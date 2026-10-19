@@ -158,7 +158,3 @@ AFFiNE is an open-source workspace that puts documents, an endless whiteboard an
 2. The first time, AFFiNE asks you to create the admin account. Fill in your name, email and a password.
 3. Sign in and create your first workspace.
 4. Change server settings, email and AI any time in the admin panel at `http://your-server-ip:6102/admin`.
-
-## Before you install
-
-To use AFFiNE from other devices, change `localhost` in `PUBLIC_URL` to your server's IP address. Every other setting is optional and listed in the Variables tab. To use one, add it in the app settings with your value; a setting you leave out keeps its default. Add the `MAILER_` settings if you want AFFiNE to send emails, and add `AFFINE_ALLOW_SIGNUP=false` after you made your account if only invited people should join. The first start takes about 5 minutes while the database is set up. There is no default password: you make the admin account the first time you open AFFiNE.
