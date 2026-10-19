@@ -88,6 +88,9 @@ x-casaos:
     en_US: Anthropic's Claude Code CLI in a browser terminal, with an optional API for automation.
   description:
     en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/claudecode/](https://icestore.hsinghhira.me/app/claudecode/) for full details
+
+
       Run Claude Code, Anthropic's AI coding assistant, in a browser
       terminal that stays open. Reach it from any device and pick up in the
       same workspace where you left off.
@@ -135,35 +138,7 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        1. Open the app settings before you install.
-
-
-        2. If you have an Anthropic API key, put it in ANTHROPIC_API_KEY.
-           If not, leave it empty. You will sign in with your Claude
-           subscription later.
-
-
-        3. AUTH_PASSWORD already has a random password. You can change it
-           to your own. Write it down. You need it to log in.
-
-
-        4. Leave MCP_ENABLED set to false.
-
-
-        5. More settings are listed on the Claude Code page at
-           https://icestore.hsinghhira.me/app/claudecode/ (Variables tab).
-           You can add them now or later in the app settings.
-
-
-        6. Install Claude Code. It is ready in under a minute.
-
-
-        7. Open Claude Code from the Zima OS dashboard and log in with your
-           AUTH_PASSWORD.
-
-
-        8. Only use this app on your home network. Anyone who reaches it
-           gets a terminal on your server.
+        Visit: [https://icestore.hsinghhira.me/app/claudecode/](https://icestore.hsinghhira.me/app/claudecode/) for full details
   index: /
   port_map: "6104"
   scheme: http

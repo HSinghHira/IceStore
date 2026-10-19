@@ -80,6 +80,9 @@ x-casaos:
     en_US: Label a container, and AutoXpose builds the DNS record and reverse proxy for it.
   description:
     en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/autoxpose/](https://icestore.hsinghhira.me/app/autoxpose/) for full details
+
+
       AutoXpose watches your Docker containers. When it finds one with an
       autoxpose label, it creates the DNS record and sets up your reverse
       proxy with HTTPS for you.
@@ -133,31 +136,7 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        1. Open the app settings before you install.
-
-
-        2. Change SERVER_IP to your public IP address.
-
-
-        3. Change LAN_IP to the local IP address of your ZimaOS box.
-
-
-        4. More settings are listed on the AutoXpose page at
-           https://icestore.hsinghhira.me/app/autoxpose/ (Variables tab).
-           You can add them now or later in the app settings.
-
-
-        5. Install AutoXpose. It is ready in a few seconds.
-
-
-        6. Open AutoXpose from the Zima OS dashboard.
-
-
-        7. Go to Settings and add your DNS provider and proxy provider.
-
-
-        8. Add an autoxpose.enable label to a container you want to share,
-           then recreate that container.
+        Visit: [https://icestore.hsinghhira.me/app/autoxpose/](https://icestore.hsinghhira.me/app/autoxpose/) for full details
   index: /
   port_map: "6103"
   scheme: http

@@ -107,6 +107,9 @@ x-casaos:
     en_US: A self-hosted Pandora or Spotify built on your own music library.
   description:
     en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/helix/](https://icestore.hsinghhira.me/app/helix/) for full details
+
+
       Helix is a self-hosted music player, discovery tool and shared
       listening space built around a Subsonic-compatible music library, such
       as Navidrome.
@@ -161,33 +164,7 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        1. Open the app settings before you install.
-
-
-        2. Find the /data/music folder. It points at /DATA/Media/Music.
-
-
-        3. Change it to the folder where your music lives, the same one
-           Navidrome uses. If you won't import music, you can remove it.
-
-
-        4. More settings, like your Subsonic server and sign-in options,
-           are listed on the Helix page at
-           https://icestore.hsinghhira.me/app/helix/ (Variables tab). You
-           can add them now or later in the app settings.
-
-
-        5. Install Helix. The first start takes about a minute.
-
-
-        6. Open Helix from the Zima OS dashboard.
-
-
-        7. Create your account. The first account is the admin.
-
-
-        8. Put Helix behind HTTPS before you share it outside your home.
-           Then set HELIX_COOKIE_SECURE to true.
+        Visit: [https://icestore.hsinghhira.me/app/helix/](https://icestore.hsinghhira.me/app/helix/) for full details
   index: /
   port_map: "6105"
   scheme: http

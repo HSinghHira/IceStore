@@ -83,6 +83,9 @@ x-casaos:
     en_US: Docs, whiteboards and databases in one local-first workspace
   description:
     en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/affine/](https://icestore.hsinghhira.me/app/affine/) for full details
+
+
       AFFiNE is an open-source workspace that puts documents, an endless
       whiteboard and databases in one editor, like Notion and Miro together.
       This is AFFiNE in a single container, with one port and one data folder.
@@ -130,7 +133,7 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        Visit: https://icestore.hsinghhira.me/app/appflowy/
+        Visit: [https://icestore.hsinghhira.me/app/affine/](https://icestore.hsinghhira.me/app/affine/) for full details
   index: /
   port_map: "6102"
   scheme: http

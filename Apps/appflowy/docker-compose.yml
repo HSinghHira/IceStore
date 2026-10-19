@@ -82,6 +82,9 @@ x-casaos:
     en_US: Open-source Notion alternative in one container. Notes, docs, wikis and projects that you own.
   description:
     en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/appflowy/](https://icestore.hsinghhira.me/app/appflowy/) for full details
+
+
       AppFlowy is an open-source workspace for notes, docs, wikis and
       projects. This is the self-hosted AppFlowy Cloud in a single
       container, with one port and one data folder. Secret keys are made
@@ -133,7 +136,7 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        Visit: https://icestore.hsinghhira.me/app/appflowy/
+        Visit: [https://icestore.hsinghhira.me/app/appflowy/](https://icestore.hsinghhira.me/app/appflowy/) for full details
   thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/screenshot-1.png
   index: /
   port_map: "6101"
