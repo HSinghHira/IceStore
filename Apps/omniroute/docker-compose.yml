@@ -1,0 +1,130 @@
+name: omniroute
+
+services:
+  omniroute:
+    image: diegosouzapw/omniroute:latest
+    container_name: omniroute
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - INITIAL_PASSWORD=CHANGEME
+    ports:
+      - target: 20128
+        published: "6114"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID
+        target: /app/data
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.40"
+          memory: 1012M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omniroute/icon.png
+    x-casaos:
+      id: com.icestore.omniroute
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: INITIAL_PASSWORD
+          description:
+            en_US: >-
+              The first dashboard password. Replace CHANGEME with your own,
+              and change it again from the dashboard after you sign in.
+      ports:
+        - container: "20128"
+          description:
+            en_US: Dashboard and OpenAI-compatible API, published on host as 6114.
+      volumes:
+        - container: /app/data
+          description:
+            en_US: OmniRoute data, provider keys and routing settings.
+
+x-casaos:
+  id: com.icestore.omniroute
+  architectures:
+    - amd64
+    - arm64
+  main: omniroute
+  author: HSinghHira
+  category: AI
+  developer: diegosouzapw
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omniroute/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omniroute/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omniroute/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omniroute/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omniroute/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omniroute/screenshot-4.png
+  title:
+    en_US: OmniRoute
+  tagline:
+    en_US: Self-hosted AI gateway for 290+ providers.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/omniroute/](https://icestore.hsinghhira.me/app/omniroute/) for full details
+
+
+      OmniRoute is a self-hosted AI gateway that puts one OpenAI-compatible
+      endpoint in front of 290+ providers and 500+ models, including Claude,
+      GPT, Gemini, DeepSeek and many free-tier options.
+
+
+      **Features**
+
+
+      - One OpenAI-compatible endpoint for 290+ providers and 500+ models
+
+      - Smart routing, load balancing and automatic fallback, so tools like
+        Claude Code, Cursor, Cline and Copilot keep working when a provider
+        is down or out of quota
+
+      - Dashboard for provider keys and routing rules
+
+      - Settings, keys and routing data kept in the app data folder
+
+
+      **How to use?**
+
+
+      1. Open OmniRoute from the Zima OS dashboard.
+
+
+      2. Sign in with the password you set in INITIAL_PASSWORD, then change
+         it from the dashboard.
+
+
+      3. Add your provider API keys.
+
+
+      4. Point your tools at OmniRoute's OpenAI-compatible endpoint.
+
+
+      5. Set routing rules and fallback order from the dashboard.
+  tips:
+    before_install:
+      en_US: >-
+        Visit: [https://icestore.hsinghhira.me/app/omniroute/](https://icestore.hsinghhira.me/app/omniroute/) for full details
+  index: /
+  port_map: "6114"
+  scheme: http
+  is_uncontrolled: false
+  version: "latest"
+  update_at: "2026-10-20"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore. Port changed from 8401 to 6114.
+      - Optional settings are listed in the Variables tab on the IceStore website.
+  repo: "https://github.com/diegosouzapw/OmniRoute"
+  support: "https://github.com/diegosouzapw/OmniRoute/issues"
+  docs: "https://github.com/diegosouzapw/OmniRoute/tree/main/docs"

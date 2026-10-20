@@ -1,0 +1,243 @@
+name: opengym
+
+services:
+  media:
+    image: alpine/git:latest
+    container_name: opengym-media
+    restart: "no"
+    networks:
+      - opengym_network
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -z "$$(ls -A /out/img 2>/dev/null)" ]; then
+          git clone --depth 1 https://github.com/hasaneyldrm/exercises-dataset /tmp/ds
+          cp /tmp/ds/images/*.jpg /out/img/ && cp /tmp/ds/videos/*.gif /out/gif/
+        fi
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/media/img
+        target: /out/img
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/media/gif
+        target: /out/gif
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    x-casaos:
+      id: com.icestore.opengym
+      volumes:
+        - container: /out/img
+          description:
+            en_US: Exercise photos, downloaded once from the public exercises-dataset project and shared with the web service.
+        - container: /out/gif
+          description:
+            en_US: Exercise animated GIFs, downloaded once from the public exercises-dataset project and shared with the web service.
+
+  api:
+    image: registry.gitlab.com/duartesantos8/opengym/api:latest
+    container_name: opengym-api
+    restart: unless-stopped
+    stop_grace_period: 40s
+    networks:
+      - opengym_network
+    environment:
+      - TZ=$TZ
+      - DATA_DIR=/data
+      - RP_ID=CHANGEME_RP_ID
+      - ORIGIN=CHANGEME_ORIGIN
+      - COACH_DISABLED=1
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/icon.png
+    x-casaos:
+      id: com.icestore.opengym
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: DATA_DIR
+          description:
+            en_US: Where openGym keeps its files inside the container. Leave it as /data.
+        - container: RP_ID
+          description:
+            en_US: The exact hostname passkeys are locked to. Use "localhost" for local-only testing, or your real domain (e.g. gym.example.com) once this sits behind HTTPS. Must match the hostname in ORIGIN exactly, in both services.
+        - container: ORIGIN
+          description:
+            en_US: The full web address people open openGym at, including http:// or https://, e.g. http://localhost:6115 or https://gym.example.com. Must match RP_ID's hostname exactly, or passkey login fails.
+        - container: COACH_DISABLED
+          description:
+            en_US: Keeps the optional AI Coach feature turned off for every profile. Set to empty to allow admins to turn it on later from Settings.
+      volumes:
+        - container: /data
+          description:
+            en_US: Everything openGym stores — profiles, passkeys, workout history, the session-signing secret and push notification keys. Back this up regularly.
+
+  web:
+    image: registry.gitlab.com/duartesantos8/opengym/web:latest
+    container_name: opengym-web
+    restart: unless-stopped
+    stop_grace_period: 40s
+    networks:
+      - opengym_network
+    depends_on:
+      - media
+      - api
+    ports:
+      - target: 80
+        published: "6115"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/media/img
+        target: /usr/share/nginx/html/img
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/media/gif
+        target: /usr/share/nginx/html/gif
+        read_only: true
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/icon.png
+    x-casaos:
+      id: com.icestore.opengym
+      ports:
+        - container: "80"
+          description:
+            en_US: Web UI (published on host as 6115)
+      volumes:
+        - container: /usr/share/nginx/html/img
+          description:
+            en_US: Read-only copy of the exercise images the media step downloaded, served alongside the app.
+        - container: /usr/share/nginx/html/gif
+          description:
+            en_US: Read-only copy of the exercise GIFs the media step downloaded, served alongside the app.
+
+networks:
+  opengym_network:
+    driver: bridge
+
+x-casaos:
+  id: com.icestore.opengym
+  architectures:
+    - amd64
+    - arm64
+  main: web
+  author: HSinghHira
+  category: Productivity
+  developer: DuarteSantos8
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/screenshot-5.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/screenshot-6.png
+  title:
+    en_US: openGym
+  tagline:
+    en_US: Self-hosted gym and body-weight tracker with passkey login
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/opengym/](https://icestore.hsinghhira.me/app/opengym/) for full details
+
+
+      openGym is a self-hosted gym and body-weight tracker: plan routines, log
+      workouts (supersets and cardio included), and track your weight and
+      progress over time, all stored on your own server.
+
+
+      **Features**
+
+
+      - Weekly routine planner and guided workout logging, with supersets,
+        drop-sets, rest-pause and planned warm-ups.
+
+      - Body-weight tracking with a goal line and progress charts, plus
+        estimated 1RM and other stats.
+
+      - Passkey (WebAuthn) sign-in — no passwords to manage, with optional
+        invite-only signup and an admin dashboard.
+
+      - Push notifications for workout-day reminders, generated on first
+        run with no setup required.
+
+      - Everything is stored as plain files under /DATA/AppData/$AppID — no
+        separate database container to run or back up.
+
+      - An exercise-media step downloads the exercise photo and GIF library
+        (~140 MB) once on first start and shares it with the web service.
+
+
+      **How to use?**
+
+
+      1. Open openGym from the Zima OS dashboard.
+
+      2. On first visit, tap "Create profile" and register a passkey for
+         your account.
+
+      3. Build your first weekly routine, then start a guided workout from
+         it and log your sets as you go.
+
+      4. Add a body-weight entry and set a goal line under the Weight tab
+         to start tracking progress.
+
+      5. Optional: turn on the admin dashboard, invite-only signup, or the
+         AI Coach later from Settings — none of these need the container
+         rebuilt.
+  tips:
+    before_install:
+      en_US: >-
+        Visit: [https://icestore.hsinghhira.me/app/opengym/](https://icestore.hsinghhira.me/app/opengym/) for full details
+  index: /
+  port_map: "6115"
+  scheme: http
+  is_uncontrolled: false
+  version: "latest"
+  update_at: "2026-10-20"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore. Port changed from 8435 to 6115.
+      - Removed PORT from the api service; openGym already uses 3000.
+      - RP_NAME and SESSION_DAYS moved to the Variables tab on the IceStore website.
+      - api and web use the latest tag. openGym ships releases very often and old version tags are removed from the GitLab registry.
+      - The media helper uses alpine/git:latest, a one-time download step.
+  repo: "https://gitlab.com/DuarteSantos8/opengym"
+  support: "https://gitlab.com/DuarteSantos8/opengym/-/issues"
+  docs: "https://gitlab.com/DuarteSantos8/opengym/-/blob/main/docs/SELF_HOSTING.md"

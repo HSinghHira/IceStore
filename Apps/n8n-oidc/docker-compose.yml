@@ -1,0 +1,191 @@
+name: n8n-oidc
+
+services:
+  n8n-oidc-init:
+    image: alpine:3.20
+    container_name: n8n-oidc-init
+    restart: "no"
+    network_mode: bridge
+    command:
+      - sh
+      - -c
+      - >-
+        mkdir -p /n8n &&
+        wget -q -O /n8n/hooks.js https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/hooks.js &&
+        echo "dca11f0d87c3b894a6194a7c47a31b1bb63aa5ad8b5b190341d3db80fab30160  /n8n/hooks.js" | sha256sum -c - &&
+        chown 1000:1000 /n8n /n8n/hooks.js &&
+        chmod 644 /n8n/hooks.js
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/n8n
+        target: /n8n
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 64M
+        reservations:
+          cpus: "0.00"
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/icon.png
+    x-casaos:
+      id: com.icestore.n8n-oidc
+      volumes:
+        - container: /n8n
+          description:
+            en_US: Same folder as n8n's data. Holds the checked OIDC hook file.
+
+  n8n-oidc:
+    image: n8nio/n8n:2.30.1
+    container_name: n8n-oidc
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    depends_on:
+      n8n-oidc-init:
+        condition: service_completed_successfully
+    environment:
+      - TZ=$TZ
+      - N8N_SECURE_COOKIE=false
+      - EXTERNAL_HOOK_FILES=/home/node/.n8n/hooks.js
+      - EXTERNAL_FRONTEND_HOOKS_URLS=/assets/oidc-frontend-hook.js
+      - N8N_ADDITIONAL_NON_UI_ROUTES=auth
+      - OIDC_ISSUER_URL=CHANGEME_OIDC_ISSUER_URL
+      - OIDC_CLIENT_ID=CHANGEME_OIDC_CLIENT_ID
+      - OIDC_CLIENT_SECRET=CHANGEME_OIDC_CLIENT_SECRET
+      - OIDC_REDIRECT_URI=CHANGEME_OIDC_REDIRECT_URI
+    ports:
+      - target: 5678
+        published: "6111"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/n8n
+        target: /home/node/.n8n
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/icon.png
+    x-casaos:
+      id: com.icestore.n8n-oidc
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: N8N_SECURE_COOKIE
+          description:
+            en_US: Keep false when you open n8n with http://. Set it to true only when n8n is behind HTTPS.
+        - container: EXTERNAL_HOOK_FILES
+          description:
+            en_US: Path to the OIDC hook file. Do not change.
+        - container: EXTERNAL_FRONTEND_HOOKS_URLS
+          description:
+            en_US: Loads the SSO button on the sign-in page. Do not change.
+        - container: N8N_ADDITIONAL_NON_UI_ROUTES
+          description:
+            en_US: Lets the /auth/oidc routes work. Do not change.
+        - container: OIDC_ISSUER_URL
+          description:
+            en_US: The address of your login provider, like https://auth.example.com. It must serve /.well-known/openid-configuration.
+        - container: OIDC_CLIENT_ID
+          description:
+            en_US: The Client ID your login provider gave you for n8n.
+        - container: OIDC_CLIENT_SECRET
+          description:
+            en_US: The Client Secret your login provider gave you for n8n.
+        - container: OIDC_REDIRECT_URI
+          description:
+            en_US: Your n8n address plus /auth/oidc/callback, like http://192.168.1.10:6111/auth/oidc/callback. It must match the redirect URI set in your login provider.
+      ports:
+        - container: "5678"
+          description:
+            en_US: n8n web UI and webhooks, published on host as 6111.
+      volumes:
+        - container: /home/node/.n8n
+          description:
+            en_US: n8n database, encryption settings and the OIDC hook file.
+
+x-casaos:
+  id: com.icestore.n8n-oidc
+  architectures:
+    - amd64
+    - arm64
+  main: n8n-oidc
+  author: HSinghHira
+  category: Productivity
+  developer: n8n GmbH (OIDC hook by Cameron Eagans)
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/screenshot-2.jpg
+  title:
+    en_US: n8n (OIDC)
+  tagline:
+    en_US: n8n workflow automation with single sign-on through any OIDC provider.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/n8n-oidc/](https://icestore.hsinghhira.me/app/n8n-oidc/) for full details
+
+
+      n8n with a bolt-on OIDC login, so you can sign in through Pocket ID,
+      Authentik, Keycloak or any other OIDC provider. It uses the community
+      [n8n-oidc](https://github.com/cweagans/n8n-oidc) hook. It is not an
+      official n8n feature.
+
+
+      **Features**
+
+
+      - "Sign in with SSO" button on the n8n sign-in page
+
+      - Accounts are created on first login
+
+      - The first person to sign in becomes the owner
+
+      - SQLite database and settings kept in the app data folder
+
+      - The hook file is downloaded and checked against a fixed SHA-256 hash
+        on every start
+
+
+      **How to use?**
+
+
+      1. Open n8n from the Zima OS dashboard.
+
+
+      2. Click **Sign in with SSO** and log in with your provider.
+
+
+      3. Build your first workflow.
+  tips:
+    before_install:
+      en_US: >-
+        Visit: [https://icestore.hsinghhira.me/app/n8n-oidc/](https://icestore.hsinghhira.me/app/n8n-oidc/) for full details
+  index: /
+  port_map: "6111"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.30.1"
+  update_at: "2026-10-20"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore. Port changed from 8469 to 6111.
+      - The hook file is now downloaded from the IceStore repo (same file, same hash).
+      - Removed N8N_PROTOCOL from the compose file; n8n already defaults to http. It is in the Variables tab.
+      - The OIDC hook was last tested upstream on n8n 2.1.1.
+  repo: "https://github.com/n8n-io/n8n"
+  support: "https://github.com/cweagans/n8n-oidc/issues"
+  docs: "https://github.com/cweagans/n8n-oidc#readme"

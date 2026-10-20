@@ -1,0 +1,145 @@
+name: dispatcharr
+
+services:
+  dispatcharr:
+    image: ghcr.io/dispatcharr/dispatcharr:latest
+    container_name: dispatcharr
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DISPATCHARR_ENV=aio
+    ports:
+      - target: 9191
+        published: "6106"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID
+        target: /data
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 4096M
+        reservations:
+          cpus: "0.50"
+          memory: 1024M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dispatcharr/icon.png
+    x-casaos:
+      id: com.icestore.dispatcharr
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: DISPATCHARR_ENV
+          description:
+            en_US: >-
+              Runs Dispatcharr in all-in-one mode, with PostgreSQL and Redis
+              inside the container. Do not change.
+      ports:
+        - container: "9191"
+          description:
+            en_US: >-
+              Web UI, HDHomeRun tuner emulation, and stream/M3U/EPG/XC output,
+              published on host as 6106.
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              All app data: the bundled PostgreSQL database, Redis data,
+              uploaded logos and artwork, DVR recordings, and logs.
+
+x-casaos:
+  id: com.icestore.dispatcharr
+  architectures:
+    - amd64
+    - arm64
+  main: dispatcharr
+  author: HSinghHira
+  category: Media
+  developer: Dispatcharr
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dispatcharr/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dispatcharr/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dispatcharr/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dispatcharr/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dispatcharr/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dispatcharr/screenshot-4.png
+  title:
+    en_US: Dispatcharr
+  tagline:
+    en_US: Your ultimate IPTV and stream management companion.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/dispatcharr/](https://icestore.hsinghhira.me/app/dispatcharr/) for full details
+
+
+      Dispatcharr is an open-source tool for managing IPTV streams, EPG data
+      and VOD content. Think of it as the *arr family's IPTV cousin.
+
+
+      **Features**
+
+
+      - Combine many IPTV/M3U and Xtream Codes sources in one place
+
+      - Stream proxy with live client management and automatic failover
+        between backup sources
+
+      - HDHomeRun tuner emulation, so Plex, Emby and Jellyfin find it as a
+        live TV source
+
+      - EPG matching and generation, with XMLTV, M3U, Xtream Codes and
+        HDHomeRun output
+
+      - FFmpeg output profiles to transcode streams per client
+
+      - Video on Demand with IMDB/TMDB metadata
+
+      - Multi-user accounts with permissions and network access rules
+
+      - Plugin system for custom automations
+
+      - PostgreSQL and Redis inside the container, nothing extra to set up
+
+
+      **How to use?**
+
+
+      1. Open Dispatcharr from the Zima OS dashboard.
+
+
+      2. Create your admin account on the setup page.
+
+
+      3. Add your IPTV sources under Settings, M3U & EPG Manager.
+
+
+      4. Create channels from your streams and match them to EPG data.
+
+
+      5. Add the M3U and XMLTV EPG links, or the HDHomeRun tuner, to Plex,
+         Emby, Jellyfin or another player.
+  tips:
+    before_install:
+      en_US: >-
+        Visit: [https://icestore.hsinghhira.me/app/dispatcharr/](https://icestore.hsinghhira.me/app/dispatcharr/) for full details
+  index: /
+  port_map: "6106"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.28.1"
+  update_at: "2026-10-20"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore. Port changed from 8415 to 6106.
+      - Removed REDIS_HOST, CELERY_BROKER_URL and DISPATCHARR_LOG_LEVEL from the compose file; all-in-one mode already uses those values.
+      - Optional settings moved to the Variables tab on the IceStore website.
+  repo: "https://github.com/Dispatcharr/Dispatcharr"
+  support: "https://github.com/Dispatcharr/Dispatcharr/issues"
+  docs: "https://dispatcharr.github.io/Dispatcharr-Docs/"

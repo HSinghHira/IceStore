@@ -1,0 +1,102 @@
+name: web-check
+
+services:
+  web-check:
+    image: lissy93/web-check:latest
+    container_name: web-check
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    ports:
+      - target: 3000
+        published: "6122"
+        protocol: tcp
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/web-check/icon.png
+    x-casaos:
+      id: com.icestore.web-check
+      ports:
+        - container: "3000"
+          description:
+            en_US: Web UI for running OSINT checks against any domain, published on host as 6122.
+
+x-casaos:
+  id: com.icestore.web-check
+  architectures:
+    - amd64
+    - arm64
+  main: web-check
+  author: HSinghHira
+  category: Networking
+  developer: Lissy93
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/web-check/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/web-check/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/web-check/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/web-check/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/web-check/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/web-check/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/web-check/screenshot-5.png
+  title:
+    en_US: Web-Check
+  tagline:
+    en_US: All-in-one OSINT tool for analysing any website.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/web-check/](https://icestore.hsinghhira.me/app/web-check/) for full details
+
+
+      Web-Check is a self-hosted OSINT tool that runs dozens of checks
+      against any domain (DNS, SSL, headers, hosting, tech stack and more)
+      and lays it all out in one clean report.
+
+
+      **Features**
+
+
+      - Dozens of checks in one report: DNS records, SSL/TLS, security
+        headers, WHOIS, hosting, tech stack, blocklist status and more
+
+      - No database or storage; every scan runs fresh
+
+      - Optional API keys unlock a few extra checks
+
+      - A clean report for any domain you enter
+
+
+      **How to use?**
+
+
+      1. Open Web-Check from the Zima OS dashboard.
+
+
+      2. Type in the domain or URL you want to check.
+
+
+      3. Run the scan and browse the report as it loads.
+  tips:
+    before_install:
+      en_US: >-
+        Visit: [https://icestore.hsinghhira.me/app/web-check/](https://icestore.hsinghhira.me/app/web-check/) for full details
+  index: /
+  port_map: "6122"
+  scheme: http
+  is_uncontrolled: false
+  version: "latest"
+  update_at: "2026-10-20"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore. Port changed from 8419 to 6122.
+      - Optional API keys are listed in the Variables tab on the IceStore website.
+      - Uses the latest tag; the 1.0.0 tag is nearly two years old and misses many fixes.
+  repo: "https://github.com/lissy93/web-check"
+  support: "https://github.com/lissy93/web-check/issues"
+  docs: "https://github.com/lissy93/web-check#readme"

@@ -1,0 +1,170 @@
+name: ntfy
+
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    init: true
+    command: serve
+    environment:
+      - TZ=$TZ
+      - NTFY_BASE_URL=http://localhost:6113
+      - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
+      - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
+      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
+      - NTFY_ENABLE_LOGIN=true
+      - NTFY_REQUIRE_LOGIN=true
+      - NTFY_AUTH_USERS=admin:$$2b$$10$$1C8wtZx6f6Fkm8W07PXZyObBN9OY1GlOAGbOA79M4yV1oKjf5kR5S:admin
+    ports:
+      - target: 80
+        published: "6113"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID
+        target: /var/lib/ntfy
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 http://127.0.0.1:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ntfy/icon.png
+    x-casaos:
+      id: com.icestore.ntfy
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: NTFY_BASE_URL
+          description:
+            en_US: >-
+              The web address of your ntfy server. localhost only works on
+              this device. For other devices, change localhost to your ZimaOS
+              IP, like http://192.168.1.50:6113, or use your public address,
+              like https://ntfy.example.com.
+        - container: NTFY_CACHE_FILE
+          description:
+            en_US: Where ntfy keeps its saved messages. Leave it as is.
+        - container: NTFY_AUTH_FILE
+          description:
+            en_US: Where ntfy keeps its users and passwords. Leave it as is.
+        - container: NTFY_AUTH_DEFAULT_ACCESS
+          description:
+            en_US: >-
+              deny-all means only signed-in users can read or send. Use
+              read-write to let anyone use your server.
+        - container: NTFY_ENABLE_LOGIN
+          description:
+            en_US: Shows a sign-in page in the web app.
+        - container: NTFY_REQUIRE_LOGIN
+          description:
+            en_US: Makes the web app ask everyone to sign in first.
+        - container: NTFY_AUTH_USERS
+          description:
+            en_US: >-
+              The admin account, as name:password-hash:role. It starts as
+              admin with the password admin. Replace the hash with your own
+              before using ntfy for anything private. Make a hash with `ntfy
+              user hash` or at
+              [bcrypt-generator.com](https://bcrypt-generator.com/). Write
+              every `$` in the hash as `$$`. Add more users with a comma
+              between them.
+      ports:
+        - container: "80"
+          description:
+            en_US: Web app and API, published on host as 6113.
+      volumes:
+        - container: /var/lib/ntfy
+          description:
+            en_US: Saved messages and the user database.
+
+x-casaos:
+  id: com.icestore.ntfy
+  architectures:
+    - amd64
+    - arm64
+  main: ntfy
+  author: HSinghHira
+  category: Productivity
+  developer: Philipp Heckel
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ntfy/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ntfy/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ntfy/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ntfy/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ntfy/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ntfy/screenshot-4.png
+  title:
+    en_US: ntfy
+  tagline:
+    en_US: Send push notifications to your phone or desktop with simple HTTP requests.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/ntfy/](https://icestore.hsinghhira.me/app/ntfy/) for full details
+
+
+      A simple, self-hosted notification service. Send alerts from any
+      script or app to your phone or desktop with a plain PUT or POST.
+
+
+      **Features**
+
+
+      - Publish and subscribe to topics over HTTP
+
+      - Android, iOS and web apps for receiving notifications
+
+      - Users and access rules, locked down by default
+
+      - Messages and users saved in the app data folder
+
+
+      **How to use?**
+
+
+      1. Open ntfy from the Zima OS dashboard.
+
+
+      2. Sign in with the default login: **admin** / **admin**.
+
+
+      3. Subscribe to a topic.
+
+
+      4. Send a test message with `curl -u admin:admin -d "Hello"
+         http://YOUR-ZIMAOS-IP:6113/mytopic`.
+
+
+      5. Add the same server and topic in the ntfy phone app.
+  tips:
+    before_install:
+      en_US: >-
+        Visit: [https://icestore.hsinghhira.me/app/ntfy/](https://icestore.hsinghhira.me/app/ntfy/) for full details
+  index: /
+  port_map: "6113"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.28.0"
+  update_at: "2026-10-20"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore. Port changed from 8473 to 6113.
+      - NTFY_BEHIND_PROXY and NTFY_UPSTREAM_BASE_URL moved to the Variables tab on the IceStore website. Add NTFY_UPSTREAM_BASE_URL=https://ntfy.sh to get instant alerts on iPhone.
+  repo: "https://github.com/binwiederhier/ntfy"
+  support: "https://github.com/binwiederhier/ntfy/issues"
+  docs: "https://docs.ntfy.sh/"

@@ -1,0 +1,149 @@
+name: vscode
+
+services:
+  vscode:
+    image: lscr.io/linuxserver/vscode:latest
+    container_name: vscode
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    cap_add:
+      - IPC_LOCK
+    shm_size: "1gb"
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - CUSTOM_USER=CHANGEME_USERNAME
+      - PASSWORD=CHANGEME_PASSWORD
+    ports:
+      - target: 3001
+        published: "6119"
+        protocol: tcp
+      - target: 3000
+        published: "6120"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID
+        target: /config
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vscode/icon.png
+    x-casaos:
+      id: com.icestore.vscode
+      envs:
+        - container: PUID
+          description:
+            en_US: The user ID that owns your files. ZimaOS fills this in for you.
+        - container: PGID
+          description:
+            en_US: The group ID that owns your files. ZimaOS fills this in for you.
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: CUSTOM_USER
+          description:
+            en_US: The username for the VS Code login screen. Set it together with PASSWORD.
+        - container: PASSWORD
+          description:
+            en_US: The password for the VS Code login screen. Change it before using the app outside a trusted network.
+      ports:
+        - container: "3001"
+          description:
+            en_US: HTTPS web interface with a self-signed certificate. Open this one in your browser. Published on host as 6119.
+        - container: "3000"
+          description:
+            en_US: Plain HTTP web interface, meant to sit behind a reverse proxy. Published on host as 6120.
+      volumes:
+        - container: /config
+          description:
+            en_US: Your VS Code home folder, with your login session, editor settings, extensions and project files.
+
+x-casaos:
+  id: com.icestore.vscode
+  architectures:
+    - amd64
+    - arm64
+  main: vscode
+  author: HSinghHira
+  category: Developer
+  developer: linuxserver.io
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vscode/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vscode/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vscode/screenshot-1.png
+  title:
+    en_US: VS Code
+  tagline:
+    en_US: The full Visual Studio Code desktop app, streamed straight to your browser.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/vscode/](https://icestore.hsinghhira.me/app/vscode/) for full details
+
+
+      The real Visual Studio Code desktop app, running in a remote desktop
+      session that streams to your browser. Your everyday code editor, with
+      nothing to install locally.
+
+
+      **Features**
+
+
+      - The genuine Visual Studio Code desktop app, not a limited web port
+
+      - Runs inside a full Selkies remote desktop, with a real terminal, git
+        and any extension you like
+
+      - HTTPS out of the box with a self-signed certificate, plus a plain
+        HTTP port for your own reverse proxy
+
+      - Optional GPU passthrough for smoother rendering
+
+      - Settings, extensions and projects survive restarts
+
+
+      **How to use?**
+
+
+      1. Open VS Code from the Zima OS dashboard.
+
+
+      2. Accept the self-signed certificate warning the first time.
+
+
+      3. Sign in with your CUSTOM_USER and PASSWORD.
+
+
+      4. Open folders, install extensions and use the terminal as usual.
+
+
+      5. Keep your projects in the home folder so they are saved.
+  tips:
+    before_install:
+      en_US: >-
+        Visit: [https://icestore.hsinghhira.me/app/vscode/](https://icestore.hsinghhira.me/app/vscode/) for full details
+  index: /
+  port_map: "6119"
+  scheme: https
+  is_uncontrolled: false
+  version: "latest"
+  update_at: "2026-10-20"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore. Ports changed from 8450/8449 to 6119 (HTTPS) and 6120 (HTTP).
+      - PUID, PGID and TZ now come from ZimaOS instead of fixed values.
+      - Optional settings are listed in the Variables tab on the IceStore website.
+      - linuxserver/vscode only publishes a floating latest tag (plus arch tags).
+  repo: "https://github.com/linuxserver/docker-vscode"
+  support: "https://github.com/linuxserver/docker-vscode/issues"
+  docs: "https://docs.linuxserver.io/images/docker-vscode/"
