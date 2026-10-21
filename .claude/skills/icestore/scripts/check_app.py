@@ -9,6 +9,7 @@ image is ghcr.io/hsinghhira/<app>, also docker/<app>/ and the build workflow.
 Prints ERROR / WARN lines. Exit code 1 when there is any ERROR.
 """
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -91,6 +92,9 @@ def other_apps_ports(root, slug):
             for pub, _ in published(svc or {}):
                 if pub:
                     taken[pub] = f.parent.name
+        pm = (data.get("x-casaos") or {}).get("port_map")
+        if pm not in (None, ""):  # host-network apps only show their port here (same as ports.py)
+            taken[str(pm)] = f.parent.name
     return taken
 
 
@@ -161,18 +165,33 @@ def check_compose(root, slug, app_dir):
 
     msvc = services[main] or {}
     ports = published(msvc)
+    to_check = [(name, pub) for name, svc in services.items() for pub, _ in published(svc or {})]
+    if not ports and msvc.get("network_mode") == "host" and meta.get("port_map"):
+        # host networking publishes nothing; the app listens on port_map directly
+        pm = str(meta["port_map"])
+        ports = [(pm, pm)]
+        to_check.append((main, pm))
     if not ports:
         err(f"main service '{main}' publishes no port")
     taken = other_apps_ports(root, slug)
+    for name, pub in to_check:
+        if not pub.isdigit():
+            err(f"service '{name}': published port '{pub}' must be a fixed number")
+            continue
+        if not PORT_LOW <= int(pub) <= PORT_HIGH:
+            err(f"service '{name}': port {pub} is outside {PORT_LOW}-{PORT_HIGH}")
+        if pub in taken:
+            err(f"port {pub} is already used by Apps/{taken[pub]}")
+
     for name, svc in services.items():
-        for pub, _ in published(svc or {}):
-            if not pub.isdigit():
-                err(f"service '{name}': published port '{pub}' must be a fixed number")
-                continue
-            if not PORT_LOW <= int(pub) <= PORT_HIGH:
-                err(f"service '{name}': port {pub} is outside {PORT_LOW}-{PORT_HIGH}")
-            if pub in taken:
-                err(f"port {pub} is already used by Apps/{taken[pub]}")
+        image = str((svc or {}).get("image") or "")
+        if not image or image.lower().startswith("ghcr.io/hsinghhira/"):
+            continue  # all-in-one images are tagged by their own workflow
+        tag = image.rsplit(":", 1)[1] if ":" in image.rsplit("/", 1)[-1] else ""
+        if "@sha256:" not in image and tag in ("", "latest"):
+            warn(f"service '{name}': image {image} is not pinned to a version tag")
+    if str(meta.get("version", "")).lower() == "latest":
+        warn("x-casaos.version is 'latest'; use the real upstream version")
     if ports and str(meta.get("port_map")) != ports[0][0]:
         err(f"x-casaos.port_map {meta.get('port_map')} does not match the main published port {ports[0][0]}")
 
@@ -278,8 +297,28 @@ def check_readme(slug, app_dir):
         warn(f"Apps/{slug} has no screenshot-N.png files; the site hides the slider")
 
 
+def find_bash():
+    """A real bash. On Windows, a bare "bash" starts the WSL launcher in System32, which fails
+    with no message when no Linux distro is installed, so use Git Bash or skip the check."""
+    found = shutil.which("bash")
+    if found and "system32" in found.lower():
+        found = None
+    if not found and sys.platform == "win32":
+        for p in (r"C:\Program Files\Git\bin\bash.exe", r"C:\Program Files\Git\usr\bin\bash.exe"):
+            if Path(p).exists():
+                found = p
+                break
+    return found
+
+
+BASH = find_bash()
+
+
 def sh_ok(path):
-    r = subprocess.run(["bash", "-n", str(path)], capture_output=True, text=True)
+    if not BASH:
+        warn(f"{path.name}: shell syntax not checked (no bash found; on Windows install Git for Windows)")
+        return
+    r = subprocess.run([BASH, "-n", str(path)], capture_output=True, text=True)
     if r.returncode:
         err(f"{path.name} has a shell syntax error: {r.stderr.strip()}")
 
@@ -297,18 +336,24 @@ def check_aio(root, slug, data):
     if any(not (d / f).exists() for f in AIO_FILES[:6]):
         return
     for f in d.iterdir():
-        if f.is_file() and PLACEHOLDER.search(f.read_text(errors="ignore")):
-            err(f"docker/{slug}/{f.name} still has template placeholders: {sorted(set(PLACEHOLDER.findall(f.read_text(errors='ignore'))))}")
-        if f.is_file() and OLD_NAMES.search(f.read_text(errors="ignore")):
+        if not f.is_file():
+            continue
+        body = f.read_text(encoding="utf-8", errors="ignore")
+        if PLACEHOLDER.search(body):
+            err(f"docker/{slug}/{f.name} still has template placeholders: {sorted(set(PLACEHOLDER.findall(body)))}")
+        if OLD_NAMES.search(body):
             err(f"docker/{slug}/{f.name} still mentions ZimaAppStore; use IceStore")
+        if f.name in ("aio-init.sh", "run-svc.sh", "capture-meta.sh", "Dockerfile", "supervisord.conf",
+                      "nginx.conf.tpl") and "\r\n" in body:
+            err(f"docker/{slug}/{f.name} has Windows (CRLF) line endings; it must be LF to run in the image")
     for f in ("aio-init.sh", "run-svc.sh", "capture-meta.sh"):
         sh_ok(d / f)
 
-    dockerfile = (d / "Dockerfile").read_text()
-    init = (d / "aio-init.sh").read_text()
-    runsvc = (d / "run-svc.sh").read_text()
-    sup = (d / "supervisord.conf").read_text()
-    tpl = (d / "nginx.conf.tpl").read_text()
+    dockerfile = (d / "Dockerfile").read_text(encoding="utf-8")
+    init = (d / "aio-init.sh").read_text(encoding="utf-8")
+    runsvc = (d / "run-svc.sh").read_text(encoding="utf-8")
+    sup = (d / "supervisord.conf").read_text(encoding="utf-8")
+    tpl = (d / "nginx.conf.tpl").read_text(encoding="utf-8")
 
     strict = re.findall(r"(?m)^FROM [^ ]+ AS img-([a-z0-9]+)$", dockerfile)
     loose = re.findall(r"(?m)^FROM .* AS img-", dockerfile)
@@ -388,7 +433,7 @@ def check_aio(root, slug, data):
     if not wf.exists():
         err(f".github/workflows/build-{slug}.yml is missing (nothing builds the image)")
     else:
-        w = wf.read_text()
+        w = wf.read_text(encoding="utf-8")
         if f"docker/{slug}" not in w:
             err(f"build-{slug}.yml does not build docker/{slug}")
         if not re.search(rf"/{slug}\b", w):

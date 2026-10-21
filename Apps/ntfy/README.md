@@ -74,11 +74,11 @@ A simple, self-hosted notification service. Send alerts from any script or app t
 ## How to use
 
 1. Open ntfy from your dashboard.
-2. Sign in with the default login: **admin** / **admin**.
+2. Sign in as **admin**. The password is in `/DATA/AppData/ntfy/password.txt` (open it with the Files app) and in the app log.
 3. Subscribe to a topic.
-4. Send a test message with `curl -u admin:admin -d "Hello" http://your-server-ip:6113/mytopic`.
+4. Send a test message with `curl -u admin:YOUR-PASSWORD -d "Hello" http://your-server-ip:6113/mytopic`.
 5. Add the same server and topic in the ntfy phone app.
 
 ## Before you install
 
-The default login is **admin** / **admin**. Change it by replacing the hash in `NTFY_AUTH_USERS` with your own (make one at [bcrypt-generator.com](https://bcrypt-generator.com/)) and write every `$` in the hash as `$$`. Change the password there, not in the app, because the app resets it when ntfy restarts. Change `localhost` in `NTFY_BASE_URL` to your server's IP so your phone can reach ntfy. For instant iPhone alerts, add `NTFY_UPSTREAM_BASE_URL=https://ntfy.sh` from the Variables tab.
+Leave `NTFY_AUTH_USERS` blank: on first start the app makes an **admin** account with its own random password, saved in `password.txt` in the app's folder and shown in the app log. To pick your own password, write it in that file and restart the app. Change it there, not in the ntfy web app, because the app resets it when ntfy restarts. Change `localhost` in `NTFY_BASE_URL` to your server's IP so your phone can reach ntfy. For instant iPhone alerts, add `NTFY_UPSTREAM_BASE_URL=https://ntfy.sh` from the Variables tab.

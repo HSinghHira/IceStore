@@ -161,7 +161,8 @@ def redact(key, value):
 
 
 def redact_text(src):
-    pat = r"(?im)^(\s*(?:-\s*)?[\w.-]*" + SECRET + r"[\w.-]*\s*[=:]\s*)(?!\$|\s*$)(\S.*)$"
+    # [ \t]*, not \s*: a blank value must not let the match run on into the next line
+    pat = r"(?im)^([ \t]*(?:-[ \t]*)?[\w.-]*" + SECRET + r"[\w.-]*[ \t]*[=:][ \t]*)(?!\$|[ \t]*$)(\S.*)$"
     return re.sub(pat, r"\1change-me", src)
 
 

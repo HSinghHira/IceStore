@@ -141,8 +141,4 @@ AppFlowy is an open-source workspace for notes, docs, wikis and projects. This i
 3. Create your first workspace and page.
 4. To use the AppFlowy desktop or mobile app, choose the self-hosted server option and enter your address with port `6101`.
 5. Manage users at `/console`. Sign in with the admin email and password.
-6. Read the email AppFlowy sends at `/mail`.
-
-## Before you install
-
-Set `ADMIN_EMAIL` to your own email. Leave `ADMIN_PASSWORD` blank to get a random one, shown in the app log as "admin password is". To use AppFlowy from other devices, change `localhost` in `PUBLIC_URL` to your server's IP address. Every other setting is optional and listed in the Variables tab. To use one, add it in the app settings with your value; a setting you leave out keeps its default. Add the `SMTP_` settings to send real email instead of using the built-in mail viewer, and add `GOTRUE_DISABLE_SIGNUP=true` after you made your account if only invited people should join. The first start takes about four minutes.
+6. Read the email AppFlowy sends at `/mail`. Sign in as `admin` with the password in `/DATA/AppData/appflowy/data/mail-password.txt` (open it with the Files app; it is also in the app log), unless you typed your own login in `MP_UI_AUTH`.

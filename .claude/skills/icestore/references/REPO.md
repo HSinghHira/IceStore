@@ -15,12 +15,17 @@ site/
   build.py  requirements.txt  site.json  static/  templates/
 store-config.json        store id com.icestore, name, maintainer, url
 supported-languages.json ["en_US"] — write every x-casaos text as en_US only
-justfile                 `just deploy` / `just d` = git add -A, commit "Building", push
-README.md                two-line description of the store (no app table)
+justfile                 `just check` runs the checker on every app; `just deploy ["message"]`
+                         (alias `just d`) = check, then git add -A, commit, push
+.gitattributes           forces LF line endings on shell, Dockerfile, nginx and compose files
+README.md                how to add the store on each OS + a hand-written app table
 ```
 
-There is no app table in the root `README.md` and no port ledger file. The site
-lists apps, and `scripts/ports.py` reads the ports from the compose files.
+The root `README.md` has an `## 📦 Apps` table, one row per app in
+alphabetical order, written by hand. Add a row for a new app (copy an existing
+row: icon, image badge, project badge, port badge(s), one-line description,
+screenshot-1) and update the badges when the image tag or port changes. There
+is no port ledger file: `scripts/ports.py` reads the ports from the compose files.
 
 ## release-store.yml
 
@@ -28,8 +33,10 @@ Runs on every push to `main`:
 
 1. `IceWhaleTech/build-appstore-action` over the whole repo → `dist/store.json`.
    Fails the run if an app has no `x-casaos.id`.
-2. `zip -r dist/store.zip .` minus `.git`, `.github`, `dist`, `_site`, `site`.
-   Note that `docker/` **is** inside `store.zip`; that is harmless.
+2. `zip -r dist/store.zip .` minus `.git`, `.github`, `.claude`, `.history`,
+   `dist`, `_site`, `site`, `docker` and `justfile`, so only the store files ship.
+   A new top-level folder that isn't part of the store must be added to that
+   exclude list too.
 3. `python site/build.py --out dist --no-clean` adds the website to the same folder.
 4. Deploys `dist/` to GitHub Pages. Base URL comes from `site/site.json`
    (`https://icestore.hsinghhira.me/`).

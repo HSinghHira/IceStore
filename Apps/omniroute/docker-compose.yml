@@ -2,14 +2,35 @@ name: omniroute
 
 services:
   omniroute:
-    image: diegosouzapw/omniroute:latest
+    image: diegosouzapw/omniroute:3.8.52
     container_name: omniroute
     restart: unless-stopped
     stop_grace_period: 40s
     network_mode: bridge
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        f=/app/data/password.txt
+        if [ -z "$$INITIAL_PASSWORD" ]; then
+          if [ -s "$$f" ]; then
+            INITIAL_PASSWORD=$$(cat "$$f")
+          else
+            INITIAL_PASSWORD=$$(head -c 18 /dev/urandom | od -An -tx1 | tr -d ' \n')
+            if printf '%s' "$$INITIAL_PASSWORD" > "$$f" 2>/dev/null; then
+              chmod 600 "$$f"
+            else
+              echo "[icestore] cannot write $$f, so the password below is only shown here"
+            fi
+            echo "[icestore] first start: your first dashboard password is $$INITIAL_PASSWORD"
+          fi
+          export INITIAL_PASSWORD
+          echo "[icestore] first dashboard password: see /DATA/AppData/omniroute/password.txt"
+        fi
+        exec /app/check-permissions.sh node dev/run-standalone.mjs
     environment:
       - TZ=$TZ
-      - INITIAL_PASSWORD=CHANGEME
+      - INITIAL_PASSWORD=
     ports:
       - target: 20128
         published: "6114"
@@ -39,8 +60,11 @@ services:
         - container: INITIAL_PASSWORD
           description:
             en_US: >-
-              The first dashboard password. Replace CHANGEME with your own,
-              and change it again from the dashboard after you sign in.
+              The first dashboard password. Leave it blank and the app makes a
+              random one on first start. Find it in
+              /DATA/AppData/omniroute/password.txt (open it with the Files app)
+              or in the app log. Or type your own here. It is only used for the
+              first sign-in; change it from the dashboard after that.
       ports:
         - container: "20128"
           description:
@@ -100,8 +124,9 @@ x-casaos:
       1. Open OmniRoute from the Zima OS dashboard.
 
 
-      2. Sign in with the password you set in INITIAL_PASSWORD, then change
-         it from the dashboard.
+      2. Sign in with the password in /DATA/AppData/omniroute/password.txt
+         (or the one you typed in INITIAL_PASSWORD), then change it from the
+         dashboard.
 
 
       3. Add your provider API keys.
@@ -119,10 +144,12 @@ x-casaos:
   port_map: "6114"
   scheme: http
   is_uncontrolled: false
-  version: "latest"
-  update_at: "2026-10-20"
+  version: "3.8.52"
+  update_at: "2026-10-21"
   release_notes:
     en_US: |-
+      - Pinned to diegosouzapw/omniroute:3.8.52 instead of latest.
+      - INITIAL_PASSWORD is now blank by default, and each install makes its own random first password (saved in password.txt in the app folder and shown in the log) instead of CHANGEME.
       - Moved to IceStore. Port changed from 8401 to 6114.
       - Optional settings are listed in the Variables tab on the IceStore website.
   repo: "https://github.com/diegosouzapw/OmniRoute"

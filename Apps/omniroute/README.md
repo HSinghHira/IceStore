@@ -75,11 +75,11 @@ OmniRoute is a self-hosted AI gateway that puts one OpenAI-compatible endpoint i
 ## How to use
 
 1. Open OmniRoute from your dashboard.
-2. Sign in with the password you set in `INITIAL_PASSWORD`, then change it from the dashboard.
+2. Sign in with the password in `/DATA/AppData/omniroute/password.txt` (open it with the Files app; it is also in the app log), or the one you typed in `INITIAL_PASSWORD`. Then change it from the dashboard.
 3. Add your provider API keys.
 4. Point your tools at OmniRoute's OpenAI-compatible endpoint.
 5. Set routing rules and fallback order from the dashboard.
 
 ## Before you install
 
-Replace `CHANGEME` in `INITIAL_PASSWORD` with your own password. It is only used for the first sign-in, so change it again from the dashboard afterwards. If other people can reach the server, add `REQUIRE_API_KEY=true` from the Variables tab. Back up the app data folder to keep your keys and routing setup.
+Leave `INITIAL_PASSWORD` blank and the app makes its own random first password, saved in `password.txt` in the app's folder and shown in the app log; or type your own. It is only used for the first sign-in, so change it from the dashboard afterwards. If other people can reach the server, add `REQUIRE_API_KEY=true` from the Variables tab. Back up the app data folder to keep your keys and routing setup.

@@ -11,8 +11,8 @@ services:
       - -c
       - >-
         mkdir -p /n8n &&
-        wget -q -O /n8n/hooks.js https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/hooks.js &&
-        echo "dca11f0d87c3b894a6194a7c47a31b1bb63aa5ad8b5b190341d3db80fab30160  /n8n/hooks.js" | sha256sum -c - &&
+        wget -q -O /n8n/hooks.js https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@8667d4dab6806586798c4f96919bac77d6352e69/Apps/n8n-oidc/hooks.js &&
+        echo "51243d919f9d0289f5312d1d2fe507b6f771e84afaa48ea105b868cad6d99757  /n8n/hooks.js" | sha256sum -c - &&
         chown 1000:1000 /n8n /n8n/hooks.js &&
         chmod 644 /n8n/hooks.js
     volumes:

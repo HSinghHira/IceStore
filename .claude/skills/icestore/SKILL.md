@@ -51,7 +51,8 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    `templates/build-workflow.yml`.
 5. **Write `Apps/<app>/docker-compose.yml`** per `references/COMPOSE.md`.
 6. **Write `Apps/<app>/README.md`** per `references/APP_README.md`, and list the
-   images the user must add (`icon.png`, `screenshot-1.png`, ...).
+   images the user must add (`icon.png`, `screenshot-1.png`, ...). Add or update
+   the app's row in the root `README.md` app table (`references/REPO.md`).
 7. **Run the checker**: `python3 scripts/check_app.py <repo root> <app>`. Fix every
    ERROR. Read each WARN and fix it or tell the user why it stays. Then go through
    `references/CHECKLIST.md` for what the script cannot see.

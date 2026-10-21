@@ -7,13 +7,14 @@ python3 scripts/check_app.py <repo root> <app>
 ```
 
 It covers: YAML validity, `name`, ids, category, version trio, ports in
-6101–6199 and unused by other apps, `port_map`, PUBLIC_URL port, `TZ=$TZ`,
+6101–6199 and unused by other apps (`port_map` for host-network apps),
+`:latest` or untagged upstream images, `version: latest`, PUBLIC_URL port, `TZ=$TZ`,
 `envs` ↔ `environment:`, a long compose environment, README `variables:`
 format, settings (compose or README) aio-init.sh never reads, raw `env | grep`
 pass-through, image URLs and their files, `#` comments, leftover
 `__PLACEHOLDERS__`, old ZimaAppStore names, tips step spacing, README front
 matter and icons, and for AIO apps: required files, `.gitignore` name, shell
-syntax, `FROM ... AS img-` format, unpinned tags, LABEL source, gateway port,
+syntax (with Git Bash on Windows), CRLF line endings, `FROM ... AS img-` format, unpinned tags, LABEL source, gateway port,
 programs ↔ img stages ↔ run-svc cases ↔ `write_env`, nginx tokens, `privileged`,
 healthcheck path, and the workflow.
 

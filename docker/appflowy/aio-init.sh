@@ -43,12 +43,29 @@ ensure_secret S3_ACCESS_KEY 10
 ensure_secret S3_SECRET_KEY 20
 ensure_secret JWT_SECRET 32
 ensure_secret ADMIN_PASSWORD 12
+ensure_secret MAIL_PASSWORD 12
 
 PG_PASSWORD=$(sed -n 's/^PG_PASSWORD=//p' "$SECRETS")
 S3_ACCESS_KEY=$(sed -n 's/^S3_ACCESS_KEY=//p' "$SECRETS")
 S3_SECRET_KEY=$(sed -n 's/^S3_SECRET_KEY=//p' "$SECRETS")
 JWT_SECRET=$(sed -n 's/^JWT_SECRET=//p' "$SECRETS")
 ADMIN_PASSWORD=$(sed -n 's/^ADMIN_PASSWORD=//p' "$SECRETS")
+MAIL_PASSWORD=$(sed -n 's/^MAIL_PASSWORD=//p' "$SECRETS")
+
+# Mail viewer (/mail) login. It shows password-reset emails, so it is never open:
+# blank MP_UI_AUTH = user "admin" with a password made on first start, kept in
+# the data folder where the Files app can open it. A value you set wins.
+MAIL_LOGIN_FILE=$DATA/mail-password.txt
+MAIL_UI_AUTH=${MP_UI_AUTH:-}
+if [ -z "$MAIL_UI_AUTH" ]; then
+  MAIL_UI_AUTH="admin:$MAIL_PASSWORD"
+  if [ ! -s "$MAIL_LOGIN_FILE" ]; then
+    printf 'Mail viewer (/mail) login\nusername: admin\npassword: %s\n' "$MAIL_PASSWORD" > "$MAIL_LOGIN_FILE"
+    chmod 600 "$MAIL_LOGIN_FILE"
+    log "first start: mail viewer (/mail) login is admin / $MAIL_PASSWORD (also saved in $MAIL_LOGIN_FILE)"
+  fi
+fi
+
 if [ -n "$ADMIN_PASSWORD_ENV" ]; then
   ADMIN_PASSWORD=$ADMIN_PASSWORD_ENV
 elif [ "$NEW_ADMIN_PASSWORD" = 1 ]; then
@@ -135,7 +152,8 @@ write_env mailpit "$TZV" \
   "MP_SMTP_AUTH_ACCEPT_ANY=1" \
   "MP_SMTP_AUTH_ALLOW_INSECURE=1" \
   "MP_SMTP_BIND_ADDR=127.0.0.1:1025" \
-  "MP_WEBROOT=/mail/"
+  "MP_WEBROOT=/mail/" \
+  "MP_UI_AUTH=$MAIL_UI_AUTH"
 
 # Email: blank SMTP_HOST = the built-in mail viewer at /mail (nothing leaves
 # the box). With a real server, the port defaults to 465 and the TLS mode to

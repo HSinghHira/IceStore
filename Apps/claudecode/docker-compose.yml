@@ -7,10 +7,26 @@ services:
     restart: unless-stopped
     stop_grace_period: 30s
     network_mode: bridge
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        f=/home/claude/.claude/password.txt
+        if [ -z "$$AUTH_PASSWORD" ]; then
+          if [ ! -s "$$f" ]; then
+            head -c 18 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$$f" || { echo "[icestore] cannot write $$f"; exit 1; }
+            chmod 600 "$$f"
+            echo "[icestore] first start: your login password is $$(cat "$$f")"
+          fi
+          AUTH_PASSWORD=$$(cat "$$f")
+          export AUTH_PASSWORD
+          echo "[icestore] login password: see /DATA/AppData/claudecode/config/password.txt"
+        fi
+        exec /init
     environment:
       - TZ=$TZ
       - ANTHROPIC_API_KEY=
-      - AUTH_PASSWORD=63f7ceb7d737278469bf7ae0fc650f12fa7e36738e8e6534
+      - AUTH_PASSWORD=
       - MCP_ENABLED=false
       - CLAUDE_CONFIG_DIR=/home/claude/.claude
     ports:
@@ -49,7 +65,12 @@ services:
             en_US: Your Anthropic API key. Leave it empty to sign in with a Claude Pro or Max subscription instead. A one-time sign-in link appears the first time you open the web terminal.
         - container: AUTH_PASSWORD
           description:
-            en_US: Pre-filled with a random value. This is the password for the web terminal login page and the Bearer token for the MCP API. You can replace it with your own.
+            en_US: >-
+              The password for the web terminal login page, and the Bearer
+              token for the MCP API. Leave it blank and the app makes a random
+              one on first start. Find it in password.txt in the app's config
+              folder (/DATA/AppData/claudecode/config/password.txt, open it
+              with the Files app) or in the app log. Or type your own here.
         - container: MCP_ENABLED
           description:
             en_US: Keep this false unless another Claude or automation tool needs to send prompts to this container through /mcp. Turning it on also starts a network beacon that shares AUTH_PASSWORD with other containers on the same Docker network.
@@ -122,7 +143,9 @@ x-casaos:
       1. Open Claude Code from the Zima OS dashboard.
 
 
-      2. Enter the AUTH_PASSWORD from the app settings on the login page.
+      2. Enter your password on the login page. Unless you typed your own
+         in AUTH_PASSWORD, it is in
+         /DATA/AppData/claudecode/config/password.txt.
 
 
       3. You are now in a terminal running `claude` in
@@ -144,9 +167,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "1.0.28"
-  update_at: "2026-10-19"
+  update_at: "2026-10-21"
   release_notes:
     en_US: |-
+      - AUTH_PASSWORD is now blank by default, and each install makes its own random password on first start (saved in config/password.txt and shown in the log). The pre-filled value in earlier versions was the same for everyone: if you installed before, type your own AUTH_PASSWORD in the app settings.
       - Moved to IceStore and pinned to ghcr.io/worph/claude-code-container:1.0.28.
       - Port changed from 8443 to 6104.
       - ANTHROPIC_API_KEY is now empty by default, which is what the image expects for subscription sign-in.

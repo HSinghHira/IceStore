@@ -35,11 +35,11 @@ Run Claude Code, Anthropic's AI coding assistant, in a browser terminal that sta
 ## How to use
 
 1. Open Claude Code from your dashboard.
-2. Enter the `AUTH_PASSWORD` from the app settings on the login page.
+2. Enter your password on the login page. Unless you typed your own in `AUTH_PASSWORD`, it is in `/DATA/AppData/claudecode/config/password.txt` (open it with the Files app) and in the app log.
 3. You are now in a terminal running `claude` in `/home/claude/workspace`.
 4. If you left `ANTHROPIC_API_KEY` empty, open the one-time link Claude Code shows and sign in with your Claude Pro or Max subscription.
 5. Closing the tab does not end your session. Opening the app again takes you back to it, until it has been idle for 30 minutes.
 
 ## Before you install
 
-Put your Anthropic API key in `ANTHROPIC_API_KEY`, or leave it empty to sign in with a Claude subscription. `AUTH_PASSWORD` comes with a random password; change it if you like and keep it somewhere safe. Leave `MCP_ENABLED` set to `false` unless another tool needs to send prompts to this container, because turning it on shares `AUTH_PASSWORD` with other containers on the same Docker network. Upstream protects the terminal with a separate Caddy container that is not bundled here, so only use this app on your home network. More settings are in the Variables tab and are added in the app settings. The app is ready in under a minute.
+Put your Anthropic API key in `ANTHROPIC_API_KEY`, or leave it empty to sign in with a Claude subscription. Leave `AUTH_PASSWORD` blank and the app makes its own random password on first start, saved in `config/password.txt` in the app's folder and shown in the app log; or type your own. Leave `MCP_ENABLED` set to `false` unless another tool needs to send prompts to this container, because turning it on shares `AUTH_PASSWORD` with other containers on the same Docker network. Upstream protects the terminal with a separate Caddy container that is not bundled here, so only use this app on your home network. More settings are in the Variables tab and are added in the app settings. The app is ready in under a minute.

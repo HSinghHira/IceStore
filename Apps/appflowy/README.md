@@ -141,4 +141,4 @@ AppFlowy is an open-source workspace for notes, docs, wikis and projects. This i
 3. Create your first workspace and page.
 4. To use the AppFlowy desktop or mobile app, choose the self-hosted server option and enter your address with port `6101`.
 5. Manage users at `/console`. Sign in with the admin email and password.
-6. Read the email AppFlowy sends at `/mail`. Sign in with the username and password from `MP_UI_AUTH`.
+6. Read the email AppFlowy sends at `/mail`. Sign in as `admin` with the password in `/DATA/AppData/appflowy/data/mail-password.txt` (open it with the Files app; it is also in the app log), unless you typed your own login in `MP_UI_AUTH`.

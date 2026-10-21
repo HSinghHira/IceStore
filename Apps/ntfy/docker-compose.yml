@@ -2,13 +2,31 @@ name: ntfy
 
 services:
   ntfy:
-    image: binwiederhier/ntfy:latest
+    image: binwiederhier/ntfy:v2.32.0
     container_name: ntfy
     restart: unless-stopped
     stop_grace_period: 40s
     network_mode: bridge
     init: true
-    command: serve
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        f=/var/lib/ntfy/password.txt
+        if [ -z "$$NTFY_AUTH_USERS" ]; then
+          if [ ! -s "$$f" ]; then
+            head -c 18 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$$f" || { echo "[icestore] cannot write $$f"; exit 1; }
+            chmod 600 "$$f"
+            echo "[icestore] first start: sign in as admin with the password $$(cat "$$f")"
+          fi
+          pw=$$(cat "$$f")
+          hash=$$(printf '%s\n%s\n' "$$pw" "$$pw" | ntfy user hash 2>/dev/null)
+          [ -n "$$hash" ] || { echo "[icestore] could not hash the password in $$f"; exit 1; }
+          NTFY_AUTH_USERS="admin:$$hash:admin"
+          export NTFY_AUTH_USERS
+          echo "[icestore] admin password: see /DATA/AppData/ntfy/password.txt"
+        fi
+        exec ntfy serve
     environment:
       - TZ=$TZ
       - NTFY_BASE_URL=http://localhost:6113
@@ -17,7 +35,7 @@ services:
       - NTFY_AUTH_DEFAULT_ACCESS=deny-all
       - NTFY_ENABLE_LOGIN=true
       - NTFY_REQUIRE_LOGIN=true
-      - NTFY_AUTH_USERS=admin:$$2b$$10$$1C8wtZx6f6Fkm8W07PXZyObBN9OY1GlOAGbOA79M4yV1oKjf5kR5S:admin
+      - NTFY_AUTH_USERS=
     ports:
       - target: 80
         published: "6113"
@@ -77,13 +95,13 @@ services:
         - container: NTFY_AUTH_USERS
           description:
             en_US: >-
-              The admin account, as name:password-hash:role. It starts as
-              admin with the password admin. Replace the hash with your own
-              before using ntfy for anything private. Make a hash with `ntfy
-              user hash` or at
-              [bcrypt-generator.com](https://bcrypt-generator.com/). Write
-              every `$` in the hash as `$$`. Add more users with a comma
-              between them.
+              Leave it blank: the app makes an admin account with a random
+              password on first start. The password is in
+              /DATA/AppData/ntfy/password.txt (open it with the Files app) and
+              in the app log. To pick your own, write it in that file and
+              restart the app. Or fill this in yourself as
+              name:password-hash:role, with every `$` in the hash written as
+              `$$` and a comma between users; then password.txt is not used.
       ports:
         - container: "80"
           description:
@@ -140,13 +158,14 @@ x-casaos:
       1. Open ntfy from the Zima OS dashboard.
 
 
-      2. Sign in with the default login: **admin** / **admin**.
+      2. Sign in as **admin**. The password is in
+         /DATA/AppData/ntfy/password.txt (open it with the Files app).
 
 
       3. Subscribe to a topic.
 
 
-      4. Send a test message with `curl -u admin:admin -d "Hello"
+      4. Send a test message with `curl -u admin:YOUR-PASSWORD -d "Hello"
          http://YOUR-ZIMAOS-IP:6113/mytopic`.
 
 
@@ -159,10 +178,12 @@ x-casaos:
   port_map: "6113"
   scheme: http
   is_uncontrolled: false
-  version: "2.28.0"
-  update_at: "2026-10-20"
+  version: "2.32.0"
+  update_at: "2026-10-21"
   release_notes:
     en_US: |-
+      - Pinned to binwiederhier/ntfy:v2.32.0 instead of latest.
+      - No more admin/admin: each install makes its own random admin password on first start, saved in password.txt in the app folder and shown in the log. Change it by editing that file and restarting. If you installed before, your app still uses admin/admin until you change NTFY_AUTH_USERS (or make it blank) in the app settings.
       - Moved to IceStore. Port changed from 8473 to 6113.
       - NTFY_BEHIND_PROXY and NTFY_UPSTREAM_BASE_URL moved to the Variables tab on the IceStore website. Add NTFY_UPSTREAM_BASE_URL=https://ntfy.sh to get instant alerts on iPhone.
   repo: "https://github.com/binwiederhier/ntfy"

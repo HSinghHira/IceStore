@@ -1,0 +1,17 @@
+* text=auto
+
+# These run inside Linux images or are read by Linux tools: always LF, even on a Windows checkout.
+*.sh text eol=lf
+*.tpl text eol=lf
+*.conf text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.js text eol=lf
+Dockerfile text eol=lf
+justfile text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary

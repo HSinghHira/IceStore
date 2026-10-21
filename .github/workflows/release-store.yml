@@ -26,7 +26,7 @@ jobs:
         run: echo "base=$(jq -r .base_url site/site.json)" >> "$GITHUB_OUTPUT"
 
       - name: Build app store bundle
-        uses: IceWhaleTech/build-appstore-action@main
+        uses: IceWhaleTech/build-appstore-action@c9bb47fad5b32d7928a07978fad68801f52e910f # main, 2026-10-21
         with:
           source: .
           output: dist
@@ -37,9 +37,13 @@ jobs:
           zip -r dist/store.zip . \
             -x ".git/*" \
             -x ".github/*" \
+            -x ".claude/*" \
+            -x ".history/*" \
             -x "dist/*" \
             -x "_site/*" \
-            -x "site/*"
+            -x "site/*" \
+            -x "docker/*" \
+            -x "justfile"
 
       - name: Check the store files
         run: |

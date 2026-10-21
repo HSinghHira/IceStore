@@ -54,10 +54,10 @@ The real Visual Studio Code desktop app, running in a remote desktop session tha
 
 1. Open VS Code from your dashboard (it opens the HTTPS port, 6119).
 2. Accept the self-signed certificate warning the first time.
-3. Sign in with your `CUSTOM_USER` and `PASSWORD`.
+3. Sign in as `admin` (or your `CUSTOM_USER`). The password is in `/DATA/AppData/vscode/password.txt` (open it with the Files app) and in the app log, unless you typed your own in `PASSWORD`.
 4. Open folders, install extensions and use the terminal as usual.
 5. Keep your projects in the home folder so they are saved.
 
 ## Before you install
 
-Replace `CHANGEME_USERNAME` and `CHANGEME_PASSWORD` in `CUSTOM_USER` and `PASSWORD` with your own. This turns on a login screen so others on your network can't open your editor. Your browser will warn about the self-signed certificate; click through it. Port 6120 is plain HTTP for use behind your own reverse proxy. This app gives full desktop access with root inside the container, so don't expose it to the internet without a proxy that adds real authentication.
+Leave `PASSWORD` blank and the app makes its own random password on first start, saved in `password.txt` in the app's folder and shown in the app log; or type your own. The username is `admin` unless you change `CUSTOM_USER`. The login screen keeps others on your network out of your editor. Your browser will warn about the self-signed certificate; click through it. Port 6120 is plain HTTP for use behind your own reverse proxy. This app gives full desktop access with root inside the container, so don't expose it to the internet without a proxy that adds real authentication.
