@@ -27,6 +27,7 @@ wait_one() {
     pg)     /usr/lib/postgresql/16/bin/pg_isready -q -h 127.0.0.1 -p 5432 ;;
     tcp:*)  (exec 3<>"/dev/tcp/127.0.0.1/${1#tcp:}") 2>/dev/null ;;
     http*)  curl -fsS -o /dev/null -m 5 "$1" 2>/dev/null ;;
+    sock:*) [ -S "${1#sock:}" ] ;;
     *)      echo "bad wait spec: $1"; return 1 ;;
   esac
 }
@@ -53,10 +54,14 @@ load_env() {
 }
 
 # ---- APP-SPECIFIC: what each service waits for before it starts ----
-# Specs: pg | tcp:<port> | http://127.0.0.1:<port>/<health path>
+# Specs: pg | tcp:<port> | http://127.0.0.1:<port>/<health path> | sock:<unix socket file>
+# The gateway waits for authentik's Python core socket, which only appears
+# after the database migrations finish (several minutes on first start).
+# Polling /-/health/live/ instead works too, but each try logs a long
+# "failed to send health live request" error until then.
 case $svc in
   authentik) wait_all pg ;;
-  gateway)   wait_all http://127.0.0.1:9000/-/health/live/ ;;
+  gateway)   wait_all "sock:$ROOTFS/authentik/dev/shm/authentik-gunicorn.sock" tcp:9000 ;;
   *) ;;
 esac
 
