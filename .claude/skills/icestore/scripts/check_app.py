@@ -30,7 +30,7 @@ PORT_LOW, PORT_HIGH = 6101, 6199
 AIO_FILES = ["Dockerfile", "aio-init.sh", "run-svc.sh", "capture-meta.sh", "supervisord.conf",
              "nginx.conf.tpl", ".gitignore"]
 OLD_NAMES = re.compile(r"ZimaAppStore|hiraappstore", re.I)
-PLACEHOLDER = re.compile(r"__[A-Z][A-Z0-9_]*__")
+PLACEHOLDER = re.compile(r"(?<![A-Za-z0-9])__[A-Z][A-Z0-9_]*__(?![A-Za-z0-9])")
 
 errors, warns = [], []
 
