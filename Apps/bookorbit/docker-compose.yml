@@ -10,7 +10,6 @@ services:
     environment:
       - TZ=$TZ
       - PUBLIC_URL=http://localhost:6124
-      - SETUP_BOOTSTRAP_TOKEN=
     ports:
       - target: 8080
         published: "6124"
@@ -57,13 +56,6 @@ services:
               http://your-zimaos-ip:6124. Links in emails, Kobo sync and OPDS
               use it. Change localhost to your ZimaOS IP, or to your own
               domain if you put BookOrbit behind HTTPS.
-        - container: SETUP_BOOTSTRAP_TOKEN
-          description:
-            en_US: >-
-              The token the first-run setup wizard asks for before it creates
-              the admin account. Leave it blank and the app makes a random one
-              on first start. It is shown in the app log and saved in the data
-              folder. Or type your own.
       ports:
         - container: "8080"
           description:
@@ -150,8 +142,9 @@ x-casaos:
 
       1. Open BookOrbit from the Zima OS dashboard.
 
-      2. The setup wizard opens. Type the setup token to create the admin
-         account.
+      2. The setup wizard opens. It asks for a setup token. To get it, open
+         the app logs and scroll to the top. Find the line that says "the
+         setup token is".
 
       3. Create your first library and pick a folder under /books.
 
@@ -171,31 +164,27 @@ x-casaos:
            http://192.168.1.20:6124 (your own IP will differ).
 
 
-        3. Leave SETUP_BOOTSTRAP_TOKEN blank to get a random one. Or type
-           your own.
-
-
-        4. Your books go in /DATA/AppData/bookorbit/books. To use a books
+        3. Your books go in /DATA/AppData/bookorbit/books. To use a books
            folder you already have, change the /books volume to that folder.
 
 
-        5. More settings, like log level and sign-in options, are listed on
+        4. More settings, like log level and sign-in options, are listed on
            the BookOrbit page at https://icestore.hsinghhira.me/app/bookorbit/
            (Variables tab). You can add them now or later in the app settings.
 
 
-        6. Start the installation.
+        5. Start the installation.
 
 
-        7. Wait about two minutes. The first start sets up the database.
+        6. Wait about two minutes. The first start sets up the database.
 
 
-        8. If you left SETUP_BOOTSTRAP_TOKEN blank, open the app log. Find the
-           line that says "the setup token is".
+        7. Open the app logs and scroll to the top. Find the line that says
+           "the setup token is". Copy the token after it.
 
 
-        9. Open http://your-zimaos-ip:6124 in your browser. Type the setup token and create
-           your admin account.
+        8. Open http://your-zimaos-ip:6124 in your browser. Paste the setup
+           token and create your admin account.
   index: /
   port_map: "6124"
   scheme: http

@@ -87,7 +87,7 @@ BookOrbit is a self-hosted digital library and reading platform for EPUB, MOBI, 
 ## How to use
 
 1. Open BookOrbit from your dashboard.
-2. The setup wizard opens. Type the setup token to create the admin account.
+2. The setup wizard opens and asks for a setup token. To get it, open the app logs and scroll to the top. Find the line that says "the setup token is".
 3. Create your first library and pick a folder under `/books`.
 4. Start reading, or drop files into the Book Dock folder.
 5. Add more users and connect OIDC/SSO in Settings if you need it.
@@ -95,4 +95,4 @@ BookOrbit is a self-hosted digital library and reading platform for EPUB, MOBI, 
 
 ## Before you install
 
-Change `localhost` in `PUBLIC_URL` to your ZimaOS IP, like `http://192.168.1.20:6124`, so links from Kobo, OPDS and emails work on other devices. Leave `SETUP_BOOTSTRAP_TOKEN` blank to get a random one: after the first start, open the app log and find the line that says "the setup token is". Your books go in `/DATA/AppData/bookorbit/books`; to use a folder you already have, change the `/books` volume. The first start takes about two minutes. Log level, sign-in options and the other settings are in the Variables tab; add them in the app settings.
+Change `localhost` in `PUBLIC_URL` to your ZimaOS IP, like `http://192.168.1.20:6124`, so links from Kobo, OPDS and emails work on other devices. A random setup token is made on first start: open the app logs, scroll to the top and find the line that says "the setup token is". Paste it into the setup wizard to create your admin account. Your books go in `/DATA/AppData/bookorbit/books`; to use a folder you already have, change the `/books` volume. The first start takes about two minutes. Log level, sign-in options and the other settings are in the Variables tab; add them in the app settings.
