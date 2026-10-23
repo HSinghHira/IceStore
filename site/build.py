@@ -18,7 +18,8 @@ README front matter (all optional):
 
   name, tagline, category    override the values from x-casaos
   site, source               "Visit project site" and "View source" links
-  services                   list of [name, path, icon], shown under App details
+  services                   list of [name, path, icon] or {name, path, icon, port}, shown
+                             under App details; port picks another published port (default: the first)
   screenshots                captions for the screenshots, in order, e.g. [home, editor]
 
 Site files:
@@ -287,13 +288,17 @@ def load_app(folder):
     svcs = []
     for s in fm.get("services", default_svcs) or []:
         if isinstance(s, dict):
-            s = [s.get("name"), s.get("path", "/"), s.get("icon", "globe")]
+            s = [s.get("name"), s.get("path", "/"), s.get("icon", "globe"), s.get("port")]
         p = str(s[1]) if len(s) > 1 else "/"
         ic = str(s[2]) if len(s) > 2 and s[2] else "globe"
         if ic not in ICONS:
             warn(f"Apps/{folder.name}: unknown service icon '{ic}', using globe")
             ic = "globe"
-        svcs.append((str(s[0]), p if p.startswith("/") else "/" + p, ic))
+        port = str(s[3]) if len(s) > 3 and s[3] else (ports[0] if ports else "")
+        if ports and port not in ports:
+            warn(f"Apps/{folder.name}: service '{s[0]}' port {port} is not published, using {ports[0]}")
+            port = ports[0]
+        svcs.append((str(s[0]), p if p.startswith("/") else "/" + p, ic, port))
 
     repo = str(fm.get("source") or meta.get("repo") or "")
     site = str(fm.get("site") or repo)
@@ -437,12 +442,11 @@ def app_page(a, cfg, tpl, layout):
 
     details = ""
     if a["svcs"] and a["ports"]:
-        host = f'http://localhost:{a["ports"][0]}'
         cards = "".join(
-            f'<div class="sv"><div class="t"><h3>{e(k)}</h3><span class="pt">{e(p)}</span></div>'
-            f'<div class="u"><span class="bd">{icon(ic)}</span><code>{e(host)}<wbr>{e(p)}</code>'
-            f'<button class="ic" type="button" data-copy="{e(host + p)}" aria-label="Copy {e(k)} URL">{icon("copy")}</button></div></div>'
-            for k, p, ic in a["svcs"])
+            f'<div class="sv"><div class="t"><h3>{e(k)}</h3><span class="pt">{e(p if port == a["ports"][0] else f":{port}{p}")}</span></div>'
+            f'<div class="u"><span class="bd">{icon(ic)}</span><code>{e(f"http://localhost:{port}")}<wbr>{e(p)}</code>'
+            f'<button class="ic" type="button" data-copy="{e(f"http://localhost:{port}{p}")}" aria-label="Copy {e(k)} URL">{icon("copy")}</button></div></div>'
+            for k, p, ic, port in a["svcs"])
         details = (
             '\n    <section class="sec" style="padding-left:0;padding-right:0" aria-labelledby="det-h">\n'
             f'      <div class="svs">{cards}</div>\n    </section>')

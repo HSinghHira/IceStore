@@ -15,7 +15,7 @@ GATEWAY_PORT=8080
 log() { echo "[init] $*"; }
 
 # ---- public addresses ----
-# PUBLIC_URL is the photos web app. The API, public albums and S3 (photo
+# PUBLIC_URL is the Web App. The API, Public Albums and S3 (photo
 # storage) each have their own port on the same host, unless ENTE_API_URL,
 # ENTE_ALBUMS_URL or ENTE_S3_URL say otherwise (for your own domains).
 PUBLIC_URL=${PUBLIC_URL:-http://localhost:6129}

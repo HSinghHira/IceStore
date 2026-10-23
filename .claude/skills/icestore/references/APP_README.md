@@ -48,6 +48,8 @@ settings. Each item:
 
 `services`: one card per URL a person opens in a browser. Each card shows
 `http://localhost:<first published port><path>`. `path` starts with `/`.
+Add `port: <published port>` for a URL on another published port (Ente's API
+on its second port: `{ name: API, path: /, icon: server, port: 6130 }`).
 `icon` must be one of the names in `build.py`'s `ICONS`, or the site falls back
 to `globe` with a warning:
 

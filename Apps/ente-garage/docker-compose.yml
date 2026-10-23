@@ -56,21 +56,21 @@ services:
         - container: PUBLIC_URL
           description:
             en_US: >-
-              The address of the photos web app, like
+              The address of the Web App, like
               http://your-zimaos-ip:6133. Change localhost to your ZimaOS
               IP, or phones and other computers cannot use Ente. The API,
-              public albums and photo storage use the same address with ports
+              Public Albums and photo storage use the same address with ports
               6134, 6135 and 6136.
       ports:
         - container: "8080"
           description:
-            en_US: Photos web app and the mail viewer (/mail/), published on host as 6133
+            en_US: Web App and the mail viewer (/mail/), published on host as 6133
         - container: "8081"
           description:
             en_US: Ente API - the server address for the phone and desktop apps, published on host as 6134
         - container: "8082"
           description:
-            en_US: Public albums (shared album links), published on host as 6135
+            en_US: Public Albums (shared album links), published on host as 6135
         - container: "8083"
           description:
             en_US: >-
@@ -100,7 +100,7 @@ x-casaos:
     - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-garage/screenshot-3.png
     - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-garage/screenshot-4.png
   title:
-    en_US: Ente - Garage S3
+    en_US: Ente Photos Garage
   tagline:
     en_US: End-to-end encrypted photo storage, with Garage for the files
   description:
@@ -118,7 +118,7 @@ x-casaos:
       - End-to-end encryption for every photo and video
 
 
-      - Photos web app, plus a public albums app for sharing links
+      - Web App, plus a Public Albums app for sharing links
 
 
       - Works with the Ente phone and desktop apps
@@ -136,7 +136,7 @@ x-casaos:
 
       **How to use?**
 
-      1. Open Ente - Garage S3 from the Zima OS dashboard.
+      1. Open Ente Photos Garage from the Zima OS dashboard.
 
       2. Sign up with your email and a password.
 
@@ -160,7 +160,7 @@ x-casaos:
 
 
         3. More settings, like your own email server and sign-up, are listed
-           on the Ente - Garage S3 page at
+           on the Ente Photos Garage page at
            https://icestore.hsinghhira.me/app/ente-garage/ (Variables tab). You
            can add them now or later in the app settings.
 
@@ -197,7 +197,7 @@ x-casaos:
   release_notes:
     en_US: |-
       - Single-container Ente Photos with Garage storage and one data folder
-      - Ports 6133 photos, 6134 API, 6135 public albums, 6136 photo storage
+      - Ports 6133 photos, 6134 API, 6135 Public Albums, 6136 photo storage
       - Database, storage and museum keys are made on first start, so each install gets its own
       - Sign-up codes go to the built-in mail viewer at /mail/ unless you set your own email server
       - Every account gets 100 TB instead of Ente's 10 GB (ENTE_AIO_STORAGE_GB)

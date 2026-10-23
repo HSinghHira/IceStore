@@ -20,7 +20,7 @@ http {
         ''      close;
     }
 
-    # Photos web app, the mail viewer (/mail/) and the health check (/ping).
+    # Web App, the mail viewer (/mail/) and the health check (/ping).
     server {
         listen @GATEWAY_PORT@;
         @EXTRA_LISTEN@
@@ -72,7 +72,7 @@ http {
         }
     }
 
-    # Public albums app (the links you get when you share an album).
+    # Public Albums app (the links you get when you share an album).
     server {
         listen 8082;
 

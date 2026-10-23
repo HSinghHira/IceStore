@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-# Ente - Garage S3 all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
+# Ente Photos Garage all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
 # The weekly bumper keeps the FROM lines current. Ente only publishes "latest"
 # and one tag per git commit, so its two images are pinned to commit tags and
 # follow "latest" (see .github/scripts/update_upstream.py).
@@ -11,7 +11,7 @@
 #   s3init     built-in (one-off: creates Ente's buckets)
 #   mailpit    chroot   (catches sign-up emails; viewer at /mail/)
 #   museum     chroot   (the Ente API server)
-#   web        chroot   (the Ente web apps: photos on 3000, public albums on 3002)
+#   web        chroot   (the Ente web apps: photos on 3000, Public Albums on 3002)
 #   quota      built-in (raises every account's storage limit; Ente's default is 10 GB)
 #   gateway    built-in (nginx: 8080 photos, 8081 API, 8082 albums, 8083 S3)
 
@@ -50,7 +50,7 @@ COPY nginx.conf.tpl /etc/nginx/aio.conf.tpl
 RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc
 
 LABEL org.opencontainers.image.title="ente-garage" \
-      org.opencontainers.image.description="Ente - Garage S3 in a single container" \
+      org.opencontainers.image.description="Ente Photos Garage in a single container" \
       org.opencontainers.image.source="https://github.com/HSinghHira/IceStore"
 
 EXPOSE 8080 8081 8082 8083
