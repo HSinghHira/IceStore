@@ -21,8 +21,10 @@
           "content": "Cloudreve",
           "id": 1792732626284,
           "level": "default",
-          "done": false,
-          "start": 1792732626284
+          "done": true,
+          "start": 1792732626284,
+          "focus": false,
+          "end": 1792746921965
         }
       },
       {
@@ -32,8 +34,10 @@
           "content": "Cloudreve Pro",
           "id": 1792732648935,
           "level": "default",
-          "done": false,
-          "start": 1792732648935
+          "done": true,
+          "start": 1792732648935,
+          "focus": false,
+          "end": 1792746923227
         }
       },
       {
@@ -120,8 +124,10 @@
           "content": "Ente Photos (MiniO)",
           "id": 1792732886549,
           "level": "default",
-          "done": false,
-          "start": 1792732886549
+          "done": true,
+          "start": 1792732886549,
+          "focus": false,
+          "end": 1792746926149
         }
       },
       {
@@ -131,8 +137,10 @@
           "content": "Ente Photos (Seaweed FS)",
           "id": 1792732895683,
           "level": "default",
-          "done": false,
-          "start": 1792732895683
+          "done": true,
+          "start": 1792732895683,
+          "focus": false,
+          "end": 1792746927191
         }
       },
       {
@@ -142,8 +150,10 @@
           "content": "Ente Photos (Garage)",
           "id": 1792732908984,
           "level": "default",
-          "done": false,
-          "start": 1792732908984
+          "done": true,
+          "start": 1792732908984,
+          "focus": false,
+          "end": 1792746928148
         }
       },
       {
@@ -357,6 +367,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1792743895620"
+    "version": "1792746928193"
   }
 }
