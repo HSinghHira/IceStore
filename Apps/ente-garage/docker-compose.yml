@@ -100,7 +100,7 @@ x-casaos:
     - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-garage/screenshot-3.png
     - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-garage/screenshot-4.png
   title:
-    en_US: Ente Photos Garage
+    en_US: Ente - Garage S3
   tagline:
     en_US: End-to-end encrypted photo storage, with Garage for the files
   description:
@@ -136,7 +136,7 @@ x-casaos:
 
       **How to use?**
 
-      1. Open Ente Photos Garage from the Zima OS dashboard.
+      1. Open Ente - Garage S3 from the Zima OS dashboard.
 
       2. Sign up with your email and a password.
 
@@ -160,7 +160,7 @@ x-casaos:
 
 
         3. More settings, like your own email server and sign-up, are listed
-           on the Ente Photos Garage page at
+           on the Ente - Garage S3 page at
            https://icestore.hsinghhira.me/app/ente-garage/ (Variables tab). You
            can add them now or later in the app settings.
 
