@@ -1,0 +1,208 @@
+name: ente-seaweedfs
+
+services:
+  ente-seaweedfs:
+    image: ghcr.io/hsinghhira/ente-seaweedfs:latest
+    container_name: ente-seaweedfs
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6137
+    ports:
+      - target: 8080
+        published: "6137"
+        protocol: tcp
+      - target: 8081
+        published: "6138"
+        protocol: tcp
+      - target: 8082
+        published: "6139"
+        protocol: tcp
+      - target: 8083
+        published: "6140"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/icon.png
+    x-casaos:
+      id: com.icestore.ente-seaweedfs
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address of the photos web app, like
+              http://your-zimaos-ip:6137. Change localhost to your ZimaOS
+              IP, or phones and other computers cannot use Ente. The API,
+              public albums and photo storage use the same address with ports
+              6138, 6139 and 6140.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Photos web app and the mail viewer (/mail/), published on host as 6137
+        - container: "8081"
+          description:
+            en_US: Ente API - the server address for the phone and desktop apps, published on host as 6138
+        - container: "8082"
+          description:
+            en_US: Public albums (shared album links), published on host as 6139
+        - container: "8083"
+          description:
+            en_US: >-
+              Photo storage (SeaweedFS S3). Phones and browsers upload and
+              download your encrypted files here, published on host as 6140
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Your encrypted photos and videos (SeaweedFS), the database,
+              secret keys and settings.
+
+x-casaos:
+  id: com.icestore.ente-seaweedfs
+  architectures:
+    - amd64
+    - arm64
+  main: ente-seaweedfs
+  author: HSinghHira
+  category: Media
+  developer: ente-io
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/screenshot-4.png
+  title:
+    en_US: Ente Photos SeaweedFS
+  tagline:
+    en_US: End-to-end encrypted photo storage, with SeaweedFS for the files
+  description:
+    en_US: >-
+      Ente is a self-hosted, end-to-end encrypted place to store, share and
+      rediscover your photos and videos on all your devices. This is Ente in
+      a single container, with PostgreSQL, SeaweedFS, an open-source object store built for very many files, and a mail viewer
+      for sign-up codes inside. Secret keys and passwords are made for you on
+      first start.
+
+
+      **Features**
+
+
+      - End-to-end encryption for every photo and video
+
+
+      - Photos web app, plus a public albums app for sharing links
+
+
+      - Works with the Ente phone and desktop apps
+
+
+      - SeaweedFS for S3-compatible photo storage, fast even with millions of files
+
+
+      - Built-in mail viewer at /mail/ for sign-up codes, or use your own
+        email server
+
+
+      - No 10 GB limit: every account gets 100 TB by default
+
+
+      **How to use?**
+
+      1. Open Ente Photos SeaweedFS from the Zima OS dashboard.
+
+      2. Sign up with your email and a password.
+
+      3. Open the mail viewer at /mail/ to read your sign-up code.
+
+      4. Type the code to finish signing up.
+
+      5. In the Ente phone app, tap the first screen 7 times and set the
+         server to http://your-zimaos-ip:6138.
+
+      6. Upload photos and share albums.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. Change localhost to your ZimaOS IP, for example
+           http://192.168.1.20:6137 (your own IP will differ). Phones
+           cannot use localhost.
+
+
+        3. More settings, like your own email server and sign-up, are listed
+           on the Ente Photos SeaweedFS page at
+           https://icestore.hsinghhira.me/app/ente-seaweedfs/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        4. Start the installation.
+
+
+        5. Wait about three minutes. The first start sets up the database.
+
+
+        6. Open the app logs and scroll to the top. Find the line that says
+           "mail viewer login". Write down the password.
+
+
+        7. Open http://your-zimaos-ip:6137 in your browser. Sign up with
+           your email and a password.
+
+
+        8. Open http://your-zimaos-ip:6137/mail/ in a new tab. Sign in
+           as admin with the mail password. Copy the code from the email.
+
+
+        9. Type the code in Ente to finish signing up.
+
+
+        10. For the phone app: tap the first screen 7 times. Set the server
+            to http://your-zimaos-ip:6138 and sign in.
+  index: /
+  port_map: "6137"
+  scheme: http
+  is_uncontrolled: false
+  version: "20fb631"
+  update_at: "2026-10-23"
+  release_notes:
+    en_US: |-
+      - Single-container Ente Photos with SeaweedFS storage and one data folder
+      - Ports 6137 photos, 6138 API, 6139 public albums, 6140 photo storage
+      - Database, storage and museum keys are made on first start, so each install gets its own
+      - Sign-up codes go to the built-in mail viewer at /mail/ unless you set your own email server
+      - Every account gets 100 TB instead of Ente's 10 GB (ENTE_AIO_STORAGE_GB)
+      - server 20fb631, web 817ce84 (Ente only publishes commit tags; they follow latest)
+      - seaweedfs 4.48, mailpit v1.32.0, PostgreSQL 15
+  repo: "https://github.com/ente/ente"
+  support: "https://github.com/ente/ente/issues"
+  docs: "https://ente.com/help/self-hosting/"

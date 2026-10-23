@@ -75,6 +75,10 @@ by itself, so a new AIO app needs no change here — only the shapes below.
    `0.19.10`, `v1.31.4` → `v1.32.0`, `RELEASE.2026-09-16T00-00-00Z` → a later
    date). Betas, `latest` and digit-less tags (`debian:trixie-slim`) are skipped.
    A `# auto-update: hold` comment on the line above a FROM freezes it.
+   Images that only publish `latest` plus one tag per git commit (`ghcr.io/ente/*`)
+   are pinned to a 40-character commit tag; those follow `latest` (the line moves
+   to the commit tag with `latest`'s digest), and `x-casaos.version` may be the
+   first 7 characters of the main image's commit tag.
 2. For each app that changed it also: raises the patch of `AIO_VERSION` in
    `build-<app>.yml`; in the compose, sets `version:` if the FROM whose tag
    equalled it moved, sets `update_at:` to today, puts

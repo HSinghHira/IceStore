@@ -453,7 +453,9 @@ def check_aio(root, slug, data):
         if tag != "latest" and not re.search(r"\d", tag):
             warn(f"FROM tag '{tag}' has no numbers, so the weekly bumper never updates it")
     version = str((data.get("x-casaos") or {}).get("version") or "")
-    if tags and version not in tags:
+    commit_short = len(version) >= 7 and any(
+        re.fullmatch(r"[0-9a-f]{40}", t) and t.startswith(version) for t in tags)
+    if tags and version not in tags and not commit_short:
         warn(f"x-casaos.version '{version}' is not the tag of any 'FROM ... AS img-' line, "
              f"so the weekly bumper cannot keep it in step (use the main image's tag exactly)")
     compose_text = Path(root, "Apps", slug, "docker-compose.yml").read_text(encoding="utf-8")

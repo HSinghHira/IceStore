@@ -7,6 +7,12 @@ the current one (0.19.2 -> 0.19.3, v1.31.4 -> v1.32.0, RELEASE.<date> -> a later
 date), so betas, nightlies and `latest` are never picked up. Tags with no digits
 (debian:trixie-slim) are base images and are left alone.
 
+Images that only publish `latest` plus one tag per git commit (ghcr.io/ente/*)
+are pinned to a 40-character commit tag. Those follow `latest`: when `latest`
+points somewhere else, the line moves to the commit tag with the same digest.
+For them, `version:` in the compose file may be the first 7 characters of the
+main image's commit tag.
+
 To keep an image where it is, put this comment on the line above its FROM:
     # auto-update: hold
 
@@ -35,6 +41,13 @@ from pathlib import Path
 FROM_RE = re.compile(r"^(FROM\s+(?:--platform=\S+\s+)?)(\S+?):([^\s@]+)(\s.*)?$")
 HOLD_RE = re.compile(r"#\s*auto-update:\s*hold", re.I)
 NUM_RE = re.compile(r"\d+")
+COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
+MANIFEST_TYPES = ", ".join([
+    "application/vnd.oci.image.index.v1+json",
+    "application/vnd.docker.distribution.manifest.list.v2+json",
+    "application/vnd.oci.image.manifest.v1+json",
+    "application/vnd.docker.distribution.manifest.v2+json",
+])
 
 
 # ---------------------------------------------------------------- registry ---
@@ -88,6 +101,28 @@ def list_tags(image):
     return tags
 
 
+def digest(registry, repo, tag, token):
+    req = urllib.request.Request(f"https://{registry}/v2/{repo}/manifests/{tag}", method="HEAD",
+                                 headers={"Accept": MANIFEST_TYPES})
+    if token:
+        req.add_header("Authorization", "Bearer " + token)
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return r.headers.get("Docker-Content-Digest")
+
+
+def follow_latest(image, current):
+    """For commit-tagged images: the commit tag `latest` points at, if it moved."""
+    registry, repo = split_image(image)
+    token = get_token(registry, repo)
+    target = digest(registry, repo, "latest", token)
+    if not target or digest(registry, repo, current, token) == target:
+        return None
+    for tag in reversed(list_tags(image)):
+        if tag != current and COMMIT_RE.match(tag) and digest(registry, repo, tag, token) == target:
+            return tag
+    raise RuntimeError("no commit tag has the same digest as latest")
+
+
 # -------------------------------------------------------------------- tags ---
 
 def shape(tag):
@@ -123,7 +158,7 @@ def update_dockerfile(path):
             print(f"  hold  {image}:{tag}")
             continue
         try:
-            new = newest(image, tag)
+            new = follow_latest(image, tag) if COMMIT_RE.match(tag) else newest(image, tag)
         except Exception as e:  # one bad registry should not stop the others
             print(f"  WARN  {image}: could not list tags ({e})", file=sys.stderr)
             continue
@@ -147,13 +182,20 @@ def update_compose(text, changes, today):
     m = re.search(r'^  version:\s*"([^"]*)"', text, re.M)
     current_version = m.group(1) if m else None
     for image, old, new in changes:
-        if old == current_version:
-            text = re.sub(r'^(  version:\s*)"[^"]*"', rf'\g<1>"{new}"', text, count=1, flags=re.M)
+        short = (COMMIT_RE.match(old) and current_version and len(current_version) >= 7
+                 and old.startswith(current_version))
+        if old == current_version or short:
+            value = new[:len(current_version)] if short else new
+            text = re.sub(r'^(  version:\s*)"[^"]*"', rf'\g<1>"{value}"', text, count=1, flags=re.M)
             current_version = None
+        pairs = [(old, new)] + ([(old[:7], new[:7])] if COMMIT_RE.match(old) else [])
         for name in {image, image.rsplit("/", 1)[-1]}:
-            text = re.sub(rf"(?<![\w/.-]){re.escape(name)} {re.escape(old)}(?![\w.])", f"{name} {new}", text)
+            for o, n in pairs:
+                text = re.sub(rf"(?<![\w/.-]){re.escape(name)} {re.escape(o)}(?![\w.])", f"{name} {n}", text)
     text = re.sub(r'^(  update_at:\s*)"[^"]*"', rf'\g<1>"{today}"', text, count=1, flags=re.M)
-    note = "Updated " + ", ".join(f"{i.rsplit('/', 1)[-1]} {o} to {n}" for i, o, n in changes)
+    def show(tag):
+        return tag[:7] if COMMIT_RE.match(tag) else tag
+    note = "Updated " + ", ".join(f"{i.rsplit('/', 1)[-1]} {show(o)} to {show(n)}" for i, o, n in changes)
     text = re.sub(r"^(  release_notes:\n    en_US: \|-?\n)", rf"\g<1>      - {note}\n", text, count=1, flags=re.M)
     return text, note
 
