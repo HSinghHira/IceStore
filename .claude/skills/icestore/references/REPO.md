@@ -4,6 +4,9 @@
 .github/workflows/
   build-<app>.yml        one per all-in-one app: builds docker/<app>/ and pushes ghcr.io/hsinghhira/<app>
   release-store.yml      builds the store and the website on every push to main
+  update-upstream.yml    weekly: bumps the FROM tags of every AIO app, then starts its build
+.github/scripts/
+  update_upstream.py     the bumper that update-upstream.yml runs (dry run without --write)
 Apps/<app>/
   docker-compose.yml     the store manifest (x-casaos)
   README.md              the app page's Introduction tab (+ front matter)
@@ -58,6 +61,39 @@ Runs when `docker/<app>/**` (or the workflow itself) changes, or by hand:
 
 Bump `AIO_VERSION` whenever the image changes (new upstream tag, script fix).
 Cache uses `scope=<app>` so apps don't evict each other's build cache.
+Keep `workflow_dispatch:` — update-upstream.yml starts the build with it.
+
+## update-upstream.yml
+
+Runs every Monday 03:00 UTC, or by hand. It finds every `docker/*/Dockerfile`
+by itself, so a new AIO app needs no change here — only the shapes below.
+
+1. `python .github/scripts/update_upstream.py --write`. For each
+   `FROM <image>:<tag>` line it lists the registry's tags (Docker Hub, GHCR or
+   any v2 registry, anonymously) and takes the newest tag **of the same shape**:
+   the tag with its digit runs replaced by `\d+` must match (`0.19.2` →
+   `0.19.10`, `v1.31.4` → `v1.32.0`, `RELEASE.2026-09-16T00-00-00Z` → a later
+   date). Betas, `latest` and digit-less tags (`debian:trixie-slim`) are skipped.
+   A `# auto-update: hold` comment on the line above a FROM freezes it.
+2. For each app that changed it also: raises the patch of `AIO_VERSION` in
+   `build-<app>.yml`; in the compose, sets `version:` if the FROM whose tag
+   equalled it moved, sets `update_at:` to today, puts
+   `- Updated <name> <old> to <new>, ...` first under `release_notes.en_US: |-`,
+   and rewrites every `<image> <old>` / `<basename> <old>` mention to the new tag.
+3. Commits as github-actions[bot], pushes to main, then `gh workflow run
+   build-<app>.yml` for each changed app and `release-store.yml` (a
+   GITHUB_TOKEN push does not trigger workflows on its own).
+
+So for the bumper to keep an AIO app current, the app must have:
+- pinned, numeric FROM tags in the exact `FROM <image>:<tag> AS img-<svc>` form;
+- `x-casaos.version` equal to the main image's FROM tag, character for character;
+- `release_notes:` written as `en_US: |-` followed by `      - ` bullets, with the
+  image list as `<basename> <tag>` (AppFlowy) or `<image> <tag>` (AFFiNE);
+- `AIO_VERSION: "x.y.z"` and `workflow_dispatch:` in `build-<app>.yml`.
+
+`check_app.py` warns when one of these is off. Simple apps (upstream image in
+the compose, no `docker/<app>/`) are not touched: with `:latest` ZimaOS sees
+new digests on its own; a pinned tag is bumped by hand.
 
 Besides one page per app and the homepage, `build.py` writes `404.html`
 (GitHub Pages serves it for any missing path, so all its links are absolute),

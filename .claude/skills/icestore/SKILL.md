@@ -98,6 +98,11 @@ folder, the compose `name:`, the main service name, the image name
   and the port in the `PUBLIC_URL` default in `aio-init.sh`. The container port of
   an AIO app is always `8080`.
 - **Pin every upstream tag** in the Dockerfile `FROM ... AS img-<name>` lines.
+- **AIO apps are kept current by `update-upstream.yml`** every Monday: it bumps
+  the FROM tags, `AIO_VERSION`, `version`, `update_at` and `release_notes`, then
+  starts the build. Write a new AIO app in the shapes it reads (`REPO.md`
+  § update-upstream.yml) and don't tell the user to bump versions by hand. A
+  new app needs no change to the workflow.
 - **Write `tips.before_install` for a 4th grader**: short steps, everyday words,
   a blank line between steps.
 - **Validate before calling it done**: the checker, plus `bash -n` on shell files

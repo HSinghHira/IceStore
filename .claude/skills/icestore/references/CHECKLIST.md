@@ -45,6 +45,10 @@ Then check by hand what it can't see:
 10. **Images** the user still has to add are listed in your reply.
 11. **AIO version**: `AIO_VERSION` in the workflow is bumped for any change to
     `docker/<app>/`.
+12. **Weekly bumper can read it** (AIO only): run
+    `python .github/scripts/update_upstream.py` from the repo root (dry run, no
+    writes). The new app is listed, each FROM shows `ok` or `bump`, and none
+    shows `WARN`. A tag it should not move has `# auto-update: hold` above it.
 
 In the reply, remind the user to check after the first push that the
 `ghcr.io/hsinghhira/<app>` package is public and that the image finished

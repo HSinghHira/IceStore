@@ -1,0 +1,58 @@
+name: Update upstream images
+
+# Once a week, look for newer tags of the images the all-in-one apps are built
+# from (docker/*/Dockerfile FROM lines). If there are any, commit the bumps and
+# start the build for each changed app, then rebuild the store.
+#
+# A push made with GITHUB_TOKEN does not trigger other workflows, so the builds
+# and the store release are started here with `gh workflow run`.
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: update-upstream
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Look for newer upstream tags
+        id: bump
+        run: python .github/scripts/update_upstream.py --write
+
+      - name: Commit and push
+        if: steps.bump.outputs.apps != ''
+        env:
+          SUMMARY: ${{ steps.bump.outputs.summary }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docker Apps .github/workflows
+          git commit -m "Update upstream images" -m "$SUMMARY"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Start the builds and the store release
+        if: steps.bump.outputs.apps != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APPS: ${{ steps.bump.outputs.apps }}
+        run: |
+          for app in $APPS; do
+            gh workflow run "build-$app.yml" --ref main
+          done
+          gh workflow run release-store.yml --ref main

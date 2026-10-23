@@ -73,6 +73,10 @@ Rules for the table:
 - One line per upstream image, exactly `FROM <image>:<tag> AS img-<svc>`.
   capture-meta.sh reads this pattern; `<svc>` is lowercase and equals the
   supervisord program name and `/opt/meta/<svc>.json`.
+- Pin a tag with numbers in it, in the form upstream releases use (`0.19.2`,
+  `v1.31.4`, `2026.8.4`). The weekly bumper (`REPO.md`, update-upstream.yml)
+  only moves a tag to a newer one of the same shape. To keep it from moving,
+  put `# auto-update: hold` on the line above, with the reason.
 - Built-ins: add apt packages. Extracting a binary (Silo):
   a small `debian:bookworm-slim` stage that `find`s it and `install -D`s it to
   `/out/...`, then `COPY --from=` that stage.
@@ -208,7 +212,8 @@ timeouts and buffering settings — copy them from upstream. Set
 capture-meta.sh is generic; copy it. The ignore file must be named `.gitignore`
 (with the dot) and contain `meta/`. The workflow comes from
 `templates/build-workflow.yml` with `__APP__` replaced; start `AIO_VERSION` at
-`1.0.0`.
+`1.0.0`. Keep `workflow_dispatch:` and the `AIO_VERSION: "x.y.z"` form; the
+weekly bumper needs both.
 
 ### 3.9 Compose file
 
@@ -218,6 +223,12 @@ path = the Dockerfile HEALTHCHECK path, memory limit sized for all services
 together (AppFlowy: 3072M limit, 512M reservation).
 
 ## 4. Updating an AIO app
+
+`update-upstream.yml` does steps 1, 3 and 4 every Monday on its own
+(`REPO.md`). Do them by hand only for a held tag, a shape change (`pg16` →
+`pg17`, a new major scheme) or when the user asks; step 2 is always by hand.
+After an automatic bump, if upstream added env vars, ports or services, step 2
+still has to happen.
 
 1. Check every upstream image's releases. Change the `FROM` tags.
 2. Read upstream's changelog and compose diff for new env vars, ports, services

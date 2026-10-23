@@ -93,6 +93,12 @@ Social, Developer, Others.
 `version` is the main upstream version (AppFlowy: `appflowy_cloud` 0.19.2), and
 `release_notes` lists every upstream image and tag inside the image.
 
+The weekly bumper edits these three for AIO apps (`REPO.md`,
+update-upstream.yml), so keep them in the form it reads: `version` is exactly the
+main image's FROM tag (no `v` added or dropped), `release_notes` is
+`en_US: |-` with one `      - ` bullet per line, and tags are written as
+`<image basename> <tag>` or `<full image> <tag>`, e.g. `gotrue 0.18.8`.
+
 `supported-languages.json` is `["en_US"]`, so only write `en_US`.
 
 ## 5. Text fields

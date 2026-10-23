@@ -442,6 +442,23 @@ def check_aio(root, slug, data):
             err(f"build-{slug}.yml must run capture-meta.sh before the build")
         if "linux/arm64" not in w and "arm64" in (data.get("x-casaos") or {}).get("architectures", []):
             err("x-casaos lists arm64 but the workflow does not build linux/arm64")
+        if "workflow_dispatch" not in w:
+            err(f"build-{slug}.yml needs 'workflow_dispatch:' (update-upstream.yml starts the build with it)")
+        if not re.search(r'(?m)^\s*AIO_VERSION:\s*"\d+\.\d+\.\d+"', w):
+            warn(f'build-{slug}.yml: AIO_VERSION is not in the form "x.y.z", so the weekly bumper cannot raise it')
+
+    # The weekly bumper (.github/scripts/update_upstream.py) edits these in place.
+    tags = re.findall(r"(?m)^FROM [^ :]+:(\S+) AS img-[a-z0-9]+$", dockerfile)
+    for tag in tags:
+        if tag != "latest" and not re.search(r"\d", tag):
+            warn(f"FROM tag '{tag}' has no numbers, so the weekly bumper never updates it")
+    version = str((data.get("x-casaos") or {}).get("version") or "")
+    if tags and version not in tags:
+        warn(f"x-casaos.version '{version}' is not the tag of any 'FROM ... AS img-' line, "
+             f"so the weekly bumper cannot keep it in step (use the main image's tag exactly)")
+    compose_text = Path(root, "Apps", slug, "docker-compose.yml").read_text(encoding="utf-8")
+    if not re.search(r"(?m)^  release_notes:\n    en_US: \|-?\n", compose_text):
+        warn("release_notes is not written as 'en_US: |-' with bullets, so the weekly bumper cannot add notes")
 
 
 def main():
