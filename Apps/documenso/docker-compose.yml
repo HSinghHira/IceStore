@@ -49,9 +49,11 @@ services:
           description:
             en_US: >-
               The address you open Documenso at, like
-              http://your-zimaos-ip:6142. Links in signing emails use it.
-              Change localhost to your ZimaOS IP, or to your own domain if you
-              put Documenso behind HTTPS.
+              http://your-zimaos-ip:6142. Change localhost to your ZimaOS IP,
+              or to your own domain if you put Documenso behind HTTPS.
+              Documenso only works at exactly this address. If it does not
+              match what is in your browser's address bar, sign-up and
+              sign-in fail with "Failed to fetch".
         - container: DOCUMENSO_ADMIN_EMAIL
           description:
             en_US: >-
@@ -140,7 +142,9 @@ x-casaos:
 
 
         2. Find PUBLIC_URL. Change localhost to your ZimaOS IP, for example
-           http://192.168.1.20:6142 (your own IP will differ).
+           http://192.168.1.20:6142 (your own IP will differ). This step is a
+           must: Documenso only works at exactly this address. Always open
+           it at this address too.
 
 
         3. Find DOCUMENSO_ADMIN_EMAIL. Type the email you will sign up with.

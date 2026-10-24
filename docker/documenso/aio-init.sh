@@ -22,6 +22,16 @@ case $PUBLIC_URL in
   http://*|https://*) ;;
   *) log "PUBLIC_URL must start with http:// or https:// (got: $PUBLIC_URL)"; exit 1 ;;
 esac
+# Documenso's browser code calls PUBLIC_URL for sign-in, and its CSRF check
+# refuses any form sent from another address, so it only works at exactly
+# this address.
+case $PUBLIC_URL in
+  *://localhost*|*://127.0.0.1*)
+    log "WARNING: PUBLIC_URL is $PUBLIC_URL. Documenso only works at exactly that address,"
+    log "WARNING: so from another device sign-up and sign-in fail with 'Failed to fetch'."
+    log "WARNING: Set PUBLIC_URL to the address you type in the browser, like http://192.168.1.20:6142" ;;
+  *) log "Documenso works only at $PUBLIC_URL (open it at exactly that address)" ;;
+esac
 
 # ---- one folder per stateful service under /data ----
 # Documents live in the database (upload transport "database"), so postgres/
