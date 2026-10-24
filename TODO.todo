@@ -47,8 +47,10 @@
           "content": "Cobolt",
           "id": 1792732668211,
           "level": "default",
-          "done": false,
-          "start": 1792732668211
+          "done": true,
+          "start": 1792732668211,
+          "focus": false,
+          "end": 1792884753343
         }
       },
       {
@@ -357,6 +359,19 @@
           "done": false,
           "start": 1792733098148
         }
+      },
+      {
+        "key": 1792883698034,
+        "children": [],
+        "todo": {
+          "content": "Doory Art",
+          "id": 1792883698034,
+          "level": "default",
+          "done": true,
+          "start": 1792883698034,
+          "focus": false,
+          "end": 1792883704464
+        }
       }
     ],
     "expandKeys": [],
@@ -369,6 +384,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1792831711704"
+    "version": "1792884753397"
   }
 }

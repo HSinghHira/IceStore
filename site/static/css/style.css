@@ -56,7 +56,7 @@ h2{font-size:clamp(30px,5vw,48px);line-height:1.1;letter-spacing:-.03em;font-wei
 .btn:hover{background:rgba(255,255,255,.11)}
 .btn.p{background:var(--ac);border-color:var(--ac);color:var(--ink);box-shadow:0 0 30px rgba(76,201,240,.35)}
 .btn.p:hover{background:var(--acd)}
-.btn.s{height:38px;padding:0 18px;font-size:13px}
+.btn.s{color:white;height:38px;padding:0 18px;font-size:13px}
 .ic{display:inline-grid;place-items:center;flex:none;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--mut);transition:.2s}
 .ic:hover,.ic.ok{color:#fff;background:rgba(255,255,255,.14)}
 .ic .i{width:16px;height:16px}
