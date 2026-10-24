@@ -1,0 +1,203 @@
+name: doory-art
+
+services:
+  doory-art:
+    image: ghcr.io/hsinghhira/doory-art:latest
+    container_name: doory-art
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6143
+      - ADMIN_EMAIL=
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6143"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/v1/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.00"
+          memory: 768M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/doory-art/icon.png
+    x-casaos:
+      id: com.icestore.doory-art
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address people use to open Doory, with no slash at the end.
+              Change localhost to your ZimaOS IP, for example
+              http://192.168.1.10:6143, or use your own https:// domain. Share
+              links and emails use it.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email for the first admin account. Put your own email here.
+              Left blank, it is admin@example.com. Only used while there is no
+              admin yet.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password for the first admin account. Leave it blank and the
+              app makes a random one on first start. It is shown in the app log
+              and saved in the data folder. Or type your own. Only used while
+              there is no admin yet; change it later in Doory.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Doory editor, API, live editing and admin, published on host as 6143
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database, uploaded images and videos, fonts, elements,
+              exports, secret keys and settings.
+
+x-casaos:
+  id: com.icestore.doory-art
+  architectures:
+    - amd64
+    - arm64
+  main: doory-art
+  author: HSinghHira
+  category: Productivity
+  developer: shaongitbd
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/doory-art/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/doory-art/screenshot-1.webp
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/doory-art/screenshot-1.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/doory-art/screenshot-2.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/doory-art/screenshot-3.webp
+  title:
+    en_US: Doory Art
+  tagline:
+    en_US: Open-source design editor in your browser. A self-hosted Canva alternative.
+  description:
+    en_US: >-
+      Doory is a design editor that runs in the browser. Make posters, social
+      posts, stories, slides, invitations, resumes, thumbnails and business
+      cards, then export them as PNG, JPG, SVG, PDF, MP4 or GIF. This is Doory
+      in a single container, with one port and one data folder. PostgreSQL is
+      inside, and the secret key and database passwords are made for you on
+      first start. The optional AI server and Redis are left out.
+
+
+      **Features**
+
+
+      - Start from a template or a blank page, with several pages per design
+
+      - Text effects, curved text, an open-licensed font catalogue and your
+        own fonts
+
+      - About 27,500 icons, emoji and illustrations, shapes, QR codes
+
+      - Photo crop, masks, filters and background removal in the browser
+
+      - Animations, page transitions, music loops, sound effects and video
+        clips
+
+      - Share links, comments, version history and live co-editing
+
+      - Brand kits with your colours, fonts and logos
+
+      - Server-side PDF export with headless Chromium inside
+
+
+      **How to use?**
+
+
+      1. Open Doory Art from the Zima OS dashboard.
+
+
+      2. Sign in with the admin email and password, or create an account.
+
+
+      3. Pick a size or a template and start designing.
+
+
+      4. Use Share to make a link, or download your design.
+
+
+      5. Open /admin/ as the admin to manage users, templates and settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find ADMIN_EMAIL. Set it to your own email.
+
+
+        3. Leave ADMIN_PASSWORD blank to get a random one. Or type your own.
+
+
+        4. Find PUBLIC_URL. Change localhost to your ZimaOS IP, for example
+           http://192.168.1.10:6143.
+
+
+        5. More settings, like email (SMTP), Google sign-in and stock photo
+           keys, are listed on the Doory Art page at
+           https://icestore.hsinghhira.me/app/doory-art/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        6. Start the installation.
+
+
+        7. Wait about ten minutes. The first start sets up the database and
+           downloads icons, fonts and templates.
+
+
+        8. If you left ADMIN_PASSWORD blank, open the app log. Find the line
+           that says "admin password is".
+
+
+        9. Open http://your-zimaos-ip:6143 and sign in with your admin email.
+
+
+        10. The admin pages are at http://your-zimaos-ip:6143/admin/.
+  index: /
+  port_map: "6143"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.2.0"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Single-container Doory with one port (6143) and one data folder
+      - Secret key and database passwords are made on first start, so each install gets its own
+      - The first admin account is made for you from ADMIN_EMAIL and ADMIN_PASSWORD
+      - ghcr.io/shaongitbd/doory-backend 0.2.0 (api, realtime and mcp), with ffmpeg added for video clips
+      - ghcr.io/shaongitbd/doory-frontend 0.2.0 (the web app, served by the built-in nginx)
+      - PostgreSQL 16 inside
+      - Icons, fonts, starter templates, audio and the background-removal model are installed on first start
+      - The MCP server for AI assistants is off until you add MCP_ENABLED=true
+      - Left out: Redis (only for more than one realtime worker) and the optional AI server
+  repo: "https://github.com/shaongitbd/doory"
+  support: "https://github.com/shaongitbd/doory/issues"
+  docs: "https://github.com/shaongitbd/doory/tree/main/docs/self-hosting"
