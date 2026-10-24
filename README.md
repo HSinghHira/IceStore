@@ -1,11 +1,10 @@
+<center><img src="icestore-logo.gif" alt="IceStore"></center>
+
 # IceStore - Zima OS / Casa OS / Homeio Third Party Community App Store
 
 A community app store for [ZimaOS](https://www.zimaspace.com/ZimaOS), [CasaOS](https://casaos.io/) and [Homeio](https://homeio.app/), maintained by [HSinghHira](https://github.com/HSinghHira).
 
 Browse the apps at **[icestore.hsinghhira.me](https://icestore.hsinghhira.me/)**.
-
-<img src="icestore-logo.gif" width="350px" alt="IceStore">
-
 ---
 
 ## 🟢 ZimaOS
