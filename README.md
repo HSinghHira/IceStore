@@ -4,6 +4,8 @@ A community app store for [ZimaOS](https://www.zimaspace.com/ZimaOS), [CasaOS](h
 
 Browse the apps at **[icestore.hsinghhira.me](https://icestore.hsinghhira.me/)**.
 
+<img src="icestore-logo.gif" width="350px" alt="IceStore">
+
 ---
 
 ## 🟢 ZimaOS
