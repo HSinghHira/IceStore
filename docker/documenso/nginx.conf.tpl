@@ -53,6 +53,11 @@ http {
             proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
             proxy_read_timeout 300s;
             proxy_send_timeout 300s;
+            # Fonts and images are bigger than the default buffers; keep them
+            # in memory and stream the rest instead of writing temp files.
+            proxy_buffer_size 32k;
+            proxy_buffers 16 64k;
+            proxy_max_temp_file_size 0;
         }
     }
 }

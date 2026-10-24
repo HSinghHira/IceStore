@@ -291,10 +291,12 @@ variables:
       The Cloudflare Turnstile secret key.
   - name: DOCUMENSO_DISABLE_TELEMETRY
     group: Privacy
-    default: "false"
+    default: ""
     description: >-
       Set to true to stop sending Documenso the app version and an
-      anonymous install ID.
+      anonymous install ID once an hour. Also stops the "Error while
+      flushing PostHog" log lines if your network blocks it. Any value
+      turns it off, so leave it out to keep it on.
   - name: NEXT_PRIVATE_DOCUMENSO_LICENSE_KEY
     group: Privacy
     default: ""

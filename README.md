@@ -1,6 +1,6 @@
-<center><img src="https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/icestore-logo.gif" alt="IceStore"></center>
+<center><img src="icestore-logo.gif" alt="IceStore"></center>
 
-<center><img src="https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/icestore-icons.gif" alt="IceStore"></center>
+<center><img src="icestore-icons.gif" alt="IceStore"></center>
 
 # IceStore - Zima OS / Casa OS / Homeio Third Party Community App Store
 
