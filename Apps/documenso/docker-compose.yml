@@ -9,7 +9,7 @@ services:
     privileged: true
     environment:
       - TZ=$TZ
-      - PUBLIC_URL=http://localhost:6142
+      - PUBLIC_URL=http://[SERVER-IP]:6142
       - DOCUMENSO_ADMIN_EMAIL=
     ports:
       - target: 8080
@@ -49,8 +49,8 @@ services:
           description:
             en_US: >-
               The address you open Documenso at, like
-              http://your-zimaos-ip:6142. Change localhost to your ZimaOS IP,
-              or to your own domain if you put Documenso behind HTTPS.
+              http://192.168.1.20:6142. Replace [SERVER-IP] with your ZimaOS
+              IP, or use your own domain if you put Documenso behind HTTPS.
               Documenso only works at exactly this address. If it does not
               match what is in your browser's address bar, sign-up and
               sign-in fail with "Failed to fetch".
@@ -141,7 +141,7 @@ x-casaos:
         1. Open the app configuration before you install.
 
 
-        2. Find PUBLIC_URL. Change localhost to your ZimaOS IP, for example
+        2. Find PUBLIC_URL. Replace [SERVER-IP] with your ZimaOS IP, for example
            http://192.168.1.20:6142 (your own IP will differ). This step is a
            must: Documenso only works at exactly this address. Always open
            it at this address too.

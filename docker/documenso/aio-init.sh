@@ -18,6 +18,14 @@ log() { echo "[init] $*"; }
 # ---- public address: Documenso's NEXT_PUBLIC_WEBAPP_URL (links in emails) ----
 PUBLIC_URL=${PUBLIC_URL:-http://localhost:6142}
 PUBLIC_URL=${PUBLIC_URL%/}
+# The compose file ships http://[SERVER-IP]:6142 as a fill-in-the-blank. Left
+# as is, it is not a valid address, so fall back to localhost (works on the
+# server itself) and say what to change.
+case $PUBLIC_URL in
+  *"[SERVER-IP]"*|*SERVER-IP*)
+    log "WARNING: PUBLIC_URL still has [SERVER-IP] in it. Replace it with your server's IP in the app settings."
+    PUBLIC_URL=http://localhost:6142 ;;
+esac
 case $PUBLIC_URL in
   http://*|https://*) ;;
   *) log "PUBLIC_URL must start with http:// or https:// (got: $PUBLIC_URL)"; exit 1 ;;
