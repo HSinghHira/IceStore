@@ -121,7 +121,7 @@
         "key": 1792732886549,
         "children": [],
         "todo": {
-          "content": "Ente Photos (MiniO)",
+          "content": "Ente - MinIO S3(MiniO)",
           "id": 1792732886549,
           "level": "default",
           "done": true,
@@ -134,7 +134,7 @@
         "key": 1792732895683,
         "children": [],
         "todo": {
-          "content": "Ente Photos (Seaweed FS)",
+          "content": "Ente - MinIO S3(Seaweed FS)",
           "id": 1792732895683,
           "level": "default",
           "done": true,
@@ -147,7 +147,7 @@
         "key": 1792732908984,
         "children": [],
         "todo": {
-          "content": "Ente Photos (Garage)",
+          "content": "Ente - MinIO S3(Garage)",
           "id": 1792732908984,
           "level": "default",
           "done": true,

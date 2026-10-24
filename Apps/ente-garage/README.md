@@ -89,7 +89,7 @@ variables:
       with the password from the app log.
 ---
 
-# Ente Photos Garage
+# Ente - Garage S3
 
 Ente is a self-hosted, end-to-end encrypted place to store, share and rediscover your photos and videos on all your devices. This is Ente in a single container, with PostgreSQL, Garage, a lightweight open-source object store, and a mail viewer for sign-up codes inside. Secret keys and passwords are made for you on first start.
 
@@ -104,7 +104,7 @@ Ente is a self-hosted, end-to-end encrypted place to store, share and rediscover
 
 ## How to use
 
-1. Open Ente Photos Garage from your dashboard.
+1. Open Ente - Garage S3 from your dashboard.
 2. Sign up with your email and a password.
 3. Open the mail viewer at `/mail/` to read your sign-up code.
 4. Type the code to finish signing up.

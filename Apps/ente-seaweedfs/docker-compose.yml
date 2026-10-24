@@ -100,7 +100,7 @@ x-casaos:
     - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/screenshot-3.png
     - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ente-seaweedfs/screenshot-4.png
   title:
-    en_US: Ente Photos SeaweedFS
+    en_US: Ente - SeaweedFS S3
   tagline:
     en_US: End-to-end encrypted photo storage, with SeaweedFS for the files
   description:
@@ -136,7 +136,7 @@ x-casaos:
 
       **How to use?**
 
-      1. Open Ente Photos SeaweedFS from the Zima OS dashboard.
+      1. Open Ente - SeaweedFS S3 from the Zima OS dashboard.
 
       2. Sign up with your email and a password.
 
@@ -160,7 +160,7 @@ x-casaos:
 
 
         3. More settings, like your own email server and sign-up, are listed
-           on the Ente Photos SeaweedFS page at
+           on the Ente - SeaweedFS S3 page at
            https://icestore.hsinghhira.me/app/ente-seaweedfs/ (Variables tab). You
            can add them now or later in the app settings.
 
@@ -196,7 +196,7 @@ x-casaos:
   update_at: "2026-10-23"
   release_notes:
     en_US: |-
-      - Single-container Ente Photos with SeaweedFS storage and one data folder
+      - Single-container Ente - MinIO S3with SeaweedFS storage and one data folder
       - Ports 6137 photos, 6138 API, 6139 Public Albums, 6140 photo storage
       - Database, storage and museum keys are made on first start, so each install gets its own
       - Sign-up codes go to the built-in mail viewer at /mail/ unless you set your own email server

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-# Ente Photos SeaweedFS all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
+# Ente - SeaweedFS S3 all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
 # The weekly bumper keeps the FROM lines current. Ente only publishes "latest"
 # and one tag per git commit, so its two images are pinned to commit tags and
 # follow "latest" (see .github/scripts/update_upstream.py).
@@ -50,7 +50,7 @@ COPY nginx.conf.tpl /etc/nginx/aio.conf.tpl
 RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc
 
 LABEL org.opencontainers.image.title="ente-seaweedfs" \
-      org.opencontainers.image.description="Ente Photos SeaweedFS in a single container" \
+      org.opencontainers.image.description="Ente - SeaweedFS S3 in a single container" \
       org.opencontainers.image.source="https://github.com/HSinghHira/IceStore"
 
 EXPOSE 8080 8081 8082 8083
