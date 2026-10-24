@@ -1,0 +1,172 @@
+name: degoog
+
+services:
+  degoog:
+    image: ghcr.io/degoog-org/degoog:1.1.0
+    container_name: degoog
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - DEGOOG_SETTINGS_PASSWORDS=
+    ports:
+      - target: 4444
+        published: "6141"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:4444/readyz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/degoog/icon.png
+    x-casaos:
+      id: com.icestore.degoog
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+        - container: PUID
+          description:
+            en_US: >-
+              User ID that Degoog runs as and that owns its data folder.
+              ZimaOS fills this in for you.
+        - container: PGID
+          description:
+            en_US: >-
+              Group ID that Degoog runs as and that owns its data folder.
+              ZimaOS fills this in for you.
+        - container: DEGOOG_SETTINGS_PASSWORDS
+          description:
+            en_US: >-
+              Password for the Settings page. Leave it empty and Degoog makes
+              a new one each time it starts and prints it in the app log. Type
+              your own to keep the same one. Several passwords can be split
+              with commas.
+      ports:
+        - container: "4444"
+          description:
+            en_US: Web UI and search API, published on host as 6141.
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Everything Degoog keeps: installed engines, plugins, themes,
+              transports, settings files and the search index.
+
+x-casaos:
+  id: com.icestore.degoog
+  architectures:
+    - amd64
+    - arm64
+  main: degoog
+  author: HSinghHira
+  category: Networking
+  developer: degoog-org
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/degoog/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/degoog/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/degoog/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/degoog/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/degoog/screenshot-3.png
+  title:
+    en_US: Degoog
+  tagline:
+    en_US: Self-hosted search aggregator you can extend with plugins.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/degoog/](https://icestore.hsinghhira.me/app/degoog/) for full details
+
+
+      Degoog asks many search engines at once and merges their results into
+      one ranked list. It is a lighter, more modular alternative to SearXNG
+      that you can extend with your own engines, plugins and themes.
+
+
+      **Features**
+
+
+      - Results from every search engine you turn on, with duplicates removed
+        and scores combined
+
+      - Plugins: custom search engines, bang commands, panels above, below or
+        beside the results, and custom transports (curl, FlareSolverr or your
+        own)
+
+      - Built-in store to install engines, plugins and themes without editing
+        files
+
+      - Everything kept in the app data folder
+
+
+      **How to use?**
+
+
+      1. Open Degoog from the Zima OS dashboard.
+
+
+      2. Follow the first-run setup wizard.
+
+
+      3. Open Settings (the gear icon) and sign in with your settings
+         password.
+
+
+      4. Turn on the search engines you want and browse the Store for more
+         engines, plugins and themes.
+  tips:
+    before_install:
+      en_US: >-
+        1. If you want, type a password in DEGOOG_SETTINGS_PASSWORDS. This
+           password opens the Settings page.
+
+
+        2. Start the installation.
+
+
+        3. Open Degoog from the Zima OS dashboard.
+
+
+        4. If you left the password empty, open the app log. Find the line
+           "Sign in to settings with:". The password is on the next line.
+           It changes every time the app starts.
+
+
+        5. Follow the setup wizard. Then click the gear icon and sign in.
+
+
+        6. More settings are listed on the Degoog page at
+           https://icestore.hsinghhira.me/app/degoog/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6141"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.1.0"
+  update_at: "2026-10-24"
+  release_notes:
+    en_US: |-
+      - Added to IceStore. Port changed from 8416 to 6141.
+      - Image pinned to ghcr.io/degoog-org/degoog 1.1.0.
+      - Optional settings are listed in the Variables tab on the IceStore website.
+  repo: "https://github.com/degoog-org/degoog"
+  support: "https://github.com/degoog-org/degoog/issues"
+  docs: "https://degoog-org.github.io/docs/"
