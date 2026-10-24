@@ -80,8 +80,10 @@
           "content": "deGoog",
           "id": 1792732842426,
           "level": "default",
-          "done": false,
-          "start": 1792732842426
+          "done": true,
+          "start": 1792732842426,
+          "focus": false,
+          "end": 1792829891679
         }
       },
       {
@@ -102,8 +104,10 @@
           "content": "Documenso",
           "id": 1792732867261,
           "level": "default",
-          "done": false,
-          "start": 1792732867261
+          "done": true,
+          "start": 1792732867261,
+          "focus": false,
+          "end": 1792831711658
         }
       },
       {
@@ -356,10 +360,8 @@
       }
     ],
     "expandKeys": [],
-    "schema": "https://github.com/Saber2pr/vsc-ext-todolist/blob/master/src/api/type.ts#L3",
     "add_mode": "bottom",
     "virtual": false,
-    "timelines": [],
     "showLine": false,
     "playFontSize": 24,
     "title": "TODO",
@@ -367,6 +369,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1792746928193"
+    "version": "1792831711704"
   }
 }

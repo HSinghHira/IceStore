@@ -1,0 +1,193 @@
+name: documenso
+
+services:
+  documenso:
+    image: ghcr.io/hsinghhira/documenso:latest
+    container_name: documenso
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6142
+      - DOCUMENSO_ADMIN_EMAIL=
+    ports:
+      - target: 8080
+        published: "6142"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/documenso/icon.png
+    x-casaos:
+      id: com.icestore.documenso
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Documenso at, like
+              http://your-zimaos-ip:6142. Links in signing emails use it.
+              Change localhost to your ZimaOS IP, or to your own domain if you
+              put Documenso behind HTTPS.
+        - container: DOCUMENSO_ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email you will sign up with. That account becomes an admin
+              as soon as it is created. Leave it blank for no admin.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Documenso web app, API and mail viewer (/mail), published on host as 6142
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (your documents and signatures), the signing
+              certificate in cert/, secret keys and settings.
+
+x-casaos:
+  id: com.icestore.documenso
+  architectures:
+    - amd64
+    - arm64
+  main: documenso
+  author: HSinghHira
+  category: Productivity
+  developer: Documenso
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/documenso/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/documenso/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/documenso/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/documenso/screenshot-2.png
+  title:
+    en_US: Documenso
+  tagline:
+    en_US: The open source DocuSign alternative
+  description:
+    en_US: >-
+      Documenso is an open source document-signing platform - like DocuSign,
+      but self-hosted and fully auditable. This is Documenso in a single
+      container, with PostgreSQL and a mail viewer inside, one port and one
+      data folder. Secret keys, the database password and a signing
+      certificate are made for you on first start.
+
+
+      **Features**
+
+
+      - Upload PDFs, place signature and text fields, and send documents out
+        for signature
+
+      - Documents are signed with a certificate, so changes after signing
+        can be detected
+
+      - Many recipients, signing order and email reminders
+
+      - Sign in with Google, Microsoft or any OIDC provider (Pocket ID,
+        authentik, Keycloak)
+
+      - Templates, teams, webhooks and an open API
+
+      - Works without an email server: emails go to the built-in mail viewer
+        at /mail until you set up SMTP
+
+
+      **How to use?**
+
+
+      1. Open Documenso from the Zima OS dashboard and sign up.
+
+      2. Open http://your-zimaos-ip:6142/mail/ to find the confirm email. The
+         login for the mail viewer is in the app logs.
+
+      3. Click the link in the email, then sign in.
+
+      4. Upload a PDF, add the people who need to sign, and drag the fields
+         onto the page.
+
+      5. Send it. Signers get an email and sign in their browser, with no
+         account needed.
+
+      6. To send real emails, add the SMTP settings from the Variables tab on
+         the IceStore page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. Change localhost to your ZimaOS IP, for example
+           http://192.168.1.20:6142 (your own IP will differ).
+
+
+        3. Find DOCUMENSO_ADMIN_EMAIL. Type the email you will sign up with.
+           That account becomes the admin.
+
+
+        4. Emails stay inside the app at first. To send real emails, add the
+           SMTP settings. They are listed on the Documenso page at
+           https://icestore.hsinghhira.me/app/documenso/ (Variables tab), with
+           sign-up rules and Google, Microsoft and OIDC sign-in. You can add
+           them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about three minutes. The first start sets up the database.
+
+
+        7. Open http://your-zimaos-ip:6142 and sign up.
+
+
+        8. Open the app logs. Find the line that says "mail viewer (/mail)
+           login is". It shows a user name and password.
+
+
+        9. Open http://your-zimaos-ip:6142/mail/ and log in with them. Open
+           the email from Documenso and click the confirm link.
+
+
+        10. Sign in to Documenso. If you are the admin, sign out and in again
+            to see the admin panel.
+  index: /
+  port_map: "6142"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.21.1"
+  update_at: "2026-10-24"
+  release_notes:
+    en_US: |-
+      - Single-container Documenso with one port (6142) and one data folder
+      - Secret keys, database passwords and a self-signed signing certificate are made on first start, so each install gets its own
+      - Built-in mail viewer at /mail, used until you set an SMTP server
+      - DOCUMENSO_ADMIN_EMAIL makes your account an admin, no database commands needed
+      - documenso/documenso v2.21.1
+      - axllent/mailpit v1.32.0
+      - PostgreSQL 15 inside
+  repo: "https://github.com/documenso/documenso"
+  support: "https://github.com/documenso/documenso/issues"
+  docs: "https://docs.documenso.com/docs/self-hosting"

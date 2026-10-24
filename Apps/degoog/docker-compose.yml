@@ -47,17 +47,17 @@ services:
         - container: PUID
           description:
             en_US: >-
-              User ID that Degoog runs as and that owns its data folder.
+              User ID that deGoog runs as and that owns its data folder.
               ZimaOS fills this in for you.
         - container: PGID
           description:
             en_US: >-
-              Group ID that Degoog runs as and that owns its data folder.
+              Group ID that deGoog runs as and that owns its data folder.
               ZimaOS fills this in for you.
         - container: DEGOOG_SETTINGS_PASSWORDS
           description:
             en_US: >-
-              Password for the Settings page. Leave it empty and Degoog makes
+              Password for the Settings page. Leave it empty and deGoog makes
               a new one each time it starts and prints it in the app log. Type
               your own to keep the same one. Several passwords can be split
               with commas.
@@ -69,7 +69,7 @@ services:
         - container: /app/data
           description:
             en_US: >-
-              Everything Degoog keeps: installed engines, plugins, themes,
+              Everything deGoog keeps: installed engines, plugins, themes,
               transports, settings files and the search index.
 
 x-casaos:
@@ -88,7 +88,7 @@ x-casaos:
     - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/degoog/screenshot-2.png
     - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/degoog/screenshot-3.png
   title:
-    en_US: Degoog
+    en_US: deGoog
   tagline:
     en_US: Self-hosted search aggregator you can extend with plugins.
   description:
@@ -96,7 +96,7 @@ x-casaos:
       Visit: [https://icestore.hsinghhira.me/app/degoog/](https://icestore.hsinghhira.me/app/degoog/) for full details
 
 
-      Degoog asks many search engines at once and merges their results into
+      deGoog asks many search engines at once and merges their results into
       one ranked list. It is a lighter, more modular alternative to SearXNG
       that you can extend with your own engines, plugins and themes.
 
@@ -120,7 +120,7 @@ x-casaos:
       **How to use?**
 
 
-      1. Open Degoog from the Zima OS dashboard.
+      1. Open deGoog from the Zima OS dashboard.
 
 
       2. Follow the first-run setup wizard.
@@ -142,7 +142,7 @@ x-casaos:
         2. Start the installation.
 
 
-        3. Open Degoog from the Zima OS dashboard.
+        3. Open deGoog from the Zima OS dashboard.
 
 
         4. If you left the password empty, open the app log. Find the line
@@ -153,7 +153,7 @@ x-casaos:
         5. Follow the setup wizard. Then click the gear icon and sign in.
 
 
-        6. More settings are listed on the Degoog page at
+        6. More settings are listed on the deGoog page at
            https://icestore.hsinghhira.me/app/degoog/ (Variables tab). You
            can add them now or later in the app settings.
   index: /

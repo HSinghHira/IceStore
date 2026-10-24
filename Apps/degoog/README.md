@@ -22,31 +22,31 @@ variables:
     default: "false"
     description: >-
       Set to true to turn off the Settings password completely. Only do this
-      if nobody else can reach Degoog, because extensions run code on the
+      if nobody else can reach deGoog, because extensions run code on the
       server.
   - name: DEGOOG_OUTGOING_ALLOWED_HOSTS
     group: Security
     default: ""
     description: >-
-      Comma-separated list of hostnames Degoog may contact. Leave it out to
+      Comma-separated list of hostnames deGoog may contact. Leave it out to
       allow any.
   - name: DEGOOG_ANUBIS_MAX_DIFFICULTY
     group: Security
     default: "4"
     description: >-
-      Highest Anubis proof-of-work level Degoog will solve when a site asks
+      Highest Anubis proof-of-work level deGoog will solve when a site asks
       for it (up to 6).
   - name: DEGOOG_BASE_URL
     group: Server
     default: ""
     description: >-
-      The public address of Degoog, like https://search.example.com, or a
-      sub-path. Set it when you put Degoog behind your own domain.
+      The public address of deGoog, like https://search.example.com, or a
+      sub-path. Set it when you put deGoog behind your own domain.
   - name: DEGOOG_DISTRUST_PROXY
     group: Server
     default: "1"
     description: >-
-      Set to 0 when Degoog is behind a reverse proxy, so it trusts the
+      Set to 0 when deGoog is behind a reverse proxy, so it trusts the
       visitor IP and https headers the proxy sends.
   - name: DEGOOG_BODY_SIZE
     group: Server
@@ -128,7 +128,7 @@ variables:
     group: Logs
     default: "info"
     description: >-
-      How much Degoog writes to the log: fatal, error, warn, info, log or
+      How much deGoog writes to the log: fatal, error, warn, info, log or
       debug.
   - name: NO_COLOR
     group: Logs
@@ -137,9 +137,9 @@ variables:
       Set to any value to remove colours from the log.
 ---
 
-# Degoog
+# deGoog
 
-Degoog asks many search engines at once and merges their results into one ranked list. It is a lighter, more modular alternative to SearXNG that you can extend with your own engines, plugins and themes.
+deGoog asks many search engines at once and merges their results into one ranked list. It is a lighter, more modular alternative to SearXNG that you can extend with your own engines, plugins and themes.
 
 ## Features
 
@@ -150,11 +150,11 @@ Degoog asks many search engines at once and merges their results into one ranked
 
 ## How to use
 
-1. Open Degoog from your dashboard.
+1. Open deGoog from your dashboard.
 2. Follow the first-run setup wizard.
 3. Open Settings (the gear icon) and sign in with your settings password.
 4. Turn on the search engines you want and browse the Store for more engines, plugins and themes.
 
 ## Before you install
 
-You can type a password in `DEGOOG_SETTINGS_PASSWORDS`; it opens the Settings page. If you leave it empty, Degoog makes a new password every time it starts and prints it in the app log under "Sign in to settings with:". Always set a password before letting other people reach Degoog, because extensions installed from Settings run code on the server. More settings, like public mode, a Valkey cache or a Postgres index, are in the Variables tab and are added in the app settings. Degoog starts in a few seconds.
+You can type a password in `DEGOOG_SETTINGS_PASSWORDS`; it opens the Settings page. If you leave it empty, deGoog makes a new password every time it starts and prints it in the app log under "Sign in to settings with:". Always set a password before letting other people reach deGoog, because extensions installed from Settings run code on the server. More settings, like public mode, a Valkey cache or a Postgres index, are in the Variables tab and are added in the app settings. deGoog starts in a few seconds.
