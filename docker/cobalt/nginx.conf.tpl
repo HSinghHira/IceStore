@@ -9,10 +9,9 @@ events {
 
 http {
     include /etc/nginx/mime.types;
-    # cobalt's web app loads ES modules and libav WebAssembly for on-device processing.
+    # cobalt's web app loads ES modules (.mjs); Debian's mime.types already has .wasm.
     types {
         text/javascript mjs;
-        application/wasm wasm;
     }
     default_type application/octet-stream;
     access_log off;
@@ -23,26 +22,24 @@ http {
         ''      $scheme;
     }
 
-    # The web app and the API share "/". A browser opening the page asks for
-    # text/html and gets the web app; everything else on "/" (the web app's
-    # own POST requests and its server-info fetch, OPTIONS, curl, the health
-    # check) goes to the API.
-    map "$request_method:$http_accept" $cobalt_page {
-        default                     0;
-        "~^(GET|HEAD):.*text/html"  1;
-    }
-
     server {
         listen @GATEWAY_PORT@;
         @EXTRA_LISTEN@
         client_max_body_size 1m;
         root /srv/cobalt-web;
 
-        location = / {
-            if ($cobalt_page) {
-                rewrite ^ /index.html last;
-            }
-            proxy_pass http://127.0.0.1:9000;
+        # The API under /api (the web app is built to call <its own address>/api).
+        # The prefix is stripped: /api -> /, /api/session -> /session.
+        location = /api {
+            proxy_pass http://127.0.0.1:9000/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        }
+        location /api/ {
+            proxy_pass http://127.0.0.1:9000/;
             proxy_http_version 1.1;
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -50,9 +47,10 @@ http {
             proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
         }
 
-        # API routes. /tunnel streams the downloaded file, so no buffering and
-        # long timeouts (the API itself limits media length with DURATION_LIMIT).
-        location ~ ^/(session|tunnel)$ {
+        # Download links. The API builds them from API_URL (= PUBLIC_URL/) as
+        # <PUBLIC_URL>/tunnel?..., always at the root. They stream the file, so no
+        # buffering and long timeouts (the API limits media length with DURATION_LIMIT).
+        location = /tunnel {
             proxy_pass http://127.0.0.1:9000;
             proxy_http_version 1.1;
             proxy_set_header Host $http_host;

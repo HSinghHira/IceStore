@@ -21,7 +21,7 @@ services:
         bind:
           create_host_path: true
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/"]
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -162,7 +162,7 @@ x-casaos:
     en_US: |-
       - Single-container cobalt with one port (6144) and one data folder
       - The web app is the official one, built from the same commit as the API
-      - Web app and API share one address and port; the web app finds the API by itself
+      - Web app on /, API on /api, one address and port; the web app finds the API by itself
       - Drop cookies.json or keys.json in /data/config to use them
       - ghcr.io/imputnet/cobalt 11.7.1
   repo: "https://github.com/imputnet/cobalt"

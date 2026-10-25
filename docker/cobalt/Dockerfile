@@ -5,8 +5,8 @@
 #
 # Services inside:
 #   api      chroot   (ghcr.io/imputnet/cobalt: the processing API on 127.0.0.1:9000)
-#   gateway  built-in (nginx on 8080: serves the web app and sends API calls to the api,
-#                      so the web app and the API share one address)
+#   gateway  built-in (nginx on 8080: serves the web app on /, the api on /api and the
+#                      api's download links on /tunnel, so everything shares one address)
 #
 # The web app is the official one from imputnet/cobalt/web. Upstream publishes no image
 # for it, so it is built here from the same commit as the API: the API image carries the
@@ -28,14 +28,14 @@ RUN set -eux; \
     git reset -q --hard HEAD; \
     test -f web/package.json
 # The web app reads its API address from WEB_DEFAULT_API at build time. Make it use
-# the address the page was opened from instead, so one image works on any IP or
-# domain (the gateway serves the API on the same address). The build fails here if
+# <the address the page was opened from>/api instead, so one image works on any IP
+# or domain (the gateway serves the API under /api). The build fails here if
 # upstream moves this line, so a bump never ships a web app pointing at nowhere.
 RUN set -eux; \
     f=web/src/lib/api/api-url.ts; \
     grep -q 'return new URL(env.DEFAULT_API!).origin;' "$f"; \
-    sed -i 's|return new URL(env\.DEFAULT_API!)\.origin;|return typeof location !== "undefined" ? location.origin : new URL(env.DEFAULT_API!).origin;|' "$f"; \
-    grep -q 'location.origin' "$f"
+    sed -i 's|return new URL(env\.DEFAULT_API!)\.origin;|return typeof location !== "undefined" ? location.origin + "/api" : new URL(env.DEFAULT_API!).origin;|' "$f"; \
+    grep -q 'location.origin + "/api"' "$f"
 RUN corepack enable
 RUN --mount=type=cache,id=cobalt-pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile --filter=./web
@@ -75,6 +75,6 @@ EXPOSE 8080
 STOPSIGNAL SIGTERM
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
-  CMD curl -fsS -o /dev/null http://127.0.0.1:8080/ || exit 1
+  CMD curl -fsS -o /dev/null http://127.0.0.1:8080/api/ || exit 1
 
 ENTRYPOINT ["/usr/local/bin/aio-init"]
