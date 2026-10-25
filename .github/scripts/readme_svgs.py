@@ -10,14 +10,13 @@ outlines (downloaded once into ~/.cache/icestore-readme), icons are embedded, an
 clickable part (a store, an app) is its own SVG wrapped in a link in README.md.
 
 Every piece is cut from one 1000-unit-wide page with black edges, so at their README
-widths (100%, 33.33% or 25%) they stack into one picture:
+width they stack into one picture:
 
   readme/hero.svg            pill, wordmark with icicles and sparkles, tagline
   readme/marquee.svg         two rows of app icons moving in opposite directions
-  readme/stores.svg          "Add IceStore to your OS" title
-  readme/store-<os>.svg      one card per OS, linked to its install steps on the site
-  readme/apps.svg            "All apps" title, linked to the app list on the site
-  readme/apps/<slug>.svg     one card per app, linked to its page on the site
+  readme/stores.svg          "Add IceStore to your OS" with the site's OS tabs; they take turns on
+                             their own, as a README picture can't be clicked inside
+  readme/apps.svg            "All apps" title and every app card, linked to the app list on the site
   readme/help.svg            "Missing an app?" panel and footer, linked to a new issue
 
 README.md is rewritten between the README-SVGS markers.
@@ -30,6 +29,7 @@ import json
 import math
 import os
 import re
+import shutil
 import sys
 import urllib.parse
 import urllib.request
@@ -55,19 +55,20 @@ FONTS = {  # name: (file in google/fonts/ofl, axis values); the site uses Unboun
     "regular": ("inter/Inter[opsz,wght].ttf", {"wght": 400, "opsz": 14}),
     "medium": ("inter/Inter[opsz,wght].ttf", {"wght": 500, "opsz": 32}),
     "semi": ("inter/Inter[opsz,wght].ttf", {"wght": 600, "opsz": 14}),
+    "mono": ("jetbrainsmono/JetBrainsMono[wght].ttf", {"wght": 500}),
+    "mono-bold": ("jetbrainsmono/JetBrainsMono[wght].ttf", {"wght": 700}),
 }
-OS_NOTES = {"zimaos": "Reads the store listing directly.", "casaos": "Uses a zip archive of the store.",
-            "homeio": "Uses the same zip as CasaOS."}
 
 # colours from site/static/css/style.css
 CARD, LINE, MUT, DIM = "rgba(255,255,255,.035)", "rgba(255,255,255,.09)", "rgba(255,255,255,.58)", "rgba(255,255,255,.35)"
 AC, AC2, INK = "#4cc9f0", "#a5e8ff", "#031219"
 
 W = 1000           # every piece is a slice of a page this wide
-P, G = 30, 20      # side padding and gap between cards (G >= 2P/3 keeps each card inside its own slice)
+P, G = 30, 20      # side padding and gap between cards
 R = 28             # corner radius of the whole picture
 COLS = 4           # app cards per row
 CARD_H = 96        # app card height
+CARD_W = (W - 2 * P - (COLS - 1) * G) / COLS
 STYLE = "@media(prefers-reduced-motion:reduce){*{animation:none!important}}"
 
 
@@ -102,6 +103,8 @@ class Face:
         upm = f["head"].unitsPerEm
         self.upm, self.cap = upm, (getattr(f["OS/2"], "sCapHeight", 0) or upm * .7) / upm
         self.asc, self.desc = f["hhea"].ascent / upm, -f["hhea"].descent / upm
+        self.names = f.getGlyphOrder()
+        self.order = {g: i for i, g in enumerate(self.names)}
 
     def gid(self, ch):
         return self.cmap.get(ord(ch)) or self.cmap[ord("?")]
@@ -117,6 +120,13 @@ class Face:
             x += self.hmtx[g][0] * k + track * size
         return pen.getCommands()
 
+    @functools.cache
+    def glyph(self, g):
+        """Outline of one glyph in font units (y up), for <defs>."""
+        pen = SVGPathPen(self.glyphs, ntos=lambda v: str(round(v)))
+        self.glyphs[g].draw(pen)
+        return pen.getCommands()
+
 
 @functools.cache
 def face(name):
@@ -124,9 +134,22 @@ def face(name):
 
 
 def text(font, s, size, x, y, fill="#fff", anchor="start", track=0):
+    """Each glyph is drawn once in the picture's <defs> (see svg()) and placed here with <use>."""
     f = face(font)
     x -= {"start": 0, "middle": .5, "end": 1}[anchor] * f.width(s, size, track)
-    return f'<path fill="{fill}" d="{f.d(s, size, x, y, track)}"/>'
+    k, adv, uses = size / f.upm, 0, ""
+    for c in s:
+        g = f.gid(c)
+        if f.glyph(g):
+            uses += f'<use href="#{font}.{f.order[g]}" x="{adv:.0f}"/>'
+        adv += f.hmtx[g][0] + track * f.upm
+    return f'<g fill="{fill}" transform="translate({num(x)},{num(y)}) scale({k:.5f},{-k:.5f})">{uses}</g>'
+
+
+def glyph_defs(markup):
+    """<path> for every glyph the picture places."""
+    return "".join(f'<path id="{n}.{i}" d="{face(n).glyph(face(n).names[int(i)])}"/>'
+                   for n, i in dict.fromkeys(re.findall(r'href="#([a-z-]+)\.(\d+)"', markup)))
 
 
 def fit(font, s, size, max_w):
@@ -199,19 +222,12 @@ def app_icon(name, uri, x, y, s, uid):
 def svg(w, h, body, style="", defs="", clip=None):
     """A slice of the page: black background, optional rounded outline, own <style>."""
     inner = rect(0, 0, w, h, fill="#000") + body
+    defs = glyph_defs(defs + body) + defs
     if clip:
         defs += f'<clipPath id="pg"><path d="{clip}"/></clipPath>'
         inner = f'<g clip-path="url(#pg)">{inner}</g>'
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{num(w)}" height="{num(h)}" viewBox="0 0 {num(w)} {num(h)}">'
             f'<style>{style}{STYLE}</style><defs>{defs}</defs>{inner}</svg>\n')
-
-
-def cell(c, n):
-    """Left edge of card c inside its own W/n-wide slice, and the card width."""
-    cw = (W - 2 * P - (n - 1) * G) / n
-    x = P + c * (cw + G) - c * W / n
-    assert -.01 <= x and x + cw <= W / n + .01, "card crosses its slice; raise G"
-    return x, cw
 
 
 # -- the pieces -----------------------------------------------------------------
@@ -335,43 +351,172 @@ def marquee(apps, icons):
 
 
 def title(h2, sub, search=False):
-    h = 150
     body = text("medium", h2, 40, P, 78, track=-.03) + text("regular", sub, 17, P, 112, MUT)
     if search:  # looks like the site's search box; the whole picture links to the app list
         sw, sx, sy = 320, W - P - 320, 64
         body += (rect(sx, sy, sw, 48, 24, CARD, LINE) + icon("search", sx + 18, sy + 15, 18, MUT)
                  + text("semi", "Search apps on the website", 15, sx + 48, sy + 29.5, DIM))
-    return svg(W, h, body)
+    return body
 
 
-def store(j, os_id, name, logo, url):
-    sw, h = W / 3, 263
-    x, cw = cell(j, 3)
-    y, pad = 0, 24
-    note = wrap("regular", OS_NOTES[os_id], 14, cw - 2 * pad - 62)
-    tx = x + pad + 62
-    head = (app_icon(name, logo, x + pad, y + pad, 48, os_id)
-            + text("semi", name, 21, tx, y + pad + 21)
-            + "".join(text("regular", s, 14, tx, y + pad + 42 + i * 19, MUT) for i, s in enumerate(note)))
-    uy = y + pad + 63 + 20
-    box = (rect(x + pad, uy, cw - 2 * pad, 60, 16, "rgba(76,201,240,.07)", "rgba(76,201,240,.35)")
-           + text("semi", "STORE URL", 11, x + pad + 16, uy + 23, AC, track=.07)
-           + text("semi", url, fit("semi", url, 13.5, cw - 2 * pad - 32), x + pad + 16, uy + 44, AC2))
-    by = uy + 60 + 16
-    cta = f"Add to {name}"
-    cw_t = face("semi").width(cta, 15) + 10 + 18
-    cx = x + cw / 2 - cw_t / 2
-    btn = (rect(x + pad, by, cw - 2 * pad, 46, 23, AC)
-           + text("semi", cta, 15, cx, by + 28.5, INK) + icon("arrow-right", cx + cw_t - 18, by + 14, 18, INK))
+def apps_grid(apps, icons):
+    """The "All apps" title and every app card in one picture, like the site's grid."""
+    top = 150
+    body = title("All apps", f"{len(apps)} apps and counting. Click to browse them on the website.", search=True)
+    for k, a in enumerate(apps):
+        body += app_card(P + (k % COLS) * (CARD_W + G), top + (k // COLS) * (CARD_H + G), a, icons[a["slug"]])
+    rows = math.ceil(len(apps) / COLS)
+    return svg(W, top + rows * (CARD_H + G), body)
+
+
+STORES = {  # os id: note, steps, footnote, terminal lines ($ = prompt); mirrors the store tabs in site/templates/index.html
+    "zimaos": ("Reads the store listing directly.",
+               ["Open **App Store** in the ZimaOS dashboard.", "Click the **Community store** icon, then **+**.",
+                "Paste the store URL above.", "Click **Add** and refresh the page."],
+               "Not showing up? Refresh or restart the App Store service.",
+               ["$curl -s -X POST \\", '  -H "Authorization: $TOKEN" \\', "  -H 'Content-Type: application/json' \\",
+                "  -d '{\"url\":\"{url}\"}' \\", '  "http://localhost/v3/app_store/repo"']),
+    "casaos": ("Uses a zip archive of the store.",
+               ["Open **App Store** in the CasaOS dashboard.", "Click **+ Add Source**.",
+                "Paste the store URL above.", "Click **Add**."],
+               "The link stays the same when new apps are added.",
+               ["$sudo casaos-cli app-management \\", "    register app-store \\", "    {url}",
+                "$sudo casaos-cli app-management \\", "    list app-stores"]),
+    "homeio": ("Uses the same zip as CasaOS.",
+               ["Open **App Store** in the Homeio dashboard.", "Click **+ Install**, then **Manage Sources**.",
+                "Paste the URL and name it, for example “IceStore”.", "Click **Add Source**."],
+               "The link stays the same when new apps are added.",
+               None),  # no terminal: the "Good to know" box instead
+}
+HOMEIO_TIPS = ["Homeio and CasaOS share one link, so a single zip serves both.",
+               "Apps appear in the App Store a few seconds after the source is added.",
+               "If the source is rejected, try `latest.zip` in place of `store.zip`."]
+CYCLE = 5  # seconds each store tab stays on screen
+
+
+def rich(s, size, x, y, max_w, lh):
+    """Text with **bold** and `code` runs, wrapped to max_w. Returns (svg, number of lines)."""
+    styles = {"r": ("regular", "rgba(255,255,255,.82)", 1), "b": ("semi", "#fff", 1), "c": ("mono", AC2, .88)}
+    words, pending = [], False
+    for part in re.split(r"(\*\*.+?\*\*|`.+?`)", s):
+        st = "b" if part.startswith("**") else "c" if part.startswith("`") else "r"
+        inner = part[2:-2] if st == "b" else part[1:-1] if st == "c" else part
+        for m in re.finditer(r"(\s*)(\S+)", inner):
+            words.append((st, m.group(2), bool(m.group(1)) or pending))
+            pending = False
+        pending = pending or inner[-1:].isspace()
+    out, cx, line = "", 0, 0
+    for st, word, space in words:
+        font, color, k = styles[st]
+        gap = face("regular").width(" ", size) if space and cx else 0
+        w = face(font).width(word, size * k)
+        if cx and cx + gap + w > max_w:
+            line, cx, gap = line + 1, 0, 0
+        out += text(font, word, size * k, x + cx + gap, y + line * lh, color)
+        cx += gap + w
+    return out, line + 1
+
+
+def stores(cfg, logos, urls):
+    """Title, the site's OS tabs and one store panel per OS, taking turns on a loop."""
+    n = len(OSES)
+    body = title(f'Add {cfg["site_name"]} to your OS', "Pick your system, copy the link and add it as a community store.")
+
+    # the tab bar; the selected look sits on top and fades in and out with its panel
+    tabs = [(i, name, 24 + 10 + face("medium").width(name, 14) + 48) for i, name, _ in OSES]
+    bw = 12 + sum(t[2] for t in tabs) + 6 * (n - 1)
+    bx, by = (W - bw) / 2, 150
+    body += rect(bx, by, bw, 58, 29, CARD, LINE)
+    tx = bx + 6
+    for j, (i, name, tw) in enumerate(tabs):
+        def logo(uid):
+            return app_icon(name, logos[i], tx + 24, by + 17, 24, uid).replace('rx="12"', 'rx="6"')
+        body += (logo(f"t{i}") + text("medium", name, 14, tx + 58, by + 34, MUT)
+                 + f'<g class="pn pn{j}">' + rect(tx, by + 6, tw, 46, 23, "#fff") + logo(f"u{i}")
+                 + text("medium", name, 14, tx + 58, by + 34, "#000") + "</g>"
+                 + rect(tx + 23, by + 66, tw - 46, 2, 1, AC, extra=f' class="pg pn{j}"'))
+        tx += tw + 6
+
+    y0, lw, rw, pad = 240, 470, 450, 28
+    lx, rx = P, W - P - rw
+    panels, h = "", 0
+    for j, (i, name, _) in enumerate(OSES):
+        note, steps, foot, term = STORES[i]
+        x = lx
+        p = (app_icon(name, logos[i], x + pad, y0 + pad, 48, f"s{i}")
+             + text("semi", name, 20, x + pad + 62, y0 + pad + 21, track=-.01)
+             + text("regular", note, 14, x + pad + 62, y0 + pad + 42, MUT))
+        uy = y0 + pad + 48 + 22
+        p += (rect(x + pad, uy, lw - 2 * pad, 60, 16, "rgba(76,201,240,.07)", "rgba(76,201,240,.35)")
+              + text("mono-bold", "STORE URL", 11, x + pad + 16, uy + 23, AC, track=.07)
+              + text("mono", urls[i], fit("mono", urls[i], 12.5, lw - 2 * pad - 32), x + pad + 16, uy + 44, AC2))
+        sy = uy + 60 + 24
+        for k, step in enumerate(steps):
+            s, lines = rich(step, 15, x + pad + 38, sy + 18, lw - 2 * pad - 38, 22.5)
+            p += (f'<circle cx="{x + pad + 13}" cy="{num(sy + 13)}" r="12.5" fill="rgba(76,201,240,.14)" stroke="rgba(76,201,240,.3)"/>'
+                  + text("semi", str(k + 1), 13, x + pad + 13, sy + 17.7, AC2, "middle") + s)
+            sy += max(26, lines * 22.5) + 14
+        sy += 4
+        p += (rect(x + pad, sy, lw - 2 * pad, 1, fill=LINE) + icon("info", x + pad, sy + 19, 16, AC2)
+              + text("regular", foot, 13, x + pad + 26, sy + 32, MUT))
+        ch = sy + 32 + pad - y0
+        p = rect(x + .5, y0 + .5, lw - 1, ch - 1, R, CARD, LINE) + rect(x + .5, y0 + .5, lw - 1, ch - 1, R, "url(#t)") + p
+
+        if term:  # terminal window, like the site's
+            lines = [ln.replace("{url}", urls[i]) for ln in term]
+            prompt = f"user@{i}:~$ "
+            longest = max(face("mono").width((prompt if ln[0] == "$" else "") + ln.lstrip("$"), 1) for ln in lines)
+            fs = min(12.5, (rw - 36) / longest)
+            p += (f'<clipPath id="tw{i}"><rect x="{rx}" y="{y0}" width="{rw}" height="{num(ch)}" rx="20"/></clipPath>'
+                  + rect(rx + .5, y0 + .5, rw - 1, ch - 1, 20, CARD, LINE) + rect(rx + .5, y0 + .5, rw - 1, ch - 1, 20, "url(#tt)")
+                  + f'<g clip-path="url(#tw{i})">' + rect(rx, y0, rw, 42, fill="rgba(255,255,255,.03)") + "</g>"
+                  + rect(rx, y0 + 42, rw, 1, fill=LINE)
+                  + f'<circle cx="{rx + 21.5}" cy="{y0 + 21}" r="5.5" fill="{AC}"/>'
+                  + f'<circle cx="{rx + 40.5}" cy="{y0 + 21}" r="5.5" fill="{AC2}" fill-opacity=".7"/>'
+                  + f'<circle cx="{rx + 59.5}" cy="{y0 + 21}" r="5.5" fill="rgba(255,255,255,.22)"/>'
+                  + text("mono", f"user@{i}: ~", 12.5, rx + rw / 2, y0 + 25.5, MUT, "middle"))
+            ly, lh = y0 + 42 + 18 + fs * 1.2, fs * 1.75
+            for ln in lines + ["$"]:
+                cx = rx + 18
+                if ln.startswith("$"):
+                    for part, font, color in ((f"user@{i}", "mono-bold", AC), (":", "mono", MUT), ("~", "mono-bold", AC2), ("$ ", "mono", MUT)):
+                        p += text(font, part, fs, cx, ly, color)
+                        cx += face(font).width(part, fs)
+                    ln = ln[1:]
+                if ln:
+                    p += text("mono", ln, fs, cx, ly, "rgba(255,255,255,.85)")
+                else:  # the blinking cursor on the last prompt
+                    p += rect(cx, ly - fs * .95, fs * .6, fs * 1.15, fill=AC, extra=' class="cur"')
+                ly += lh
+        else:
+            p += (rect(rx + .5, y0 + .5, rw - 1, ch - 1, 24, "#080808", LINE)
+                  + text("regular", "Good to know", 14, rx + 22, y0 + 30, MUT) + rect(rx, y0 + 48, rw, 1, fill=LINE))
+            ty = y0 + 48 + 22 + 15
+            for tip in HOMEIO_TIPS:
+                s, lines = rich(tip, 15, rx + 44, ty, rw - 44 - 26, 23)
+                p += f'<circle cx="{rx + 30}" cy="{num(ty - 5)}" r="2.5" fill="{AC}"/>' + s
+                ty += lines * 23 + 12
+        panels += f'<g class="pn pn{j}">{p}</g>'
+        h = max(h, y0 + ch + 30)
+
     defs = ('<radialGradient id="t" cx="0" cy="0" r="1" gradientTransform="scale(1.2,.7)">'
-            f'<stop stop-color="{AC}" stop-opacity=".12"/><stop offset=".6" stop-color="{AC}" stop-opacity="0"/></radialGradient>')
-    card = rect(x + .5, y + .5, cw - 1, by + 46 + pad - 1, R, CARD, LINE) + rect(x + .5, y + .5, cw - 1, by + 46 + pad - 1, R, "url(#t)")
-    return svg(sw, h, card + head + box + btn, defs=defs)
+            f'<stop stop-color="{AC}" stop-opacity=".12"/><stop offset=".6" stop-color="{AC}" stop-opacity="0"/></radialGradient>'
+            '<radialGradient id="tt" cx="0" cy="0" r="1" gradientTransform="translate(1,0) scale(1.2,.8)">'
+            f'<stop stop-color="{AC}" stop-opacity=".1"/><stop offset=".6" stop-color="{AC}" stop-opacity="0"/></radialGradient>')
+    # each panel (and its tab's selected look) shows for CYCLE seconds, then hands over to the next;
+    # without animation only the first one shows
+    t, a = CYCLE * n, 100 / n
+    style = (f".pn{{opacity:0;animation:cy {t}s infinite both}}.pn0{{opacity:1}}"
+             f".pg{{opacity:0;transform-box:fill-box;transform-origin:left;animation-name:pg;animation-timing-function:linear}}"
+             + "".join(f".pn{j}{{animation-delay:{j * CYCLE}s}}" for j in range(1, n))
+             + f"@keyframes cy{{0%{{opacity:0}}{a * .05:.2f}%,{a * .95:.2f}%{{opacity:1}}{a:.2f}%,100%{{opacity:0}}}}"
+             + f"@keyframes pg{{0%{{transform:scaleX(0);opacity:1}}{a:.2f}%{{transform:scaleX(1);opacity:1}}{a + .01:.2f}%,100%{{opacity:0}}}}"
+             + ".cur{animation:bl 1.1s steps(1) infinite}@keyframes bl{50%{opacity:0}}")
+    return svg(W, h, body + panels, style, defs)
 
 
-def app_card(i, a, uri):
-    x, cw = cell(i % COLS, COLS)
-    s, pad = 56, 18
+def app_card(x, y0, a, uri):
+    cw, s, pad = CARD_W, 56, 18
     tx = x + pad + s + 14
     max_w = cw - (tx - x) - 14
     lines = [("semi", t, 17, "#fff") for t in wrap("semi", a["name"], 17, max_w)]
@@ -380,12 +525,13 @@ def app_card(i, a, uri):
         cat = wrap("regular", cat[:1].upper() + cat[1:], 13.5, max_w, 1)[0]
         lines.append(("regular", cat, 13.5, MUT))
     total = sum(sz * 1.3 for _, _, sz, _ in lines)
-    y = (CARD_H - total) / 2
-    body = rect(x + .5, .5, cw - 1, CARD_H - 1, 22, CARD, LINE) + app_icon(a["name"], uri, x + pad, (CARD_H - s) / 2, s, "a")
+    y = y0 + (CARD_H - total) / 2
+    body = (rect(x + .5, y0 + .5, cw - 1, CARD_H - 1, 22, CARD, LINE)
+            + app_icon(a["name"], uri, x + pad, y0 + (CARD_H - s) / 2, s, "a" + a["slug"]))
     for font, t, sz, color in lines:
         body += text(font, t, sz, tx, y + sz * 1.02, color)
         y += sz * 1.3
-    return svg(W / COLS, CARD_H + G, body)
+    return body
 
 
 def help_panel(cfg):
@@ -427,15 +573,11 @@ def readme_block(apps, cfg):
     def link(href, inner):
         return f'<a href="{e(href)}">{inner}</a>'
 
-    blanks = -len(apps) % COLS
     parts = [
         img("hero.svg", "100%", f'{cfg["site_name"]}: {cfg["tagline"]}'),
         img("marquee.svg", "100%", f'Icons of the {len(apps)} apps in {cfg["site_name"]}'),
-        link(base + "#stores", img("stores.svg", "100%", f'Add {cfg["site_name"]} to your OS')),
-        *[link(f"{base}#{i}", img(f"store-{i}.svg", "33.33%", f'Add {cfg["site_name"]} to {n}')) for i, n, _ in OSES],
-        link(base + "#apps", img("apps.svg", "100%", f"All {len(apps)} apps")),
-        *[link(f'{base}app/{a["slug"]}/', img(f'apps/{a["slug"]}.svg', "25%", a["name"])) for a in apps],
-        *[img("apps/_blank.svg", "25%", "") for _ in range(blanks)],
+        link(base + "#stores", img("stores.svg", "100%", f'Add {cfg["site_name"]} to ZimaOS, CasaOS or Homeio')),
+        link(base + "#apps", img("apps.svg", "100%", f'All {len(apps)} apps: ' + ", ".join(a["name"] for a in apps))),
         link(cfg["repo"] + "/issues/new", img("help.svg", "100%", "Missing an app? Request it on GitHub")),
     ]
     # one picture per line, each line break inside a tag: no space may get between the pictures
@@ -459,29 +601,24 @@ def main():
     apps.sort(key=lambda a: a["name"].lower())
     icons = {a["slug"]: picture(a["icon"].read_bytes()) if a["icon"] else "" for a in apps}
 
-    (OUT / "apps").mkdir(parents=True, exist_ok=True)
+    OUT.mkdir(exist_ok=True)
     files = {
         "hero.svg": hero(apps, cfg),
         "marquee.svg": marquee(apps, icons),
-        "stores.svg": title(f'Add {cfg["site_name"]} to your OS', "Pick your system, copy the link and add it as a community store."),
-        "apps.svg": title("All apps", f"{len(apps)} apps and counting. Click one to see how to set it up.", search=True),
+        "apps.svg": apps_grid(apps, icons),
         "help.svg": help_panel(cfg),
     }
-    for j, (i, n, logo) in enumerate(OSES):
+    logos = {}
+    for i, n, logo in OSES:
         try:
-            uri = picture(fetch(logo), 96)
+            logos[i] = picture(fetch(logo), 96)
         except Exception as ex:  # a letter tile is fine for a while
             print(f"::warning::{n} logo: {ex}")
-            uri = ""
-        files[f"store-{i}.svg"] = store(j, i, n, uri, urls[i])
-    for k, a in enumerate(apps):
-        files[f'apps/{a["slug"]}.svg'] = app_card(k, a, icons[a["slug"]])
-    if len(apps) % COLS:
-        files["apps/_blank.svg"] = svg(W / COLS, CARD_H + G, "")
-
-    for f in (OUT / "apps").glob("*.svg"):
-        if f"apps/{f.name}" not in files:
-            f.unlink()
+            logos[i] = ""
+    files["stores.svg"] = stores(cfg, logos, urls)
+    shutil.rmtree(OUT / "apps", ignore_errors=True)  # left over from when apps and stores had their own pictures
+    for old in OUT.glob("store-*.svg"):
+        old.unlink()
     for name, content in files.items():
         (OUT / name).write_text(content, encoding="utf-8", newline="\n")
 
