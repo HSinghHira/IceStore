@@ -20,7 +20,9 @@ RUN=${AIO_RUN:-/run/aio}
 # ---- APP-SPECIFIC: services copied out as native binaries (space separated) ----
 NATIVE=""
 
-exec > >(sed -u "s/^/[$svc] /") 2>&1
+# Strip ANSI colour codes (ZimaOS/CasaOS log viewers show them as junk like [32m),
+# then prefix every line with the service name.
+exec > >(sed -u -e 's|\x1b\[[0-9;?]*[ -/]*[@-~]||g' -e "s/^/[$svc] /") 2>&1
 
 wait_one() {
   case $1 in

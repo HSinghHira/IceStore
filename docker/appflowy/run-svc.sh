@@ -12,7 +12,9 @@ ROOTFS=${AIO_ROOTFS:-/opt/rootfs}
 META=${AIO_META:-/opt/meta}
 RUN=${AIO_RUN:-/run/aio}
 
-exec > >(sed -u "s/^/[$svc] /") 2>&1
+# Strip ANSI colour codes (ZimaOS/CasaOS log viewers show them as junk like [32m),
+# then prefix every line with the service name.
+exec > >(sed -u -e 's|\x1b\[[0-9;?]*[ -/]*[@-~]||g' -e "s/^/[$svc] /") 2>&1
 
 wait_one() {
   case $1 in
