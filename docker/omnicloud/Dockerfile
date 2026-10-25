@@ -38,9 +38,12 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=src /src/backend/package.json /src/backend/package-lock.json ./
-RUN npm ci --omit=dev
+# npm install, not npm ci: upstream's backend lockfile is missing the
+# @aws-sdk packages its package.json lists, so npm ci refuses to run.
+# Upstream's own backend/Dockerfile uses npm install too.
+RUN npm install --omit=dev --no-audit --no-fund
 COPY --from=src /src/backend/src ./src
-RUN node --input-type=module -e "import 'better-sqlite3'"
+RUN node --input-type=module -e "import 'better-sqlite3'; import '@aws-sdk/client-s3'; import '@aws-sdk/lib-storage'"
 
 # ---- the web app (static files, so built once on the build machine) ----
 # Same Node as img-api; kept in step by hand.
