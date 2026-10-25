@@ -124,7 +124,7 @@ x-casaos:
 
 
         5. To use __TITLE__ on other devices, change localhost to your ZimaOS
-           IP address.
+           IP, like http://192.168.1.20:__PORT__.
 
 
         6. More settings, like email and sign-up rules, are listed on the

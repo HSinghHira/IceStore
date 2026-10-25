@@ -48,7 +48,13 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    it becomes the README `variables:` list),
    health endpoints, the upstream `docker-compose.yml` and nginx/reverse-proxy
    config, data paths, whether images are amd64+arm64. Look things up; do not
-   recall tags from memory.
+   recall tags from memory. The repo's own bumper finds the newest tag the
+   way the weekly job will (`import update_upstream as u; u.newest(image,
+   tag)`, `u.list_tags(image)` from `.github/scripts/`), and the registry API
+   gives each image's architectures and `Entrypoint`/`Cmd`/`WorkingDir`/`User`
+   without Docker. Also decide here whether the app works with
+   `PUBLIC_URL` on localhost (`references/COMPOSE.md` §7): OIDC/OAuth servers
+   don't, and need the `[ZIMAOS-IP-ADDRESS]` placeholder.
 3. **AIO only: write `docker/<app>/`** from `templates/aio/`, following
    `references/AIO.md`. Copy logic from `examples/appflowy/docker/appflowy/` when
    the templates don't cover something (MinIO/Silo, mail, native binaries, a web
@@ -67,6 +73,29 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    or on the user's computer, write them there; otherwise zip them in that layout.
    Tell the user which port you used, which images to add, and what to verify on
    first install (below).
+
+### Porting an app from the old ZimaAppStore
+
+The user sometimes copies app folders from the old store into `Apps/` (often
+untracked, with names like `StoatChat` or `ZimaBrainCE`). Treat each as a new
+app built from the old manifest, not as an edit:
+
+- Rename the folder to the app id (lowercase, dashes). On Windows a case-only
+  rename needs two steps (`mv X X.tmp; mv X.tmp x`; `git mv` for tracked ones).
+- Rename `thumbnail.*`, `thumbnail-1.*`, ... to `screenshot-1.*`,
+  `screenshot-2.*`, ... in that order; every image URL changes to IceStore's
+  jsdelivr path.
+- New id `com.icestore.<app>` (the old store's installs are a different store
+  anyway), a new 61xx port, `TZ=$TZ`, `PUID=$PUID`/`PGID=$PGID`.
+- Throw away every fixed secret and `CHANGEME` password in the old file; make
+  them per install (wrapper, aio-init, or the app's own first-run setup).
+- Re-check the old manifest against upstream's current setup. The Stoat one
+  had wrong internal ports and a WebRTC port range mapped to other numbers;
+  the old ZimaBrain one claimed arm64 for an amd64-only image.
+- A multi-container manifest becomes an AIO app; a single image with a
+  secret becomes a wrapper (or an inline `entrypoint:` like `Apps/vscode`
+  for linuxserver images that read the secret from an env var).
+- Mention every old port and id in `release_notes`.
 
 The folder name is the app's id everywhere: lowercase letters, digits and dashes
 (`appflowy`, `immich`, `paperless-ngx`). It is the `Apps/` folder, the `docker/`
@@ -107,6 +136,14 @@ folder, the compose `name:`, the main service name, the image name
   `x-casaos.port_map`, the port in the `PUBLIC_URL` default in the compose file,
   and the port in the `PUBLIC_URL` default in `aio-init.sh`. The container port of
   an AIO app is always `8080`.
+- **Addresses people must type use one placeholder:** `http://[ZIMAOS-IP-ADDRESS]:<port>`,
+  in the compose default (only when the app can't work on localhost), the
+  envs descriptions, the tips, the description and the README
+  (`references/COMPOSE.md` §5 and §7). When it is required, the tips and the
+  README's "Before you install" say so first and plainly, and aio-init shows
+  a "set PUBLIC_URL to ..." page instead of redirecting browsers to localhost
+  (`references/AIO.md` §3.5). Prefer making the app follow the browser's
+  address when it can (`references/AIO.md` §3.7).
 - **Pin every upstream tag** in the Dockerfile `FROM ... AS img-<name>` lines.
 - **AIO apps are kept current by `update-upstream.yml`** every Monday: it bumps
   the FROM tags, `AIO_VERSION`, `version`, `update_at` and `release_notes`, then

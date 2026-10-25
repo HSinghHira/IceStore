@@ -9,7 +9,7 @@ services:
     privileged: true
     environment:
       - TZ=$TZ
-      - PUBLIC_URL=http://localhost:6164
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6164
       - ACTUAL_OPENID_CLIENT_ID=
       - ACTUAL_OPENID_CLIENT_SECRET=
     ports:
@@ -56,10 +56,10 @@ services:
         - container: PUBLIC_URL
           description:
             en_US: >-
-              The address you open Trackie at, like http://192.168.1.20:6164.
-              Change localhost to your ZimaOS IP, or sign-in only works on the
-              ZimaOS box itself. The sign-in server and its admin console use
-              the same address with ports 6165 and 6166.
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6164, or your own domain if Trackie is behind
+              HTTPS. Sign-in only works at this address. The sign-in server and
+              its admin console use the same address with ports 6165 and 6166.
         - container: ACTUAL_OPENID_CLIENT_ID
           description:
             en_US: >-
@@ -154,8 +154,9 @@ x-casaos:
         1. Open the app configuration before you install.
 
 
-        2. Find PUBLIC_URL. It starts as http://localhost:6164. Change
-           localhost to your ZimaOS IP, like http://192.168.1.20:6164.
+        2. Find PUBLIC_URL. It is http://[ZIMAOS-IP-ADDRESS]:6164. Replace
+           [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6164. You must do this, or sign-in won't work.
 
 
         3. Leave ACTUAL_OPENID_CLIENT_ID and ACTUAL_OPENID_CLIENT_SECRET
@@ -165,7 +166,7 @@ x-casaos:
         4. Start the installation. Wait about three minutes.
 
 
-        5. Open the Logto admin console at http://your-zimaos-ip:6166.
+        5. Open the Logto admin console at http://[ZIMAOS-IP-ADDRESS]:6166.
            Make your Logto admin account.
 
 
@@ -183,7 +184,7 @@ x-casaos:
 
 
         9. In its settings, add this Redirect URI:
-           http://your-zimaos-ip:6164/openid/callback (your PUBLIC_URL plus
+           http://[ZIMAOS-IP-ADDRESS]:6164/openid/callback (your PUBLIC_URL plus
            /openid/callback). Save.
 
 
@@ -195,7 +196,7 @@ x-casaos:
             ACTUAL_OPENID_CLIENT_SECRET. Save.
 
 
-        12. Wait a minute. Open http://your-zimaos-ip:6164 and sign in with
+        12. Wait a minute. Open http://[ZIMAOS-IP-ADDRESS]:6164 and sign in with
             your email.
 
 
@@ -215,6 +216,7 @@ x-casaos:
   update_at: "2026-10-25"
   release_notes:
     en_US: |-
+      - PUBLIC_URL now starts as http://[ZIMAOS-IP-ADDRESS]:6164 so it is clear it must be set. Until it is, Trackie and Logto show a note saying what to set instead of sending you to localhost.
       - Moved to IceStore as a single container with one data folder. Ports changed from 8465-8467 to 6164 (Trackie), 6165 (Logto) and 6166 (Logto admin console). The app id is now com.icestore.trackie.
       - The identity secret, the Akahu token secret and the database passwords are made on first start, so each install gets its own. The compose file no longer ships fixed ones.
       - Logto's signing key is switched to RSA on first start and its database is brought up to date on every start, so there is no key rotation to do by hand.

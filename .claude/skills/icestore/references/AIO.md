@@ -114,7 +114,38 @@ The generic part below needs no changes.
 
 ### 3.5 aio-init.sh
 
-- `PUBLIC_URL` default: `http://localhost:<61xx>`.
+- `PUBLIC_URL` default: the same as the compose file (`COMPOSE.md` §7):
+  `http://localhost:<61xx>`, or `http://[ZIMAOS-IP-ADDRESS]:<61xx>` when the
+  address must be set. For the placeholder, swap it for localhost so the
+  services start, log what to do, and write the "set PUBLIC_URL" note for
+  every other host (copy both from `docker/trackie/aio-init.sh`):
+
+  ```bash
+  PUBLIC_URL=${PUBLIC_URL:-http://[ZIMAOS-IP-ADDRESS]:6164}
+  case $PUBLIC_URL in
+    *"[ZIMAOS-IP-ADDRESS]"*)
+      log "PUBLIC_URL is still $PUBLIC_URL: replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP in the app settings"
+      PUBLIC_URL=${PUBLIC_URL//"[ZIMAOS-IP-ADDRESS]"/localhost} ;;
+  esac
+  ...
+  # host is localhost: anyone on another address gets a note, not a redirect
+  GUARD_FILE=$(dirname "$NGINX_OUT")/aio-guard.conf
+  case $host in
+    localhost|127.0.0.1) cat > "$GUARD_FILE" <<'EOF'
+  if ($host !~* "^(localhost|127\.0\.0\.1)$") {
+      return 503 "... set PUBLIC_URL to http://$host:6164 and save ...\n";
+  }
+  EOF
+      ;;
+    *) : > "$GUARD_FILE" ;;
+  esac
+  ```
+
+  and put `include @GUARD_FILE@;` in every `server` block of the template.
+  The box itself, the healthcheck and service-to-service calls use localhost
+  and still get through. Without this, an OIDC app left on localhost sends
+  every browser to `http://localhost:<port>/...`, which looks broken
+  ("unknown-session", a blank page) instead of saying what is wrong.
 - `mkdir -p` one folder per stateful service under `$DATA`.
 - `ensure_secret NAME BYTES` for every secret (DB password, JWT secret, S3 keys,
   admin password...). Secrets that two services share are one secret used in both
@@ -210,6 +241,49 @@ in aio-init (AppFlowy uses `@WEB_PORT@`, read from the web image's
 timeouts and buffering settings — copy them from upstream. Set
 `client_max_body_size` to what uploads need.
 
+The checker reads aio-init literally: each token needs `s/@TOKEN@/` with `/`
+as the delimiter. A value with slashes (a URL, a path) goes through
+`sed_escape() { printf '%s' "$1" | sed -e 's/[\/&]/\\&/g'; }` first:
+`-e "s/@WEB_ROOT@/$(sed_escape "$WEB_OUT")/g"`.
+
+`proxy_set_header` in a `location` drops **every** `proxy_set_header` from the
+`server` block (nginx inherits them only when the location sets none). Put
+shared ones (Host, X-Forwarded-*, `Accept-Encoding ""`) at server level, or
+repeat all of them in the location.
+
+Upstream reverse-proxy configs often strip a path prefix (Caddy
+`uri strip_prefix /api`). In nginx that is `location /api/ { proxy_pass
+http://127.0.0.1:14702/; proxy_redirect / /api/; }` plus `location = /api` for
+the bare path. Stoat's template has the full set (api, ws, autumn, livekit...).
+
+**Make the app follow the browser's address when you can**, so it works from
+the LAN IP, localhost and a domain at once, whatever `PUBLIC_URL` says:
+- A web app built with placeholders for runtime injection (Vite apps with
+  `VITE_API_URL=__VITE_API_URL__`, upstream `inject.js`): look at the built
+  bundle first (`docker pull`, or download the last layer). If the
+  placeholders are strings in one env object
+  (`{VITE_API_URL:"__VITE_API_URL__",...}`), replace the quoted string with an
+  expression: `"__VITE_API_URL__"` → `(location.origin+"/api")`, host →
+  `location.host`. Check the result with `node --check` on a `.mjs` copy.
+  Don't write the placeholder names literally in aio-init (the checker reads
+  `__NAME__` as a leftover template placeholder): `P=__VITE_` then
+  `"${P}API_URL__"`.
+- An API that hands the client addresses from its config (Stoat's root
+  config lists the websocket, file and voice URLs): rewrite them per request
+  with `sub_filter_types application/json; sub_filter_once off;
+  sub_filter '@PUBLIC_URL@' '$proxy_x_forwarded_proto://$http_host';` and the
+  same for `ws://`/`wss://` (a `map` from `$proxy_x_forwarded_proto`). It needs
+  `proxy_set_header Accept-Encoding "";` so the response isn't compressed.
+- Not possible for OIDC/OAuth servers (Logto, GoTrue, Authentik): their issuer
+  and redirect URIs are fixed and checked. Those apps need the
+  `[ZIMAOS-IP-ADDRESS]` placeholder and the guard page (§3.5).
+
+Static web apps (a Node image that only serves `dist/`) don't need a chroot
+service: copy the files out (`COPY --from=web-dist /app/dist /opt/<app>-web/`),
+fill in the placeholders in aio-init on every start into a world-readable
+folder outside `$RUN` (aio-init's `umask 077` would hide it from nginx), and
+serve them with `root ...; try_files $uri /index.html;`.
+
 ### 3.8 capture-meta.sh, .gitignore, workflow
 
 capture-meta.sh is generic; copy it. The ignore file must be named `.gitignore`
@@ -264,6 +338,49 @@ still has to happen.
   case for any app that needs S3 instead of picking a new S3 server.
 - First start is slow (initdb, migrations, every service waiting in turn). Set
   the healthcheck `start_period` and the "wait about N minutes" tip to match.
+- `PUBLIC_URL` left on localhost: browsers on other devices are sent to
+  `localhost` (Stoat: dark screen and "Couldn't fetch Stoat configuration from
+  'localhost:6167'"; Trackie/Logto: redirect to `localhost:6165/unknown-session`).
+  Follow the browser's address where possible (§3.7), otherwise ship the
+  `[ZIMAOS-IP-ADDRESS]` placeholder with the guard page (§3.5).
+- Distroless images (`gcr.io/distroless`, Stoat's Rust services) have no
+  `/bin/sh`, so run-svc's "cd to WorkingDir" wrapper fails in their chroot.
+  Start the command by its full path from `/` instead (in run-svc's
+  start-up tweaks after the meta is read: `cmd=("$workdir/${cmd[0]#./}" ...);
+  workdir=""`). Check `Entrypoint`/`Cmd`/`WorkingDir`/`User` of every image
+  before writing run-svc (`docker image inspect`, or the registry API).
+- Changing a service's command (Logto's `db seed` + `alteration deploy`,
+  AFFiNE's migration, LiveKit's `--config`): override `entry`/`cmd` in run-svc
+  right after the meta is read, as AFFiNE, authentik and Trackie do.
+- Apps whose database schema is only upgraded by a separate command (Logto:
+  `npm run cli db alteration deploy latest`) must run it before every start,
+  or the weekly bumper's next image breaks the app.
+- One-off jobs (bucket creation, setting a first admin password) are built-in
+  programs with `autorestart=unexpected`, `exitcodes=0`, `startsecs=0` that wait
+  for their service, do the job idempotently and `exit 0` (ente's `s3init`,
+  Tianji's `admin`).
+- A service that can't work until the person finishes a setup step (Trackie
+  before it is registered in Logto) must not crash-loop and hold up the
+  gateway: log what to do and `exec sleep infinity`, let the gateway and the
+  healthcheck wait for something that is up (Logto), and show a note page via
+  `error_page 502 503 504 = @not_ready`.
+- An image published for amd64 only while its files are architecture-free (a
+  static web build, Stoat's for-web): `FROM --platform=linux/amd64 <image>:<tag>
+  AS web-dist` (not `img-`, so capture-meta skips it) keeps arm64 builds
+  working. Per-commit tags have no numeric shape the bumper can follow, so put
+  `# auto-update: hold` above them.
+- WebRTC (LiveKit, coturn): media ports must have the **same number inside and
+  outside** the container, because the server tells browsers which port to
+  use. Use one TCP and one UDP 61xx port (`rtc.tcp_port`, `rtc.udp_port`), not
+  a range mapped to other numbers, and set `node_ip` from `PUBLIC_URL` when it
+  is an IP. Browsers only allow microphone and camera over HTTPS or on
+  localhost, so say so in the tips.
+- The checker reads aio-init literally: `write_env <svc>` must appear once per
+  service on its own line (not in a loop over names), and so must each
+  `pass_env <svc> '<regex>'`. Use an array for a shared environment:
+  `write_env api "${STOAT_ENV[@]}"`.
+- Writing these files from a Python heredoc mangles `\` (line continuations,
+  `\n`, regex escapes). Write them with the editor tool, or check every `\` after.
 
 ## 6. Testing without Docker
 

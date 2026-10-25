@@ -32,6 +32,9 @@ PORT_LOW, PORT_HIGH = 6101, 6199
 AIO_FILES = ["Dockerfile", "aio-init.sh", "run-svc.sh", "capture-meta.sh", "supervisord.conf",
              "nginx.conf.tpl", ".gitignore"]
 OLD_NAMES = re.compile(r"ZimaAppStore|hiraappstore", re.I)
+# Written in an address that the person must change before the app works
+# (COMPOSE.md 7): http://[ZIMAOS-IP-ADDRESS]:61xx.
+IP_PLACEHOLDER = "[ZIMAOS-IP-ADDRESS]"
 PLACEHOLDER = re.compile(r"(?<![A-Za-z0-9])__[A-Z][A-Z0-9_]*__(?![A-Za-z0-9])")
 
 errors, warns = [], []
@@ -202,7 +205,7 @@ def check_compose(root, slug, app_dir):
     if "TZ" in env and env["TZ"] != "$TZ":
         err("TZ must be $TZ")
     for k, v in env.items():
-        if url_port(v) and ports and url_port(v) != ports[0][0] and "localhost" in v:
+        if url_port(v) and ports and url_port(v) != ports[0][0] and ("localhost" in v or IP_PLACEHOLDER in v):
             err(f"{k}={v} uses port {url_port(v)}, but the app is published on {ports[0][0]}")
         if SECRET.search(k) and v and not v.startswith("$"):
             warn(f"{k} has a fixed value in the compose file, so every install gets the same one; make it "
@@ -237,6 +240,13 @@ def check_compose(root, slug, app_dir):
                 err(f"image URL points at a file that is not in the repo: {f.relative_to(root)}")
 
     tips = text((meta.get("tips") or {}).get("before_install"))
+    for k, v in env.items():
+        if IP_PLACEHOLDER not in str(v):
+            continue
+        if IP_PLACEHOLDER not in tips:
+            err(f"{k} starts as {v}, but tips.before_install never tells people to replace {IP_PLACEHOLDER}")
+        if IP_PLACEHOLDER not in notes.get(k, ""):
+            warn(f"{k}'s x-casaos.envs description should say to replace {IP_PLACEHOLDER} with the ZimaOS IP")
     for n in range(2, 40):
         if re.search(rf"(?<!\n){n}\. ", tips) and not re.search(rf"\n\s*{n}\. ", tips):
             err(f"tips.before_install step {n} runs into the previous one (leave a blank line between steps)")
@@ -496,6 +506,10 @@ def check_aio(root, slug, data):
         err(f"all-in-one apps publish container port 8080 (found target {ports[0][1]})")
     if "/opt/rootfs/" in dockerfile and main.get("privileged") is not True:
         err("chroot services need privileged: true (aio-init.sh mounts /proc for them)")
+    if any(IP_PLACEHOLDER in str(v) for v in env_pairs(main.get("environment")).values()) \
+            and IP_PLACEHOLDER not in init:
+        err(f"the compose file ships {IP_PLACEHOLDER} in an address, but aio-init.sh never handles it "
+            f"(it would reach the app as is); see AIO.md 3.5")
     m = re.search(r"PUBLIC_URL:-(\S+?)\}", init)
     if m and ports and url_port(m.group(1)) != ports[0][0]:
         err(f"aio-init.sh default PUBLIC_URL {m.group(1)} does not use the published port {ports[0][0]}")

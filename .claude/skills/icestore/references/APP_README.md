@@ -79,6 +79,12 @@ how to use it from other devices, that more settings are in the Variables tab an
 are added in the app settings, how long first start takes>
 ```
 
+When the app needs a real address (`COMPOSE.md` §7), "Before you install"
+starts with it in bold: "**You must set `PUBLIC_URL` first.** It starts as
+`http://[ZIMAOS-IP-ADDRESS]:6164`: replace `[ZIMAOS-IP-ADDRESS]` with your
+ZimaOS IP, like `http://192.168.1.20:6164`." Write every address people type
+as `http://[ZIMAOS-IP-ADDRESS]:<port>/path`, here and in the steps.
+
 Normal markdown with single newlines is fine here (it is not inside YAML).
 Write it plainly, like the tips.
 

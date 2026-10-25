@@ -22,6 +22,11 @@ http {
         ''      close;
     }
 
+    map $proxy_x_forwarded_proto $ws_scheme {
+        https   wss;
+        default ws;
+    }
+
     # The routes are upstream's Caddyfile: each service under its own path,
     # with the path taken off before it is passed on.
     server {
@@ -37,18 +42,36 @@ http {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        # Plain responses from the services, so the API's addresses can be
+        # rewritten below.
+        proxy_set_header Accept-Encoding "";
 
-        # Tells apps which API this server uses (upstream's stoat.json).
+        # Tells apps which API this server uses (upstream's stoat.json), at
+        # the address the request came in on.
         location = /.well-known/stoat {
             default_type application/json;
             add_header Access-Control-Allow-Origin * always;
-            return 200 '{"api":"@API_URL@"}';
+            return 200 '{"api":"$proxy_x_forwarded_proto://$http_host/api"}';
         }
 
-        location = /api { proxy_pass http://127.0.0.1:14702/; }
+        # The API tells the web app where the websocket, files, link
+        # previews and voice are, using the addresses in Revolt.toml (made
+        # from PUBLIC_URL). They are rewritten to the address the request
+        # came in on, so Stoat works from the LAN IP and from a domain alike.
+        location = /api {
+            proxy_pass http://127.0.0.1:14702/;
+            sub_filter_types application/json;
+            sub_filter_once off;
+            sub_filter '@PUBLIC_URL@' '$proxy_x_forwarded_proto://$http_host';
+            sub_filter '@WS_URL@' '$ws_scheme://$http_host';
+        }
         location /api/ {
             proxy_pass http://127.0.0.1:14702/;
             proxy_redirect / /api/;
+            sub_filter_types application/json;
+            sub_filter_once off;
+            sub_filter '@PUBLIC_URL@' '$proxy_x_forwarded_proto://$http_host';
+            sub_filter '@WS_URL@' '$ws_scheme://$http_host';
         }
 
         # The websocket every client keeps open.

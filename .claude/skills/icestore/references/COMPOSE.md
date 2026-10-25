@@ -117,12 +117,20 @@ short sentences, everyday words, one action per step, no explaining why. It
 must cover, when they apply:
 
 1. Values to set first (`ADMIN_EMAIL`, `CHANGEME` placeholders) — name the variable.
-2. `PUBLIC_URL`: starts as `http://localhost:<port>`; change `localhost` to the
-   ZimaOS IP for other devices.
+2. `PUBLIC_URL` (§7). When the address must be set, the step says so plainly
+   ("You must do this, or sign-in won't work"), quotes the placeholder
+   `http://[ZIMAOS-IP-ADDRESS]:<port>` and gives an example with a real IP.
+   When it is optional, say what changing `localhost` gives (links in emails).
 3. How long the first start takes.
 4. Where to find a generated password (the app log line, e.g. "admin password is").
 5. First sign-in / account creation.
-6. Extra paths like `/console` or `/mail`, written as `http://your-zimaos-ip:<port>/path`.
+6. Extra paths like `/console` or `/mail`, written as
+   `http://[ZIMAOS-IP-ADDRESS]:<port>/path`.
+
+Write every address a person types the same way, in the tips, the
+description, the envs descriptions and the README: `http://[ZIMAOS-IP-ADDRESS]:<port>`,
+never `your-zimaos-ip`, `<your-ip>` or `[SERVER-IP]`. The README's "Before
+you install" starts with the required address in bold when there is one.
 
 ## 6. Images
 
@@ -142,10 +150,26 @@ the files exist (the only allowed `#` lines).
 - `TZ=$TZ` always (ZimaOS fills it in). Never hardcode a time zone.
 - `PUID=$PUID` / `PGID=$PGID` only if upstream lists them (rare for AIO apps:
   services run as their own users inside the container).
-- **App URL**: `PUBLIC_URL=http://localhost:<61xx>` with the literal port, as
-  AppFlowy does. It works on the ZimaOS box itself; `tips.before_install` tells
-  people to change `localhost`. Don't use `CHANGEME_IP`. `$PORT` is not used in
-  IceStore because it hasn't been confirmed to be filled in.
+- **App URL**: `PUBLIC_URL` with the literal 61xx port. `$PORT` is not used in
+  IceStore because it hasn't been confirmed to be filled in. ZimaOS can't fill
+  in the box's IP either (inside the container only the Docker bridge address
+  is known), so pick the default by asking: **does the app work from another
+  device while `PUBLIC_URL` says localhost?**
+  - **No — the address must be set** (the app is or uses an OIDC/OAuth server
+    such as Logto, Authentik or GoTrue whose issuer and redirect URIs are
+    fixed; or it builds absolute redirects the browser follows): ship
+    `PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:<61xx>`. The envs description
+    starts with "Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP".
+    aio-init must handle the placeholder (`AIO.md` §3.5): run on localhost so
+    the services start, and show a "set PUBLIC_URL to http://<this host>:<port>"
+    page to every other address instead of redirecting to localhost.
+    Trackie is the example. The checker fails a placeholder that aio-init or
+    the tips never mention.
+  - **Yes — it is only used for links** (emails, share links) or the app can
+    follow the browser's address (`AIO.md` §3.7, Stoat): ship
+    `PUBLIC_URL=http://localhost:<61xx>`, as AppFlowy does, and the tips say
+    to change `localhost` for working email links.
+  Never `CHANGEME_IP` or `[SERVER-IP]`: one placeholder, `[ZIMAOS-IP-ADDRESS]`.
 - Shell variables (`$HOME`, `$USER`, ...) are never install-time values.
 - Data path is always `/DATA/AppData/$AppID/...`.
 

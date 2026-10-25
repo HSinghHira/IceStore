@@ -24,6 +24,8 @@ http {
     server {
         listen @GATEWAY_PORT@;
         @EXTRA_LISTEN@
+        # Shows "set PUBLIC_URL" instead of a redirect to localhost (aio-init).
+        include @GUARD_FILE@;
         # Budget files are uploaded whole; Actual's own limit decides.
         client_max_body_size 100m;
 
@@ -58,6 +60,8 @@ http {
     server {
         listen 8081;
         @LOGTO_EXTRA_LISTEN@
+        # Shows "set PUBLIC_URL" instead of a redirect to localhost (aio-init).
+        include @GUARD_FILE@;
         location / {
             proxy_pass http://127.0.0.1:3001;
             proxy_http_version 1.1;
@@ -77,6 +81,8 @@ http {
     server {
         listen 8082;
         @ADMIN_EXTRA_LISTEN@
+        # Shows "set PUBLIC_URL" instead of a redirect to localhost (aio-init).
+        include @GUARD_FILE@;
         location / {
             proxy_pass http://127.0.0.1:3002;
             proxy_http_version 1.1;

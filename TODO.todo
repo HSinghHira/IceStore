@@ -320,8 +320,10 @@
           "content": "StoatChat",
           "id": 1792733046164,
           "level": "default",
-          "done": false,
-          "start": 1792733046164
+          "done": true,
+          "start": 1792733046164,
+          "focus": false,
+          "end": 1792908683240
         }
       },
       {
@@ -331,8 +333,10 @@
           "content": "Tianji",
           "id": 1792733058595,
           "level": "default",
-          "done": false,
-          "start": 1792733058595
+          "done": true,
+          "start": 1792733058595,
+          "focus": false,
+          "end": 1792908683780
         }
       },
       {
@@ -342,8 +346,10 @@
           "content": "Trackie",
           "id": 1792733066797,
           "level": "default",
-          "done": false,
-          "start": 1792733066797
+          "done": true,
+          "start": 1792733066797,
+          "focus": false,
+          "end": 1792908684197
         }
       },
       {
@@ -353,8 +359,10 @@
           "content": "VSCodium",
           "id": 1792733071424,
           "level": "default",
-          "done": false,
-          "start": 1792733071424
+          "done": true,
+          "start": 1792733071424,
+          "focus": false,
+          "end": 1792908684757
         }
       },
       {
@@ -377,8 +385,10 @@
           "content": "Yuvomi",
           "id": 1792733092053,
           "level": "default",
-          "done": false,
-          "start": 1792733092053
+          "done": true,
+          "start": 1792733092053,
+          "focus": false,
+          "end": 1792908685765
         }
       },
       {
@@ -388,8 +398,10 @@
           "content": "ZimaBrainCE",
           "id": 1792733098148,
           "level": "default",
-          "done": false,
-          "start": 1792733098148
+          "done": true,
+          "start": 1792733098148,
+          "focus": false,
+          "end": 1792908686097
         }
       },
       {
@@ -416,6 +428,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1792905333913"
+    "version": "1792908686132"
   }
 }

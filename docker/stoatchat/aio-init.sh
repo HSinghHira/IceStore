@@ -246,13 +246,24 @@ log "voice and video: ${VOICE_IP:-your public IP} on port $LIVEKIT_TCP_PORT/tcp 
 
 # ---- web app: fill in the addresses (upstream's inject.js) ----
 # The files are built with placeholders: __VITE_ plus the setting's name
-# (API_URL, HOST, ...) plus two underscores. A blank value becomes
-# undefined, as inject.js does.
+# (API_URL, HOST, ...) plus two underscores, as strings in one settings
+# object. Upstream puts fixed addresses there. Here the host, API and GIF
+# addresses become "the address this page was opened at" (location.host,
+# location.origin), so the same install works from the LAN IP, localhost and
+# a domain behind HTTPS, whatever PUBLIC_URL says. Placeholders anywhere else
+# get PUBLIC_URL's values; blank ones become undefined, as inject.js does.
 P=__VITE_
 inject() {
   local file
   while IFS= read -r -d '' file; do
     grep -q "$P" "$file" || continue
+    case $file in
+      *.js) sed -i \
+              -e "s|\"${P}HOST__\"|location.host|g" \
+              -e "s|\"${P}API_URL__\"|(location.origin+\"/api\")|g" \
+              -e "s|\"${P}GIFBOX_URL__\"|(location.origin+\"/gifbox\")|g" \
+              "$file" ;;
+    esac
     sed -i \
       -e "s|${P}HOST__|$hostport|g" \
       -e "s|${P}API_URL__|$PUBLIC_URL/api|g" \
@@ -287,7 +298,8 @@ fi
 # The addresses have slashes in them, so they are escaped for sed.
 sed_escape() { printf '%s' "$1" | sed -e 's/[\/&]/\\&/g'; }
 sed -e "s/@GATEWAY_PORT@/$GATEWAY_PORT/g" -e "s/@EXTRA_LISTEN@/$EXTRA_LISTEN/g" \
-    -e "s/@API_URL@/$(sed_escape "$PUBLIC_URL/api")/g" -e "s/@WEB_ROOT@/$(sed_escape "$WEB_OUT")/g" \
+    -e "s/@PUBLIC_URL@/$(sed_escape "$PUBLIC_URL")/g" -e "s/@WS_URL@/$(sed_escape "$WS_URL")/g" \
+    -e "s/@WEB_ROOT@/$(sed_escape "$WEB_OUT")/g" \
     "$NGINX_TPL" > "$NGINX_OUT"
 
 # ---- one env file per service: /run/aio/<service>.env ----

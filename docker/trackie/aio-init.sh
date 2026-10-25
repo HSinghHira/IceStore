@@ -19,8 +19,16 @@ log() { echo "[init] $*"; }
 # PUBLIC_URL is Trackie (upstream's SERVER_HOSTNAME). Logto's sign-in server
 # and admin console use the same host with ports 6165 and 6166, unless
 # LOGTO_ENDPOINT or LOGTO_ADMIN_ENDPOINT say otherwise (for your own domains).
-PUBLIC_URL=${PUBLIC_URL:-http://localhost:6164}
+PUBLIC_URL=${PUBLIC_URL:-http://[ZIMAOS-IP-ADDRESS]:6164}
 PUBLIC_URL=${PUBLIC_URL%/}
+# The compose file ships http://[ZIMAOS-IP-ADDRESS]:6164 so people see they
+# must put their IP there. Until they do, run on localhost (so Logto starts)
+# and show the "set PUBLIC_URL" note to every other address (below).
+case $PUBLIC_URL in
+  *"[ZIMAOS-IP-ADDRESS]"*)
+    log "PUBLIC_URL is still $PUBLIC_URL: replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP in the app settings"
+    PUBLIC_URL=${PUBLIC_URL//"[ZIMAOS-IP-ADDRESS]"/localhost} ;;
+esac
 case $PUBLIC_URL in
   http://*|https://*) ;;
   *) log "PUBLIC_URL must start with http:// or https:// (got: $PUBLIC_URL)"; exit 1 ;;
@@ -41,7 +49,7 @@ for u in "$LOGTO_URL" "$LOGTO_ADMIN_URL"; do
 done
 log "trackie: $PUBLIC_URL  sign-in (Logto): $LOGTO_URL  Logto admin console: $LOGTO_ADMIN_URL"
 if [ "$host" = localhost ]; then
-  log "PUBLIC_URL uses localhost, so sign-in only works on this server; set it to http://<your-zimaos-ip>:6164"
+  log "PUBLIC_URL uses localhost, so sign-in only works on this server; set it to http://[ZIMAOS-IP-ADDRESS]:6164 with your IP"
 fi
 
 # ---- one folder per stateful service under /data ----
@@ -166,9 +174,28 @@ LOGTO_EXTRA_LISTEN=""
 [ "$LOGTO_PORT" = "$WEB_PORT" ] || LOGTO_EXTRA_LISTEN=$(extra_listen "$LOGTO_PORT")
 ADMIN_EXTRA_LISTEN=""
 [ "$ADMIN_PORT" = "$WEB_PORT" ] || [ "$ADMIN_PORT" = "$LOGTO_PORT" ] || ADMIN_EXTRA_LISTEN=$(extra_listen "$ADMIN_PORT")
+# Logto's addresses are fixed (they are in every sign-in token), so with
+# the default PUBLIC_URL (localhost) every sign-in from another device is
+# sent to localhost and fails. In that case anyone opening Trackie or Logto
+# from another address gets a short note saying what to set instead.
+# Requests to localhost/127.0.0.1 (the box itself, the healthcheck, Trackie
+# calling Logto) still go through.
+GUARD_FILE=$(dirname "$NGINX_OUT")/aio-guard.conf
+case $host in
+  localhost|127.0.0.1)
+    cat > "$GUARD_FILE" <<'EOF'
+if ($host !~* "^(localhost|127\.0\.0\.1)$") {
+    return 503 "Trackie is not set up for this address yet.\n\nPUBLIC_URL still has no ZimaOS IP in it, so sign-in would send you to localhost.\n\nOpen the Trackie app settings in ZimaOS, set PUBLIC_URL to http://$host:6164 and save. After the app restarts, open http://$host:6166 for the Logto admin console.\n";
+}
+EOF
+    ;;
+  *) : > "$GUARD_FILE" ;;
+esac
+sed_escape() { printf '%s' "$1" | sed -e 's/[\/&]/\\&/g'; }
 sed -e "s/@GATEWAY_PORT@/$GATEWAY_PORT/g" -e "s/@EXTRA_LISTEN@/$EXTRA_LISTEN/g" \
     -e "s/@LOGTO_EXTRA_LISTEN@/$LOGTO_EXTRA_LISTEN/g" -e "s/@ADMIN_EXTRA_LISTEN@/$ADMIN_EXTRA_LISTEN/g" \
-    -e "s/@ADMIN_PORT@/${ADMIN_PORT:-6166}/g" "$NGINX_TPL" > "$NGINX_OUT"
+    -e "s/@ADMIN_PORT@/${ADMIN_PORT:-6166}/g" -e "s/@GUARD_FILE@/$(sed_escape "$GUARD_FILE")/g" \
+    "$NGINX_TPL" > "$NGINX_OUT"
 
 # ---- one env file per service: /run/aio/<service>.env ----
 mkdir -p "$RUN"

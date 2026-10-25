@@ -43,6 +43,13 @@ Then check by hand what it can't see:
 8. **`tips.before_install`** reads like it was written for a 4th grader, covers
    install to first use, and its wait time matches the healthcheck `start_period`.
 9. **README and x-casaos.description** say the same things.
+9a. **Other devices**: open the app (in your head, or for real) from another
+    device with `PUBLIC_URL` left at its default. Either it works (it follows
+    the browser's address, `AIO.md` §3.7), or `PUBLIC_URL` ships as
+    `http://[ZIMAOS-IP-ADDRESS]:<port>`, the tips and README say first that
+    it must be set, and the app shows a "set PUBLIC_URL" page instead of
+    redirecting to localhost (`AIO.md` §3.5). Every address people type is
+    written `http://[ZIMAOS-IP-ADDRESS]:<port>`.
 10. **Images** the user still has to add are listed in your reply.
 11. **AIO version**: `AIO_VERSION` in the workflow is bumped for any change to
     `docker/<app>/`.

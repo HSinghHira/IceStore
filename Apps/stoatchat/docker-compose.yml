@@ -53,10 +53,10 @@ services:
         - container: PUBLIC_URL
           description:
             en_US: >-
-              The address you open Stoat at, like http://192.168.1.20:6167.
-              Change localhost to your ZimaOS IP, or Stoat only works on the
-              ZimaOS box itself. Voice and video need HTTPS: use your own
-              domain, like https://chat.example.com, behind a reverse proxy.
+              Your main address for Stoat, like https://chat.example.com or
+              http://192.168.1.20:6167. Stoat works from any address you open
+              it at; this one is used for links in emails and, when it is an
+              IP, for voice. Voice and video need HTTPS.
       ports:
         - container: "8080"
           description:
@@ -183,6 +183,7 @@ x-casaos:
   update_at: "2026-10-25"
   release_notes:
     en_US: |-
+      - The web app now works from whatever address you open it at (LAN IP, localhost or your domain), instead of only the one in PUBLIC_URL. Before, it showed a dark screen or "Couldn't fetch Stoat configuration from 'localhost:6167'".
       - Moved to IceStore as a single container with one data folder. The web port changed from 8422 to 6167 and voice uses 6168 (TCP) and 6169 (UDP) instead of 8423-8429. The app id is now com.icestore.stoatchat.
       - The file encryption key, the VAPID push keys, the LiveKit key and every internal password are made on first start, so each install gets its own. The compose file no longer ships fixed keys.
       - Routes, ports and Revolt.toml follow upstream's self-hosted setup (the services listen on 14702-14706), and every Revolt.toml setting can be set with a REVOLT__SECTION__KEY variable.
