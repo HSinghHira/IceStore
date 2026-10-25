@@ -1,0 +1,192 @@
+name: tianji
+
+services:
+  tianji:
+    image: ghcr.io/hsinghhira/tianji:latest
+    container_name: tianji
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6163
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6163"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1536M
+        reservations:
+          cpus: "0.25"
+          memory: 384M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/icon.png
+    x-casaos:
+      id: com.icestore.tianji
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Tianji at, like http://192.168.1.20:6163.
+              Change localhost to your ZimaOS IP so tracking scripts, status
+              pages and links work from other devices. Use your own domain if
+              you put Tianji behind HTTPS.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The first password for the admin account. Leave it blank and
+              the app makes one on first start and shows it in the app log.
+              It is only used until you change the password in Tianji.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Tianji dashboard, API, tracker script and reporter endpoint, published on host as 6163
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (websites, monitors, servers, surveys and
+              accounts), the secret keys and admin-password.txt.
+
+x-casaos:
+  id: com.icestore.tianji
+  architectures:
+    - amd64
+    - arm64
+  main: tianji
+  author: HSinghHira
+  category: Developer
+  developer: msgbyte
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/screenshot-5.png
+  title:
+    en_US: Tianji
+  tagline:
+    en_US: Website analytics, uptime monitoring and server status in one app.
+  description:
+    en_US: >-
+      Tianji is an all-in-one insight hub: website analytics like Umami or
+      Google Analytics, uptime checks like Uptime Kuma and a server status
+      page, in one light self-hosted app. This is Tianji in a single
+      container, with PostgreSQL inside, one port and one data folder. The
+      secret key, the database passwords and the admin password are made for
+      you on first start.
+
+
+      **Features**
+
+
+      - Cookie-free, privacy-friendly website analytics with one small
+        tracking script
+
+      - Uptime monitors for websites and services, with notifications
+
+      - Server and Docker status from a small reporter you run on each
+        server
+
+      - Public status pages to share with your users
+
+      - Surveys, event feeds, short links and an AI gateway with cost
+        tracking
+
+
+      **How to use?**
+
+
+      1. Find the admin password in the app log, on the line that says
+         "Tianji login is".
+
+
+      2. Open Tianji from the Zima OS dashboard and sign in as admin.
+
+
+      3. Change the password in Settings.
+
+
+      4. Add a website, a monitor or a server.
+
+
+      5. For website analytics, copy the tracking script from the website's
+         page and add it to your site.
+
+
+      6. For server status, run the tianji-reporter on that server and point
+         it at http://your-zimaos-ip:6163.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6163. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6163, so
+           tracking scripts and status pages work from other devices.
+
+
+        3. Leave ADMIN_PASSWORD blank to get a random one, or type your own.
+
+
+        4. More settings, like sign-up, email and sign in with GitHub or
+           Google, are listed on the Tianji page at
+           https://icestore.hsinghhira.me/app/tianji/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about two minutes. The first start sets up the database.
+
+
+        7. Open the app log. Find the line that says "Tianji login is". It
+           shows the admin password. It is also in admin-password.txt in the
+           app folder.
+
+
+        8. Open http://your-zimaos-ip:6163 and sign in as admin with that
+           password.
+
+
+        9. Change the password in Settings.
+  index: /
+  port_map: "6163"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.33.12"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore as a single container with one port (6163, was 8432) and one data folder. The app id is now com.icestore.tianji.
+      - The JWT secret, the database passwords and the admin password are made on first start, so each install gets its own. The default admin / admin login is replaced.
+      - moonrailgun/tianji 1.33.12
+      - PostgreSQL 15 inside
+  repo: "https://github.com/msgbyte/tianji"
+  support: "https://github.com/msgbyte/tianji/issues"
+  docs: "https://tianji.dev/docs/intro"

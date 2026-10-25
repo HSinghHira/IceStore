@@ -1,0 +1,228 @@
+name: trackie
+
+services:
+  trackie:
+    image: ghcr.io/hsinghhira/trackie:latest
+    container_name: trackie
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6164
+      - ACTUAL_OPENID_CLIENT_ID=
+      - ACTUAL_OPENID_CLIENT_SECRET=
+    ports:
+      - target: 8080
+        published: "6164"
+        protocol: tcp
+      - target: 8081
+        published: "6165"
+        protocol: tcp
+      - target: 8082
+        published: "6166"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/icestore-health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1536M
+        reservations:
+          cpus: "0.25"
+          memory: 384M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackie/icon.png
+    x-casaos:
+      id: com.icestore.trackie
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. Transactions are put on days in this time zone.
+              It is filled in from your ZimaOS time zone; Trackie is made for
+              Pacific/Auckland.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Trackie at, like http://192.168.1.20:6164.
+              Change localhost to your ZimaOS IP, or sign-in only works on the
+              ZimaOS box itself. The sign-in server and its admin console use
+              the same address with ports 6165 and 6166.
+        - container: ACTUAL_OPENID_CLIENT_ID
+          description:
+            en_US: >-
+              The App ID of Trackie in the Logto admin console (port 6166).
+              Leave it blank for the first install; the install tips show
+              where to find it. Trackie starts once this and the secret are
+              set.
+        - container: ACTUAL_OPENID_CLIENT_SECRET
+          description:
+            en_US: >-
+              The App secret of Trackie in the Logto admin console. Leave it
+              blank for the first install.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Trackie web app, published on host as 6164
+        - container: "8081"
+          description:
+            en_US: Logto sign-in server (OIDC), published on host as 6165
+        - container: "8082"
+          description:
+            en_US: Logto admin console, published on host as 6166. Keep it on your home network.
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Budgets and accounts (trackie/), the sign-in server's
+              database (postgres/) and the secret keys (state/). Back up the
+              whole folder: without state/secrets.env nobody finds their
+              budget again.
+
+x-casaos:
+  id: com.icestore.trackie
+  architectures:
+    - amd64
+  main: trackie
+  author: HSinghHira
+  category: Finance
+  developer: trackie-nz
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackie/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackie/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackie/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackie/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackie/screenshot-3.png
+  title:
+    en_US: Trackie (Actual Budget - NZ Fork)
+  tagline:
+    en_US: Free, private budgeting for New Zealand, built on Actual Budget.
+  description:
+    en_US: >-
+      Trackie is a New Zealand fork of Actual Budget, a fast, private,
+      open-source budgeting app. This is the same code that runs trackie.nz,
+      in a single container with its Logto sign-in server and PostgreSQL
+      inside. The secret keys and database passwords are made for you on
+      first start, and Logto's signing key is switched to RSA for you.
+
+
+      **Features**
+
+
+      - Your own private budget for each person, made the first time they
+        sign in
+
+      - Passwordless sign-in with a code sent by email, through the
+        built-in Logto server
+
+      - Optional end-to-end encryption you control
+
+      - NZ bank sync through Akahu, with each person's own tokens
+
+      - NZ defaults: DD/MM/YYYY dates, weeks start on Monday
+
+
+      **How to use?**
+
+
+      1. Do the one-time Logto setup in the install tips.
+
+
+      2. Open Trackie from the Zima OS dashboard.
+
+
+      3. Sign in with your email to make your budget.
+
+
+      4. Link your bank under Settings if you want transactions to sync by
+         themselves.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6164. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6164.
+
+
+        3. Leave ACTUAL_OPENID_CLIENT_ID and ACTUAL_OPENID_CLIENT_SECRET
+           blank for now.
+
+
+        4. Start the installation. Wait about three minutes.
+
+
+        5. Open the Logto admin console at http://your-zimaos-ip:6166.
+           Make your Logto admin account.
+
+
+        6. In Logto, open Connectors, Email and SMS. Add an SMTP email
+           connector with your mail account. Logto sends the sign-in codes
+           with it.
+
+
+        7. In Logto, open Sign-in experience. Choose sign-in with Email and
+           a Verification code. Save.
+
+
+        8. In Logto, open Applications. Make a new Traditional web app
+           called Trackie.
+
+
+        9. In its settings, add this Redirect URI:
+           http://your-zimaos-ip:6164/openid/callback (your PUBLIC_URL plus
+           /openid/callback). Save.
+
+
+        10. Copy the App ID and the App secret.
+
+
+        11. Open the Trackie app settings in ZimaOS. Paste the App ID into
+            ACTUAL_OPENID_CLIENT_ID and the App secret into
+            ACTUAL_OPENID_CLIENT_SECRET. Save.
+
+
+        12. Wait a minute. Open http://your-zimaos-ip:6164 and sign in with
+            your email.
+
+
+        13. Without HTTPS your browser may say Trackie can't run. Click
+            Advanced options and use the fallback mode, or put Trackie
+            behind HTTPS.
+
+
+        14. More settings are listed on the Trackie page at
+            https://icestore.hsinghhira.me/app/trackie/ (Variables tab). You
+            can add them now or later in the app settings.
+  index: /
+  port_map: "6164"
+  scheme: http
+  is_uncontrolled: false
+  version: "26.9.0-trackie.2"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore as a single container with one data folder. Ports changed from 8465-8467 to 6164 (Trackie), 6165 (Logto) and 6166 (Logto admin console). The app id is now com.icestore.trackie.
+      - The identity secret, the Akahu token secret and the database passwords are made on first start, so each install gets its own. The compose file no longer ships fixed ones.
+      - Logto's signing key is switched to RSA on first start and its database is brought up to date on every start, so there is no key rotation to do by hand.
+      - The Logto addresses and the discovery URL now come from PUBLIC_URL.
+      - ghcr.io/trackie-nz/trackie 26.9.0-trackie.2
+      - svhd/logto 1.45.0
+      - PostgreSQL 17 inside
+      - amd64 only: upstream publishes no arm64 Trackie image.
+  repo: "https://github.com/trackie-nz/trackie"
+  support: "https://github.com/trackie-nz/trackie/issues"
+  docs: "https://github.com/trackie-nz/trackie/tree/main/docs"

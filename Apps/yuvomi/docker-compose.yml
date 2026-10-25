@@ -1,0 +1,177 @@
+name: yuvomi
+
+services:
+  yuvomi:
+    image: ghcr.io/hsinghhira/yuvomi:latest
+    container_name: yuvomi
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 3000
+        published: "6161"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/backups
+        target: /backups
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/modules
+        target: /app/modules
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', r => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yuvomi/icon.png
+    x-casaos:
+      id: com.icestore.yuvomi
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, used for backups and as the starting household
+              time zone. It is filled in from your ZimaOS time zone. Leave it
+              unless you need another.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Yuvomi web app, published on host as 6161
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database with all your household's data, and its two keys
+              (.session_secret and .db_encryption_key, made on first start).
+              Back up the whole folder: without .db_encryption_key the
+              database can't be opened.
+        - container: /backups
+          description:
+            en_US: Scheduled and manual backups. They need the same database key to restore.
+        - container: /app/modules
+          description:
+            en_US: Optional drop-in modules from other people (see MODULES.md upstream).
+
+x-casaos:
+  id: com.icestore.yuvomi
+  architectures:
+    - amd64
+    - arm64
+  main: yuvomi
+  author: HSinghHira
+  category: Home
+  developer: ulsklyc
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yuvomi/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yuvomi/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yuvomi/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yuvomi/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yuvomi/screenshot-3.png
+  title:
+    en_US: Yuvomi
+  tagline:
+    en_US: One private home for tasks, calendar, budget, meals and everything else that runs a household
+  description:
+    en_US: >-
+      Yuvomi is a self-hosted family planner that replaces a dozen separate
+      apps (tasks, calendar, budget, shopping, meals and more) with one
+      private place on your own server. Each install makes its own session
+      secret and database key on first start, and the database is encrypted.
+
+
+      **Features**
+
+
+      - Modules for Tasks, Shopping, Meals, Recipes, Pantry, Calendar,
+        Documents, Inventory, Budget, Housekeeping, Rewards, Health,
+        Schedule, Notes and Contacts, Birthdays, Family, Reminders and
+        Backup. Turn on only what your household needs.
+
+      - Modules work together: a meal plan fills the shopping list, a done
+        chore pays reward points
+
+      - Two-way Google, Outlook and CalDAV calendar sync, sign-in with
+        OIDC, two-factor sign-in and invite links for family members
+
+      - Encrypted database (SQLCipher), no telemetry, scheduled backups
+        and a REST and MCP API
+
+
+      **How to use?**
+
+
+      1. Open Yuvomi from the Zima OS dashboard.
+
+
+      2. Make your household's admin account on the first screen.
+
+
+      3. Turn on the modules you want in Settings.
+
+
+      4. Invite the rest of the family with an invite link. Each person
+         picks their own password.
+
+
+      5. Calendar sync, weather, sign-in with OIDC and WebDAV backups can be
+         added later in Settings or in the Variables tab on the IceStore
+         page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. You don't need to change anything.
+
+
+        2. Wait about 30 seconds.
+
+
+        3. Open Yuvomi from the Zima OS dashboard.
+
+
+        4. Make your admin account on the first screen.
+
+
+        5. Back up the app folder /DATA/AppData/yuvomi now and then. It
+           holds the database key (.db_encryption_key). Without it nobody
+           can open your data, not even the app maker.
+
+
+        6. More settings, like email, weather, calendar sync and sign-in
+           with OIDC, are listed on the Yuvomi page at
+           https://icestore.hsinghhira.me/app/yuvomi/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6161"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.79.0"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore. The port changed from 8434 to 6161 and the app id is now com.icestore.yuvomi.
+      - Now runs ghcr.io/hsinghhira/yuvomi: ghcr.io/ulsklyc/yuvomi 2.79.0 plus a start script that makes this install's SESSION_SECRET and DB_ENCRYPTION_KEY on first start and keeps them in the data folder. The compose file no longer ships fixed keys.
+      - Optional settings moved to the Variables tab on the IceStore website.
+  repo: "https://github.com/ulsklyc/yuvomi"
+  support: "https://github.com/ulsklyc/yuvomi/issues"
+  docs: "https://github.com/ulsklyc/yuvomi/tree/main/docs"
