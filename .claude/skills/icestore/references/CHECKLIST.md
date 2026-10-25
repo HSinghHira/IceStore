@@ -29,8 +29,9 @@ Then check by hand what it can't see:
    `release_notes` lists the same tags.
 4. **arm64**: every upstream image has it, or arm64 is removed from both the
    workflow and `architectures`.
-5. **No secrets** in any committed file. AIO compose files carry none; simple
-   ones carry only freshly generated values, never real credentials.
+5. **No secrets** in any committed file, and none in any compose file: each
+   install makes its own (aio-init.sh, a wrapper image, or the app itself).
+   The checker warns about a fixed password/secret/token/key value.
 6. **Settings**: compose `environment:` is short (`TZ`, `PUBLIC_URL`, admin).
    Every other setting a person might change (sign-up, SMTP, sign-in
    providers, feature switches, API keys, log level) is in the README

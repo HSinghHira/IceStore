@@ -1,0 +1,167 @@
+name: portracker
+
+services:
+  portracker:
+    image: mostafawahied/portracker:1.3.14
+    container_name: portracker
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    pid: "host"
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    environment:
+      - TZ=$TZ
+      - ENABLE_AUTH=true
+      - SESSION_SECRET=da0a97ffbde6f4866988abf1f976cdad3145a020546f7013b994e2bc32e1ff87
+    ports:
+      - target: 4999
+        published: "6158"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/portracker/icon.png
+    x-casaos:
+      id: com.icestore.portracker
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: ENABLE_AUTH
+          description:
+            en_US: >-
+              Turns on portracker's login screen and setup wizard. Set to
+              false to leave the dashboard open to anyone on your network.
+        - container: SESSION_SECRET
+          description:
+            en_US: >-
+              Pre-filled with a random value. It keeps you signed in when the
+              app restarts. You can replace it with your own random text.
+      ports:
+        - container: "4999"
+          description:
+            en_US: Dashboard web UI, published on host as 6158
+      volumes:
+        - container: /data
+          description:
+            en_US: The SQLite database with your settings, peers and login.
+        - container: /var/run/docker.sock
+          description:
+            en_US: >-
+              Read-only access to Docker, used to find your containers and
+              their ports.
+
+x-casaos:
+  id: com.icestore.portracker
+  architectures:
+    - amd64
+    - arm64
+  main: portracker
+  author: HSinghHira
+  category: Networking
+  developer: mostafa-wahied
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/portracker/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/portracker/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/portracker/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/portracker/screenshot-2.png
+  title:
+    en_US: portracker
+  tagline:
+    en_US: Live, self-hosted port monitoring and discovery for your homelab
+  description:
+    en_US: >-
+      portracker scans your host and your Docker containers and builds a
+      live map of every port in use, so messy spreadsheets and surprise port
+      conflicts stop happening.
+
+
+      **Features**
+
+
+      - Finds ports on the host and in Docker containers by itself, and shows
+        internal and published ports apart
+
+      - Add other portracker servers as peers to see every server,
+        container and VM on one dashboard
+
+      - Built-in login with a first-run setup wizard (no OIDC or other
+        sign-in providers yet)
+
+      - One small container with a built-in SQLite database
+
+
+      **How to use?**
+
+
+      1. Open portracker from the Zima OS dashboard.
+
+      2. Follow the setup wizard and make your admin username and password.
+
+      3. portracker starts scanning right away. There is nothing else to set
+         up to see host and Docker ports.
+
+      4. To watch more machines, install portracker there too and add it as
+         a peer from the Settings gear.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. There is nothing you must set first.
+
+
+        2. SESSION_SECRET is already filled with a random value. You can
+           type your own random text if you like.
+
+
+        3. Wait a few seconds for the first start.
+
+
+        4. Open http://your-zimaos-ip:6158 in your browser.
+
+
+        5. Follow the setup wizard to make your admin username and password.
+
+
+        6. Forgot your password? Add RECOVERY_MODE=true in the app settings,
+           restart, and find the recovery code in the app log.
+
+
+        7. More settings, like UDP scanning and TrueNAS, are listed on the
+           portracker page at https://icestore.hsinghhira.me/app/portracker/
+           (Variables tab). You can add them now or later in the app settings.
+  index: /
+  port_map: "6158"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.3.14"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore, now on port 6158
+      - Pinned to mostafawahied/portracker 1.3.14
+      - Data moved to /DATA/AppData/portracker/data
+  repo: "https://github.com/mostafa-wahied/portracker"
+  support: "https://github.com/mostafa-wahied/portracker/issues"
+  docs: "https://github.com/mostafa-wahied/portracker#readme"

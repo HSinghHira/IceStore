@@ -23,6 +23,12 @@ by `.github/workflows/build-<app>.yml`. AppFlowy is the reference example.
 
 - **Simple** — upstream is one image that just needs env vars, a port and a
   volume. Only `Apps/<app>/` is needed. Use `templates/docker-compose.simple.yml`.
+- **Wrapper** — a simple app that needs a secret unique to each install (an
+  encryption key, a session or JWT secret) and doesn't make one itself. The
+  image is upstream's plus one start script that makes the secret on first
+  start and keeps it in the data folder. Needs `Apps/<app>/`, `docker/<app>/`
+  (`Dockerfile`, a start script) and `build-<app>.yml`. Read
+  `references/WRAPPER.md`. Pocket ID is the example.
 - **All-in-one** — upstream needs two or more containers to work, or the user
   asks for a single-container version. Needs `Apps/<app>/`, `docker/<app>/` and
   `build-<app>.yml`. Read `references/AIO.md` before writing anything.
@@ -91,8 +97,12 @@ folder, the compose `name:`, the main service name, the image name
   those in the ZimaOS app settings. `aio-init.sh` must read every one, with
   missing or blank meaning "use the default" (`references/COMPOSE.md` §8,
   `references/APP_README.md`, `references/AIO.md` §3.5).
-- **AIO apps ship no secrets in the compose file.** `aio-init.sh` makes them on
-  first start and keeps them in `/data/state/secrets.env`.
+- **Every install gets its own secrets.** A secret in the compose file is the
+  same for everyone who installs the app, so no compose file ships one. AIO
+  apps make them in `aio-init.sh` (`/data/state/secrets.env`); a simple app
+  whose secret must be unique and that doesn't make one itself becomes a
+  wrapper image (`references/WRAPPER.md`). Only an app that makes the secret
+  itself when it's missing may leave it out entirely.
 - **One number, four places.** The app's 61xx port is the published port,
   `x-casaos.port_map`, the port in the `PUBLIC_URL` default in the compose file,
   and the port in the `PUBLIC_URL` default in `aio-init.sh`. The container port of
@@ -126,6 +136,7 @@ folder, the compose `name:`, the main service name, the image name
 - `references/REPO.md` — the IceStore tree, both workflows, what the site reads.
 - `references/COMPOSE.md` — compose and x-casaos rules, variables, secrets, tips.
 - `references/AIO.md` — how the all-in-one image works and how to port a new app.
+- `references/WRAPPER.md` — upstream image + a start script for per-install secrets.
 - `references/APP_README.md` — per-app README front matter, sections and images.
 - `references/CHECKLIST.md` — the final human check.
 - `templates/` — compose (simple and AIO), README, workflow, and `aio/` skeletons.

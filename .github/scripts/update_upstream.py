@@ -15,6 +15,9 @@ main image's commit tag.
 
 To keep an image where it is, put this comment on the line above its FROM:
     # auto-update: hold
+To take newer tags only while the first number stays the same (odoo
+20.0-20261015 -> 20.0-20261101, never 21.0-...), put this one there instead:
+    # auto-update: keep-major
 
 When something changes in an app, this also:
   - raises the patch number of AIO_VERSION in .github/workflows/build-<app>.yml
@@ -40,6 +43,7 @@ from pathlib import Path
 
 FROM_RE = re.compile(r"^(FROM\s+(?:--platform=\S+\s+)?)(\S+?):([^\s@]+)(\s.*)?$")
 HOLD_RE = re.compile(r"#\s*auto-update:\s*hold", re.I)
+KEEP_MAJOR_RE = re.compile(r"#\s*auto-update:\s*keep-major", re.I)
 NUM_RE = re.compile(r"\d+")
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 MANIFEST_TYPES = ", ".join([
@@ -134,9 +138,11 @@ def key(tag):
     return tuple(int(n) for n in NUM_RE.findall(tag))
 
 
-def newest(image, current):
+def newest(image, current, keep_major=False):
     pattern = shape(current)
     candidates = [t for t in list_tags(image) if pattern.match(t)]
+    if keep_major:
+        candidates = [t for t in candidates if key(t)[:1] == key(current)[:1]]
     best = max(candidates, key=key, default=current)
     return best if key(best) > key(current) else None
 
@@ -158,7 +164,8 @@ def update_dockerfile(path):
             print(f"  hold  {image}:{tag}")
             continue
         try:
-            new = follow_latest(image, tag) if COMMIT_RE.match(tag) else newest(image, tag)
+            keep_major = i > 0 and bool(KEEP_MAJOR_RE.search(lines[i - 1]))
+            new = follow_latest(image, tag) if COMMIT_RE.match(tag) else newest(image, tag, keep_major)
         except Exception as e:  # one bad registry should not stop the others
             print(f"  WARN  {image}: could not list tags ({e})", file=sys.stderr)
             continue

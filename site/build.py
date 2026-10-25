@@ -52,7 +52,7 @@ ROOT = HERE.parent
 TPL = HERE / "templates"
 STATIC = HERE / "static"
 IMG_EXT = {".png", ".webp", ".jpg", ".jpeg", ".gif", ".svg"}
-SECRET = r"(?:pass(?:word)?|secret|token|api[_-]?key|private[_-]?key)"
+SECRET = r"(?:pass(?:word)?|secret|token|api[_-]?key|private[_-]?key|encryption[_-]?key)"
 DEFAULTS = {
     "site_name": "IceStore",
     "tagline": "3rd-Party Community AppStore for Zima OS, Casa OS and Homeio",

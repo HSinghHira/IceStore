@@ -4,8 +4,10 @@
     python3 check_app.py <repo root> <app folder name>
     python3 check_app.py ~/IceStore appflowy
 
-Checks Apps/<app>/ (compose, README, images) and, for all-in-one apps whose
-image is ghcr.io/hsinghhira/<app>, also docker/<app>/ and the build workflow.
+Checks Apps/<app>/ (compose, README, images) and, for apps whose image is
+ghcr.io/hsinghhira/<app>, also docker/<app>/ and the build workflow: the full
+all-in-one layout, or a wrapper image (upstream image + an IceStore start
+script, no aio-init.sh) as Pocket ID uses to make per-install secrets.
 Prints ERROR / WARN lines. Exit code 1 when there is any ERROR.
 """
 import re
@@ -25,7 +27,7 @@ CATEGORIES = {"Media", "Productivity", "Home", "Networking", "AI", "Finance", "S
 SITE_ICONS = {"github", "plus", "plus-circle", "issues", "grid", "copy", "check", "search", "info",
               "external-link", "code", "arrow-left", "arrow-right", "package", "tag", "plug", "monitor",
               "table", "file-code", "server", "mail", "globe"}
-SECRET = re.compile(r"(?:pass(?:word)?|secret|token|api[_-]?key|private[_-]?key)", re.I)
+SECRET = re.compile(r"(?:pass(?:word)?|secret|token|api[_-]?key|private[_-]?key|encryption[_-]?key)", re.I)
 PORT_LOW, PORT_HIGH = 6101, 6199
 AIO_FILES = ["Dockerfile", "aio-init.sh", "run-svc.sh", "capture-meta.sh", "supervisord.conf",
              "nginx.conf.tpl", ".gitignore"]
@@ -203,7 +205,8 @@ def check_compose(root, slug, app_dir):
         if url_port(v) and ports and url_port(v) != ports[0][0] and "localhost" in v:
             err(f"{k}={v} uses port {url_port(v)}, but the app is published on {ports[0][0]}")
         if SECRET.search(k) and v and not v.startswith("$"):
-            warn(f"{k} has a fixed value in the compose file; all-in-one apps make secrets on first start")
+            warn(f"{k} has a fixed value in the compose file, so every install gets the same one; make it "
+                 f"on first start instead (the app itself, aio-init.sh, or a wrapper image, COMPOSE.md 9)")
     descs, notes = {}, {}
     for name, svc in services.items():
         for e in ((svc or {}).get("x-casaos") or {}).get("envs") or []:
@@ -325,10 +328,84 @@ def sh_ok(path):
         err(f"{path.name} has a shell syntax error: {r.stderr.strip()}")
 
 
+def check_workflow(root, slug, data, aio):
+    wf = Path(root, ".github", "workflows", f"build-{slug}.yml")
+    if not wf.exists():
+        err(f".github/workflows/build-{slug}.yml is missing (nothing builds the image)")
+        return
+    w = wf.read_text(encoding="utf-8")
+    if f"docker/{slug}" not in w:
+        err(f"build-{slug}.yml does not build docker/{slug}")
+    if not re.search(rf"/{slug}\b", w):
+        err(f"build-{slug}.yml does not push ghcr.io/<owner>/{slug}")
+    if aio and "capture-meta.sh" not in w:
+        err(f"build-{slug}.yml must run capture-meta.sh before the build")
+    if "linux/arm64" not in w and "arm64" in (data.get("x-casaos") or {}).get("architectures", []):
+        err("x-casaos lists arm64 but the workflow does not build linux/arm64")
+    if "workflow_dispatch" not in w:
+        err(f"build-{slug}.yml needs 'workflow_dispatch:' (update-upstream.yml starts the build with it)")
+    if not re.search(r'(?m)^\s*AIO_VERSION:\s*"\d+\.\d+\.\d+"', w):
+        warn(f'build-{slug}.yml: AIO_VERSION is not in the form "x.y.z", so the weekly bumper cannot raise it')
+
+
+def check_bumper_shapes(root, slug, data, tags):
+    """The weekly bumper (.github/scripts/update_upstream.py) edits these in place."""
+    for tag in tags:
+        if tag != "latest" and not re.search(r"\d", tag):
+            warn(f"FROM tag '{tag}' has no numbers, so the weekly bumper never updates it")
+    version = str((data.get("x-casaos") or {}).get("version") or "")
+    commit_short = len(version) >= 7 and any(
+        re.fullmatch(r"[0-9a-f]{40}", t) and t.startswith(version) for t in tags)
+    if tags and version not in tags and not commit_short:
+        warn(f"x-casaos.version '{version}' is not the tag of any upstream FROM line, "
+             f"so the weekly bumper cannot keep it in step (use the main image's tag exactly)")
+    compose_text = Path(root, "Apps", slug, "docker-compose.yml").read_text(encoding="utf-8")
+    if not re.search(r"(?m)^  release_notes:\n    en_US: \|-?\n", compose_text):
+        warn("release_notes is not written as 'en_US: |-' with bullets, so the weekly bumper cannot add notes")
+
+
+def check_wrapper(root, slug, data):
+    """Upstream image + an IceStore start script (per-install secrets), no aio-init.sh."""
+    d = Path(root, "docker", slug)
+    dockerfile = (d / "Dockerfile").read_text(encoding="utf-8")
+    for f in d.iterdir():
+        if not f.is_file():
+            continue
+        body = f.read_text(encoding="utf-8", errors="ignore")
+        if PLACEHOLDER.search(body):
+            err(f"docker/{slug}/{f.name} still has template placeholders: {sorted(set(PLACEHOLDER.findall(body)))}")
+        if OLD_NAMES.search(body):
+            err(f"docker/{slug}/{f.name} still mentions ZimaAppStore; use IceStore")
+        if (f.suffix == ".sh" or f.name == "Dockerfile") and "\r\n" in body:
+            err(f"docker/{slug}/{f.name} has Windows (CRLF) line endings; it must be LF to run in the image")
+        if f.suffix == ".sh":
+            sh_ok(f)
+    froms = re.findall(r"(?m)^FROM\s+(\S+)", dockerfile)
+    if len(froms) != 1:
+        err(f"a wrapper Dockerfile has exactly one FROM (the upstream image); found {len(froms)}")
+    tags = []
+    for image in froms:
+        tag = image.rsplit(":", 1)[1] if ":" in image.split("/")[-1] else ""
+        if not tag or tag == "latest":
+            warn(f"FROM {image} is not pinned to a version tag")
+        else:
+            tags.append(tag)
+    m = re.search(r'org\.opencontainers\.image\.source="([^"]+)"', dockerfile)
+    if not m or m.group(1).rstrip("/") != f"https://github.com/{REPO}":
+        err(f"Dockerfile LABEL org.opencontainers.image.source must be https://github.com/{REPO} (GHCR links the package with it)")
+    if not re.search(r"(?m)^ENTRYPOINT\b", dockerfile):
+        err("a wrapper Dockerfile must set ENTRYPOINT to its start script")
+    check_workflow(root, slug, data, aio=False)
+    check_bumper_shapes(root, slug, data, tags)
+
+
 def check_aio(root, slug, data):
     d = Path(root, "docker", slug)
     if not d.is_dir():
         err(f"image is ghcr.io/hsinghhira/{slug} but docker/{slug}/ does not exist")
+        return
+    if (d / "Dockerfile").exists() and not (d / "aio-init.sh").exists():
+        check_wrapper(root, slug, data)
         return
     for f in AIO_FILES:
         if not (d / f).exists():
@@ -431,38 +508,9 @@ def check_aio(root, slug, data):
     elif m2 and m1.group(1).strip('"') != m2.group(1).strip('"'):
         err(f"compose healthcheck path {m1.group(1)} differs from the Dockerfile HEALTHCHECK {m2.group(1)}")
 
-    wf = Path(root, ".github", "workflows", f"build-{slug}.yml")
-    if not wf.exists():
-        err(f".github/workflows/build-{slug}.yml is missing (nothing builds the image)")
-    else:
-        w = wf.read_text(encoding="utf-8")
-        if f"docker/{slug}" not in w:
-            err(f"build-{slug}.yml does not build docker/{slug}")
-        if not re.search(rf"/{slug}\b", w):
-            err(f"build-{slug}.yml does not push ghcr.io/<owner>/{slug}")
-        if "capture-meta.sh" not in w:
-            err(f"build-{slug}.yml must run capture-meta.sh before the build")
-        if "linux/arm64" not in w and "arm64" in (data.get("x-casaos") or {}).get("architectures", []):
-            err("x-casaos lists arm64 but the workflow does not build linux/arm64")
-        if "workflow_dispatch" not in w:
-            err(f"build-{slug}.yml needs 'workflow_dispatch:' (update-upstream.yml starts the build with it)")
-        if not re.search(r'(?m)^\s*AIO_VERSION:\s*"\d+\.\d+\.\d+"', w):
-            warn(f'build-{slug}.yml: AIO_VERSION is not in the form "x.y.z", so the weekly bumper cannot raise it')
-
-    # The weekly bumper (.github/scripts/update_upstream.py) edits these in place.
+    check_workflow(root, slug, data, aio=True)
     tags = re.findall(r"(?m)^FROM [^ :]+:(\S+) AS img-[a-z0-9]+$", dockerfile)
-    for tag in tags:
-        if tag != "latest" and not re.search(r"\d", tag):
-            warn(f"FROM tag '{tag}' has no numbers, so the weekly bumper never updates it")
-    version = str((data.get("x-casaos") or {}).get("version") or "")
-    commit_short = len(version) >= 7 and any(
-        re.fullmatch(r"[0-9a-f]{40}", t) and t.startswith(version) for t in tags)
-    if tags and version not in tags and not commit_short:
-        warn(f"x-casaos.version '{version}' is not the tag of any 'FROM ... AS img-' line, "
-             f"so the weekly bumper cannot keep it in step (use the main image's tag exactly)")
-    compose_text = Path(root, "Apps", slug, "docker-compose.yml").read_text(encoding="utf-8")
-    if not re.search(r"(?m)^  release_notes:\n    en_US: \|-?\n", compose_text):
-        warn("release_notes is not written as 'en_US: |-' with bullets, so the weekly bumper cannot add notes")
+    check_bumper_shapes(root, slug, data, tags)
 
 
 def main():

@@ -1,0 +1,178 @@
+name: skysend
+
+services:
+  skysend:
+    image: skyfay/skysend:v3.2.0
+    container_name: skysend
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - BASE_URL=http://localhost:6159
+    ports:
+      - target: 3000
+        published: "6159"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/uploads
+        target: /uploads
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/icon.png
+    x-casaos:
+      id: com.icestore.skysend
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: BASE_URL
+          description:
+            en_US: >-
+              The address you type in your browser. Share links are built
+              from it. It starts as localhost, which only works on this
+              device. For other devices, change `localhost` to your ZimaOS
+              IP, or use your own https address. Keep the port at 6159 unless
+              you use a reverse proxy.
+      ports:
+        - container: "3000"
+          description:
+            en_US: >-
+              Web UI for sharing encrypted files and notes, published on host
+              as 6159
+      volumes:
+        - container: /data
+          description:
+            en_US: SkySend's database and any branding files you add.
+        - container: /uploads
+          description:
+            en_US: >-
+              The encrypted files people upload. SkySend never sees what is
+              inside them.
+
+x-casaos:
+  id: com.icestore.skysend
+  architectures:
+    - amd64
+    - arm64
+  main: skysend
+  author: HSinghHira
+  category: Productivity
+  developer: Skyfay
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/screenshot-5.png
+  title:
+    en_US: SkySend
+  tagline:
+    en_US: End-to-end encrypted, zero-knowledge file and note sharing
+  description:
+    en_US: >-
+      SkySend is a minimalist, end-to-end encrypted file and note sharing
+      service. Files and notes are encrypted in your browser before upload,
+      so the server only stores encrypted data and never sees the key.
+
+
+      **Features**
+
+
+      - Drag-and-drop file and folder uploads, with expiry times and
+        download limits
+
+      - Encrypted notes made of blocks: text, passwords, code and SSH keys
+        together, with optional burn-after-reading
+
+      - File requests: hand out a link and others upload files that only
+        you can open
+
+      - Optional password protection with Argon2id
+
+      - Optional OIDC / SSO sign-in to limit who can upload, while downloads
+        stay public
+
+      - Optional S3-compatible storage (AWS S3, R2, MinIO and more)
+
+      - No accounts and no telemetry
+
+
+      **How to use?**
+
+
+      1. Open SkySend from the Zima OS dashboard.
+
+      2. Drag a file onto the page, or switch to the Note tab to share text,
+         a password, code or an SSH key.
+
+      3. Pick an expiry time and a download or view limit, and add a
+         password if you like.
+
+      4. Copy the share link and send it. The key to open it is only in the
+         link, never on the server.
+
+      5. Open My Links to see what you shared from this browser.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find BASE_URL. It starts as http://localhost:6159.
+
+
+        3. Change localhost to your ZimaOS IP address, for example
+           192.168.1.50. Share links use this address.
+
+
+        4. More settings, like file size limits, S3 storage, branding and SSO
+           sign-in, are listed on the SkySend page at
+           https://icestore.hsinghhira.me/app/skysend/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about half a minute for the first start.
+
+
+        7. Open SkySend from the Zima OS dashboard.
+
+
+        8. Upload a small file to check that everything works.
+  index: /
+  port_map: "6159"
+  scheme: http
+  is_uncontrolled: false
+  version: "v3.2.0"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore, now on port 6159
+      - Updated to skyfay/skysend v3.2.0: file requests, notes made of blocks and new themes
+      - DEFAULT_THEME now picks graphite, aurora or midnight; dark, light or system go in DEFAULT_COLOR_SCHEME
+      - Optional settings moved to the Variables tab on the IceStore page; blank ones are no longer passed to SkySend
+  repo: "https://github.com/Skyfay/SkySend"
+  support: "https://github.com/Skyfay/SkySend/issues"
+  docs: "https://docs.skysend.app"

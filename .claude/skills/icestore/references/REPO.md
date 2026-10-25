@@ -2,7 +2,7 @@
 
 ```
 .github/workflows/
-  build-<app>.yml        one per all-in-one app: builds docker/<app>/ and pushes ghcr.io/hsinghhira/<app>
+  build-<app>.yml        one per all-in-one or wrapper app: builds docker/<app>/ and pushes ghcr.io/hsinghhira/<app>
   release-store.yml      builds the store and the website on every push to main
   update-upstream.yml    weekly: bumps the FROM tags of every AIO app, then starts its build
 .github/scripts/
@@ -12,8 +12,9 @@ Apps/<app>/
   README.md              the app page's Introduction tab (+ front matter)
   icon.png               app icon (store and site)
   screenshot-1.png ...   screenshots for the site slider, in number order
-docker/<app>/            all-in-one apps only: the image's build context
-  Dockerfile  aio-init.sh  run-svc.sh  capture-meta.sh  supervisord.conf  nginx.conf.tpl  .gitignore
+docker/<app>/            all-in-one and wrapper apps: the image's build context
+  all-in-one: Dockerfile  aio-init.sh  run-svc.sh  capture-meta.sh  supervisord.conf  nginx.conf.tpl  .gitignore
+  wrapper:    Dockerfile (one FROM, the upstream image)  icestore-init.sh
 site/
   build.py  requirements.txt  site.json  static/  templates/
 store-config.json        store id com.icestore, name, maintainer, url
@@ -74,7 +75,9 @@ by itself, so a new AIO app needs no change here — only the shapes below.
    the tag with its digit runs replaced by `\d+` must match (`0.19.2` →
    `0.19.10`, `v1.31.4` → `v1.32.0`, `RELEASE.2026-09-16T00-00-00Z` → a later
    date). Betas, `latest` and digit-less tags (`debian:trixie-slim`) are skipped.
-   A `# auto-update: hold` comment on the line above a FROM freezes it.
+   A `# auto-update: hold` comment on the line above a FROM freezes it;
+   `# auto-update: keep-major` only lets the first number stay the same
+   (Odoo: `20.0-20261015` → newer `20.0-` builds, never `21.0-`).
    Images that only publish `latest` plus one tag per git commit (`ghcr.io/ente/*`)
    are pinned to a 40-character commit tag; those follow `latest` (the line moves
    to the commit tag with `latest`'s digest), and `x-casaos.version` may be the
@@ -94,6 +97,9 @@ So for the bumper to keep an AIO app current, the app must have:
 - `release_notes:` written as `en_US: |-` followed by `      - ` bullets, with the
   image list as `<basename> <tag>` (AppFlowy) or `<image> <tag>` (AFFiNE);
 - `AIO_VERSION: "x.y.z"` and `workflow_dispatch:` in `build-<app>.yml`.
+
+Wrapper apps (`WRAPPER.md`) are bumped the same way: their single
+`FROM <image>:<tag>` line needs no `AS img-`, and `x-casaos.version` is that tag.
 
 `check_app.py` warns when one of these is off. Simple apps (upstream image in
 the compose, no `docker/<app>/`) are not touched: with `:latest` ZimaOS sees

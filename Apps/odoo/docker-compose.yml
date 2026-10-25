@@ -1,0 +1,168 @@
+name: odoo
+
+services:
+  odoo:
+    image: ghcr.io/hsinghhira/odoo:latest
+    container_name: odoo
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - ODOO_MASTER_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6156"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/web/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odoo/icon.png
+    x-casaos:
+      id: com.icestore.odoo
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: ODOO_MASTER_PASSWORD
+          description:
+            en_US: >-
+              The master password. Odoo asks for it when you create, back up,
+              restore or delete a database. Leave it blank and the app makes a
+              random one on first start. It is shown in the app log and saved
+              in the data folder. Or type your own.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Odoo web app, published on host as 6156
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything Odoo keeps: the PostgreSQL database (postgres/), the
+              file store with attachments (odoo/), your own add-on modules
+              (addons/) and the secret keys (state/). Back this folder up.
+
+x-casaos:
+  id: com.icestore.odoo
+  architectures:
+    - amd64
+    - arm64
+  main: odoo
+  author: HSinghHira
+  category: Productivity
+  developer: Odoo S.A.
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odoo/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odoo/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odoo/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odoo/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odoo/screenshot-3.jpg
+  title:
+    en_US: Odoo
+  tagline:
+    en_US: All-in-one open source business apps, from CRM and sales to accounting and inventory
+  description:
+    en_US: >-
+      Odoo is a suite of open source business apps that run your company in
+      one place, including CRM, sales, accounting, inventory, projects, and
+      a website builder. This is Odoo in a single container, with one port
+      and one data folder. The database passwords and the master password
+      are made for you on first start.
+
+
+      **Features**
+
+
+      - CRM, sales, invoicing, accounting, inventory, and purchasing apps
+
+      - Website, eCommerce, and project management apps
+
+      - Install only the apps you need and add more later
+
+      - Your own add-on modules in the addons folder
+
+      - PostgreSQL 16 inside, nothing else to set up
+
+
+      **How to use?**
+
+
+      1. Open Odoo from the Zima OS dashboard.
+
+      2. On the first screen, create a database. Type the master password
+         from the app log, a database name, your email, and a password for
+         your admin account.
+
+      3. Sign in and pick the apps you want to install.
+
+      4. Put your own add-on modules in the addons folder, then update the
+         app list in Odoo.
+
+      5. Manage databases later at the /web/database/manager page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. There is nothing you must set first.
+
+
+        2. Want your own master password? Type it in ODOO_MASTER_PASSWORD
+           first. Or leave it blank to get a random one.
+
+
+        3. Wait about three minutes for the first start.
+
+
+        4. If you left ODOO_MASTER_PASSWORD blank, open the app log. Find
+           the line that says "master password is". Write it down.
+
+
+        5. Open http://your-zimaos-ip:6156 in your browser.
+
+
+        6. Type the master password. Then pick a database name, your email
+           and a password for your admin account.
+
+
+        7. Click Create database. This takes a minute or two.
+
+
+        8. More settings, like email, workers and log level, are listed on
+           the Odoo page at https://icestore.hsinghhira.me/app/odoo/
+           (Variables tab). You can add them now or later in the app
+           settings.
+  index: /
+  port_map: "6156"
+  scheme: http
+  is_uncontrolled: false
+  version: "20.0-20261015"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore as a single container, now on port 6156
+      - Odoo and its PostgreSQL 16 database now run in one container with one data folder
+      - No passwords in the compose file any more: they are made on first start and kept in the data folder
+      - odoo 20.0-20261015
+  repo: "https://github.com/odoo/odoo"
+  support: "https://github.com/odoo/odoo/issues"
+  docs: "https://www.odoo.com/documentation/20.0/"

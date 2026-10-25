@@ -1,0 +1,187 @@
+name: pocket-id
+
+services:
+  pocket-id:
+    image: ghcr.io/hsinghhira/pocket-id:latest
+    container_name: pocket-id
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - APP_URL=http://localhost:6157
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 1411
+        published: "6157"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "/app/pocket-id", "healthcheck"]
+      interval: 1m30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pocket-id/icon.png
+    x-casaos:
+      id: com.icestore.pocket-id
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: APP_URL
+          description:
+            en_US: >-
+              The exact address you open Pocket ID at, like
+              https://id.example.com. Passkeys only work on https, or on
+              http://localhost on this device. Passkeys are locked to this
+              address, so set it before you make your admin account and do
+              not change it later.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the data folder. It is filled in by ZimaOS.
+              Leave it.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the data folder. It is filled in by ZimaOS.
+              Leave it.
+      ports:
+        - container: "1411"
+          description:
+            en_US: Pocket ID web UI and API, published on host as 6157
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              The SQLite database, uploaded logos and pictures, the GeoLite2
+              location database and .encryption_key, this install's own key
+              made on first start. Back this folder up; the data can't be
+              read without the key.
+
+x-casaos:
+  id: com.icestore.pocket-id
+  architectures:
+    - amd64
+    - arm64
+  main: pocket-id
+  author: HSinghHira
+  category: Networking
+  developer: Pocket ID
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pocket-id/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pocket-id/screenshot-1.webp
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pocket-id/screenshot-1.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pocket-id/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pocket-id/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pocket-id/screenshot-4.png
+  title:
+    en_US: Pocket ID
+  tagline:
+    en_US: A simple, passkey-only OIDC and OAuth 2.0 provider for your self-hosted apps
+  description:
+    en_US: >-
+      Pocket ID is a simple, OpenID Connect Certified OIDC and OAuth 2.0
+      provider built around passkeys. There are no passwords to leak: people
+      sign in with a passkey or a hardware key like a YubiKey. Every install
+      makes its own encryption key on first start.
+
+
+      **Features**
+
+
+      - Passkey-only sign-in, with no passwords anywhere in the system
+
+      - OpenID Connect Certified and OAuth 2.0 compliant, so it works with
+        most apps that offer "Login with OIDC"
+
+      - Simple admin pages for users, groups and OIDC clients, without the
+        complexity of Keycloak or Authentik
+
+      - Optional self-service sign-up, LDAP sync and SCIM provisioning
+
+      - SQLite built in, so there is no separate database to look after
+
+
+      **How to use?**
+
+
+      1. Open Pocket ID at the address you set in APP_URL.
+
+      2. Go to the /setup page and create the first admin account with a
+         passkey.
+
+      3. Add your users, or connect LDAP if you already have a directory.
+
+      4. Create an OIDC client for each app you want to sign in to with
+         Pocket ID.
+
+      5. In that app's OIDC settings, type your Pocket ID address and the
+         client ID and secret.
+
+      6. Branding, email and sign-up rules are in the admin pages under
+         Application Configuration.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find APP_URL. Set it to the exact address you will open Pocket ID
+           at, like https://id.example.com.
+
+
+        3. Passkeys only work on an https address. Put Pocket ID behind a
+           reverse proxy with https first. On the ZimaOS box itself,
+           http://localhost:6157 also works.
+
+
+        4. Do not change APP_URL later. Passkeys are locked to it.
+
+
+        5. More settings, like email, sign-up rules and log level, are listed
+           on the Pocket ID page at https://icestore.hsinghhira.me/app/pocket-id/
+           (Variables tab). You can add them now or later in the app settings.
+
+
+        6. Start the installation. It is ready in a few seconds.
+
+
+        7. Open your APP_URL address and add /setup at the end.
+
+
+        8. Make your admin account with a passkey.
+  index: /
+  port_map: "6157"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.19.1"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore, now on port 6157
+      - Built on ghcr.io/pocket-id/pocket-id v2.19.1, plus a start script that makes each install's own encryption key
+      - No encryption key in the compose file any more: it is made on first start and kept in the data folder as .encryption_key
+      - Data moved to /DATA/AppData/pocket-id/data
+      - Optional settings moved to the Variables tab on the IceStore page, so Application Configuration in the admin pages works again
+  repo: "https://github.com/pocket-id/pocket-id"
+  support: "https://github.com/pocket-id/pocket-id/issues"
+  docs: "https://pocket-id.org/docs/introduction"

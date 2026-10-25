@@ -76,7 +76,10 @@ Rules for the table:
 - Pin a tag with numbers in it, in the form upstream releases use (`0.19.2`,
   `v1.31.4`, `2026.8.4`). The weekly bumper (`REPO.md`, update-upstream.yml)
   only moves a tag to a newer one of the same shape. To keep it from moving,
-  put `# auto-update: hold` on the line above, with the reason.
+  put `# auto-update: hold` on the line above, with the reason. When a new
+  major needs a data migration the app can't do itself (Odoo), put
+  `# auto-update: keep-major` there instead: newer tags with the same first
+  number are still taken.
 - Built-ins: add apt packages. Extracting a binary (Silo):
   a small `debian:bookworm-slim` stage that `find`s it and `install -D`s it to
   `/out/...`, then `COPY --from=` that stage.

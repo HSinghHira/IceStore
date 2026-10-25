@@ -210,10 +210,18 @@ Nothing personal ever goes in the repo; the compose file is shown on the website
   them with `openssl rand` on first start and keeps them in
   `/data/state/secrets.env`. The admin password is `ADMIN_PASSWORD=` (empty):
   empty means "make one and print it in the log"; a value means "use this".
-- **Simple apps:** cryptographic secrets (keys, JWT/session secrets) get a freshly
-  generated value (`openssl rand -hex 32`), never `CHANGEME`, with a description
-  saying it was pre-filled and can be replaced. Identifying values (an email, a
-  username) use a `CHANGEME...` placeholder (`ADMIN_EMAIL=CHANGEME@example.com`).
+- **Simple apps:** a cryptographic secret (encryption key, JWT/session secret,
+  database password) must be **unique to each install**. A value written in the
+  compose file is the same for everyone who installs from IceStore, so never
+  put one there, not even a freshly generated one. Instead:
+  1. If the app makes the secret itself when it's missing and keeps it in its
+     data folder, leave the variable out of the compose file (it may go in the
+     README `variables:` list for people who want their own).
+  2. Otherwise build a **wrapper image** (`WRAPPER.md`): upstream's image plus
+     a start script that makes the secret on first start, keeps it in the data
+     folder and hands it to the app. Pocket ID's `ENCRYPTION_KEY` works this way.
+  Identifying values (an email, a username) use a `CHANGEME...` placeholder
+  (`ADMIN_EMAIL=CHANGEME@example.com`).
 - The site shows secret-looking variables (password/secret/token/key in the name)
   as `change-me` unless the value starts with `$`. Don't rely on that.
 
