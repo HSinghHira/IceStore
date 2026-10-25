@@ -1,0 +1,49 @@
+name: Update README pictures
+
+# Redraw the SVGs at the top of README.md (readme/) when an app is added, renamed
+# or gets a new icon, and once a week for the OS logos. Commits only when
+# something changed.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Apps/**"
+      - "site/site.json"
+      - "site/build.py"
+      - ".github/scripts/readme_svgs.py"
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-readme-svgs
+  cancel-in-progress: false
+
+jobs:
+  svgs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Draw the SVGs
+        run: |
+          pip install -r site/requirements.txt pillow==13.0.0 fonttools==4.67.0
+          python .github/scripts/readme_svgs.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add readme README.md
+          git diff --cached --quiet && exit 0
+          git commit -m "Update README pictures"
+          git pull --rebase origin main
+          git push origin HEAD:main
