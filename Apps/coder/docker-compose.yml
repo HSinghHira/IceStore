@@ -1,0 +1,198 @@
+name: coder
+
+services:
+  coder:
+    image: ghcr.io/hsinghhira/coder:latest
+    container_name: coder
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6145
+    ports:
+      - target: 8080
+        published: "6145"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/icon.png
+    x-casaos:
+      id: com.icestore.coder
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Coder at. Change localhost to your ZimaOS
+              IP, like http://192.168.1.20:6145, or use your own HTTPS domain
+              like https://coder.example.com. Workspaces connect back to
+              Coder at this address, so it must work from other devices.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Coder web UI, API, web terminals and workspace connections, published on host as 6145
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (users, templates, workspaces, audit logs), the
+              Terraform cache in coder/, and the database password in
+              state/. Back up this folder.
+
+x-casaos:
+  id: com.icestore.coder
+  architectures:
+    - amd64
+    - arm64
+  main: coder
+  author: HSinghHira
+  category: Developer
+  developer: Coder Technologies, Inc.
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-5.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-6.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-7.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-8.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/screenshot-9.png
+  title:
+    en_US: Coder
+  tagline:
+    en_US: Self-hosted, browser-based remote development environments
+  description:
+    en_US: >-
+      Coder turns your server into a cloud development platform: full
+      development environments that open in your browser or in your own IDE,
+      like a self-hosted GitHub Codespaces. This is Coder in a single
+      container, with PostgreSQL inside, one port and one data folder. The
+      database password is made for you on first start.
+
+
+      **Features**
+
+
+      - Development environments and terminals in the browser, with no
+        local setup
+
+
+      - Connect from VS Code, JetBrains or any SSH editor
+
+
+      - Workspaces defined as code with Terraform templates
+
+
+      - Sign in with Pocket ID or any OIDC provider, or with GitHub,
+        next to Coder's own accounts
+
+
+      - Docker workspaces when you add the Docker socket (see the README)
+
+
+      - PostgreSQL 17 inside, no second container to look after
+
+
+      **How to use?**
+
+
+      1. Open Coder from the Zima OS dashboard.
+
+
+      2. The first person to open it makes the admin account in the
+         browser.
+
+
+      3. Open Templates and start from a starter template, or import your
+         own.
+
+
+      4. Create a workspace from a template to get a browser IDE and
+         terminal.
+
+
+      5. Connect your own VS Code or JetBrains IDE to the same workspace
+         if you like.
+
+
+      6. For Pocket ID, GitHub sign-in or email, add the settings from the
+         Variables tab on the IceStore page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app settings before you install.
+
+
+        2. Find PUBLIC_URL. Change localhost to your ZimaOS IP, for example
+           http://192.168.1.20:6145 (your own IP will differ).
+
+
+        3. Want Docker workspaces? Add a volume: host
+           /var/run/docker.sock, container /var/run/docker.sock.
+
+
+        4. More settings, like Pocket ID or GitHub sign-in and email, are
+           listed on the Coder page at
+           https://icestore.hsinghhira.me/app/coder/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about three minutes. The first start sets up the database.
+
+
+        7. Open http://your-zimaos-ip:6145.
+
+
+        8. The first person to open Coder makes the admin account. Do it
+           right away.
+
+
+        9. Open Templates, pick a starter template, and make your first
+           workspace.
+  index: /
+  port_map: "6145"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.38.2"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Single-container Coder with one port (6145) and one data folder
+      - The database password is made on first start, so each install gets its own
+      - Optional Docker workspaces: mount /var/run/docker.sock and Coder can use it
+      - Pocket ID / OIDC, GitHub sign-in and email settings are in the Variables tab
+      - coder/coder v2.38.2
+      - PostgreSQL 17 inside
+  repo: "https://github.com/coder/coder"
+  support: "https://github.com/coder/coder/issues"
+  docs: "https://coder.com/docs"

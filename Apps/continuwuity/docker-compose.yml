@@ -1,0 +1,199 @@
+name: continuwuity
+
+services:
+  continuwuity:
+    image: forgejo.ellis.link/continuwuation/continuwuity:v26.9.1
+    container_name: continuwuity
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - CONTINUWUITY_SERVER_NAME=CHANGEME.example.com
+      - CONTINUWUITY_DATABASE_PATH=/var/lib/continuwuity
+      - CONTINUWUITY_ADDRESS=0.0.0.0
+      - CONTINUWUITY_PORT=8008
+    ports:
+      - target: 8008
+        published: "6146"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/db
+        target: /var/lib/continuwuity
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/continuwuity/icon.png
+    x-casaos:
+      id: com.icestore.continuwuity
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: CONTINUWUITY_SERVER_NAME
+          description:
+            en_US: >-
+              Your Matrix server's name, like matrix.example.com. It becomes
+              part of every user name (@you:matrix.example.com) and can never
+              be changed without deleting all data, so set it before the
+              first start. For use at home only, your ZimaOS IP and port
+              work too, like 192.168.1.20:6146.
+        - container: CONTINUWUITY_DATABASE_PATH
+          description:
+            en_US: >-
+              Where the database is kept inside the container. Leave it as
+              /var/lib/continuwuity.
+        - container: CONTINUWUITY_ADDRESS
+          description:
+            en_US: >-
+              The address the server listens on inside the container. Leave
+              it as 0.0.0.0.
+        - container: CONTINUWUITY_PORT
+          description:
+            en_US: >-
+              The port the server listens on inside the container. Leave it
+              as 8008.
+      ports:
+        - container: "8008"
+          description:
+            en_US: >-
+              Matrix client and federation API, published on host as 6146.
+              Put an HTTPS reverse proxy in front of it to federate with
+              other servers.
+      volumes:
+        - container: /var/lib/continuwuity
+          description:
+            en_US: >-
+              The RocksDB database: all rooms, messages, media and accounts.
+              This is the only data the server has, so back it up.
+
+x-casaos:
+  id: com.icestore.continuwuity
+  architectures:
+    - amd64
+    - arm64
+  main: continuwuity
+  author: HSinghHira
+  category: Social
+  developer: Continuwuity contributors
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/continuwuity/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/continuwuity/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/continuwuity/screenshot-1.png
+  title:
+    en_US: Continuwuity (Matrix)
+  tagline:
+    en_US: A fast, lightweight Matrix homeserver written in Rust
+  description:
+    en_US: >-
+      Continuwuity is a community-run Matrix homeserver written in Rust, a
+      lean and actively maintained alternative to Synapse that runs well on
+      small hardware. Chat with your own people, or with anyone on the
+      Matrix network, from any Matrix app.
+
+
+      **Features**
+
+
+      - Fast, memory-safe Rust server for small and medium homeservers
+
+
+      - Federates with the whole Matrix network, or keep it private
+
+
+      - Bridges (appservices) to Discord, Telegram and more
+
+
+      - Built-in RocksDB database, no second container
+
+
+      - Manage users and rooms from an admin room inside Matrix, no web
+        dashboard needed
+
+
+      **How to use?**
+
+
+      1. Before you install, set CONTINUWUITY_SERVER_NAME to your Matrix
+         domain. It can not be changed later.
+
+
+      2. To talk to other Matrix servers, point that domain at your server
+         and put an HTTPS reverse proxy in front of port 6146.
+
+
+      3. Start the app and open its logs. Find the one-time registration
+         token printed on first start.
+
+
+      4. Open a Matrix app (Element, Cinny, FluffyChat), choose your server,
+         and register the first account with that token.
+
+
+      5. The first account is the admin and is invited to the admin room.
+         Manage the server from there.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app settings before you install.
+
+
+        2. Find CONTINUWUITY_SERVER_NAME. Replace CHANGEME.example.com with
+           your Matrix domain, like matrix.example.com.
+
+
+        3. Just for home use? You can use your ZimaOS IP and port instead,
+           like 192.168.1.20:6146.
+
+
+        4. Choose carefully. This name can never be changed later without
+           deleting everything.
+
+
+        5. To talk to other Matrix servers, you need HTTPS. Put a reverse
+           proxy (like Caddy or Nginx Proxy Manager) in front of port 6146.
+
+
+        6. More settings, like sign-up rules, federation and email, are
+           listed on the Continuwuity page at
+           https://icestore.hsinghhira.me/app/continuwuity/ (Variables
+           tab). You can add them now or later in the app settings.
+
+
+        7. Start the installation. It is ready in a few seconds.
+
+
+        8. Open the app logs. Find the one-time registration token.
+
+
+        9. Open a Matrix app like Element. Choose your server and register
+           your first account with that token.
+
+
+        10. That first account is the admin. You are invited to the admin
+            room, where you manage the server.
+  index: /
+  port_map: "6146"
+  scheme: http
+  is_uncontrolled: false
+  version: "v26.9.1"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore on port 6146
+      - continuwuation/continuwuity v26.9.1
+      - Well-known delegation, sign-up, federation and email settings are in the Variables tab
+  repo: "https://forgejo.ellis.link/continuwuation/continuwuity"
+  support: "https://forgejo.ellis.link/continuwuation/continuwuity/issues"
+  docs: "https://continuwuity.org/introduction.html"
