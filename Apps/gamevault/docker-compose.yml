@@ -1,0 +1,186 @@
+name: gamevault
+
+services:
+  gamevault:
+    image: ghcr.io/hsinghhira/gamevault:latest
+    container_name: gamevault
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - PUBLIC_URL=http://localhost:6149
+    ports:
+      - target: 8080
+        published: "6149"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/files
+        target: /files
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.25"
+          memory: 384M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gamevault/icon.png
+    x-casaos:
+      id: com.icestore.gamevault
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns your game files. It is filled in by ZimaOS.
+              Leave it unless your games folder belongs to another user.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns your game files. It is filled in by ZimaOS.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open GameVault at, like http://192.168.1.20:6149.
+              Change localhost to your ZimaOS IP. It is only used for
+              sign-in with OAuth2 (like authentik or Pocket ID).
+      ports:
+        - container: "8080"
+          description:
+            en_US: GameVault web UI, API and game downloads, published on host as 6149
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (library, users, progress), cover art in
+              gamevault/media, save files, config.yaml, logs and secret keys.
+        - container: /files
+          description:
+            en_US: >-
+              Your game library: DRM-free games as .zip, .7z or .rar files or
+              folders. You can point this at a games folder you already have.
+
+x-casaos:
+  id: com.icestore.gamevault
+  architectures:
+    - amd64
+    - arm64
+  main: gamevault
+  author: HSinghHira
+  category: Media
+  developer: Phalcode
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gamevault/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gamevault/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gamevault/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gamevault/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gamevault/screenshot-3.png
+  title:
+    en_US: GameVault
+  tagline:
+    en_US: Your self-hosted, DRM-free Steam alternative
+  description:
+    en_US: >-
+      GameVault is a self-hosted gaming platform that lets you and your
+      friends enjoy DRM-free games stored on your own server in an organized,
+      Steam-like library. This is GameVault in a single container, with
+      PostgreSQL inside, one port and one data folder plus your games folder.
+      The database password is made for you on first start.
+
+
+      **Features**
+
+
+      - Scans your games folder and finds titles, versions and file types on
+        its own
+
+      - Cover art, screenshots and details from IGDB
+
+      - Many users with roles, online status and play time
+
+      - Save file syncing, so players can pick up where they left off on any
+        device
+
+      - Web UI in the browser; the GameVault app for Windows downloads and
+        installs games
+
+
+      **How to use?**
+
+
+      1. Open GameVault from the Zima OS dashboard.
+
+      2. Register the first account. It becomes the admin.
+
+      3. Copy DRM-free games (.zip, .7z or .rar) into the files folder.
+         GameVault finds them on its own.
+
+      4. Browse your library, add cover art and invite friends.
+
+      5. Players can also use the GameVault app for Windows with the address
+         http://your-zimaos-ip:6149.
+  tips:
+    before_install:
+      en_US: >-
+        1. Look at the storage settings before you install. The /files folder
+           is where your games go. You can change it to a games folder you
+           already have.
+
+
+        2. More settings, like turning off sign-up or adding IGDB keys, are
+           listed on the GameVault page at
+           https://icestore.hsinghhira.me/app/gamevault/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        3. Start the installation.
+
+
+        4. Wait about five minutes. The first start sets up the database.
+
+
+        5. Open http://your-zimaos-ip:6149.
+
+
+        6. Register your first account. It becomes the admin.
+
+
+        7. Put your DRM-free games into the files folder. GameVault finds
+           them within an hour, or right away from the admin panel.
+  index: /
+  port_map: "6149"
+  scheme: http
+  is_uncontrolled: false
+  version: "17.0.1"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Single-container GameVault with one port (6149), one data folder and your games folder
+      - The database password and token seed are made on first start, so there is nothing to set
+      - gamevault-backend 17.0.1 (17.0 adds multiple versions per game; existing games are moved over on their own)
+      - PostgreSQL 16 inside
+  repo: "https://github.com/Phalcode/gamevault-backend"
+  support: "https://github.com/Phalcode/gamevault-backend/issues"
+  docs: "https://gamevau.lt/docs/server-docs/setup/docker-compose/"

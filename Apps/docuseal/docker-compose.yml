@@ -1,0 +1,147 @@
+name: docuseal
+
+services:
+  docuseal:
+    image: docuseal/docuseal:3.3.3
+    container_name: docuseal
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 3000
+        published: "6148"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docuseal/icon.png
+    x-casaos:
+      id: com.icestore.docuseal
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "3000"
+          description:
+            en_US: DocuSeal web UI, published on host as 6148
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything DocuSeal keeps, in docuseal/: the SQLite database,
+              uploaded and signed documents, and docuseal.env with the secret
+              key made on first start. Back this folder up.
+
+x-casaos:
+  id: com.icestore.docuseal
+  architectures:
+    - amd64
+    - arm64
+  main: docuseal
+  author: HSinghHira
+  category: Productivity
+  developer: DocuSeal
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docuseal/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docuseal/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docuseal/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docuseal/screenshot-2.png
+  title:
+    en_US: DocuSeal
+  tagline:
+    en_US: Open source DocuSign alternative to create, fill and sign PDF documents
+  description:
+    en_US: >-
+      DocuSeal is an open source platform for filling and signing digital
+      documents. Build a fillable PDF form once, then send it out for one or
+      more people to sign from any device.
+
+
+      **Features**
+
+
+      - Drag-and-drop PDF form builder with 12+ field types (signature,
+        date, file, checkbox and more)
+
+      - Many signers per document, with email notifications
+
+      - Automatic PDF eSignature and signature verification
+
+      - Built-in SQLite database, so there is no separate database to look
+        after
+
+      - The secret key is made for you on first start and kept in the data
+        folder
+
+
+      **How to use?**
+
+
+      1. Open DocuSeal from the Zima OS dashboard.
+
+      2. Create your admin account on the first screen. Type the address you
+         open DocuSeal at as the app URL.
+
+      3. Upload a PDF to make your first template, then place the fields on
+         it.
+
+      4. Send the template to a signer, or share the signing link.
+
+      5. To send emails, add your SMTP server under Settings, Email in the
+         app, or with the SMTP settings in the Variables tab on the IceStore
+         page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. There is nothing you must set first.
+
+
+        2. Wait about one minute for the first start.
+
+
+        3. Open http://your-zimaos-ip:6148 in your browser.
+
+
+        4. Make your admin account. For the app URL, type the address in your
+           browser bar, like http://192.168.1.20:6148.
+
+
+        5. To send signing emails, open Settings, then Email, inside
+           DocuSeal and type your mail server details.
+
+
+        6. More settings, like SMTP, file storage on S3 and a Postgres
+           database, are listed on the DocuSeal page at
+           https://icestore.hsinghhira.me/app/docuseal/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6148"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.3.3"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Moved to IceStore, now on port 6148
+      - Pinned to docuseal/docuseal 3.3.3
+      - No secret key in the compose file any more: DocuSeal makes its own on first start and keeps it in the data folder
+  repo: "https://github.com/docusealco/docuseal"
+  support: "https://github.com/docusealco/docuseal/issues"
+  docs: "https://www.docuseal.com/docs"

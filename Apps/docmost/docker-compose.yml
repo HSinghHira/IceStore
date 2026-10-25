@@ -1,0 +1,176 @@
+name: docmost
+
+services:
+  docmost:
+    image: ghcr.io/hsinghhira/docmost:latest
+    container_name: docmost
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6147
+    ports:
+      - target: 8080
+        published: "6147"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docmost/icon.png
+    x-casaos:
+      id: com.icestore.docmost
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Docmost at, like http://192.168.1.20:6147.
+              Change localhost to your ZimaOS IP so links in emails and
+              shared pages work from other devices. Use your own domain if
+              you put Docmost behind HTTPS.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Docmost web app, API and mail viewer (/mail), published on host as 6147
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (all spaces and pages), uploaded files in
+              storage/, Redis data, secret keys and settings.
+
+x-casaos:
+  id: com.icestore.docmost
+  architectures:
+    - amd64
+    - arm64
+  main: docmost
+  author: HSinghHira
+  category: Productivity
+  developer: Docmost
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docmost/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docmost/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docmost/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docmost/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docmost/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/docmost/screenshot-4.png
+  title:
+    en_US: Docmost
+  tagline:
+    en_US: Open source collaborative wiki and documentation
+  description:
+    en_US: >-
+      Docmost is an open source alternative to Notion and Confluence: real-time
+      collaborative docs and a team wiki in one app. This is Docmost in a
+      single container, with PostgreSQL, Redis and a mail viewer inside, one
+      port and one data folder. The secret key and database passwords are
+      made for you on first start.
+
+
+      **Features**
+
+
+      - Real-time collaborative editing with a rich block editor
+
+      - Spaces, nested pages, permissions and page history
+
+      - Diagrams with draw.io, Excalidraw and Mermaid
+
+      - Comments, search, and import from Markdown, HTML and Notion
+
+      - Works without an email server: invite and password-reset emails go
+        to the built-in mail viewer at /mail until you set up SMTP
+
+
+      **How to use?**
+
+
+      1. Open Docmost from the Zima OS dashboard.
+
+      2. Make your admin account and workspace on the first screen.
+
+      3. Create a space and start writing pages.
+
+      4. Invite people from Settings, Members. Until you set up SMTP, the
+         invite emails are in the mail viewer at
+         http://your-zimaos-ip:6147/mail/. Its login is in the app logs.
+
+      5. To send real emails, add the SMTP settings from the Variables tab
+         on the IceStore page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6147. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6147, so
+           links work from other devices.
+
+
+        3. Emails stay inside the app at first. To send real emails, add the
+           SMTP settings. They are listed on the Docmost page at
+           https://icestore.hsinghhira.me/app/docmost/ (Variables tab), with
+           S3 storage and other settings. You can add them now or later in
+           the app settings.
+
+
+        4. Start the installation.
+
+
+        5. Wait about three minutes. The first start sets up the database.
+
+
+        6. Open http://your-zimaos-ip:6147.
+
+
+        7. Make your admin account and your workspace.
+
+
+        8. To read invite emails, open the app logs and find the line that
+           says "mail viewer (/mail) login is". It shows a user name and
+           password.
+
+
+        9. Open http://your-zimaos-ip:6147/mail/ and log in with them.
+  index: /
+  port_map: "6147"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.97.0"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Single-container Docmost with one port (6147) and one data folder
+      - The secret key and database passwords are made on first start, so each install gets its own
+      - Built-in mail viewer at /mail, used until you set an SMTP server
+      - docmost/docmost 0.97.0
+      - axllent/mailpit v1.32.0
+      - PostgreSQL 18 and Redis inside
+  repo: "https://github.com/docmost/docmost"
+  support: "https://github.com/docmost/docmost/issues"
+  docs: "https://docmost.com/docs"
