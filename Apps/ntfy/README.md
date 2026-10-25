@@ -15,6 +15,30 @@ variables:
     description: >-
       Set to true when ntfy sits behind a reverse proxy, so it reads the real
       visitor address.
+  - name: NTFY_AUTH_DEFAULT_ACCESS
+    group: Sign-up and accounts
+    default: deny-all
+    description: >-
+      deny-all means only signed-in users can read or send. Set to read-write
+      to let anyone use your server.
+  - name: NTFY_ENABLE_LOGIN
+    group: Sign-up and accounts
+    default: "true"
+    description: >-
+      Shows a sign-in page in the web app.
+  - name: NTFY_REQUIRE_LOGIN
+    group: Sign-up and accounts
+    default: "true"
+    description: >-
+      Makes the web app ask everyone to sign in first.
+  - name: NTFY_AUTH_USERS
+    group: Sign-up and accounts
+    default: ""
+    description: >-
+      Leave it out and the app makes an admin account with the random password
+      in password.txt. Or list your own users as name:password-hash:role, with
+      every `$` in the hash written as `$$` and a comma between users; then
+      password.txt is not used.
   - name: NTFY_ENABLE_SIGNUP
     group: Sign-up and accounts
     default: "false"
@@ -81,4 +105,4 @@ A simple, self-hosted notification service. Send alerts from any script or app t
 
 ## Before you install
 
-Leave `NTFY_AUTH_USERS` blank: on first start the app makes an **admin** account with its own random password, saved in `password.txt` in the app's folder and shown in the app log. To pick your own password, write it in that file and restart the app. Change it there, not in the ntfy web app, because the app resets it when ntfy restarts. Change `localhost` in `NTFY_BASE_URL` to your server's IP so your phone can reach ntfy. For instant iPhone alerts, add `NTFY_UPSTREAM_BASE_URL=https://ntfy.sh` from the Variables tab.
+On first start the app makes an **admin** account with its own random password, saved in `password.txt` in the app's folder and shown in the app log. To pick your own password, write it in that file and restart the app. Change it there, not in the ntfy web app, because the app resets it when ntfy restarts. Change `localhost` in `NTFY_BASE_URL` to your server's IP so your phone can reach ntfy. For instant iPhone alerts, add `NTFY_UPSTREAM_BASE_URL=https://ntfy.sh` from the Variables tab.

@@ -158,9 +158,10 @@ variables:
       Your Unsplash API access key.
   - name: HELIX_LOGIN_BACKGROUND_UNSPLASH_QUERY
     group: Login background
-    default: vinyl record player turntable music
+    default: ""
     description: >-
-      The words Helix searches Unsplash for.
+      The words Helix searches Unsplash for. Leave it out to use
+      "vinyl record player turntable music".
   - name: HELIX_LOGIN_BACKGROUND_UNSPLASH_CACHE_SECONDS
     group: Login background
     default: "900"

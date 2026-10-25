@@ -2,7 +2,7 @@ name: web-check
 
 services:
   web-check:
-    image: lissy93/web-check:latest
+    image: lissy93/web-check:2.3.8
     container_name: web-check
     restart: unless-stopped
     stop_grace_period: 40s
@@ -90,13 +90,13 @@ x-casaos:
   port_map: "6122"
   scheme: http
   is_uncontrolled: false
-  version: "latest"
-  update_at: "2026-10-20"
+  version: "2.3.8"
+  update_at: "2026-10-25"
   release_notes:
     en_US: |-
       - Moved to IceStore. Port changed from 8419 to 6122.
       - Optional API keys are listed in the Variables tab on the IceStore website.
-      - Uses the latest tag; the 1.0.0 tag is nearly two years old and misses many fixes.
+      - Pinned the image to 2.3.8; upstream now publishes current version tags.
   repo: "https://github.com/lissy93/web-check"
   support: "https://github.com/lissy93/web-check/issues"
   docs: "https://github.com/lissy93/web-check#readme"

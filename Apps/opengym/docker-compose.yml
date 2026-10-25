@@ -1,8 +1,8 @@
 name: opengym
 
 services:
-  media:
-    image: alpine/git:latest
+  opengym-media:
+    image: alpine/git:2.54.0
     container_name: opengym-media
     restart: "no"
     networks:
@@ -43,13 +43,15 @@ services:
           description:
             en_US: Exercise animated GIFs, downloaded once from the public exercises-dataset project and shared with the web service.
 
-  api:
-    image: registry.gitlab.com/duartesantos8/opengym/api:latest
+  opengym-api:
+    image: registry.gitlab.com/duartesantos8/opengym/api:1.4.2
     container_name: opengym-api
     restart: unless-stopped
     stop_grace_period: 40s
     networks:
-      - opengym_network
+      opengym_network:
+        aliases:
+          - api
     environment:
       - TZ=$TZ
       - DATA_DIR=/data
@@ -95,16 +97,18 @@ services:
           description:
             en_US: Everything openGym stores — profiles, passkeys, workout history, the session-signing secret and push notification keys. Back this up regularly.
 
-  web:
-    image: registry.gitlab.com/duartesantos8/opengym/web:latest
-    container_name: opengym-web
+  opengym:
+    image: registry.gitlab.com/duartesantos8/opengym/web:1.4.2
+    container_name: opengym
     restart: unless-stopped
     stop_grace_period: 40s
     networks:
-      - opengym_network
+      opengym_network:
+        aliases:
+          - web
     depends_on:
-      - media
-      - api
+      - opengym-media
+      - opengym-api
     ports:
       - target: 80
         published: "6115"
@@ -155,7 +159,7 @@ x-casaos:
   architectures:
     - amd64
     - arm64
-  main: web
+  main: opengym
   author: HSinghHira
   category: Productivity
   developer: DuarteSantos8
@@ -229,15 +233,16 @@ x-casaos:
   port_map: "6115"
   scheme: http
   is_uncontrolled: false
-  version: "latest"
-  update_at: "2026-10-20"
+  version: "1.4.2"
+  update_at: "2026-10-25"
   release_notes:
     en_US: |-
       - Moved to IceStore. Port changed from 8435 to 6115.
-      - Removed PORT from the api service; openGym already uses 3000.
+      - Removed PORT from the opengym-api service; openGym already uses 3000.
       - RP_NAME and SESSION_DAYS moved to the Variables tab on the IceStore website.
-      - api and web use the latest tag. openGym ships releases very often and old version tags are removed from the GitLab registry.
-      - The media helper uses alpine/git:latest, a one-time download step.
+      - api and web pinned to 1.4.2 instead of latest.
+      - The media helper uses alpine/git 2.54.0, a one-time download step.
+      - Services renamed to opengym, opengym-api and opengym-media to match their container names.
   repo: "https://gitlab.com/DuarteSantos8/opengym"
   support: "https://gitlab.com/DuarteSantos8/opengym/-/issues"
   docs: "https://gitlab.com/DuarteSantos8/opengym/-/blob/main/docs/SELF_HOSTING.md"

@@ -9,81 +9,81 @@ variables:
     group: Passkeys
     default: openGym
     description: >-
-      The name shown in the passkey prompt when signing in. Add it to the api
+      The name shown in the passkey prompt when signing in. Add it to the opengym-api
       service.
   - name: SESSION_DAYS
     group: Sign-up and accounts
     default: "90"
     description: >-
       How many days a sign-in lasts. Lower it if openGym is reachable from the
-      internet. Add it to the api service.
+      internet. Add it to the opengym-api service.
   - name: INVITE_ONLY
     group: Sign-up and accounts
     default: ""
     description: >-
-      Set to 1 so new profiles need an invite code. Add it to the api service.
+      Set to 1 so new profiles need an invite code. Add it to the opengym-api service.
   - name: FIRST_USER_ADMIN
     group: Sign-up and accounts
     default: ""
     description: >-
       Set to 1 so the first profile on a new install becomes the admin. Add it
-      to the api service.
+      to the opengym-api service.
   - name: ADMIN_UIDS
     group: Sign-up and accounts
     default: ""
     description: >-
       Account IDs that get the admin dashboard, separated by commas. Add it to
-      the api service.
+      the opengym-api service.
   - name: ALLOW_GUEST
     group: Sign-up and accounts
     default: "1"
     description: >-
-      Set to 0 to remove "Continue without account". Add it to the api
+      Set to 0 to remove "Continue without account". Add it to the opengym-api
       service.
   - name: PASSWORD_LOGIN
     group: Sign-up and accounts
     default: ""
     description: >-
-      Set to 1 to also allow name-and-password sign-in. Add it to the api
+      Set to 1 to also allow name-and-password sign-in. Add it to the opengym-api
       service.
   - name: DEFAULT_LANG
     group: Server
     default: ""
     description: >-
       The language for sign-in and new profiles, like en or de. Leave it out
-      to use the browser's language. Add it to the api service.
+      to use the browser's language. Add it to the opengym-api service.
   - name: TRUST_PROXY
     group: Server
     default: ""
     description: >-
       Set to 1 when openGym is behind a reverse proxy, so it sees real
-      visitor addresses. Add it to the api service.
+      visitor addresses. Add it to the opengym-api service.
   - name: VAPID_SUBJECT
     group: Notifications
     default: ""
     description: >-
       Contact address given to push services, like mailto:you@example.com.
-      Leave it out to use ORIGIN. Add it to the api service.
+      Leave it out to use ORIGIN. Add it to the opengym-api service.
   - name: AUDIT_LOG
     group: Logs
     default: "1"
     description: >-
-      Set to 0 to turn the activity log off. Add it to the api service.
+      Set to 0 to turn the activity log off. Add it to the opengym-api service.
   - name: AUDIT_DAYS
     group: Logs
     default: "90"
     description: >-
-      Days of activity log to keep. Add it to the api service.
+      Days of activity log to keep. Add it to the opengym-api service.
   - name: MEDIA_UPLOADS
     group: Uploads
     default: "1"
     description: >-
-      Set to 0 to turn off photo and video uploads. Add it to the api service.
+      Set to 0 to turn off photo and video uploads. Add it to the opengym-api service.
   - name: MEDIA_QUOTA_MB
     group: Uploads
     default: "200"
     description: >-
-      Storage per profile in MB. Set to 0 for no limit. Add it to the api
+      Storage per profile in MB. Set to 0 for no limit. Add it to the opengym-api
       service.
 ---
 
@@ -110,4 +110,4 @@ openGym is a self-hosted gym and body-weight tracker: plan routines, log workout
 
 ## Before you install
 
-Set `RP_ID` and `ORIGIN` in the api service. They must point at the same address, or sign-in fails. To test on the same computer only, use `localhost` and `http://localhost:6115`. To use openGym from your phone, you need a real domain with HTTPS in front, like `gym.example.com` and `https://gym.example.com`. Pick your final address before inviting people: moving later breaks every passkey. The first start downloads about 140 MB of exercise pictures, so give it a few minutes. More settings are in the Variables tab; add them to the api service in the app settings.
+Set `RP_ID` and `ORIGIN` in the opengym-api service. They must point at the same address, or sign-in fails. To test on the same computer only, use `localhost` and `http://localhost:6115`. To use openGym from your phone, you need a real domain with HTTPS in front, like `gym.example.com` and `https://gym.example.com`. Pick your final address before inviting people: moving later breaks every passkey. The first start downloads about 140 MB of exercise pictures, so give it a few minutes. More settings are in the Variables tab; add them to the opengym-api service in the app settings.

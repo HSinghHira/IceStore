@@ -2,7 +2,7 @@ name: fluxdown
 
 services:
   fluxdown:
-    image: ghcr.io/zerx-lab/fluxdown-server:latest
+    image: ghcr.io/zerx-lab/fluxdown-server:0.6.3
     container_name: fluxdown
     restart: unless-stopped
     stop_grace_period: 40s
@@ -115,13 +115,13 @@ x-casaos:
   port_map: "6107"
   scheme: http
   is_uncontrolled: false
-  version: "latest"
-  update_at: "2026-10-20"
+  version: "0.6.3"
+  update_at: "2026-10-25"
   release_notes:
     en_US: |-
       - Moved to IceStore. Port changed from 8470 to 6107.
       - Main service renamed from fluxdown-server to fluxdown.
-      - Uses the latest tag. Upstream releases do not match the published image tags.
+      - Pinned the image to 0.6.3; upstream image tags now match its releases.
   repo: "https://github.com/zerx-lab/FluxDown"
   support: "https://github.com/zerx-lab/FluxDown/issues"
   docs: "https://github.com/zerx-lab/FluxDown"

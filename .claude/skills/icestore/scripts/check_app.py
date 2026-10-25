@@ -213,7 +213,9 @@ def check_compose(root, slug, app_dir):
         if k not in descs:
             warn(f"{k} has no x-casaos.envs description")
 
-    optional = [k for k in env if k not in ("TZ", "PUBLIC_URL") and not k.startswith("ADMIN_")]
+    # values ZimaOS fills in ($PUID, $PGID, ...) are not settings people choose
+    optional = [k for k, v in env.items()
+                if k not in ("TZ", "PUBLIC_URL") and not k.startswith("ADMIN_") and not str(v).startswith("$")]
     if len(optional) > 3:
         warn(f"the compose environment has {len(optional)} optional settings ({', '.join(optional)}); keep it short "
              f"and list optional settings in README.md front matter 'variables:' (COMPOSE.md 8)")

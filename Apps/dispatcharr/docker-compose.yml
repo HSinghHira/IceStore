@@ -2,7 +2,7 @@ name: dispatcharr
 
 services:
   dispatcharr:
-    image: ghcr.io/dispatcharr/dispatcharr:latest
+    image: ghcr.io/dispatcharr/dispatcharr:0.33.0
     container_name: dispatcharr
     restart: unless-stopped
     stop_grace_period: 60s
@@ -133,13 +133,14 @@ x-casaos:
   port_map: "6106"
   scheme: http
   is_uncontrolled: false
-  version: "0.28.1"
-  update_at: "2026-10-20"
+  version: "0.33.0"
+  update_at: "2026-10-25"
   release_notes:
     en_US: |-
       - Moved to IceStore. Port changed from 8415 to 6106.
       - Removed REDIS_HOST, CELERY_BROKER_URL and DISPATCHARR_LOG_LEVEL from the compose file; all-in-one mode already uses those values.
       - Optional settings moved to the Variables tab on the IceStore website.
+      - Pinned the image to 0.33.0 instead of latest.
   repo: "https://github.com/Dispatcharr/Dispatcharr"
   support: "https://github.com/Dispatcharr/Dispatcharr/issues"
   docs: "https://dispatcharr.github.io/Dispatcharr-Docs/"

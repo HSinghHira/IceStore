@@ -11,6 +11,7 @@ services:
       - /bin/sh
       - -c
       - |
+        export CLAUDE_CONFIG_DIR="$${CLAUDE_CONFIG_DIR:-/home/claude/.claude}"
         f=/home/claude/.claude/password.txt
         if [ -z "$$AUTH_PASSWORD" ]; then
           if [ ! -s "$$f" ]; then
@@ -28,7 +29,6 @@ services:
       - ANTHROPIC_API_KEY=
       - AUTH_PASSWORD=
       - MCP_ENABLED=false
-      - CLAUDE_CONFIG_DIR=/home/claude/.claude
     ports:
       - target: 8080
         published: "6104"
@@ -74,9 +74,6 @@ services:
         - container: MCP_ENABLED
           description:
             en_US: Keep this false unless another Claude or automation tool needs to send prompts to this container through /mcp. Turning it on also starts a network beacon that shares AUTH_PASSWORD with other containers on the same Docker network.
-        - container: CLAUDE_CONFIG_DIR
-          description:
-            en_US: Where Claude Code keeps its settings and sign-in. It points at the config folder so your sign-in survives a restart. Leave it as it is.
       ports:
         - container: "8080"
           description:
@@ -175,6 +172,7 @@ x-casaos:
       - Port changed from 8443 to 6104.
       - ANTHROPIC_API_KEY is now empty by default, which is what the image expects for subscription sign-in.
       - Sign-in state is kept in the config folder through CLAUDE_CONFIG_DIR, instead of a separate .claude.json file mount that became a folder on a fresh install.
+      - CLAUDE_CONFIG_DIR is now set by the start script, so it no longer shows in the install screen.
       - MCP automation endpoint (/mcp) stays off by default (MCP_ENABLED=false). Turning it on also starts a UDP beacon that shares AUTH_PASSWORD with containers on the same Docker network.
       - Only the web terminal port is published. Upstream protects it with a separate Caddy forward-auth container, which is not bundled here, so keep the port on your home network.
   repo: "https://github.com/worph/claude-code-container"

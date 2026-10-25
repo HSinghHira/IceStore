@@ -2,7 +2,7 @@ name: immerle
 
 services:
   immerle:
-    image: ghcr.io/immerle/immerle:latest
+    image: ghcr.io/immerle/immerle:0.0.14
     container_name: immerle
     restart: unless-stopped
     stop_grace_period: 40s
@@ -150,13 +150,14 @@ x-casaos:
   port_map: "6108"
   scheme: http
   is_uncontrolled: false
-  version: "0.0.11"
-  update_at: "2026-10-20"
+  version: "0.0.14"
+  update_at: "2026-10-25"
   release_notes:
     en_US: |-
       - Moved to IceStore. Port changed from 8480 to 6108.
       - Removed PORT, LIBRARY_PATHS and DATABASE_DRIVER from the compose file; they matched upstream defaults.
       - AUTH_REQUIRE_SETUP_TOKEN and LOG_LEVEL moved to the Variables tab on the IceStore website.
+      - Pinned the image to 0.0.14 instead of latest.
   repo: "https://github.com/immerle/immerle"
   support: "https://github.com/immerle/immerle/issues"
   docs: "https://immerle.com/docs/"

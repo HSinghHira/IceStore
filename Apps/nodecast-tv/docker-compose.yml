@@ -2,7 +2,7 @@ name: nodecast-tv
 
 services:
   nodecast-tv:
-    image: ghcr.io/technomancer702/nodecast-tv:latest
+    image: ghcr.io/technomancer702/nodecast-tv:2.2.1
     container_name: nodecast-tv
     restart: unless-stopped
     stop_grace_period: 40s
@@ -121,13 +121,14 @@ x-casaos:
   port_map: "6112"
   scheme: http
   is_uncontrolled: false
-  version: "latest"
-  update_at: "2026-10-20"
+  version: "2.2.1"
+  update_at: "2026-10-25"
   release_notes:
     en_US: |-
       - Moved to IceStore. Port changed from 8413 to 6112.
       - Removed PORT from the compose file; the app already listens on 3000.
       - OIDC single sign-on settings moved to the Variables tab on the IceStore website.
+      - Pinned the image to 2.2.1 instead of latest.
   repo: "https://github.com/technomancer702/nodecast-tv"
   support: "https://github.com/technomancer702/nodecast-tv/issues"
   docs: "https://github.com/technomancer702/nodecast-tv/blob/main/README.md"

@@ -12,6 +12,11 @@ services:
       - /bin/sh
       - -c
       - |
+        export NTFY_CACHE_FILE="$${NTFY_CACHE_FILE:-/var/lib/ntfy/cache.db}"
+        export NTFY_AUTH_FILE="$${NTFY_AUTH_FILE:-/var/lib/ntfy/auth.db}"
+        export NTFY_AUTH_DEFAULT_ACCESS="$${NTFY_AUTH_DEFAULT_ACCESS:-deny-all}"
+        export NTFY_ENABLE_LOGIN="$${NTFY_ENABLE_LOGIN:-true}"
+        export NTFY_REQUIRE_LOGIN="$${NTFY_REQUIRE_LOGIN:-true}"
         f=/var/lib/ntfy/password.txt
         if [ -z "$$NTFY_AUTH_USERS" ]; then
           if [ ! -s "$$f" ]; then
@@ -30,12 +35,6 @@ services:
     environment:
       - TZ=$TZ
       - NTFY_BASE_URL=http://localhost:6113
-      - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
-      - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
-      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
-      - NTFY_ENABLE_LOGIN=true
-      - NTFY_REQUIRE_LOGIN=true
-      - NTFY_AUTH_USERS=
     ports:
       - target: 80
         published: "6113"
@@ -75,33 +74,6 @@ services:
               this device. For other devices, change localhost to your ZimaOS
               IP, like http://192.168.1.50:6113, or use your public address,
               like https://ntfy.example.com.
-        - container: NTFY_CACHE_FILE
-          description:
-            en_US: Where ntfy keeps its saved messages. Leave it as is.
-        - container: NTFY_AUTH_FILE
-          description:
-            en_US: Where ntfy keeps its users and passwords. Leave it as is.
-        - container: NTFY_AUTH_DEFAULT_ACCESS
-          description:
-            en_US: >-
-              deny-all means only signed-in users can read or send. Use
-              read-write to let anyone use your server.
-        - container: NTFY_ENABLE_LOGIN
-          description:
-            en_US: Shows a sign-in page in the web app.
-        - container: NTFY_REQUIRE_LOGIN
-          description:
-            en_US: Makes the web app ask everyone to sign in first.
-        - container: NTFY_AUTH_USERS
-          description:
-            en_US: >-
-              Leave it blank: the app makes an admin account with a random
-              password on first start. The password is in
-              /DATA/AppData/ntfy/password.txt (open it with the Files app) and
-              in the app log. To pick your own, write it in that file and
-              restart the app. Or fill this in yourself as
-              name:password-hash:role, with every `$` in the hash written as
-              `$$` and a comma between users; then password.txt is not used.
       ports:
         - container: "80"
           description:
@@ -186,6 +158,7 @@ x-casaos:
       - No more admin/admin: each install makes its own random admin password on first start, saved in password.txt in the app folder and shown in the log. Change it by editing that file and restarting. If you installed before, your app still uses admin/admin until you change NTFY_AUTH_USERS (or make it blank) in the app settings.
       - Moved to IceStore. Port changed from 8473 to 6113.
       - NTFY_BEHIND_PROXY and NTFY_UPSTREAM_BASE_URL moved to the Variables tab on the IceStore website. Add NTFY_UPSTREAM_BASE_URL=https://ntfy.sh to get instant alerts on iPhone.
+      - NTFY_AUTH_DEFAULT_ACCESS, NTFY_ENABLE_LOGIN, NTFY_REQUIRE_LOGIN and NTFY_AUTH_USERS moved to the Variables tab. The app still locks ntfy down by default when they are left out.
   repo: "https://github.com/binwiederhier/ntfy"
   support: "https://github.com/binwiederhier/ntfy/issues"
   docs: "https://docs.ntfy.sh/"
