@@ -1,0 +1,179 @@
+name: indelible
+
+services:
+  indelible:
+    image: ghcr.io/hsinghhira/indelible:latest
+    container_name: indelible
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6152
+    ports:
+      - target: 8080
+        published: "6152"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "3.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.25"
+          memory: 768M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/indelible/icon.png
+    x-casaos:
+      id: com.icestore.indelible
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The exact address you open Indelible at, like
+              http://192.168.1.20:6152. Change localhost to your ZimaOS IP.
+              Sign-in only works at this address. Use your own https://
+              domain if you put Indelible behind a reverse proxy.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Indelible web app and API, published on host as 6152
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (your library, highlights, notes and search index),
+              every archived page, PDF and EPUB in silo/, secret keys and
+              settings.
+
+x-casaos:
+  id: com.icestore.indelible
+  architectures:
+    - amd64
+    - arm64
+  main: indelible
+  author: HSinghHira
+  category: Productivity
+  developer: useindelible
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/indelible/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/indelible/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/indelible/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/indelible/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/indelible/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/indelible/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/indelible/screenshot-5.png
+  title:
+    en_US: Indelible
+  tagline:
+    en_US: A self-hosted, permanent home for everything you save to read later
+  description:
+    en_US: >-
+      Indelible is a self-hosted, open source knowledge library and
+      read-it-later archiver: a private Pocket or Readwise that keeps
+      everything you save, in full, on your own server. This is Indelible in
+      a single container, with PostgreSQL (pgvector), Silo file storage, the
+      page renderer and the background worker inside, one port and one data
+      folder. Every secret key and password is made for you on first start.
+
+
+      **Features**
+
+
+      - Full-content archiving of articles, PDFs and EPUBs, with a headless
+        Chromium renderer for pages that resist simple scraping
+
+      - A focused reading view with highlights, notes and reading progress
+        that syncs across web and mobile
+
+      - Full-text and semantic search across your whole library
+
+      - Mila, an optional AI assistant that summarizes and answers questions
+        about your saved content, using your own AI provider key
+
+      - Save from the browser extension, RSS feeds, file uploads or a
+        personal email address
+
+      - Syncs to Obsidian and Notion
+
+
+      **How to use?**
+
+
+      1. Open Indelible from the Zima OS dashboard.
+
+      2. Create your account on the first visit. Sign-ups close by themselves
+         as soon as that first account exists.
+
+      3. Save something: paste a link, upload a file, install the browser
+         extension or add an RSS feed.
+
+      4. Open a saved item to highlight text, take notes and track your
+         reading.
+
+      5. Turn on Mila in Settings if you want AI summaries; you add your own
+         OpenAI-compatible API key there.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6152. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6152.
+           Signing in only works at this exact address.
+
+
+        3. More settings, like letting more people sign up, OIDC sign-in and
+           Notion sync, are listed on the Indelible page at
+           https://icestore.hsinghhira.me/app/indelible/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        4. Start the installation.
+
+
+        5. Wait about three minutes. The first start sets up the database
+           and file storage.
+
+
+        6. Open http://your-zimaos-ip:6152.
+
+
+        7. Sign up. The first account is yours, and sign-ups close after it.
+  index: /
+  port_map: "6152"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.1.1"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Single-container Indelible with one port (6152) and one data folder
+      - Every secret key and password is made on first start, so each install gets its own
+      - Runs in development mode over http (works on your network) and production mode when PUBLIC_URL is https
+      - ind-api 0.1.1
+      - ind-worker 0.1.1
+      - ind-renderer 0.1.1
+      - pgsty/silo RELEASE.2026-10-18T00-00-00Z
+      - PostgreSQL 18 with pgvector inside
+  repo: "https://github.com/useindelible/indelible"
+  support: "https://github.com/useindelible/indelible/issues"
+  docs: "https://useindelible.com/docs/self-hosting/install/"

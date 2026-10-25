@@ -1,0 +1,183 @@
+name: outline
+
+services:
+  outline:
+    image: ghcr.io/hsinghhira/outline:latest
+    container_name: outline
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6155
+    ports:
+      - target: 8080
+        published: "6155"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2560M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/outline/icon.png
+    x-casaos:
+      id: com.icestore.outline
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The exact address you open Outline at, like
+              http://192.168.1.20:6155. Change localhost to your ZimaOS IP.
+              Outline only works at this address, so use your own domain
+              (https://...) if you put it behind a reverse proxy.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Outline web app, API and mail viewer (/mail), published on host as 6155
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (all documents, collections and users), uploaded
+              files in storage/, Redis data, secret keys and settings.
+
+x-casaos:
+  id: com.icestore.outline
+  architectures:
+    - amd64
+    - arm64
+  main: outline
+  author: HSinghHira
+  category: Productivity
+  developer: Outline
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/outline/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/outline/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/outline/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/outline/screenshot-2.png
+  title:
+    en_US: Outline
+  tagline:
+    en_US: The fastest wiki and knowledge base for growing teams, self-hosted
+  description:
+    en_US: >-
+      Outline is a fast, beautifully designed wiki and knowledge base for
+      teams, with real-time collaborative editing, nested collections and
+      powerful search. This is Outline in a single container, with
+      PostgreSQL, Redis and a mail viewer inside, one port and one data
+      folder. The secret keys and database passwords are made for you on
+      first start, and you can sign in with email right away: no Google,
+      Slack or OIDC app needed.
+
+
+      **Features**
+
+
+      - Real-time collaborative editing with a clean Markdown editor
+
+      - Nested collections and documents, full-text search and a
+        keyboard-first interface
+
+      - Sign in with email links, or add Google, Slack, Microsoft, Discord
+        or any OIDC provider (Pocket ID, Authentik...)
+
+      - API and integrations (GitHub, GitLab, Linear, Figma, Notion import)
+
+      - Works without an email server: sign-in links and invites go to the
+        built-in mail viewer at /mail until you set up SMTP
+
+
+      **How to use?**
+
+
+      1. Open Outline from the Zima OS dashboard.
+
+      2. On the first visit, Outline asks for a workspace name, your name and
+         your email. That makes you the admin.
+
+      3. Create a collection and start writing.
+
+      4. To sign in again later, type your email. Until you set up SMTP, the
+         sign-in link is in the mail viewer at
+         http://your-zimaos-ip:6155/mail/. Its login is in the app logs.
+
+      5. Invite people from Settings, Members.
+
+      6. To send real emails or add Google, Slack or OIDC sign-in, add the
+         settings from the Variables tab on the IceStore page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6155. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6155.
+           Outline only works at this exact address.
+
+
+        3. Emails stay inside the app at first. To send real emails, or to
+           sign in with Google, Slack or OIDC (like Pocket ID), add those
+           settings. They are listed on the Outline page at
+           https://icestore.hsinghhira.me/app/outline/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        4. Start the installation.
+
+
+        5. Wait about three minutes. The first start sets up the database.
+
+
+        6. Open http://your-zimaos-ip:6155.
+
+
+        7. Type a workspace name, your name and your email. You are now the
+           admin.
+
+
+        8. To sign in again later, type your email. Open the app logs and
+           find the line that says "mail viewer (/mail) login is". It shows a
+           user name and password.
+
+
+        9. Open http://your-zimaos-ip:6155/mail/, log in with them, and click
+           the sign-in link in the email.
+  index: /
+  port_map: "6155"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.12.0"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Single-container Outline with one port (6155) and one data folder
+      - The secret keys and database passwords are made on first start, so each install gets its own
+      - Email sign-in works out of the box: links go to the built-in mail viewer at /mail until you set an SMTP server
+      - outlinewiki/outline 1.12.0
+      - axllent/mailpit v1.32.0
+      - PostgreSQL 16 and Redis inside
+  repo: "https://github.com/outline/outline"
+  support: "https://github.com/outline/outline/discussions"
+  docs: "https://docs.getoutline.com"

@@ -1,0 +1,176 @@
+name: omnicloud
+
+services:
+  omnicloud:
+    image: ghcr.io/hsinghhira/omnicloud:latest
+    container_name: omnicloud
+    hostname: omnicloud
+    restart: unless-stopped
+    stop_grace_period: 40s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6154
+    ports:
+      - target: 8080
+        published: "6154"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.50"
+          memory: 768M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omnicloud/icon.png
+    x-casaos:
+      id: com.icestore.omnicloud
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open OmniCloud at, like http://192.168.1.20:6154.
+              Change localhost to your ZimaOS IP. The Google, OneDrive,
+              Dropbox and Yandex sign-in callbacks are made from it
+              (PUBLIC_URL/api/accounts/google/callback and so on).
+      ports:
+        - container: "8080"
+          description:
+            en_US: OmniCloud web app and API, published on host as 6154
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (connected accounts with their encrypted logins,
+              the file list and settings) and the secret keys.
+
+x-casaos:
+  id: com.icestore.omnicloud
+  architectures:
+    - amd64
+    - arm64
+  main: omnicloud
+  author: HSinghHira
+  category: Productivity
+  developer: dimartarmizi
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omnicloud/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omnicloud/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omnicloud/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omnicloud/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omnicloud/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omnicloud/screenshot-4.png
+  title:
+    en_US: OmniCloud
+  tagline:
+    en_US: One workspace for every cloud drive you own
+  description:
+    en_US: >-
+      OmniCloud brings Google Drive, OneDrive, Dropbox, Yandex Disk, MEGA,
+      pCloud and S3-compatible storage into one file workspace, so you don't
+      need a separate app for every provider. This is OmniCloud in a single
+      container, built from the upstream source, with the API and the web app
+      behind one port and one data folder. The encryption and sign-in keys
+      are made for you on first start.
+
+
+      **Features**
+
+
+      - Browse, upload, download, rename and delete files across every
+        connected provider from one file explorer
+
+      - Home, My Drive, Recent, Starred, Shared with Me and Quota views
+
+      - Live upload progress, drag-and-drop and folder uploads
+
+      - Automatic choice of which account gets each upload (round robin,
+        weighted, least used, most free or manual priority)
+
+      - Background sync keeps the file list of every account current
+
+      - Local mode for one person, or hosted mode with logins for many
+
+
+      **How to use?**
+
+
+      1. Open OmniCloud from the Zima OS dashboard.
+
+      2. In local mode (the default) there is no login. Set APP_MODE to
+         hosted to make accounts with a login.
+
+      3. Go to Quota to add a cloud account.
+
+      4. MEGA, pCloud and S3 storage ask for their login right there. Google
+         Drive, OneDrive, Dropbox and Yandex Disk need an app from that
+         provider first (see the Variables tab).
+
+      5. Open My Drive to browse, upload and download across every connected
+         account.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6154. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6154.
+
+
+        3. OmniCloud has no login in local mode. Anyone who can open the page
+           can use your clouds. To get a login, add APP_MODE with the value
+           hosted.
+
+
+        4. To use Google Drive, OneDrive, Dropbox or Yandex Disk, make an app
+           at that provider and add its client ID and secret. They are listed
+           on the OmniCloud page at https://icestore.hsinghhira.me/app/omnicloud/
+           (Variables tab). You can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about one minute.
+
+
+        7. Open http://your-zimaos-ip:6154.
+
+
+        8. Go to Quota and connect your first cloud account.
+  index: /
+  port_map: "6154"
+  scheme: http
+  is_uncontrolled: false
+  version: "51b949a"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Single-container OmniCloud with one port (6154) and one data folder
+      - Built from upstream commit 51b949a, since upstream publishes no image or releases
+      - The encryption and sign-in keys are made on first start, and the host name is fixed so saved cloud logins survive updates
+      - The cloud sign-in callbacks are made from PUBLIC_URL
+      - node 22.23.4-bookworm-slim
+  repo: "https://github.com/dimartarmizi/OmniCloud"
+  support: "https://github.com/dimartarmizi/OmniCloud/issues"
+  docs: "https://github.com/dimartarmizi/OmniCloud/blob/main/docs/provider-setup.md"

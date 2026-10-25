@@ -1,0 +1,187 @@
+name: homelable
+
+services:
+  homelable:
+    image: ghcr.io/hsinghhira/homelable:latest
+    container_name: homelable
+    restart: unless-stopped
+    stop_grace_period: 40s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6151
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6151"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 768M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homelable/icon.png
+    x-casaos:
+      id: com.icestore.homelable
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Homelable at, like http://192.168.1.20:6151.
+              Change localhost to your ZimaOS IP. Use your own domain if you
+              put Homelable behind HTTPS.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password for the admin login. Leave it empty and one is made
+              for you on first start; it is shown in the app logs. Type your
+              own to change it at any time.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Homelable web app and API, published on host as 6151
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (all canvases, devices and settings), uploaded floor
+              plans, the secret key and the admin password file.
+
+x-casaos:
+  id: com.icestore.homelable
+  architectures:
+    - amd64
+    - arm64
+  main: homelable
+  author: HSinghHira
+  category: Networking
+  developer: Pouzor
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homelable/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homelable/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homelable/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homelable/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homelable/screenshot-3.png
+  title:
+    en_US: Homelable
+  tagline:
+    en_US: Draw and monitor your whole homelab as a live, interactive diagram
+  description:
+    en_US: >-
+      Homelable is a self-hosted map of your homelab: scan your network, drop
+      the devices it finds onto a canvas, and watch live health checks light
+      up as your gear goes on and offline. This is Homelable in a single
+      container, with the API and the web app behind one port and one data
+      folder. The secret key and the admin password are made for you on first
+      start.
+
+
+      **Features**
+
+
+      - One-click nmap network scans that queue new devices for you to
+        approve onto the canvas
+
+      - 15+ node types: routers, switches, servers, hypervisors, firewalls,
+        Docker hosts and containers, IoT and more
+
+      - Live status checks per node (ping, TCP, HTTP) with real-time updates
+
+      - Import Proxmox hosts and guests, Unraid, Zigbee2MQTT meshes and
+        Z-Wave JS networks
+
+      - Rack view with port-to-port cabling, next to your network and
+        electrical diagrams
+
+      - Sign in with a password or with your own OpenID Connect provider
+
+
+      **How to use?**
+
+
+      1. Open Homelable from the Zima OS dashboard.
+
+      2. Sign in as admin. The password is in the app logs, on the line that
+         says "admin login is".
+
+      3. Click Scan Network to find devices on your network, or add nodes by
+         hand.
+
+      4. Approve the devices you want from the Pending Devices list.
+
+      5. Double-click a node to set its health check, icon and services.
+
+      6. Scans run from inside the container, so device MAC addresses are
+         not shown.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6151. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6151.
+
+
+        3. Find ADMIN_PASSWORD. Type a password, or leave it empty to get one
+           made for you.
+
+
+        4. More settings, like the scan ranges, Proxmox import and OpenID
+           Connect sign-in, are listed on the Homelable page at
+           https://icestore.hsinghhira.me/app/homelable/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about one minute.
+
+
+        7. If you left ADMIN_PASSWORD empty, open the app logs and find the
+           line that says "admin login is". It shows the user name and
+           password.
+
+
+        8. Open http://your-zimaos-ip:6151 and sign in as admin.
+
+
+        9. Click Scan Network to find your devices.
+  index: /
+  port_map: "6151"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.6.0"
+  update_at: "2026-10-25"
+  release_notes:
+    en_US: |-
+      - Single-container Homelable with one port (6151) and one data folder
+      - The secret key and admin password are made on first start; set ADMIN_PASSWORD to choose your own (no bcrypt hash needed)
+      - homelable-backend 3.6.0
+      - homelable-frontend 3.6.0
+      - The optional MCP server for AI clients is not included
+  repo: "https://github.com/Pouzor/homelable"
+  support: "https://github.com/Pouzor/homelable/issues"
+  docs: "https://github.com/Pouzor/homelable/blob/main/INSTALLATION.md"
