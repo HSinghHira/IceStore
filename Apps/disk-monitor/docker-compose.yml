@@ -2,7 +2,7 @@ name: disk-monitor
 
 services:
   disk-monitor:
-    image: ghcr.io/isanto1306/disk-monitor:0.32.104
+    image: ghcr.io/hsinghhira/disk-monitor:latest
     container_name: disk-monitor
     hostname: disk-monitor
     restart: unless-stopped
@@ -13,33 +13,6 @@ services:
     read_only: true
     tmpfs:
       - /tmp:size=64m,mode=1777
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        d=/app/cache
-        umask 077
-        if [ -z "$$DISK_MONITOR_SESSION_SECRET" ]; then
-          f=$$d/.session_secret
-          if [ ! -s "$$f" ]; then
-            head -c 48 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$$f.tmp" && mv "$$f.tmp" "$$f" || { echo "[icestore] cannot write $$f"; exit 1; }
-            echo "[icestore] made a new session secret in /DATA/AppData/disk-monitor/cache/.session_secret"
-          fi
-          DISK_MONITOR_SESSION_SECRET=$$(cat "$$f")
-          export DISK_MONITOR_SESSION_SECRET
-        fi
-        if [ -z "$$DISK_MONITOR_PASSWORD" ]; then
-          f=$$d/password.txt
-          if [ ! -s "$$f" ]; then
-            head -c 12 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$$f.tmp" && mv "$$f.tmp" "$$f" || { echo "[icestore] cannot write $$f"; exit 1; }
-            echo "[icestore] first start: sign in as $${DISK_MONITOR_USERNAME:-admin} with the password $$(cat "$$f")"
-          fi
-          DISK_MONITOR_PASSWORD=$$(cat "$$f")
-          export DISK_MONITOR_PASSWORD
-          echo "[icestore] login password: see /DATA/AppData/disk-monitor/cache/password.txt"
-        fi
-        export DISK_MONITOR_USERNAME="$${DISK_MONITOR_USERNAME:-admin}"
-        exec uvicorn entrypoint_header_stable:app --host 0.0.0.0 --port 6170 --no-server-header --no-access-log
     environment:
       - TZ=$TZ
       - DISK_MONITOR_USERNAME=admin
@@ -229,9 +202,10 @@ x-casaos:
   update_at: "2026-10-27"
   release_notes:
     en_US: |-
-      - Initial IceStore version, pinned to ghcr.io/isanto1306/disk-monitor 0.32.104.
+      - Initial IceStore version, built on ghcr.io/isanto1306/disk-monitor 0.32.104.
       - Runs on port 6170 instead of 8999.
       - Each install makes its own session secret and, when DISK_MONITOR_PASSWORD is blank, its own random login password on first start, instead of CHANGE_ME values.
+      - The start script is now in the image (ghcr.io/hsinghhira/disk-monitor), not in the compose file, so it no longer fails with "can't create .tmp: Read-only file system".
   repo: "https://github.com/isanto1306/Disk-Monitor"
   support: "https://github.com/isanto1306/Disk-Monitor/issues"
   docs: "https://github.com/isanto1306/Disk-Monitor#readme"

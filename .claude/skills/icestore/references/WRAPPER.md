@@ -11,6 +11,12 @@ data folder (DocuSeal), you need no wrapper: leave the variable out of the
 compose file. An app that makes a new one on every start (portracker's
 `SESSION_SECRET`, which signs everyone out on restart) still needs a wrapper.
 
+Do not do this with an inline shell `entrypoint:` in the compose file:
+ZimaOS replaces `$` twice, so every `$$var` reaches the shell empty. The
+start script always lives in the image. Disk Monitor (`docker/disk-monitor/`)
+is a second example: amd64 only, host networking, a read-only root, and a
+changed port set in the Dockerfile `CMD`.
+
 ## Files
 
 ```

@@ -100,8 +100,8 @@ app built from the old manifest, not as an edit:
   had wrong internal ports and a WebRTC port range mapped to other numbers;
   the old ZimaBrain one claimed arm64 for an amd64-only image.
 - A multi-container manifest becomes an AIO app; a single image with a
-  secret becomes a wrapper (or an inline `entrypoint:` like `Apps/vscode`
-  for linuxserver images that read the secret from an env var).
+  secret becomes a wrapper (`references/WRAPPER.md`). Never an inline
+  shell `entrypoint:`/`command:` script in the compose file (see below).
 - Mention every old port and id in `release_notes`.
 
 The folder name is the app's id everywhere: lowercase letters, digits and dashes
@@ -119,6 +119,14 @@ folder, the compose `name:`, the main service name, the image name
   Never write `ZimaAppStore` or `com.hiraappstore` in a new app. An existing app
   keeps its old `x-casaos.id` if people have already installed it — changing the
   id makes the store treat it as a different app.
+- **No shell scripts or shell variables in `docker-compose.yml`.** ZimaOS
+  replaces `$` in the compose file twice, so `$$f` reaches the shell as an
+  empty string (Disk Monitor's first version failed with
+  `can't create .tmp: Read-only file system` / `cannot write ` this way).
+  Only ZimaOS's own `$TZ`, `$PUID`, `$PGID` and `$AppID` may appear. Any
+  start-up logic (secrets, passwords, a changed port) goes in a wrapper image
+  (`references/WRAPPER.md`). Older apps with inline `entrypoint:` scripts
+  (vscode, vscodium, ntfy, claudecode, omniroute, opengym) are suspect.
 - **No `#` comments in `docker-compose.yml`.** Explanations go in x-casaos fields
   (`references/COMPOSE.md`). Shell, Dockerfile, nginx and supervisord files may
   and should have comments.
