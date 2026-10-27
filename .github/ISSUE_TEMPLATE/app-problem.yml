@@ -1,0 +1,40 @@
+name: Report a problem with an app
+description: Something does not install, start or work as expected.
+title: "[App] "
+labels: ["bug"]
+body:
+  - type: input
+    id: app
+    attributes:
+      label: App
+      placeholder: e.g. AFFiNE
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Shown on the app page on the IceStore website.
+  - type: dropdown
+    id: os
+    attributes:
+      label: System
+      options:
+        - ZimaOS
+        - CasaOS
+        - Homeio
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Optional. The app's container logs, if you can get them.
+      render: shell

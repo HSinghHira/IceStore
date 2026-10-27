@@ -424,8 +424,10 @@
           "content": "Ente - All Apps",
           "id": 1792916028122,
           "level": "default",
-          "done": false,
-          "start": 1792916028123
+          "done": true,
+          "start": 1792916028123,
+          "focus": false,
+          "end": 1793093096033
         }
       }
     ],
@@ -439,6 +441,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1793083308499"
+    "version": "1793093096070"
   }
 }

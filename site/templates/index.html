@@ -199,14 +199,22 @@
         <h2 id="apps-h">All apps</h2>
         <p class="sub" id="count">{{app_count}} apps and counting.</p>
       </div>
-      <div class="sf">
-        {{icon:search}}<input id="q" type="search" placeholder="Search apps" aria-label="Search apps"
-          autocomplete="off" />
+      <div class="tools">
+        <div class="sf">
+          {{icon:search}}<input id="q" type="search" placeholder="Search apps" aria-label="Search apps"
+            autocomplete="off" /><kbd class="kb" aria-hidden="true">/</kbd>
+        </div>
+        <label class="so"><span class="sr">Sort apps</span><select id="sort">
+          <option value="name">A–Z</option>
+          <option value="added">Newest</option>
+          <option value="updated">Recently updated</option>
+        </select></label>
       </div>
     </div>
+    <div class="cats" role="group" aria-label="Filter by category">{{{cats}}}</div>
     <div class="grid">{{{cards}}}</div>
-    <p class="none" id="none" hidden>No app matches that search.</p>
-  </section>
+    <p class="none" id="none" hidden><span id="none-t">No app matches that search.</span>
+      <a id="none-req" href="{{request_url}}" rel="noopener">Request it</a></p>  </section>
 
   <section class="wrap sec" aria-labelledby="help-h">
     <div class="help">
@@ -215,7 +223,7 @@
         <p class="sub">Ask for it, report a bug, or browse the code.</p>
       </div>
       <div class="cta">
-        <a class="btn p" href="{{repo}}/issues/new">{{icon:plus-circle}}Request an App</a><a class="btn"
+        <a class="btn p" href="{{request_url}}">{{icon:plus-circle}}Request an App</a><a class="btn"
           href="{{repo}}/issues">{{icon:issues}}Issues</a><a class="btn" href="{{repo}}">{{icon:github}}GitHub</a>
       </div>
     </div>

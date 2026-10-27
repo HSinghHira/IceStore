@@ -31,6 +31,23 @@
     b._t=setTimeout(()=>{b.innerHTML=old;b.classList.remove('ok');b._t=0},1600);
   });
 
+  /* ---- offline support: sw.js sits next to the manifest (the site root) ---- */
+  if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){
+    const m=$('link[rel=manifest]');
+    if(m)addEventListener('load',()=>navigator.serviceWorker.register(new URL('sw.js',m.href)).catch(()=>{}));
+  }
+
+  /* ---- "/" jumps to the page's search box; Esc clears it ---- */
+  document.addEventListener('keydown',e=>{
+    const t=e.target;
+    if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!(t.closest&&t.closest('input,textarea,select,[contenteditable]'))){
+      const q=$('#app main #q');if(!q)return;
+      e.preventDefault();q.scrollIntoView({block:'center',behavior:reduced?'auto':'smooth'});q.focus({preventScroll:true});
+    }else if(e.key==='Escape'&&t.id==='q'){
+      if(t.value){t.value='';t.dispatchEvent(new Event('input'))}else t.blur();
+    }
+  });
+
   /* ---- "best viewed on desktop" notice, small phones only ---- */
   (()=>{
     let seen;try{seen=sessionStorage.getItem('ice-desk')}catch(_){}

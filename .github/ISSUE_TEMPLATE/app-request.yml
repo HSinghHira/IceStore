@@ -1,0 +1,28 @@
+name: Request an app
+description: Ask for an app to be added to IceStore.
+title: "[App request] "
+labels: ["app request"]
+body:
+  - type: markdown
+    attributes:
+      value: Tell us which app you would like to install from IceStore on ZimaOS, CasaOS or Homeio.
+  - type: input
+    id: app
+    attributes:
+      label: App name
+      placeholder: e.g. Immich
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Project link
+      description: The app's website or source code (GitHub, GitLab...).
+      placeholder: https://github.com/...
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What do you use it for?
+      description: Optional. Anything that helps, like which features matter to you.

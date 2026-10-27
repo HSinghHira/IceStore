@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history: the site sorts apps by when they were added and updated
 
       - name: Read the public base URL
         id: cfg
@@ -59,6 +61,8 @@ jobs:
           cache-dependency-path: site/requirements.txt
 
       - name: Build the website into the same bundle
+        env:
+          GITHUB_TOKEN: ${{ github.token }}   # GitHub stars for the app pages (higher API limit)
         run: |
           pip install -r site/requirements.txt
           python site/build.py --out dist --no-clean

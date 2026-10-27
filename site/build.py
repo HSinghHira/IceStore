@@ -37,12 +37,18 @@ Pages are full HTML, so they work without JavaScript and are indexed by search e
 js/core.js only makes moving between them smoother.
 """
 import argparse
+import datetime
 import html
 import json
 import math
+import os
 import re
+import time
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 import shutil
 import struct
+import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import urlencode
@@ -72,6 +78,9 @@ OSES = [  # id, name, logo
     ("casaos", "CasaOS", "https://casaos.zimaspace.com/favicon/apple-touch-icon.png"),
     ("homeio", "Homeio", "https://homeio.app/icon.webp"),
 ]
+# x-casaos architectures -> plain names for the chip's tooltip
+ARCH_NAMES = {"amd64": "Intel/AMD 64-bit", "arm64": "ARM 64-bit", "arm": "ARM 32-bit", "arm/v7": "ARM 32-bit",
+              "386": "Intel/AMD 32-bit", "riscv64": "RISC-V 64-bit"}
 # x-casaos category -> schema.org applicationCategory (anything else: UtilitiesApplication)
 APP_TYPES = {
     "productivity": "BusinessApplication", "documents": "BusinessApplication", "business": "BusinessApplication",
@@ -105,6 +114,12 @@ ICONS = {
     "file-code": '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M10 13l-2 2 2 2M14 13l2 2-2 2"/>',
     "server": '<rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/>',
     "mail": '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+    "cpu": '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/>',
+    "star": '<path d="M11.5 2.3a.6.6 0 0 1 1 0l2.6 5.4 5.9.8a.6.6 0 0 1 .3 1l-4.3 4.2 1 5.9a.6.6 0 0 1-.8.6L12 17.4l-5.3 2.8a.6.6 0 0 1-.8-.6l1-5.9-4.3-4.2a.6.6 0 0 1 .3-1l5.9-.8z"/>',
+    "calendar": '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+    "commit": '<circle cx="12" cy="12" r="3"/><path d="M3 12h6M15 12h6"/>',
+    "rss": '<path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>',
+    "download": '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
     "globe": '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/>',
 }
 
@@ -229,6 +244,30 @@ def image_size(path):
     return None
 
 
+def git_dates():
+    """{folder: (added, updated)} as Unix times, from git history (empty without git).
+    added = first commit that touched Apps/<folder>; updated = last commit that changed an
+    `image:` line there (a version bump), else added. Needs the full history (fetch-depth: 0)."""
+    def log(*args):
+        r = subprocess.run(["git", "-C", str(ROOT), "log", "--format=@%ct", "--name-only", *args, "--", "Apps"],
+                           capture_output=True, text=True, encoding="utf-8")
+        if r.returncode:
+            return {}
+        seen, t = {}, 0
+        for line in r.stdout.splitlines():  # newest first
+            if line.startswith("@"):
+                t = int(line[1:])
+            elif line.count("/") >= 2:
+                seen.setdefault(line.split("/")[1], []).append(t)
+        return seen
+
+    try:
+        touched, bumped = log(), log(r"-G^\s*image:")
+    except OSError:
+        return {}
+    return {f: (min(ts), max(bumped.get(f) or [min(ts)])) for f, ts in touched.items()}
+
+
 def load_app(folder):
     slug = re.sub(r"[^a-z0-9._-]+", "-", folder.name.lower()).strip("-")
     cf = next((folder / n for n in ("docker-compose.yml", "docker-compose.yaml") if (folder / n).exists()), None)
@@ -317,6 +356,9 @@ def load_app(folder):
         "slug": slug, "folder": folder, "icon": icon, "shots": shots,
         "name": name, "desc": tagline, "image": image, "version": version, "ports": ports,
         "category": str(fm.get("category") or text(meta.get("category"))),
+        "arch": [str(x) for x in (meta.get("architectures") or [])],
+        # the app's own version and release date from x-casaos (the image tag is often just "latest")
+        "app_version": str(meta.get("version") or "").strip(), "update_at": str(meta.get("update_at") or "").strip(),
         "site": site, "src": repo or site, "svcs": svcs, "env": env, "more": more, "captions": captions,
         "compose": redact_text(raw).rstrip(), "intro": intro,
     }
@@ -346,9 +388,12 @@ def hue(name):
     return sum(ord(c) for c in name) % 40
 
 
-def ph(name, src=""):
-    """Letter tile in the app's colour, with the icon on top when there is one."""
-    img = f'<img src="{e(src)}" alt="" loading="lazy" onerror="this.remove()">' if src else ""
+def ph(name, src="", fallback=""):
+    """Letter tile in the app's colour, with the icon on top when there is one.
+    If src fails, fallback is tried (the original file when src is the wsrv.nl copy), then the letter shows."""
+    f = f' data-f="{e(fallback)}"' if fallback and fallback != src else ""
+    onerror = "if(this.dataset.f){this.src=this.dataset.f;this.removeAttribute('data-f')}else this.remove()"
+    img = f'<img src="{e(src)}"{f} alt="" loading="lazy" decoding="async" onerror="{onerror}">' if src else ""
     return f'<span class="ph" style="--h:{hue(name)}" aria-hidden="true">{e(name[:1].upper())}{img}</span>'
 
 
@@ -391,22 +436,63 @@ def marquee(apps):
         if not row:
             continue
         reps = max(1, math.ceil(24 / len(row)))  # enough tiles to fill wide screens
-        tiles = "".join(f'<div class="tile">{ph(a["name"], a["icon_url"])}</div>' for a in row) * reps
+        tiles = "".join(f'<div class="tile">{ph(a["name"], a["icon_cdn"], a["icon_url"])}</div>' for a in row) * reps
         out.append(f'  <div class="mq" aria-hidden="true"><div class="{cls}">{tiles * 2}</div></div>')
     return "\n".join(out)
 
 
+def card(a, root=""):
+    """App card with category, name and tagline. root leads back to the site root ("../../" on app pages).
+    data-q is what the home search matches: name, tagline and category."""
+    q = " ".join((a["name"], a["desc"], a["category"])).lower()
+    k = f'<span class="k">{e(a["category"])}</span>' if a["category"] else ""
+    p = f'<p>{e(a["desc"])}</p>' if a["desc"] else ""
+    fallback = root + a["icon_url"] if a["icon_url"] else ""
+    return (f'<a class="card" href="{root}app/{a["slug"]}/" data-name="{e(a["name"].lower())}" data-cat="{e(a["category"])}" '
+            f'data-q="{e(q)}" data-added="{a["added"]}" data-updated="{a["updated"]}">{ph(a["name"], a["icon_cdn"], fallback)}'
+            f'<div class="ct">{k}<h3>{e(a["name"])}</h3>{p}</div></a>')
+
+
+def related(a, apps, n=3):
+    """Up to n other apps in the same category: the ones after this app A-Z, wrapping round,
+    so each page shows different neighbours."""
+    same = [x for x in apps if x["category"] and x["category"] == a["category"]]
+    if len(same) < 2:
+        return []
+    i = same.index(a)
+    return (same[i + 1:] + same[:i])[:n]
+
+
+def related_html(a, apps):
+    more = related(a, apps)
+    if not more:
+        return ""
+    cat = a["category"]
+    return (
+        '\n    <section class="sec rel" style="padding-left:0;padding-right:0" aria-labelledby="rel-h">\n'
+        f'      <div class="rh"><h2 id="rel-h">More {e(cat)} apps</h2>'
+        f'<a class="btn" href="../../?{e(urlencode({"cat": cat}))}#apps">{icon("grid")}See all</a></div>\n'
+        f'      <div class="grid">{"".join(card(x, "../../") for x in more)}</div>\n    </section>')
+
+
 def home_page(apps, cfg, tpl, layout):
     base = cfg["base_url"]
-    cards = "".join(
-        f'<a class="card" href="app/{a["slug"]}/" data-name="{e(a["name"].lower())}">{ph(a["name"], a["icon_url"])}<h3>{e(a["name"])}</h3></a>'
-        for a in apps)
+    cards = "".join(card(a) for a in apps)
+    # category filter: biggest first, "Others" last
+    counts = {}
+    for a in apps:
+        if a["category"]:
+            counts[a["category"]] = counts.get(a["category"], 0) + 1
+    order = sorted(counts, key=lambda c: (c.lower() in ("other", "others"), -counts[c], c.lower()))
+    cats = f'<button class="cat" type="button" data-cat="" aria-pressed="true">All<b>{len(apps)}</b></button>' + "".join(
+        f'<button class="cat" type="button" data-cat="{e(c)}" aria-pressed="false">{e(c)}<b>{counts[c]}</b></button>'
+        for c in order)
     tabs = "".join(
         f'<button class="tab" role="tab" type="button" id="{i}" data-hash="{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}">'
         f'<img src="{logo}" alt="" width="24" height="24" loading="lazy">{n}</button>'
         for j, (i, n, logo) in enumerate(OSES))
     values = {
-        **cfg, "app_count": len(apps), "marquee": marquee(apps), "cards": cards, "os_tabs": tabs,
+        **cfg, "app_count": len(apps), "marquee": marquee(apps), "cards": cards, "cats": cats, "os_tabs": tabs,
         **{f"{i}_logo": logo for i, _, logo in OSES},
         **{f"{i}_url_wbr": wbr(cfg[f"{i}_url"]) for i, _, _ in OSES},
     }
@@ -420,13 +506,164 @@ def home_page(apps, cfg, tpl, layout):
     return page(layout, fill(tpl, values), head)
 
 
-def app_page(a, cfg, tpl, layout):
+def github_repo(url):
+    """"owner/repo" for a github.com link, else ""."""
+    m = re.match(r"https?://github\.com/([\w.-]+)/([\w.-]+)", url or "")
+    return f"{m.group(1)}/{m.group(2).removesuffix('.git')}" if m else ""
+
+
+def github_stars(apps):
+    """{owner/repo: stars} for the apps' upstream projects. Cached in .cache/ for 12 hours so local
+    rebuilds do not hit the API rate limit; uses $GITHUB_TOKEN when set (as in GitHub Actions).
+    Set ICESTORE_NO_STARS=1 to skip. Any failure just leaves the star chip out."""
+    if os.environ.get("ICESTORE_NO_STARS"):
+        return {}
+    cache_file = ROOT / ".cache" / "github-stars.json"
+    try:
+        cache = json.loads(cache_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        cache = {}
+    stars = cache.get("stars", {})
+    repos = sorted({r for r in (github_repo(a["src"]) for a in apps) if r})
+    if time.time() - cache.get("time", 0) < 12 * 3600 and all(r in stars for r in repos):
+        return stars
+
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": "IceStore-site-build"}
+    if os.environ.get("GITHUB_TOKEN"):
+        headers["Authorization"] = "Bearer " + os.environ["GITHUB_TOKEN"]
+
+    def get(repo):
+        try:
+            req = urllib.request.Request(f"https://api.github.com/repos/{repo}", headers=headers)
+            with urllib.request.urlopen(req, timeout=8) as r:
+                return repo, int(json.load(r)["stargazers_count"])
+        except Exception:
+            return repo, None
+
+    with ThreadPoolExecutor(8) as pool:
+        got = {r: n for r, n in pool.map(get, repos) if n is not None}
+    if not got:
+        warn("could not fetch GitHub stars (offline or rate limited); using the cached numbers")
+        return stars
+    stars.update(got)
+    try:
+        cache_file.parent.mkdir(exist_ok=True)
+        cache_file.write_text(json.dumps({"time": time.time(), "stars": stars}), encoding="utf-8")
+    except OSError:
+        pass
+    return stars
+
+
+def short_num(n):
+    """52300 -> 52.3k"""
+    if n >= 1_000_000:
+        return f"{n / 1_000_000:.1f}".rstrip("0").rstrip(".") + "M"
+    if n >= 1000:
+        return f"{n / 1000:.1f}".rstrip("0").rstrip(".") + "k"
+    return str(n)
+
+
+def parse_day(s):
+    try:
+        return datetime.date.fromisoformat(str(s)[:10])
+    except ValueError:
+        return None
+
+
+def issue_url(cfg, template, **fields):
+    """New-issue link that opens one of the forms in .github/ISSUE_TEMPLATE, with fields filled in."""
+    return f'{cfg["repo"]}/issues/new?' + urlencode({"template": template, **fields})
+
+
+def pager_html(a, apps):
+    """Previous / next app, A-Z, wrapping round."""
+    if len(apps) < 2:
+        return ""
+    i = apps.index(a)
+    prev, nxt = apps[i - 1], apps[(i + 1) % len(apps)]
+    return (
+        '\n    <nav class="pager" aria-label="Previous and next app">'
+        f'<a class="pg" href="../../app/{prev["slug"]}/" rel="prev"><span>{icon("arrow-left")}Previous app</span><b>{e(prev["name"])}</b></a>'
+        f'<a class="pg nx" href="../../app/{nxt["slug"]}/" rel="next"><span>Next app{icon("arrow-right")}</span><b>{e(nxt["name"])}</b></a>'
+        '</nav>')
+
+
+def app_time(a):
+    """When the app last changed: git (version bump) first, then x-casaos update_at, as a UTC datetime."""
+    if a.get("updated"):
+        return datetime.datetime.fromtimestamp(a["updated"], datetime.timezone.utc)
+    d = parse_day(a["update_at"])
+    return datetime.datetime(d.year, d.month, d.day, tzinfo=datetime.timezone.utc) if d else None
+
+
+def feed(apps, cfg, n=30):
+    """feed.xml: an Atom feed of the n most recently added or updated apps. Each version is its
+    own entry, so feed readers show an app again when it gets a new version."""
+    base = cfg["base_url"]
+    dated = sorted(((app_time(a), a) for a in apps if app_time(a)), key=lambda x: x[0], reverse=True)[:n]
+    now = datetime.datetime.now(datetime.timezone.utc)
+    iso = lambda t: t.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    entries = []
+    for t, a in dated:
+        url = f'{base}app/{a["slug"]}/'
+        v = a["app_version"]
+        title = f'{a["name"]} {v}' if v else a["name"]
+        cat = f'<category term="{e(a["category"])}"/>' if a["category"] else ""
+        entries.append(
+            f'  <entry>\n    <title>{e(title)}</title>\n    <link href="{e(url)}"/>\n'
+            f'    <id>{e(url)}#v{e(v or iso(t))}</id>\n    <updated>{iso(t)}</updated>\n'
+            f'    <summary>{e(a["desc"])}</summary>\n    {cat}\n  </entry>')
+    return (
+        '<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">\n'
+        f'  <title>{e(cfg["site_name"])} – new and updated apps</title>\n'
+        f'  <subtitle>{e(cfg["tagline"])}</subtitle>\n'
+        f'  <link href="{e(base)}feed.xml" rel="self"/>\n  <link href="{e(base)}"/>\n'
+        f'  <id>{e(base)}</id>\n  <updated>{iso(dated[0][0] if dated else now)}</updated>\n'
+        f'  <author><name>{e(cfg["author"])}</name><uri>{e(cfg["author_url"])}</uri></author>\n'
+        + "\n".join(entries) + "\n</feed>\n")
+
+
+def service_worker(version):
+    """sw.js: lets the site open offline. Network first (so nothing is ever stale online),
+    with the last copy from the cache when the network fails."""
+    return f"""/* IceStore offline support, built {version}. Network first; the cache is only a fallback. */
+const V='ice-{version}',PRE=['./','css/style.css','js/icons.js','js/core.js','js/home.js','js/app.js','js/badge.js',
+  'favicon.svg','manifest.webmanifest','img/icon-192.png'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(V).then(c=>c.addAll(PRE)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys()
+  .then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{{
+  const r=e.request,u=new URL(r.url);
+  if(r.method!=='GET'||u.origin!==location.origin||/\\.zip$/.test(u.pathname))return;
+  const page=r.mode==='navigate'||(r.headers.get('accept')||'').includes('text/html');
+  e.respondWith(fetch(r).then(res=>{{
+    if(res.ok&&res.type==='basic'){{const c=res.clone();caches.open(V).then(x=>x.put(r,c))}}
+    return res;
+  }}).catch(()=>caches.match(r).then(m=>m||(page?caches.match('./'):undefined)).then(m=>m||Response.error())));
+}});
+"""
+
+
+def app_page(a, apps, cfg, tpl, layout):
     base, name = cfg["base_url"], a["name"]
     url = f'{base}app/{a["slug"]}/'
 
-    chips = [("package", f'{a["image"]}:{a["version"]}')] + [("plug", f"port {p}") for p in a["ports"]]
+    chips = [("package", f'{a["image"]}:{a["version"]}')]
+    if a["app_version"]:
+        v = a["app_version"]
+        chips.append(("commit", v if v[:1] in "vV" or not v[:1].isdigit() else "v" + v, "App version"))
+    day = parse_day(a["update_at"])
+    if day:
+        chips.append(("calendar", f'Updated {day.day} {day:%b %Y}', f"Last updated on {day:%d %B %Y}"))
+    chips += [("plug", f"port {p}") for p in a["ports"]]
+    if a["arch"]:  # which CPUs it runs on, e.g. "amd64 · arm64"
+        chips.append(("cpu", " · ".join(a["arch"]),
+                      "Runs on " + ", ".join(ARCH_NAMES.get(x, x) for x in a["arch"])))
     if a["category"]:
         chips.append(("tag", a["category"]))
+    stars = a.get("stars")
+    if stars is not None:
+        chips.append(("star", f"{short_num(stars)} stars", f"{stars:,} GitHub stars for the upstream project"))
     links = []
     if a["site"]:
         links.append(f'<a class="btn p" href="{e(a["site"])}" rel="noopener">{icon("external-link")}Visit project site</a>')
@@ -458,7 +695,8 @@ def app_page(a, cfg, tpl, layout):
             navs = (f'<button class="nav prev" type="button" aria-label="Previous screenshots">{icon("arrow-left")}</button>'
                     f'<button class="nav next" type="button" aria-label="Next screenshots">{icon("arrow-right")}</button>')
         shots = (
-            f'\n    <section class="sec gs" style="padding-left:0;padding-right:0" aria-label="{e(name)} screenshots">\n'
+            f'\n    <section class="sec gs" style="padding-left:0;padding-right:0" aria-labelledby="shots-h">\n'
+            '      <h2 id="shots-h" class="sr">Screenshots</h2>\n'
             f'      <div class="gw"><div class="gal" tabindex="0">{"".join(thumbs)}</div>{navs}</div>\n'
             '    </section>')
 
@@ -472,7 +710,8 @@ def app_page(a, cfg, tpl, layout):
             f'<button class="ic" type="button" data-copy="{e(f"http://localhost:{port}{p}")}" aria-label="Copy {e(k)} URL">{icon("copy")}</button></div>'
             for k, p, ic, port in a["svcs"])
         details = (
-            '\n    <section class="sec dt" style="padding-left:0;padding-right:0" aria-label="Open the app">\n'
+            '\n    <section class="sec dt" style="padding-left:0;padding-right:0" aria-labelledby="det-h">\n'
+            '      <h2 id="det-h" class="sr">Open the app</h2>\n'
             f'      <label class="host">{icon("server")}<span>Server address</span>'
             '<input id="host" type="text" placeholder="localhost" autocomplete="off" spellcheck="false" inputmode="url" '
             'aria-describedby="host-n"><small id="host-n">IP of your ZimaOS, CasaOS or Homeio device. Saved for every app.</small></label>\n'
@@ -506,7 +745,9 @@ def app_page(a, cfg, tpl, layout):
                      f'{note}<div class="vgs">{"".join(table(g, items) for g, items in groups.items())}</div>'))
     tabs.append(("compose", "file-code", "Docker Compose",
                  f'<div class="code"><div class="chrome"><i></i><i></i><i></i><span>docker-compose.yml</span>'
-                 f'<button class="ic" type="button" data-copy-from="#yml" aria-label="Copy docker-compose.yml">{icon("copy")}</button></div>'
+                 f'<a class="ic" href="docker-compose.yml" download="{e(a["slug"])}-docker-compose.yml" '
+                 f'aria-label="Download docker-compose.yml" title="Download">{icon("download")}</a>'
+                 f'<button class="ic" type="button" data-copy-from="#yml" aria-label="Copy docker-compose.yml" title="Copy">{icon("copy")}</button></div>'
                  f'<pre id="yml"><code class="yml">{e(a["compose"])}</code></pre></div>'))
     tab_html = "".join(
         f'<button class="tab" role="tab" type="button" id="t-{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}">{icon(ic)}{n}</button>'
@@ -522,10 +763,14 @@ def app_page(a, cfg, tpl, layout):
 
     values = {
         **cfg, "app_name": name, "desc": a["desc"],
-        "icon": ph(name, a["icon"].name if a["icon"] else ""),
-        "chips": "".join(f"<li>{icon(i)}{e(x)}</li>" for i, x in chips),
+        "icon": ph(name, a["icon_cdn"], a["icon"].name if a["icon"] else ""),
+        "chips": "".join(f'<li{f" title={chr(34)}{e(c[2])}{chr(34)}" if len(c) > 2 else ""}>{icon(c[0])}{e(c[1])}</li>' for c in chips),
         "links": f'<div class="cta" style="justify-content:flex-start">{"".join(links)}</div>' if links else "",
         "shots": shots, "details": details, "tabs": tab_html, "panels": panels, "install": install,
+        "related": related_html(a, apps), "pager": pager_html(a, apps),
+        "help": (f'<p class="rep">{icon("issues")}<span>Something not working with {e(name)}? '
+                 f'<a href="{e(issue_url(cfg, "app-problem.yml", title=f"[{name}] ", app=name, version=a["app_version"]))}" rel="noopener">Report a problem</a>'
+                 f' or <a href="{e(cfg["request_url"])}" rel="noopener">request another app</a>.</span></p>'),
     }
     title = f'{name} – ZimaOS, CasaOS & Homeio app | {cfg["site_name"]}'
     desc = f'{a["desc"].rstrip(".")}. ' if a["desc"] else ""
@@ -535,6 +780,9 @@ def app_page(a, cfg, tpl, layout):
         "image": url + a["shots"][0].name if a["shots"] else base + "img/og.png",
         "applicationCategory": APP_TYPES.get(a["category"].lower(), "UtilitiesApplication"),
         "operatingSystem": "Linux (Docker)",
+        **({"processorRequirement": ", ".join(a["arch"])} if a["arch"] else {}),
+        **({"softwareVersion": a["app_version"]} if a["app_version"] else {}),
+        **({"dateModified": str(day)} if day else {}),
         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
         "author": {"@type": "Person", "name": cfg["author"], "url": cfg["author_url"]},
         "isPartOf": {"@id": base + "#website"},
@@ -578,7 +826,7 @@ def not_found_page(apps, cfg, layout):
     base = cfg["base_url"]
     cards = "".join(
         f'<a class="card" href="{base}app/{a["slug"]}/" data-name="{e(a["name"].lower())}">'
-        f'{ph(a["name"], base + a["icon_url"] if a["icon_url"] else "")}<h3>{e(a["name"])}</h3></a>'
+        f'{ph(a["name"], a["icon_cdn"], base + a["icon_url"] if a["icon_url"] else "")}<h3>{e(a["name"])}</h3></a>'
         for a in apps)
     content = (
         '<div class="wrap">\n'
@@ -611,7 +859,7 @@ def badge_page(apps, cfg, layout):
     url = base + "app-badge/"
     cards = "".join(
         f'<a class="card" href="?={e(a["slug"])}" data-name="{e(a["name"].lower())}">'
-        f'{ph(a["name"], "../" + a["icon_url"] if a["icon_url"] else "")}<h3>{e(a["name"])}</h3></a>'
+        f'{ph(a["name"], a["icon_cdn"], "../" + a["icon_url"] if a["icon_url"] else "")}<h3>{e(a["name"])}</h3></a>'
         for a in apps)
     data = {"base": base, "site": cfg["site_name"], "apps": {a["slug"]: a["name"] for a in apps}}
 
@@ -650,7 +898,7 @@ def badge_page(apps, cfg, layout):
         '    <section class="sec" style="padding-left:0;padding-right:0" aria-labelledby="ba-h">\n'
         '      <div class="srch"><div><h2 id="ba-h">Choose an app</h2></div>'
         f'<label class="sf">{icon("search")}<span class="sr">Search apps</span>'
-        '<input id="q" type="search" placeholder="Search apps" autocomplete="off"></label></div>\n'
+        '<input id="q" type="search" placeholder="Search apps" autocomplete="off"><kbd class="kb" aria-hidden="true">/</kbd></label></div>\n'
         f'      <div class="grid">{cards}</div>\n'
         '      <p class="none" id="none" hidden>No app matches that search.</p>\n'
         '    </section>\n'
@@ -691,6 +939,7 @@ def main():
     # real files with real extensions, so GitHub Pages serves the right content type
     cfg["zimaos_url"] = cfg["base_url"] + "store.json"
     cfg["casaos_url"] = cfg["homeio_url"] = cfg["base_url"] + "store.zip"
+    cfg["request_url"] = issue_url(cfg, "app-request.yml", title="[App request] ")
 
     apps, errors = [], []
     for folder in sorted(p for p in (ROOT / "Apps").iterdir() if p.is_dir() and not p.name.startswith(".")):
@@ -703,8 +952,18 @@ def main():
             print(f"::error::{msg}")
         sys.exit(1)
     apps.sort(key=lambda a: a["name"].lower())
+    dates = git_dates()
+    if not dates:
+        warn("no git history: the Newest and Recently updated sorts fall back to A-Z")
+    for a in apps:
+        a["added"], a["updated"] = dates.get(a["folder"].name, (0, 0))
+    stars = github_stars(apps)
+    for a in apps:
+        a["stars"] = stars.get(github_repo(a["src"]))
     for a in apps:
         a["icon_url"] = f'app/{a["slug"]}/{a["icon"].name}' if a["icon"] else ""
+        # one 192px WebP per icon (sharp at the largest 96px size), the same URL on every page so it caches
+        a["icon_cdn"] = wsrv(cfg["base_url"] + a["icon_url"], w=192, h=192, output="webp", q=85) if a["icon"] else ""
 
     layout = (TPL / "layout.html").read_text(encoding="utf-8")
     tpl_index = (TPL / "index.html").read_text(encoding="utf-8")
@@ -722,7 +981,9 @@ def main():
         dest.mkdir(parents=True, exist_ok=True)
         for f in ([a["icon"]] if a["icon"] else []) + a["shots"]:
             shutil.copy(f, dest / f.name)
-        (dest / "index.html").write_text(app_page(a, cfg, tpl_app, layout), encoding="utf-8")
+        # the compose file as shown on the page (passwords already replaced), for the download button
+        (dest / "docker-compose.yml").write_text(a["compose"] + "\n", encoding="utf-8", newline="\n")
+        (dest / "index.html").write_text(app_page(a, apps, cfg, tpl_app, layout), encoding="utf-8")
 
     (out / "index.html").write_text(home_page(apps, cfg, tpl_index, layout), encoding="utf-8")
     (out / "404.html").write_text(not_found_page(apps, cfg, layout), encoding="utf-8")
@@ -738,6 +999,8 @@ def main():
     (out / "sitemap.xml").write_text(sitemap(apps, cfg["base_url"]), encoding="utf-8")
     (out / "robots.txt").write_text(f'User-agent: *\nAllow: /\n\nSitemap: {cfg["base_url"]}sitemap.xml\n', encoding="utf-8")
     (out / "manifest.webmanifest").write_text(manifest(cfg), encoding="utf-8")
+    (out / "feed.xml").write_text(feed(apps, cfg), encoding="utf-8")
+    (out / "sw.js").write_text(service_worker(time.strftime("%Y%m%d%H%M%S")), encoding="utf-8")
     print(f"Built {len(apps)} app page(s) into {out}")
 
 
