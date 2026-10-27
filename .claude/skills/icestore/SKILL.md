@@ -63,8 +63,15 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    `templates/build-workflow.yml`.
 5. **Write `Apps/<app>/docker-compose.yml`** per `references/COMPOSE.md`.
 6. **Write `Apps/<app>/README.md`** per `references/APP_README.md`, and list the
-   images the user must add (`icon.png`, `screenshot-1.png`, ...). Add or update
-   the app's row in the root `README.md` app table (`references/REPO.md`).
+   images the user must add (`icon.png`, `screenshot-1.png`, ...).
+6a. **Update the root `README.md`** (always, for a new app, a renamed app or a
+   new icon): from the repo root run
+   `python .github/scripts/readme_svgs.py` (needs `pyyaml markdown pillow
+   fonttools`). It rewrites the block between the `README-SVGS` markers (app
+   count, the "All N apps" list) and redraws `readme/*.svg`. Never edit that
+   block by hand. Check `git diff README.md` shows the new app in the list and
+   the new count (`references/REPO.md`). A "no ports found" warning is normal
+   for host-network apps.
 7. **Run the checker**: `python3 scripts/check_app.py <repo root> <app>`. Fix every
    ERROR. Read each WARN and fix it or tell the user why it stays. Then go through
    `references/CHECKLIST.md` for what the script cannot see.

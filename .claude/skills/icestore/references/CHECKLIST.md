@@ -51,6 +51,9 @@ Then check by hand what it can't see:
     redirecting to localhost (`AIO.md` §3.5). Every address people type is
     written `http://[ZIMAOS-IP-ADDRESS]:<port>`.
 10. **Images** the user still has to add are listed in your reply.
+10a. **Root README updated**: `python .github/scripts/readme_svgs.py` was run
+    from the repo root, and `git diff README.md` shows the new app in the
+    "All N apps" list with the new count, plus changed `readme/*.svg`.
 11. **AIO version**: `AIO_VERSION` in the workflow is bumped for any change to
     `docker/<app>/`.
 12. **Weekly bumper can read it** (AIO only): run

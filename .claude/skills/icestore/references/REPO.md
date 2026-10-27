@@ -22,14 +22,30 @@ supported-languages.json ["en_US"] — write every x-casaos text as en_US only
 justfile                 `just check` runs the checker on every app; `just deploy ["message"]`
                          (alias `just d`) = check, then git add -A, commit, push
 .gitattributes           forces LF line endings on shell, Dockerfile, nginx and compose files
-README.md                how to add the store on each OS + a hand-written app table
+README.md                intro + a generated block of SVG pictures (store, app list)
+readme/*.svg             the pictures, drawn by .github/scripts/readme_svgs.py
 ```
 
-The root `README.md` has an `## 📦 Apps` table, one row per app in
-alphabetical order, written by hand. Add a row for a new app (copy an existing
-row: icon, image badge, project badge, port badge(s), one-line description,
-screenshot-1) and update the badges when the image tag or port changes. There
-is no port ledger file: `scripts/ports.py` reads the ports from the compose files.
+The root `README.md` has no hand-written app table any more. Everything
+between `<!-- README-SVGS:START -->` and `<!-- README-SVGS:END -->` is written
+by `.github/scripts/readme_svgs.py`: the app count, the "All N apps: ..." list
+(each app's title, alphabetical) and the pictures in `readme/` (hero, icon
+marquee, store tabs, app cards, help panel). Never edit that block by hand.
+
+When you add an app, rename one or change its icon, run it from the repo root
+and commit `README.md` and `readme/` with the app:
+
+```bash
+pip install -r site/requirements.txt pillow fonttools
+python .github/scripts/readme_svgs.py
+```
+
+`update-readme-svgs.yml` also runs it on every push that touches `Apps/**` (and
+weekly) and commits the result, but run it yourself so the README is right in
+the same commit. "no ports found" warnings are normal for host-network apps.
+
+There is no port ledger file: `scripts/ports.py` reads the ports from the
+compose files.
 
 ## release-store.yml
 
