@@ -28,6 +28,8 @@ Site files:
   templates/layout.html      <head>, background, footer; shared by every page
   templates/index.html       the home page
   templates/app.html         an app page
+  app-badge/                 badge picker page (built here); the badge SVGs come from
+                             .github/scripts/app_badges.py, run after this script
   static/                    copied as-is: css/, js/, favicon.svg, img/
 
 Templates use {{name}} (escaped), {{{name}}} (raw HTML) and {{icon:name}} (inline SVG icon).
@@ -420,7 +422,8 @@ def app_page(a, cfg, tpl, layout):
     if a["site"]:
         links.append(f'<a class="btn p" href="{e(a["site"])}" rel="noopener">{icon("external-link")}Visit project site</a>')
     if a["src"]:
-        links.append(f'<a class="btn" href="{e(a["src"])}" rel="noopener">{icon("code")}View source</a>')
+        links.append(f'<a class="btn" href="{e(a["src"])}" rel="noopener">{icon("code")}</a>')
+    links.append(f'<a class="btn" href="../../app-badge/?={e(a["slug"])}">{icon("tag")}</a>')
 
     shots = ""
     if a["shots"]:
@@ -572,6 +575,58 @@ def not_found_page(apps, cfg, layout):
                             '<meta name="robots" content="noindex">')
 
 
+def badge_page(apps, cfg, layout):
+    """app-badge/: pick an app, see its badge and copy the Markdown or HTML.
+    The badges themselves (app-badge/<slug>.svg) are drawn by .github/scripts/app_badges.py.
+    The chosen app comes from the query (?=affine), so js/badge.js fills in the details."""
+    base = cfg["base_url"]
+    url = base + "app-badge/"
+    cards = "".join(
+        f'<a class="card" href="?={e(a["slug"])}" data-name="{e(a["name"].lower())}">'
+        f'{ph(a["name"], "../" + a["icon_url"] if a["icon_url"] else "")}<h3>{e(a["name"])}</h3></a>'
+        for a in apps)
+    data = {"base": base, "site": cfg["site_name"], "apps": {a["slug"]: a["name"] for a in apps}}
+
+    def snippet(id_, title):
+        return (f'<div class="code bsn"><div class="chrome"><i></i><i></i><i></i><span>{title}</span>'
+                f'<button class="btn p s" type="button" data-copy-from="#{id_}" data-done="Copied">{icon("copy")}Copy</button></div>'
+                f'<pre id="{id_}"><code></code></pre></div>')
+
+    content = (
+        '<div class="wrap">\n'
+        f'  <div class="top"><a class="logo" href="../">{e(cfg["site_name"])}</a>'
+        f'<a class="back" href="../#apps">{icon("arrow-left")}All apps</a></div>\n'
+        '  <main id="main" tabindex="-1" data-page="badge">\n'
+        '    <section class="bhero" aria-labelledby="b-h">\n'
+        '      <h1 id="b-h">App badges</h1>\n'
+        f'      <p class="lead">Show that an app can be installed from {e(cfg["site_name"])}. Pick an app, copy the Markdown '
+        'and paste it into a README. The badge links to the app page.</p>\n'
+        '      <div class="bsel" id="bsel" hidden>\n'
+        '        <a class="bimg" id="bimg" href="#"><img alt="" height="80"></a>\n'
+        f'        {snippet("b-md", "Markdown")}\n'
+        f'        {snippet("b-html", "HTML")}\n'
+        f'        {snippet("b-url", "Image URL")}\n'
+        '      </div>\n'
+        '      <p class="none" id="bnone" hidden></p>\n'
+        '    </section>\n'
+        '    <section class="sec" style="padding-left:0;padding-right:0" aria-labelledby="ba-h">\n'
+        '      <div class="srch"><div><h2 id="ba-h">Choose an app</h2></div>'
+        f'<label class="sf">{icon("search")}<span class="sr">Search apps</span>'
+        '<input id="q" type="search" placeholder="Search apps" autocomplete="off"></label></div>\n'
+        f'      <div class="grid">{cards}</div>\n'
+        '      <p class="none" id="none" hidden>No app matches that search.</p>\n'
+        '    </section>\n'
+        f'    <script type="application/json" id="bdata">{js(data)}</script>\n'
+        '  </main>\n</div>')
+    ld = {"@context": "https://schema.org", "@type": "WebPage", "name": "App badges", "url": url,
+          "isPartOf": {"@id": base + "#website"}}
+    head = {**cfg, "root": "../", "url": url, "og_image": base + "img/og.png",
+            "title": f'App badges – {cfg["site_name"]}',
+            "description": f'Get a badge for any app in {cfg["site_name"]} to show in your README.',
+            "og_alt": cfg["site_name"], "jsonld": js(ld)}
+    return page(layout, content, head)
+
+
 def redirect_page(target, base):
     """A tiny page that sends the visitor on, for folders that have no page of their own."""
     t = e(target)
@@ -633,6 +688,8 @@ def main():
 
     (out / "index.html").write_text(home_page(apps, cfg, tpl_index, layout), encoding="utf-8")
     (out / "404.html").write_text(not_found_page(apps, cfg, layout), encoding="utf-8")
+    (out / "app-badge").mkdir(parents=True, exist_ok=True)
+    (out / "app-badge" / "index.html").write_text(badge_page(apps, cfg, layout), encoding="utf-8")
     # /app/ has no page of its own: send people to the homepage
     (out / "app").mkdir(parents=True, exist_ok=True)
     (out / "app" / "index.html").write_text(redirect_page("../", cfg["base_url"]), encoding="utf-8")

@@ -26,6 +26,10 @@ WATCH = [HERE, ROOT / "Apps"]
 def build():
     t = time.time()
     r = subprocess.run([sys.executable, str(HERE / "build.py"), "--out", str(OUT)])
+    if r.returncode == 0:  # app badges need pillow and fonttools; the site works without them
+        b = subprocess.run([sys.executable, str(ROOT / ".github" / "scripts" / "app_badges.py"), "--out", str(OUT)])
+        if b.returncode:
+            print("app badges skipped (pip install pillow fonttools)", flush=True)
     print(f"build {'ok' if r.returncode == 0 else 'FAILED'} in {time.time() - t:.1f}s", flush=True)
 
 
