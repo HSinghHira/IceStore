@@ -11,9 +11,11 @@
 #   s3init     built-in (one-off: creates Ente's buckets)
 #   mailpit    chroot   (catches sign-up emails; viewer at /mail/)
 #   museum     chroot   (the Ente API server)
-#   web        chroot   (the Ente web apps: photos on 3000, Public Albums on 3002)
+#   web        chroot   (all ten Ente web apps, on 3000-3010)
 #   quota      built-in (raises every account's storage limit; Ente's default is 10 GB)
-#   gateway    built-in (nginx: 8080 photos, 8081 API, 8082 albums, 8083 S3)
+#   gateway    built-in (nginx: 8080 photos, 8081 API, 8082 albums, 8083 S3,
+#                        8104 mail, 8105-8112 accounts, auth, cast, locker share,
+#                        embed, paste, locker, memories)
 
 FROM ghcr.io/ente/server:20fb6316bd98b1af613ef771c684d5cd46fbf371 AS img-museum
 FROM ghcr.io/ente/web:817ce840de0e05ae8f817ca218795d620bc122c8 AS img-web
@@ -53,7 +55,7 @@ LABEL org.opencontainers.image.title="ente-seaweedfs" \
       org.opencontainers.image.description="Ente - SeaweedFS S3 in a single container" \
       org.opencontainers.image.source="https://github.com/HSinghHira/IceStore"
 
-EXPOSE 8080 8081 8082 8083
+EXPOSE 8080 8081 8082 8083 8104 8105 8106 8107 8108 8109 8110 8111 8112
 STOPSIGNAL SIGTERM
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=5 \

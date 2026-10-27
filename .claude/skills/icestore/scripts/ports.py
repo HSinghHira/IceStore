@@ -4,6 +4,10 @@
     python3 ports.py --repo /path/to/IceStore          # a local checkout
     python3 ports.py                                   # download HSinghHira/IceStore from GitHub
     python3 ports.py --repo . --count 2                # next 2 free ports in a row
+    python3 ports.py --repo . --block                  # next free 30-port block in 66xx
+
+Apps with many ports (more than about 4) get a block of 30 in 6600-6699
+instead of using up 61xx: 6600, 6630, 6660, 6690 (Ente uses the first three).
 
 The ports come straight from every Apps/*/docker-compose.yml (published ports
 and x-casaos.port_map), so there is no ledger file to keep in sync.
@@ -23,6 +27,7 @@ except ImportError:
 
 REPO = "HSinghHira/IceStore"
 LOW, HIGH = 6101, 6199
+BLOCK_LOW, BLOCK_HIGH, BLOCK = 6600, 6699, 30
 SOURCES = [
     f"https://codeload.github.com/{REPO}/tar.gz/refs/heads/main",
     f"https://github.com/{REPO}/archive/refs/heads/main.tar.gz",
@@ -79,6 +84,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", help="path to a local IceStore checkout")
     ap.add_argument("--count", type=int, default=1, help="how many ports in a row the new app needs")
+    ap.add_argument("--block", action="store_true", help="find the next free 30-port block in 6600-6699")
     args = ap.parse_args()
 
     apps = from_local(args.repo) if args.repo else from_github()
@@ -91,13 +97,22 @@ def main():
             if not p.isdigit():
                 problems.append(f"{app}: port '{p}' is not a number (a $PORT variable?)")
                 continue
-            if not LOW <= int(p) <= HIGH:
-                problems.append(f"{app}: port {p} is outside {LOW}-{HIGH}")
+            if not (LOW <= int(p) <= HIGH or BLOCK_LOW <= int(p) <= BLOCK_HIGH):
+                problems.append(f"{app}: port {p} is outside {LOW}-{HIGH} and {BLOCK_LOW}-{BLOCK_HIGH}")
             if p in owner and owner[p] != app:
                 problems.append(f"port {p} is used by both {owner[p]} and {app}")
             owner.setdefault(p, app)
 
     used = {int(p) for p in owner if p.isdigit()}
+    if args.block:
+        print()
+        for msg in problems:
+            print(f"WARNING: {msg}")
+        for b in range(BLOCK_LOW, BLOCK_HIGH + 1, BLOCK):
+            if not any(b <= q < b + BLOCK for q in used):
+                print(f"Next free block: {b}-{min(b + BLOCK - 1, BLOCK_HIGH)}")
+                return
+        sys.exit(f"no free block left in {BLOCK_LOW}-{BLOCK_HIGH}; ask the user which range to use next")
     start = None
     for p in range(LOW, HIGH - args.count + 2):
         if all(q not in used for q in range(p, p + args.count)):

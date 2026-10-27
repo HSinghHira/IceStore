@@ -15,10 +15,15 @@ GATEWAY_PORT=8080
 log() { echo "[init] $*"; }
 
 # ---- public addresses ----
-# PUBLIC_URL is the Web App. The API, Public Albums and S3 (photo
-# storage) each have their own port on the same host, unless ENTE_API_URL,
-# ENTE_ALBUMS_URL or ENTE_S3_URL say otherwise (for your own domains).
-PUBLIC_URL=${PUBLIC_URL:-http://localhost:6129}
+# PUBLIC_URL is the Web App. Every other app has its own port on the same
+# host, counted up from PUBLIC_URL's port (6630 by default):
+#   +1 API            +2 Public Albums   +3 photo storage (S3)  +4 mail viewer
+#   +5 Accounts       +6 Auth            +7 Cast                +8 Public Locker
+#   +9 Embed          +10 Paste          +11 Locker             +12 Public Memories
+# Counting from PUBLIC_URL keeps older installs (Web App, API, Albums, S3 on
+# four ports in a row) working. Each address can be set to your own domain
+# instead with the variables below (README variables: list).
+PUBLIC_URL=${PUBLIC_URL:-http://localhost:6630}
 PUBLIC_URL=${PUBLIC_URL%/}
 case $PUBLIC_URL in
   http://*|https://*) ;;
@@ -28,16 +33,31 @@ proto=${PUBLIC_URL%%://*}
 hostport=${PUBLIC_URL#*://}
 hostport=${hostport%%/*}
 host=${hostport%:*}
-API_URL=${ENTE_API_URL:-$proto://$host:6130}
-ALBUMS_URL=${ENTE_ALBUMS_URL:-$proto://$host:6131}
-S3_URL=${ENTE_S3_URL:-$proto://$host:6132}
-API_URL=${API_URL%/}
-ALBUMS_URL=${ALBUMS_URL%/}
-S3_URL=${S3_URL%/}
-for u in "$API_URL" "$ALBUMS_URL" "$S3_URL"; do
-  case $u in
+BASE_PORT=6630
+if [[ $hostport == *:* ]] && [[ ${hostport##*:} =~ ^[0-9]+$ ]]; then
+  BASE_PORT=${hostport##*:}
+fi
+at() { echo "$proto://$host:$((BASE_PORT + $1))"; }
+API_URL=${ENTE_API_URL:-$(at 1)}
+# ENTE_ALBUMS_URL is the old name of ENTE_APPS_PUBLIC_ALBUMS; both work.
+ALBUMS_URL=${ENTE_APPS_PUBLIC_ALBUMS:-${ENTE_ALBUMS_URL:-$(at 2)}}
+S3_URL=${ENTE_S3_URL:-$(at 3)}
+MAIL_URL=$(at 4)
+ACCOUNTS_URL=${ENTE_APPS_ACCOUNTS:-$(at 5)}
+AUTH_URL=$(at 6)
+CAST_URL=${ENTE_APPS_CAST:-$(at 7)}
+LOCKER_SHARE_URL=${ENTE_APPS_PUBLIC_LOCKER:-$(at 8)}
+EMBED_URL=${ENTE_APPS_EMBED_ALBUMS:-$(at 9)}
+PASTE_URL=${ENTE_APPS_PUBLIC_PASTE:-$(at 10)}
+LOCKER_URL=$(at 11)
+MEMORIES_URL=${ENTE_APPS_PUBLIC_MEMORIES:-$(at 12)}
+for v in API_URL ALBUMS_URL S3_URL ACCOUNTS_URL CAST_URL LOCKER_SHARE_URL EMBED_URL PASTE_URL MEMORIES_URL; do
+  val=${!v}
+  val=${val%/}
+  printf -v "$v" '%s' "$val"
+  case $val in
     http://*|https://*) ;;
-    *) log "every address must start with http:// or https:// (got: $u)"; exit 1 ;;
+    *) log "every address must start with http:// or https:// (got $v: $val)"; exit 1 ;;
   esac
 done
 # Ente wants the S3 endpoint as host:port; "local" buckets are plain http.
@@ -45,9 +65,21 @@ S3_ENDPOINT=${S3_URL#*://}
 S3_ENDPOINT=${S3_ENDPOINT%%/*}
 case $S3_URL in https://*) S3_LOCAL=false ;; *) S3_LOCAL=true ;; esac
 S3_REGION=eu-central-2
-log "photos: $PUBLIC_URL  api: $API_URL  albums: $ALBUMS_URL  storage: $S3_URL"
+log "web app:          $PUBLIC_URL"
+log "api (phone apps): $API_URL"
+log "public albums:    $ALBUMS_URL"
+log "photo storage:    $S3_URL"
+log "mail viewer:      $MAIL_URL"
+log "accounts:         $ACCOUNTS_URL"
+log "auth:             $AUTH_URL"
+log "cast:             $CAST_URL"
+log "public locker:    $LOCKER_SHARE_URL"
+log "embed:            $EMBED_URL"
+log "paste:            $PASTE_URL"
+log "locker:           $LOCKER_URL"
+log "public memories:  $MEMORIES_URL"
 if [ "$host" = localhost ]; then
-  log "PUBLIC_URL uses localhost, so phones and other computers cannot reach Ente; set it to http://<your-zimaos-ip>:6129"
+  log "PUBLIC_URL uses localhost, so phones and other computers cannot reach Ente; set it to http://<your-zimaos-ip>:6630"
 fi
 
 # ---- one folder per stateful service under /data ----
@@ -96,7 +128,7 @@ JWT_SECRET=$(secret JWT_SECRET | tr '+/' '-_')
 # MP_UI_AUTH ("user:password") wins; blank = admin with the password made above.
 MAIL_UI_AUTH=${MP_UI_AUTH:-admin:$(secret MAIL_PASSWORD)}
 if [ -z "${MP_UI_AUTH:-}" ]; then
-  log "mail viewer login: user admin, password $(secret MAIL_PASSWORD) (open $PUBLIC_URL/mail/)"
+  log "mail viewer login: user admin, password $(secret MAIL_PASSWORD) (open $MAIL_URL, or $PUBLIC_URL/mail/)"
 else
   log "the mail viewer login is the one you set in MP_UI_AUTH"
 fi
@@ -145,9 +177,10 @@ done
 
 # ---- gateway ----
 # 8080 photos (+ the PUBLIC_URL port), 8081 API, 8082 albums, 8083 S3 (+ the
-# S3 address's port). museum calls the S3 address from inside the container,
-# so with the default localhost address that port must answer in here too.
-INTERNAL_PORTS=" 1025 2112 3000 3001 3002 3003 3004 3005 3006 3008 3009 3010 5432 8025 8080 8081 8082 8083 8090 3200 3201 "
+# S3 address's port), 8104 mail viewer, 8105-8112 the other web apps.
+# museum calls the S3 address from inside the container, so with the
+# default localhost address that port must answer in here too.
+INTERNAL_PORTS=" 1025 2112 3000 3001 3002 3003 3004 3005 3006 3008 3009 3010 5432 8025 8080 8081 8082 8083 8090 3200 3201 8104 8105 8106 8107 8108 8109 8110 8111 8112 "
 port_of() {
   local hp=${1#*://}
   hp=${hp%%/*}
@@ -219,6 +252,13 @@ else
 fi
 SMTP_NAME=${ENTE_SMTP_SENDER_NAME:-Ente}
 
+# Passkeys are tied to the Accounts app address. Browsers only allow them on
+# https (or localhost) with a real host name, not an IP address.
+acc_host=${ACCOUNTS_URL#*://}
+acc_host=${acc_host%%/*}
+acc_host=${acc_host%:*}
+WEBAUTHN_RPID=${ENTE_WEBAUTHN_RPID:-$acc_host}
+
 bucket() {
   cat <<EOF
     $1:
@@ -252,6 +292,16 @@ EOF
   cat <<EOF
 apps:
     public-albums: $(yq "$ALBUMS_URL")
+    embed-albums: $(yq "$EMBED_URL")
+    public-locker: $(yq "$LOCKER_SHARE_URL")
+    public-paste: $(yq "$PASTE_URL")
+    public-memories: $(yq "$MEMORIES_URL")
+    accounts: $(yq "$ACCOUNTS_URL")
+    cast: $(yq "$CAST_URL")
+webauthn:
+    rpid: $(yq "$WEBAUTHN_RPID")
+    rporigins:
+        - $(yq "$ACCOUNTS_URL")
 key:
     encryption: $(yq "$(secret KEY_ENCRYPTION)")
     hash: $(yq "$(secret KEY_HASH)")
@@ -274,6 +324,8 @@ write_env museum "$TZV"
 # museum reads ENTE_<SECTION>_<KEY> itself; blank ones are skipped, so they
 # mean "default". The SMTP ones and the addresses are wired up above.
 pass_env museum 'ENTE_INTERNAL_(DISABLE_REGISTRATION|ADMIN)'
+# Apps that are not in the web image: point them at your own copy.
+pass_env museum 'ENTE_APPS_(FAMILY|SPACE|LEGACY|ACCOUNTS_LEGACY)'
 
 STORAGE_GB=${ENTE_AIO_STORAGE_GB:-102400}
 [[ $STORAGE_GB =~ ^[0-9]+$ ]] || { log "ENTE_AIO_STORAGE_GB must be a whole number (got: $STORAGE_GB); using 102400"; STORAGE_GB=102400; }

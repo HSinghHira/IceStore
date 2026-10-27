@@ -9,19 +9,46 @@ services:
     privileged: true
     environment:
       - TZ=$TZ
-      - PUBLIC_URL=http://localhost:6137
+      - PUBLIC_URL=http://localhost:6660
     ports:
       - target: 8080
-        published: "6137"
+        published: "6660"
         protocol: tcp
       - target: 8081
-        published: "6138"
+        published: "6661"
         protocol: tcp
       - target: 8082
-        published: "6139"
+        published: "6662"
         protocol: tcp
       - target: 8083
-        published: "6140"
+        published: "6663"
+        protocol: tcp
+      - target: 8104
+        published: "6664"
+        protocol: tcp
+      - target: 8105
+        published: "6665"
+        protocol: tcp
+      - target: 8106
+        published: "6666"
+        protocol: tcp
+      - target: 8107
+        published: "6667"
+        protocol: tcp
+      - target: 8108
+        published: "6668"
+        protocol: tcp
+      - target: 8109
+        published: "6669"
+        protocol: tcp
+      - target: 8110
+        published: "6670"
+        protocol: tcp
+      - target: 8111
+        published: "6671"
+        protocol: tcp
+      - target: 8112
+        published: "6672"
         protocol: tcp
     volumes:
       - type: bind
@@ -57,25 +84,54 @@ services:
           description:
             en_US: >-
               The address of the Web App, like
-              http://your-zimaos-ip:6137. Change localhost to your ZimaOS
-              IP, or phones and other computers cannot use Ente. The API,
-              Public Albums and photo storage use the same address with ports
-              6138, 6139 and 6140.
+              http://your-zimaos-ip:6660. Change localhost to your ZimaOS
+              IP, or phones and other computers cannot use Ente. The other
+              apps use the same address with the next ports: 6661 API,
+              6662 Public Albums, 6663 photo storage, 6664 mail viewer,
+              and 6665 to 6672 for Accounts, Auth, Cast, Public Locker,
+              Embed, Paste, Locker and Public Memories.
       ports:
         - container: "8080"
           description:
-            en_US: Web App and the mail viewer (/mail/), published on host as 6137
+            en_US: Web App (Ente Photos), published on host as 6660
         - container: "8081"
           description:
-            en_US: Ente API - the server address for the phone and desktop apps, published on host as 6138
+            en_US: Ente API - the server address for the phone and desktop apps, published on host as 6661
         - container: "8082"
           description:
-            en_US: Public Albums (shared album links), published on host as 6139
+            en_US: Public Albums (shared album links), published on host as 6662
         - container: "8083"
           description:
             en_US: >-
               Photo storage (SeaweedFS S3). Phones and browsers upload and
-              download your encrypted files here, published on host as 6140
+              download your encrypted files here, published on host as 6663
+        - container: "8104"
+          description:
+            en_US: Mail viewer for sign-up codes and other Ente emails, published on host as 6664
+        - container: "8105"
+          description:
+            en_US: Accounts app (passkeys and family invites), published on host as 6665
+        - container: "8106"
+          description:
+            en_US: Ente Auth web app (your two-factor codes), published on host as 6666
+        - container: "8107"
+          description:
+            en_US: Cast app (show albums on a TV), published on host as 6667
+        - container: "8108"
+          description:
+            en_US: Public Locker (shared Locker links), published on host as 6668
+        - container: "8109"
+          description:
+            en_US: Embed app (albums inside other web pages), published on host as 6669
+        - container: "8110"
+          description:
+            en_US: Ente Paste (share text that deletes itself), published on host as 6670
+        - container: "8111"
+          description:
+            en_US: Ente Locker web app (store important documents), published on host as 6671
+        - container: "8112"
+          description:
+            en_US: Public Memories (shared memory links), published on host as 6672
       volumes:
         - container: /data
           description:
@@ -118,7 +174,9 @@ x-casaos:
       - End-to-end encryption for every photo and video
 
 
-      - Web App, plus a Public Albums app for sharing links
+      - All ten Ente web apps, each on its own port: Photos, Public
+        Albums, Accounts, Auth, Cast, Locker, Public Locker, Embed,
+        Paste and Public Memories
 
 
       - Works with the Ente phone and desktop apps
@@ -127,8 +185,8 @@ x-casaos:
       - SeaweedFS for S3-compatible photo storage, fast even with millions of files
 
 
-      - Built-in mail viewer at /mail/ for sign-up codes, or use your own
-        email server
+      - Built-in mail viewer on port 6664 for sign-up codes, or use your
+        own email server
 
 
       - No 10 GB limit: every account gets 100 TB by default
@@ -140,12 +198,12 @@ x-casaos:
 
       2. Sign up with your email and a password.
 
-      3. Open the mail viewer at /mail/ to read your sign-up code.
+      3. Open the mail viewer on port 6664 to read your sign-up code.
 
       4. Type the code to finish signing up.
 
       5. In the Ente phone app, tap the first screen 7 times and set the
-         server to http://your-zimaos-ip:6138.
+         server to http://your-zimaos-ip:6661.
 
       6. Upload photos and share albums.
   tips:
@@ -155,7 +213,7 @@ x-casaos:
 
 
         2. Find PUBLIC_URL. Change localhost to your ZimaOS IP, for example
-           http://192.168.1.20:6137 (your own IP will differ). Phones
+           http://192.168.1.20:6660 (your own IP will differ). Phones
            cannot use localhost.
 
 
@@ -175,11 +233,11 @@ x-casaos:
            "mail viewer login". Write down the password.
 
 
-        7. Open http://your-zimaos-ip:6137 in your browser. Sign up with
+        7. Open http://your-zimaos-ip:6660 in your browser. Sign up with
            your email and a password.
 
 
-        8. Open http://your-zimaos-ip:6137/mail/ in a new tab. Sign in
+        8. Open http://your-zimaos-ip:6664 in a new tab. Sign in
            as admin with the mail password. Copy the code from the email.
 
 
@@ -187,19 +245,26 @@ x-casaos:
 
 
         10. For the phone app: tap the first screen 7 times. Set the server
-            to http://your-zimaos-ip:6138 and sign in.
+            to http://your-zimaos-ip:6661 and sign in.
   index: /
-  port_map: "6137"
+  port_map: "6660"
   scheme: http
   is_uncontrolled: false
   version: "20fb631"
-  update_at: "2026-10-23"
+  update_at: "2026-10-27"
   release_notes:
     en_US: |-
-      - Single-container Ente - MinIO S3with SeaweedFS storage and one data folder
-      - Ports 6137 photos, 6138 API, 6139 Public Albums, 6140 photo storage
+      - New ports: 6660 Web App, 6661 API, 6662 Public Albums, 6663 photo storage,
+        6664 mail viewer, 6665-6672 the other web apps
+      - Adds the Accounts (passkeys), Auth, Cast, Public Locker, Embed, Paste, Locker
+        and Public Memories apps, and tells the Ente server where each one is
+      - Mail viewer has its own port; /mail/ on the Web App still works
+      - Old installs on 6137-6140 keep working: every address counts up from
+        PUBLIC_URL's port. Reinstall to get the new apps' ports
+      - New settings ENTE_APPS_* (Ente's own names); ENTE_ALBUMS_URL still works
+      - Single-container Ente with SeaweedFS storage and one data folder
       - Database, storage and museum keys are made on first start, so each install gets its own
-      - Sign-up codes go to the built-in mail viewer at /mail/ unless you set your own email server
+      - Sign-up codes go to the built-in mail viewer unless you set your own email server
       - Every account gets 100 TB instead of Ente's 10 GB (ENTE_AIO_STORAGE_GB)
       - server 20fb631, web 817ce84 (Ente only publishes commit tags; they follow latest)
       - seaweedfs 4.48, mailpit v1.32.0, PostgreSQL 15

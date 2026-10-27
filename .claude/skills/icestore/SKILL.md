@@ -37,7 +37,9 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
 
 ## Order of operations
 
-1. **Claim a port.** Ports are `6101`–`6199`; AppFlowy has `6101`. Run
+1. **Claim a port.** Ports are `6101`–`6199`; AppFlowy has `6101`. An app with
+   many ports (more than about 4) gets a block of 30 in `6600`–`6699` instead
+   (`ports.py --block`; Ente Garage 6600, Ente MinIO 6630, Ente SeaweedFS 6660). Run
    `scripts/ports.py --repo <checkout>` (or with no `--repo` to download the repo
    from GitHub). It reads every `Apps/*/docker-compose.yml`, so there is no ledger
    file. If it cannot reach the repo, ask the user which ports are taken. Never

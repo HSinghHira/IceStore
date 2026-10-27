@@ -29,6 +29,8 @@ SITE_ICONS = {"github", "plus", "plus-circle", "issues", "grid", "copy", "check"
               "table", "file-code", "server", "mail", "globe"}
 SECRET = re.compile(r"(?:pass(?:word)?|secret|token|api[_-]?key|private[_-]?key|encryption[_-]?key)", re.I)
 PORT_LOW, PORT_HIGH = 6101, 6199
+# Apps with many ports get a block of 30 here instead (Ente: 6600, 6630, 6660).
+BLOCK_LOW, BLOCK_HIGH = 6600, 6699
 AIO_FILES = ["Dockerfile", "aio-init.sh", "run-svc.sh", "capture-meta.sh", "supervisord.conf",
              "nginx.conf.tpl", ".gitignore"]
 OLD_NAMES = re.compile(r"ZimaAppStore|hiraappstore", re.I)
@@ -183,8 +185,8 @@ def check_compose(root, slug, app_dir):
         if not pub.isdigit():
             err(f"service '{name}': published port '{pub}' must be a fixed number")
             continue
-        if not PORT_LOW <= int(pub) <= PORT_HIGH:
-            err(f"service '{name}': port {pub} is outside {PORT_LOW}-{PORT_HIGH}")
+        if not (PORT_LOW <= int(pub) <= PORT_HIGH or BLOCK_LOW <= int(pub) <= BLOCK_HIGH):
+            err(f"service '{name}': port {pub} is outside {PORT_LOW}-{PORT_HIGH} and {BLOCK_LOW}-{BLOCK_HIGH}")
         if pub in taken:
             err(f"port {pub} is already used by Apps/{taken[pub]}")
 

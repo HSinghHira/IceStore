@@ -7,7 +7,7 @@ python3 scripts/check_app.py <repo root> <app>
 ```
 
 It covers: YAML validity, `name`, ids, category, version trio, ports in
-6101–6199 and unused by other apps (`port_map` for host-network apps),
+6101–6199 (or a 6600–6699 block) and unused by other apps (`port_map` for host-network apps),
 `:latest` or untagged upstream images, `version: latest`, PUBLIC_URL port, `TZ=$TZ`,
 `envs` ↔ `environment:`, a long compose environment, README `variables:`
 format, settings (compose or README) aio-init.sh never reads, raw `env | grep`

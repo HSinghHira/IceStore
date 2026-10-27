@@ -9,6 +9,8 @@ events {
 
 http {
     access_log off;
+    # Redirects stay relative, so they keep the port the browser used.
+    absolute_redirect off;
 
     map $http_x_forwarded_proto $proxy_x_forwarded_proto {
         default $http_x_forwarded_proto;
@@ -20,7 +22,7 @@ http {
         ''      close;
     }
 
-    # Web App, the mail viewer (/mail/) and the health check (/ping).
+    # Web App, the mail viewer (/mail/, also on its own port) and the health check (/ping).
     server {
         listen @GATEWAY_PORT@;
         @EXTRA_LISTEN@
@@ -121,6 +123,132 @@ http {
             proxy_send_timeout 3600s;
             proxy_request_buffering off;
             proxy_buffering off;
+        }
+    }
+
+    # Mail viewer on its own port. Mailpit's web root stays /mail/, so the
+    # /mail/ path on the Web App port keeps working too.
+    server {
+        listen 8104;
+
+        location /mail/ {
+            proxy_pass http://127.0.0.1:8025;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+            proxy_read_timeout 3600s;
+        }
+
+        location / {
+            return 302 /mail/;
+        }
+    }
+
+    # Accounts app (passkeys and other sign-in steps).
+    server {
+        listen 8105;
+
+        location / {
+            proxy_pass http://127.0.0.1:3001;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        }
+    }
+
+    # Ente Auth web app (your two-factor codes).
+    server {
+        listen 8106;
+
+        location / {
+            proxy_pass http://127.0.0.1:3003;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        }
+    }
+
+    # Cast app (show albums on a TV).
+    server {
+        listen 8107;
+
+        location / {
+            proxy_pass http://127.0.0.1:3004;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        }
+    }
+
+    # Public Locker app (shared Locker links).
+    server {
+        listen 8108;
+
+        location / {
+            proxy_pass http://127.0.0.1:3005;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        }
+    }
+
+    # Embed app (albums embedded in other web pages).
+    server {
+        listen 8109;
+
+        location / {
+            proxy_pass http://127.0.0.1:3006;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        }
+    }
+
+    # Ente Paste app.
+    server {
+        listen 8110;
+
+        location / {
+            proxy_pass http://127.0.0.1:3008;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        }
+    }
+
+    # Ente Locker web app.
+    server {
+        listen 8111;
+
+        location / {
+            proxy_pass http://127.0.0.1:3009;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+        }
+    }
+
+    # Public Memories app (shared memory links).
+    server {
+        listen 8112;
+
+        location / {
+            proxy_pass http://127.0.0.1:3010;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
         }
     }
 }
