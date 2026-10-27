@@ -219,9 +219,9 @@ def app_icon(name, uri, x, y, s, uid):
             + text("semi", name[:1].upper(), s * .42, x + s / 2, y + s / 2 + s * .42 * .36, anchor="middle"))
 
 
-def svg(w, h, body, style="", defs="", clip=None):
-    """A slice of the page: black background, optional rounded outline, own <style>."""
-    inner = rect(0, 0, w, h, fill="#000") + body
+def svg(w, h, body, style="", defs="", clip=None, bg="#000"):
+    """A slice of the page: black background (or bg), optional rounded outline, own <style>."""
+    inner = rect(0, 0, w, h, fill=bg) + body
     defs = glyph_defs(defs + body) + defs
     if clip:
         defs += f'<clipPath id="pg"><path d="{clip}"/></clipPath>'

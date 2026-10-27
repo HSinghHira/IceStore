@@ -45,6 +45,7 @@ import shutil
 import struct
 import sys
 from pathlib import Path
+from urllib.parse import urlencode
 
 import markdown
 import yaml
@@ -351,6 +352,14 @@ def ph(name, src=""):
     return f'<span class="ph" style="--h:{hue(name)}" aria-hidden="true">{e(name[:1].upper())}{img}</span>'
 
 
+def wsrv(url, **opts):
+    """Resized, recompressed copy of a public image via the wsrv.nl image CDN.
+    GIFs (animation) and SVGs (vectors) are left as they are."""
+    if url.lower().endswith((".gif", ".svg")):
+        return url
+    return "https://wsrv.nl/?" + urlencode({"url": url, **opts})
+
+
 def js(obj):
     return json.dumps(obj, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
@@ -422,36 +431,51 @@ def app_page(a, cfg, tpl, layout):
     if a["site"]:
         links.append(f'<a class="btn p" href="{e(a["site"])}" rel="noopener">{icon("external-link")}Visit project site</a>')
     if a["src"]:
-        links.append(f'<a class="btn" href="{e(a["src"])}" rel="noopener">{icon("code")}</a>')
-    links.append(f'<a class="btn" href="../../app-badge/?={e(a["slug"])}">{icon("tag")}</a>')
+        links.append(f'<a class="btn" href="{e(a["src"])}" rel="noopener">{icon("code")}View source</a>')
+    links.append(f'<a class="btn" href="../../app-badge/?={e(a["slug"])}">{icon("tag")}Get badge</a>')
 
+    # screenshots: a row of thumbnails (3 in view) under the app details; a click opens the full image.
+    # Thumbnails and the popup image come from wsrv.nl (resized WebP); the <a> links the original,
+    # and onerror falls back to it (e.g. a new screenshot that is not deployed yet).
     shots = ""
     if a["shots"]:
-        imgs = []
+        thumbs = []
         for n, f in enumerate(a["shots"], 1):
             cap = a["captions"][n - 1] if n <= len(a["captions"]) else ""
             alt = f"{name} screenshot {n}" + (f": {cap}" if cap else "")
             size = image_size(f)
             dims = f' width="{size[0]}" height="{size[1]}"' if size else ""
-            lazy = ' loading="lazy"' if n > 1 else ""
-            imgs.append(f'<img src="{e(f.name)}" alt="{e(alt)}"{dims}{lazy}>')
+            lazy = ' loading="lazy"' if n > 3 else ""
+            pub = url + f.name
+            thumb = wsrv(pub, w=720, output="webp", q=80, we=1)
+            full = wsrv(pub, w=1920, output="webp", q=85, we=1)
+            thumbs.append(
+                f'<a class="gt" href="{e(f.name)}" id="shot-{n}" data-full="{e(full)}" data-cap="{e(cap)}">'
+                f'<img src="{e(thumb)}" alt="{e(alt)}"{dims}{lazy} decoding="async" '
+                f'onerror="this.onerror=null;this.src=\'{e(f.name)}\'"></a>')
+        navs = ""
+        if len(a["shots"]) > 3:
+            navs = (f'<button class="nav prev" type="button" aria-label="Previous screenshots">{icon("arrow-left")}</button>'
+                    f'<button class="nav next" type="button" aria-label="Next screenshots">{icon("arrow-right")}</button>')
         shots = (
-            f'      <div class="shot" role="region" aria-roledescription="carousel" aria-label="{e(name)} screenshots">\n'
-            f'        <div class="chrome"><i></i><i></i><i></i><span class="cnt" aria-live="off"></span></div>\n'
-            f'        <div class="slw"><div class="sl" tabindex="0">{"".join(imgs)}</div>\n'
-            f'          <button class="nav prev" type="button" aria-label="Previous screenshot">{icon("arrow-left")}</button>'
-            f'<button class="nav next" type="button" aria-label="Next screenshot">{icon("arrow-right")}</button></div>\n'
-            f'        <div class="dots"></div>\n      </div>')
+            f'\n    <section class="sec gs" style="padding-left:0;padding-right:0" aria-label="{e(name)} screenshots">\n'
+            f'      <div class="gw"><div class="gal" tabindex="0">{"".join(thumbs)}</div>{navs}</div>\n'
+            '    </section>')
 
     details = ""
     if a["svcs"] and a["ports"]:
+        # one compact row per service; js/app.js swaps "localhost" for the address the visitor saved
         cards = "".join(
-            f'<div class="sv"><div class="t"><h3>{e(k)}</h3><span class="pt">{e(p if port == a["ports"][0] else f":{port}{p}")}</span></div>'
-            f'<div class="u"><span class="bd">{icon(ic)}</span><code>{e(f"http://localhost:{port}")}<wbr>{e(p)}</code>'
-            f'<button class="ic" type="button" data-copy="{e(f"http://localhost:{port}{p}")}" aria-label="Copy {e(k)} URL">{icon("copy")}</button></div></div>'
+            f'<div class="sv" data-port="{e(port)}" data-path="{e(p)}"><span class="bd">{icon(ic)}</span>'
+            f'<div class="t"><h3>{e(k)}</h3><code>{e(f"http://localhost:{port}{p}")}</code></div>'
+            f'<a class="ic" href="{e(f"http://localhost:{port}{p}")}" target="_blank" rel="noopener" aria-label="Open {e(k)}">{icon("external-link")}</a>'
+            f'<button class="ic" type="button" data-copy="{e(f"http://localhost:{port}{p}")}" aria-label="Copy {e(k)} URL">{icon("copy")}</button></div>'
             for k, p, ic, port in a["svcs"])
         details = (
-            '\n    <section class="sec" style="padding-left:0;padding-right:0" aria-labelledby="det-h">\n'
+            '\n    <section class="sec dt" style="padding-left:0;padding-right:0" aria-label="Open the app">\n'
+            f'      <label class="host">{icon("server")}<span>Server address</span>'
+            '<input id="host" type="text" placeholder="localhost" autocomplete="off" spellcheck="false" inputmode="url" '
+            'aria-describedby="host-n"><small id="host-n">IP of your ZimaOS, CasaOS or Homeio device. Saved for every app.</small></label>\n'
             f'      <div class="svs">{cards}</div>\n    </section>')
 
     tabs = [("intro", "info", "Introduction", f'<div class="md">{a["intro"]}</div>')]
@@ -482,7 +506,7 @@ def app_page(a, cfg, tpl, layout):
                      f'{note}<div class="vgs">{"".join(table(g, items) for g, items in groups.items())}</div>'))
     tabs.append(("compose", "file-code", "Docker Compose",
                  f'<div class="code"><div class="chrome"><i></i><i></i><i></i><span>docker-compose.yml</span>'
-                 f'<button class="btn p s" type="button" data-copy-from="#yml" data-done="Copied">{icon("copy")}Copy</button></div>'
+                 f'<button class="ic" type="button" data-copy-from="#yml" aria-label="Copy docker-compose.yml">{icon("copy")}</button></div>'
                  f'<pre id="yml"><code class="yml">{e(a["compose"])}</code></pre></div>'))
     tab_html = "".join(
         f'<button class="tab" role="tab" type="button" id="t-{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}">{icon(ic)}{n}</button>'
@@ -497,7 +521,7 @@ def app_page(a, cfg, tpl, layout):
         for i, n, logo in OSES)
 
     values = {
-        **cfg, "app_name": name, "desc": a["desc"], "hero_class": "ahero" if a["shots"] else "ahero solo",
+        **cfg, "app_name": name, "desc": a["desc"],
         "icon": ph(name, a["icon"].name if a["icon"] else ""),
         "chips": "".join(f"<li>{icon(i)}{e(x)}</li>" for i, x in chips),
         "links": f'<div class="cta" style="justify-content:flex-start">{"".join(links)}</div>' if links else "",
@@ -520,8 +544,12 @@ def app_page(a, cfg, tpl, layout):
         {"@type": "ListItem", "position": 2, "name": "Apps", "item": base + "#apps"},
         {"@type": "ListItem", "position": 3, "name": name, "item": url},
     ]}
+    # link previews: the first screenshot cropped to 1200x630 (the size layout.html declares)
+    og = base + "img/og.png"
+    if a["shots"] and a["shots"][0].suffix.lower() not in (".gif", ".svg"):
+        og = wsrv(url + a["shots"][0].name, w=1200, h=630, fit="cover", a="top", output="jpg", q=85)
     head = {**cfg, "root": "../../", "title": title, "description": desc, "url": url,
-            "og_image": base + "img/og.png", "og_alt": f'{name} on {cfg["site_name"]}',
+            "og_image": og, "og_alt": f'{name} on {cfg["site_name"]}',
             "jsonld": js({"@context": "https://schema.org", "@graph": [app_ld, crumbs]})}
     return page(layout, fill(tpl, values), head)
 
@@ -589,7 +617,7 @@ def badge_page(apps, cfg, layout):
 
     def snippet(id_, title):
         return (f'<div class="code bsn"><div class="chrome"><i></i><i></i><i></i><span>{title}</span>'
-                f'<button class="btn p s" type="button" data-copy-from="#{id_}" data-done="Copied">{icon("copy")}Copy</button></div>'
+                f'<button class="ic" type="button" data-copy-from="#{id_}" aria-label="Copy {title}">{icon("copy")}</button></div>'
                 f'<pre id="{id_}"><code></code></pre></div>')
 
     content = (
@@ -598,11 +626,21 @@ def badge_page(apps, cfg, layout):
         f'<a class="back" href="../#apps">{icon("arrow-left")}All apps</a></div>\n'
         '  <main id="main" tabindex="-1" data-page="badge">\n'
         '    <section class="bhero" aria-labelledby="b-h">\n'
-        '      <h1 id="b-h">App badges</h1>\n'
-        f'      <p class="lead">Show that an app can be installed from {e(cfg["site_name"])}. Pick an app, copy the Markdown '
-        'and paste it into a README. The badge links to the app page.</p>\n'
+        '      <div class="btop">\n'
+        '        <div><h1 id="b-h">App badges</h1>\n'
+        f'        <p class="lead">Show that an app can be installed from {e(cfg["site_name"])}. Pick an app, copy the Markdown '
+        'and paste it into a README. The badge links to the app page.</p></div>\n'
+        '        <div class="bprev" id="bprev" data-theme="dark" hidden>\n'
+        '          <a class="bstage" id="bimg" href="#"><img class="bs-d" alt="" height="80">'
+        '<img class="bs-l" alt="" height="80"></a>\n'
+        '          <div class="bthm" role="radiogroup" aria-label="Badge theme">'
+        '<button type="button" role="radio" data-t="dark" aria-checked="true">Dark</button>'
+        '<button type="button" role="radio" data-t="light" aria-checked="false">Light</button>'
+        '<button type="button" role="radio" data-t="auto" aria-checked="false">Auto</button></div>\n'
+        '          <p class="bnote" id="bnote"></p>\n'
+        '        </div>\n'
+        '      </div>\n'
         '      <div class="bsel" id="bsel" hidden>\n'
-        '        <a class="bimg" id="bimg" href="#"><img alt="" height="80"></a>\n'
         f'        {snippet("b-md", "Markdown")}\n'
         f'        {snippet("b-html", "HTML")}\n'
         f'        {snippet("b-url", "Image URL")}\n'

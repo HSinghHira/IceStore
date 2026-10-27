@@ -1,17 +1,16 @@
 <div class="wrap">
   <div class="top"><a class="logo" href="../../">{{site_name}}</a><a class="back" href="../../#apps">{{icon:arrow-left}}All apps</a></div>
   <main id="main" tabindex="-1" data-page="app">
-    <div class="{{hero_class}}">
+    <div class="ahero">
       <div>
         <nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="../../">{{site_name}}</a></li><li><a href="../../#apps">Apps</a></li><li aria-current="page">{{app_name}}</li></ol></nav>
-        {{{icon}}}
-        <h1>{{app_name}}</h1>
+        <div class="ttl">{{{icon}}}<h1>{{app_name}}</h1></div>
         <p class="lead">{{desc}}</p>
         <ul class="chips">{{{chips}}}</ul>
         {{{links}}}
       </div>
-{{{shots}}}
     </div>
+{{{shots}}}
 {{{details}}}
 
     <section class="sec" style="padding-left:0;padding-right:0;text-align:center" aria-labelledby="gs-h">
