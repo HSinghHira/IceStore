@@ -2,7 +2,7 @@ name: vscode
 
 services:
   vscode:
-    image: lscr.io/linuxserver/vscode:1.142.0-ls30
+    image: ghcr.io/hsinghhira/vscode:latest
     container_name: vscode
     restart: unless-stopped
     stop_grace_period: 30s
@@ -10,22 +10,6 @@ services:
     cap_add:
       - IPC_LOCK
     shm_size: "1gb"
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        f=/config/password.txt
-        if [ -z "$$PASSWORD" ]; then
-          if [ ! -s "$$f" ]; then
-            head -c 18 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$$f" || { echo "[icestore] cannot write $$f"; exit 1; }
-            chmod 600 "$$f"
-            echo "[icestore] first start: sign in as $${CUSTOM_USER:-abc} with the password $$(cat "$$f")"
-          fi
-          PASSWORD=$$(cat "$$f")
-          export PASSWORD
-          echo "[icestore] login password: see /DATA/AppData/vscode/password.txt"
-        fi
-        exec /init
     environment:
       - PUID=$PUID
       - PGID=$PGID
@@ -158,11 +142,12 @@ x-casaos:
   port_map: "6119"
   scheme: https
   is_uncontrolled: false
-  version: "1.142.0"
-  update_at: "2026-10-21"
+  version: "1.143.1-ls31"
+  update_at: "2026-10-28"
   release_notes:
     en_US: |-
-      - Pinned to lscr.io/linuxserver/vscode:1.142.0-ls30 instead of latest.
+      - Fixed "Failed to start" ([icestore] cannot write). The start-up script now lives in the image (ghcr.io/hsinghhira/vscode) instead of the compose file, where ZimaOS emptied its variables and the container stopped right away.
+      - Built on lscr.io/linuxserver/vscode 1.143.1-ls31.
       - PASSWORD is now blank by default, and each install makes its own random password on first start (saved in password.txt in the app folder and shown in the log) instead of CHANGEME_PASSWORD. The username is now admin.
       - Moved to IceStore. Ports changed from 8450/8449 to 6119 (HTTPS) and 6120 (HTTP).
       - PUID, PGID and TZ now come from ZimaOS instead of fixed values.
