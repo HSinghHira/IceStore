@@ -1,0 +1,7 @@
+{
+  "Entrypoint": ["/sbin/tini", "--"],
+  "Cmd": ["/invidious/invidious"],
+  "WorkingDir": "/invidious",
+  "User": "invidious",
+  "Env": ["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"]
+}

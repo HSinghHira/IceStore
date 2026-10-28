@@ -1,0 +1,206 @@
+name: pullmd
+
+services:
+  pullmd:
+    image: ghcr.io/hsinghhira/pullmd:latest
+    container_name: pullmd
+    restart: unless-stopped
+    stop_grace_period: 40s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6132
+      - PULLMD_AUTH_MODE=disabled
+      - PULLMD_ADMIN_EMAIL=
+      - PULLMD_ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6132"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pullmd/icon.png
+    x-casaos:
+      id: com.icestore.pullmd
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open PullMD at, like
+              http://[ZIMAOS-IP-ADDRESS]:6132 (for example
+              http://192.168.1.20:6132), or your own https:// domain.
+              PullMD works from any address without it. It is used for the
+              links on the help page, the Claude skill download and OAuth
+              sign-in for claude.ai. Keep the port at 6132.
+        - container: PULLMD_AUTH_MODE
+          description:
+            en_US: >-
+              Who can use PullMD. disabled = anyone who can reach it, no
+              sign-in. single-admin = only you, with the admin email and
+              password. multi-user = people make their own accounts.
+        - container: PULLMD_ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email for the first admin account, used when sign-in is on.
+              Put your own email here. Left blank, it is admin@example.com.
+        - container: PULLMD_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password for the first admin account, used when sign-in is
+              on. Leave it blank and the app makes a random one on first
+              start. It is shown in the app log and saved in the data folder.
+              Or type your own (at least 8 characters).
+      ports:
+        - container: "8080"
+          description:
+            en_US: PullMD web app, REST API and MCP server, published on host as 6132
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The conversion cache and share links, accounts, API keys and
+              the admin password.
+
+x-casaos:
+  id: com.icestore.pullmd
+  architectures:
+    - amd64
+    - arm64
+  main: pullmd
+  author: HSinghHira
+  category: AI
+  developer: AeternaLabsHQ
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pullmd/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pullmd/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pullmd/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pullmd/screenshot-2.png
+  title:
+    en_US: PullMD
+  tagline:
+    en_US: Anything in, clean Markdown out. Web pages, documents and YouTube to Markdown for people and AI agents.
+  description:
+    en_US: >-
+      PullMD turns web pages, documents, images, audio and YouTube videos into
+      clean Markdown. Use it from the web app, the REST API, the MCP server
+      or a Claude skill. This is PullMD in a single container, with one port
+      and one data folder. The Trafilatura and MarkItDown helpers are inside.
+      The Playwright helper (headless Chromium, about 3.7 GB) is left out, so
+      pages that need JavaScript fall back to plain extraction.
+
+
+      **Features**
+
+
+      - Web pages through Cloudflare Markdown, Readability and Trafilatura
+
+      - Reddit threads and Hacker News discussions with their comments
+
+      - PDF, Word, PowerPoint, Excel and EPUB, by link or upload
+
+      - YouTube title, description and transcript with timecodes, no API key
+
+      - Image captions and audio transcripts with any OpenAI-compatible model
+        (optional)
+
+      - Only the parts that match a question (?query=), to save tokens
+
+      - Share links that keep the last good copy if the page goes away
+
+      - MCP server for AI assistants, and optional sign-in with API keys
+
+
+      **How to use?**
+
+
+      1. Open PullMD from the Zima OS dashboard.
+
+
+      2. Paste a link, or drop a file, and press Convert.
+
+
+      3. Copy or download the Markdown, or make a share link.
+
+
+      4. Open /help for the API, the MCP address and the Claude skill.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. PullMD has no sign-in to start with. Anyone on your network can use
+           it.
+
+
+        3. To keep it to yourself, set PULLMD_AUTH_MODE to single-admin. Set
+           PULLMD_ADMIN_EMAIL to your own email.
+
+
+        4. Leave PULLMD_ADMIN_PASSWORD blank to get a random one. Or type your
+           own.
+
+
+        5. PUBLIC_URL can stay as it is. Change localhost to your ZimaOS IP,
+           like http://192.168.1.20:6132, to get the right address in the
+           help page and the Claude skill.
+
+
+        6. More settings, like AI keys for images and audio, YouTube options
+           and Reddit keys, are listed on the PullMD page at
+           https://icestore.hsinghhira.me/app/pullmd/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        7. Start the installation.
+
+
+        8. Wait about two minutes for all parts to start.
+
+
+        9. If you turned sign-in on and left the password blank, open the app
+           log. Find the line that says "admin password is".
+
+
+        10. Open http://[ZIMAOS-IP-ADDRESS]:6132 in your browser.
+  index: /
+  port_map: "6132"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.16.0"
+  update_at: "2026-10-28"
+  release_notes:
+    en_US: |-
+      - Single-container PullMD with one port (6132) and one data folder
+      - aeternalabshq/pullmd 3.16.0
+      - aeternalabshq/pullmd-trafilatura 3.16.0
+      - aeternalabshq/pullmd-markitdown 3.16.0
+      - YouTube transcripts are on (upstream: off), since MarkItDown is inside
+      - Left out: the Playwright helper (headless Chromium, about 3.7 GB)
+  repo: "https://github.com/AeternaLabsHQ/pullmd"
+  support: "https://github.com/AeternaLabsHQ/pullmd/issues"
+  docs: "https://github.com/AeternaLabsHQ/pullmd#readme"

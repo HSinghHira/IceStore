@@ -1,0 +1,175 @@
+name: norish
+
+services:
+  norish:
+    image: ghcr.io/hsinghhira/norish:latest
+    container_name: norish
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6134
+    ports:
+      - target: 8080
+        published: "6134"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/norish/icon.png
+    x-casaos:
+      id: com.icestore.norish
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6134, or use your own https:// domain.
+              Sign-in only works from this address. Keep the port at 6134.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Norish web app, API and live updates, published on host as 6134
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database, recipe photos and videos, queues, the master key
+              and settings. Keep the master key (state/secrets.env) with your
+              backups: without it, saved API keys can't be read.
+
+x-casaos:
+  id: com.icestore.norish
+  architectures:
+    - amd64
+    - arm64
+  main: norish
+  author: HSinghHira
+  category: Home
+  developer: norish-recipes
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/norish/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/norish/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/norish/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/norish/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/norish/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/norish/screenshot-4.jpg
+  title:
+    en_US: Norish
+  tagline:
+    en_US: Real-time recipe app for households. Plan meals, share groceries and cook together.
+  description:
+    en_US: >-
+      Norish is a recipe app made for households. Save recipes from any site,
+      plan your meals on a calendar and share one grocery list that updates
+      live for everyone. This is Norish in a single container, with one port
+      and one data folder. PostgreSQL, Redis and the Obscura page renderer
+      are inside, and the master key and passwords are made for you on first
+      start.
+
+
+      **Features**
+
+
+      - Import recipes from a link, a photo, a video or plain text
+
+      - Households that share recipes, plans and groceries in real time
+
+      - Meal planner calendar and smart grocery lists with aisles
+
+      - Cookbooks, a pantry and a cooking mode
+
+      - Unit conversion, serving scaling and nutrition
+
+      - Works offline and installs like an app
+
+      - Optional AI import and transcription with OpenAI, Ollama or LM Studio
+
+      - Sign in with a password, OIDC (Authentik, Pocket ID...), GitHub or
+        Google
+
+      - Fifteen languages
+
+
+      **How to use?**
+
+
+      1. Open Norish from the Zima OS dashboard.
+
+
+      2. Make an account. The first account is the server owner and admin.
+
+
+      3. Add a recipe with Import and paste a link.
+
+
+      4. Invite your household and plan the week.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. You must do this, or sign-in won't work. It
+           starts as http://[ZIMAOS-IP-ADDRESS]:6134.
+
+
+        3. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6134 (keep the port at 6134).
+
+
+        4. More settings, like AI import, sign-in with OIDC, GitHub or Google,
+           and languages, are listed on the Norish page at
+           https://icestore.hsinghhira.me/app/norish/ (Variables tab). You
+           can add them now or later in the app settings. Most of them can
+           also be changed later in Norish under Settings, Admin.
+
+
+        5. Start the installation.
+
+
+        6. Wait about three minutes for all parts to start.
+
+
+        7. Open http://[ZIMAOS-IP-ADDRESS]:6134 and make an account. The
+           first account becomes the admin.
+  index: /
+  port_map: "6134"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.25.1-beta"
+  update_at: "2026-10-28"
+  release_notes:
+    en_US: |-
+      - Single-container Norish with one port (6134) and one data folder
+      - The master key, the Obscura token and database passwords are made on first start, so each install gets its own
+      - norishapp/norish v0.25.1-beta
+      - norishapp/obscura 0.2.4-norish.2 (page renderer for URL imports)
+      - PostgreSQL 17 and Redis inside
+  repo: "https://github.com/norish-recipes/norish"
+  support: "https://github.com/norish-recipes/norish/issues"
+  docs: "https://docs.norish.dev"

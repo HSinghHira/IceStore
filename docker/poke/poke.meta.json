@@ -1,0 +1,7 @@
+{
+  "Entrypoint": null,
+  "Cmd": ["node", "server.js"],
+  "WorkingDir": "/poketube",
+  "User": "node",
+  "Env": ["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "NODE_ENV=production"]
+}
