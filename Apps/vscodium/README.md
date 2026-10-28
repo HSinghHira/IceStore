@@ -53,7 +53,7 @@ VSCodium is the community build of Microsoft's VS Code editor, with no tracking 
 ## How to use
 
 1. Find your connection token in the app log, on the line that says "open VSCodium at", or in `connection-token.txt` in the app folder.
-2. Open `http://your-zimaos-ip:6160/?tkn=your-token` in your browser.
+2. Open `http://[ZIMAOS-IP-ADDRESS]:6160/?tkn=your-token` in your browser.
 3. Open a folder, install extensions and use the terminal as usual.
 4. Keep your projects in the home folder so they are saved.
 

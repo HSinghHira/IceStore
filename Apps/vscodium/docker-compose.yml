@@ -2,29 +2,11 @@ name: vscodium
 
 services:
   vscodium:
-    image: lscr.io/linuxserver/vscodium-web:1.140.06880-ls44
+    image: ghcr.io/hsinghhira/vscodium:latest
     container_name: vscodium
     restart: unless-stopped
     stop_grace_period: 30s
     network_mode: bridge
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        f=/config/connection-token.txt
-        if [ -z "$$CONNECTION_TOKEN" ] && [ -z "$$CONNECTION_TOKEN_FILE" ]; then
-          if [ ! -s "$$f" ]; then
-            head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$$f" || { echo "[icestore] cannot write $$f"; exit 1; }
-            chmod 600 "$$f"
-            echo "[icestore] first start: made this install's connection token in $$f"
-          fi
-          CONNECTION_TOKEN=$$(cat "$$f")
-          export CONNECTION_TOKEN
-        fi
-        if [ -n "$$CONNECTION_TOKEN" ] && [ -z "$$CONNECTION_TOKEN_FILE" ]; then
-          echo "[icestore] open VSCodium at http://your-zimaos-ip:6160/?tkn=$$CONNECTION_TOKEN"
-        fi
-        exec /init
     environment:
       - PUID=$PUID
       - PGID=$PGID
@@ -127,7 +109,7 @@ x-casaos:
          "open VSCodium at", or in connection-token.txt in the app folder.
 
 
-      2. Open http://your-zimaos-ip:6160/?tkn=your-token in your browser.
+      2. Open http://[ZIMAOS-IP-ADDRESS]:6160/?tkn=your-token in your browser.
 
 
       3. Open a folder, install extensions and use the terminal as usual.
@@ -146,7 +128,7 @@ x-casaos:
         3. Open the app log. Find the line that says "open VSCodium at".
 
 
-        4. Copy the address on that line. Change your-zimaos-ip to the IP
+        4. Copy the address on that line. Change [ZIMAOS-IP-ADDRESS] to the IP
            of your ZimaOS, like http://192.168.1.20:6160/?tkn=...
 
 
@@ -169,12 +151,13 @@ x-casaos:
   port_map: "6160"
   scheme: http
   is_uncontrolled: false
-  version: "1.140.06880"
-  update_at: "2026-10-25"
+  version: "1.143.17183-ls45"
+  update_at: "2026-10-28"
   release_notes:
     en_US: |-
+      - Fixed "Failed to start". The start-up script now lives in the image (ghcr.io/hsinghhira/vscodium) instead of the compose file, where ZimaOS emptied its variables and the container stopped right away.
+      - Built on lscr.io/linuxserver/vscodium-web 1.143.17183-ls45.
       - Moved to IceStore. The port changed from 8451 to 6160 and the app id is now com.icestore.vscodium.
-      - Pinned to lscr.io/linuxserver/vscodium-web:1.140.06880-ls44 instead of latest.
       - CONNECTION_TOKEN is blank by default. Each install makes its own random token on first start (saved in connection-token.txt and shown in the log) instead of shipping one fixed token.
       - PUID, PGID and TZ now come from ZimaOS. SUDO_PASSWORD and CODE_ARGS moved to the Variables tab on the IceStore website.
   repo: "https://github.com/linuxserver/docker-vscodium-web"
