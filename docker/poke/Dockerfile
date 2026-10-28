@@ -32,7 +32,7 @@ ARG POKE_COMMIT=a62345721f52b8beef9fddcd5f676c802d9d44e3
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        ca-certificates curl python3 make g++ libcurl4-openssl-dev; \
+        ca-certificates curl git python3 make g++ libcurl4-openssl-dev; \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /poketube
 # The DASH manifest route is hard-wired to poketube.fun's own Invidious;
