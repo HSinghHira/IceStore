@@ -1,0 +1,197 @@
+name: fileship
+
+services:
+  fileship:
+    image: ghcr.io/hsinghhira/fileship:latest
+    container_name: fileship
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6131
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6131"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fileship/icon.png
+    x-casaos:
+      id: com.icestore.fileship
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Fileship at, like
+              http://[ZIMAOS-IP-ADDRESS]:6131 (for example
+              http://192.168.1.20:6131), or your own domain. Fileship works
+              from any address without it, but links in emails and single
+              sign-on only work once localhost is changed.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The first password for the admin account. Leave it blank and
+              the app makes one on first start and shows it in the app log.
+              It is only used until you change the password in Fileship.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Fileship dashboard, API, uploads and share links, published on host as 6131
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything: the database, uploaded files, thumbnails, backups,
+              AI models, Fileship's encryption key (fileship/secret.key),
+              the database passwords and admin-password.txt. Back up the
+              whole folder.
+
+x-casaos:
+  id: com.icestore.fileship
+  architectures:
+    - amd64
+    - arm64
+  main: fileship
+  author: HSinghHira
+  category: Productivity
+  developer: hanzydev
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fileship/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fileship/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fileship/screenshot-1.png
+  title:
+    en_US: Fileship
+  tagline:
+    en_US: Your own ShareX server and file cloud, with AI search that runs on your server.
+  description:
+    en_US: >-
+      Fileship is a self-hosted file and media platform: a ShareX upload
+      server, a file cloud with folders and notes, short links and AI search
+      that runs on your own server. This is Fileship in a single container,
+      with PostgreSQL inside, one port and one data folder. The database
+      passwords and the admin password are made for you on first start.
+
+
+      **Features**
+
+
+      - Files, nested shared folders, Markdown notes, short links and a
+        trash
+
+
+      - Public sharing with passwords, expiry dates, view limits and rich
+        embeds for Discord
+
+
+      - AI search, captions and OCR that run on your server (no GPU
+        needed)
+
+
+      - Uploads on this server, or on S3, SFTP or FTP storage
+
+
+      - Many users with permissions, storage limits, passkeys, two-factor
+        sign-in and single sign-on
+
+
+      - ShareX, browser extension, Windows app and phone app uploads
+
+
+      **How to use?**
+
+
+      1. Find the admin password in the app log, on the line that says
+         "Fileship login is".
+
+
+      2. Open Fileship from the Zima OS dashboard and sign in as admin.
+
+
+      3. Change the password in Settings, Security.
+
+
+      4. Drop files on the page to upload them, or set up ShareX from
+         Settings.
+
+
+      5. Add other people in Administration, Users.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Optional: find PUBLIC_URL. Change localhost in it to your ZimaOS
+           IP, so it reads http://[ZIMAOS-IP-ADDRESS]:6131 (like
+           http://192.168.1.20:6131) and links in emails and single sign-on
+           work. Fileship works from other devices either way.
+
+
+        3. Leave ADMIN_PASSWORD blank to get a random one, or type your own.
+
+
+        4. More settings, like sign-up, email, single sign-on and AI, are
+           listed on the Fileship page at
+           https://icestore.hsinghhira.me/app/fileship/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about two minutes. The first start sets up the database.
+
+
+        7. Open the app log. Find the line that says "Fileship login is". It
+           shows the admin password. It is also in admin-password.txt in the
+           app folder.
+
+
+        8. Open http://[ZIMAOS-IP-ADDRESS]:6131 and sign in as admin with
+           that password.
+
+
+        9. Change the password in Settings, Security.
+  index: /
+  port_map: "6131"
+  scheme: http
+  is_uncontrolled: false
+  version: "6.3.1"
+  update_at: "2026-10-28"
+  release_notes:
+    en_US: |-
+      - First release in IceStore: Fileship in a single container with one port (6131) and one data folder.
+      - The database passwords and the admin password are made on first start, so each install gets its own. The default admin / password login is replaced.
+      - The updater-agent is left out (it needs the Docker socket), so one-click updates from the dashboard are off. The IceStore image is updated to new Fileship versions every week instead.
+      - The AI preset starts at low (upstream: medium) to use less memory. Change it with NUXT_AI_PRESET or in Administration, Instance.
+      - ghcr.io/hanzydev/fileship 6.3.1
+      - PostgreSQL 16 inside
+  repo: "https://github.com/hanzydev/Fileship"
+  support: "https://github.com/hanzydev/Fileship/issues"
+  docs: "https://github.com/hanzydev/Fileship/tree/main/docs"

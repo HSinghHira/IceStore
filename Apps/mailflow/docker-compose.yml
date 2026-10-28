@@ -1,0 +1,167 @@
+name: mailflow
+
+services:
+  mailflow:
+    image: ghcr.io/hsinghhira/mailflow:latest
+    container_name: mailflow
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6130
+    ports:
+      - target: 8080
+        published: "6130"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mailflow/icon.png
+    x-casaos:
+      id: com.icestore.mailflow
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you type in your browser. MailFlow works from any
+              address, but links in invite and password reset emails, and
+              single sign-on (OIDC), use this one. It starts as localhost.
+              Change `localhost` to your ZimaOS IP or your domain, like
+              http://[ZIMAOS-IP-ADDRESS]:6130. Keep the port at 6130 unless
+              you use a domain.
+      ports:
+        - container: "8080"
+          description:
+            en_US: MailFlow web app and API, published on host as 6130
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (your accounts, synced mail and settings), the
+              secret keys and the push notification keys. Back up the whole
+              folder: without data/state, stored mail passwords can't be read.
+
+x-casaos:
+  id: com.icestore.mailflow
+  architectures:
+    - amd64
+    - arm64
+  main: mailflow
+  author: HSinghHira
+  category: Productivity
+  developer: maathimself
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mailflow/icon.png
+  title:
+    en_US: MailFlow
+  tagline:
+    en_US: One modern webmail inbox for Gmail, Outlook, iCloud and any IMAP account
+  description:
+    en_US: >-
+      MailFlow is a self-hosted webmail client that puts all your email
+      accounts, like Gmail, iCloud Mail, Outlook and any other IMAP account,
+      into one fast, modern inbox. A modern alternative to Roundcube and
+      SnappyMail. This is MailFlow in a single container, with one port and
+      one data folder. Secret keys are made for you on first start.
+
+
+      **Features**
+
+
+      - A unified inbox for many accounts, with live updates over IMAP IDLE
+
+      - Threaded conversations, fast full-text search and inbox rules
+
+      - Contacts with a built-in CardDAV server for your phone
+
+      - Several users, an admin panel, two-factor sign-in and OIDC single sign-on
+
+      - Themes, layouts and push notifications (keys made for you)
+
+      - PostgreSQL and Redis inside; the optional Caddy HTTPS service is left out
+
+
+      **How to use?**
+
+      1. Open MailFlow from the Zima OS dashboard.
+
+      2. Create your account. The first account becomes the admin.
+
+      3. Add an email account. For Gmail and iCloud, use an app password from
+         your Google or Apple account settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6130.
+
+
+        3. Change localhost to your ZimaOS IP, like http://192.168.1.20:6130.
+           Then links in invite and password reset emails work.
+
+
+        4. More settings, like Google and Microsoft sign-in for mail
+           accounts, are listed on the MailFlow page at
+           https://icestore.hsinghhira.me/app/mailflow/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about 2 minutes for all parts to start.
+
+
+        7. Open MailFlow from the Zima OS dashboard, or go to
+           http://[ZIMAOS-IP-ADDRESS]:6130 on another device.
+
+
+        8. Create your account right away. The first account becomes the
+           admin.
+
+
+        9. Add your email account. For Gmail and iCloud, make an app password
+           in your Google or Apple account and use it here.
+  index: /
+  port_map: "6130"
+  scheme: http
+  is_uncontrolled: false
+  version: "4.1.0"
+  update_at: "2026-10-28"
+  release_notes:
+    en_US: |-
+      - Single-container MailFlow with one port (6130) and one data folder
+      - Secret keys and web push keys are made on first start, so each install gets its own
+      - Works from any address: the gateway passes live-update connections from the address you opened
+      - Upstream's frontend nginx is replaced by the built-in gateway; the optional Caddy HTTPS service is left out
+      - mailflow-backend 4.1.0
+      - mailflow-frontend 4.1.0
+      - PostgreSQL 16 and Redis inside
+  repo: "https://github.com/maathimself/mailflow"
+  support: "https://github.com/maathimself/mailflow/issues"
+  docs: "https://mailflow.sh/docs.html"

@@ -1,0 +1,159 @@
+name: isponsorblocktv
+
+services:
+  isponsorblocktv:
+    image: ghcr.io/hsinghhira/isponsorblocktv:latest
+    container_name: isponsorblocktv
+    restart: unless-stopped
+    stop_grace_period: 20s
+    init: true
+    network_mode: host
+    environment:
+      - TZ=$TZ
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6129/', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/isponsorblocktv/icon.png
+    x-casaos:
+      id: com.icestore.isponsorblocktv
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. ZimaOS fills this in for you.
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              The settings made in the setup wizard (config.json): your paired
+              TVs, the segment types to skip and your options. Back this folder
+              up so you don't have to pair your TVs again.
+
+x-casaos:
+  id: com.icestore.isponsorblocktv
+  architectures:
+    - amd64
+    - arm64
+  main: isponsorblocktv
+  author: HSinghHira
+  category: Media
+  developer: dmunozv04
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/isponsorblocktv/icon.png
+  title:
+    en_US: iSponsorBlockTV
+  tagline:
+    en_US: Skip sponsors, intros and ads in the YouTube app on your TV.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/isponsorblocktv/](https://icestore.hsinghhira.me/app/isponsorblocktv/) for full details
+
+
+      iSponsorBlockTV connects to the YouTube app on your TV, like a phone
+      would, and skips sponsor segments, intros and other parts using the
+      SponsorBlock database. It can also mute ads and press "Skip Ad" for you.
+
+
+      **Features**
+
+
+      - Skips sponsors, intros, outros, self-promotion, reminders to
+        subscribe and more, you pick which
+
+      - Mutes ads and presses "Skip Ad" as soon as it shows up
+
+      - Works with Apple TV, Samsung and LG TVs, Android TV, Google TV,
+        Chromecast, Roku, Fire TV, Xbox, PlayStation and Nintendo Switch
+
+      - Finds TVs on your network by itself, or pair one with a TV code
+
+      - Channel allow list, so creators you like are never skipped
+
+      - Setup wizard right in your browser, no terminal needed
+
+
+      **How to use?**
+
+
+      1. Open iSponsorBlockTV from the Zima OS dashboard. You see the setup
+         wizard.
+
+
+      2. Add your TV: let the wizard find it, or pair it with the code from
+         the YouTube app on your TV (Settings, then Link with TV code).
+
+
+      3. Pick what to skip, then save and exit the wizard.
+
+
+      4. Play a video on your TV. Sponsor parts are skipped by themselves.
+
+
+      There is nothing else to open: the skipper runs in the background and
+      starts again by itself when you save new settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation.
+
+
+        2. Open iSponsorBlockTV from the Zima OS dashboard, or go to
+           http://[ZIMAOS-IP-ADDRESS]:6129 from another device.
+
+
+        3. The setup wizard opens. Click to add a device.
+
+
+        4. Let it find your TV, or type the code from the YouTube app on your
+           TV. You find the code in YouTube, under Settings, then Link with TV
+           code.
+
+
+        5. Pick what you want to skip.
+
+
+        6. Save and exit the wizard. Skipping starts within a few seconds.
+
+
+        7. Open a video on your TV to try it.
+
+
+        More settings are listed on the iSponsorBlockTV page at
+        https://icestore.hsinghhira.me/app/isponsorblocktv/ (Variables tab).
+        You can add them now or later in the app settings.
+  index: /
+  port_map: "6129"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.11.0"
+  update_at: "2026-10-28"
+  release_notes:
+    en_US: |-
+      - Initial IceStore version, built on ghcr.io/dmunozv04/isponsorblocktv v2.11.0.
+      - Adds a web page on port 6129 that runs upstream's setup wizard in the browser, so no terminal is needed.
+      - The skipper waits until a TV is paired and restarts by itself when the settings change.
+      - Uses host networking so the wizard can find TVs on your network.
+  repo: "https://github.com/dmunozv04/iSponsorBlockTV"
+  support: "https://github.com/dmunozv04/iSponsorBlockTV/issues"
+  docs: "https://github.com/dmunozv04/iSponsorBlockTV/wiki"
