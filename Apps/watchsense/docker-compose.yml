@@ -1,0 +1,187 @@
+name: watchsense
+
+services:
+  watchsense:
+    image: ghcr.io/peppeg/watchsense:1.1.1
+    container_name: watchsense
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 3000
+        published: "6173"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/exports
+        target: /app/exports
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 96M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watchsense/icon.png
+    x-casaos:
+      id: com.icestore.watchsense
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the data folder. It is filled in by ZimaOS.
+              Leave it.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the data folder. It is filled in by ZimaOS.
+              Leave it.
+      ports:
+        - container: "3000"
+          description:
+            en_US: WatchSense web app, published on host as 6173
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              The SQLite database (watchsense.db) and secret.key, the key made
+              on first start that encrypts the API keys and logins you save
+              in Settings. Back up both together.
+        - container: /app/exports
+          description:
+            en_US: >-
+              Only for the Trakt import: put your Trakt data export in the
+              trakt folder inside it. WatchSense only reads this folder.
+
+x-casaos:
+  id: com.icestore.watchsense
+  architectures:
+    - amd64
+    - arm64
+  main: watchsense
+  author: HSinghHira
+  category: Media
+  developer: peppeg
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watchsense/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watchsense/screenshot-1.webp
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watchsense/screenshot-1.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watchsense/screenshot-2.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watchsense/screenshot-3.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watchsense/screenshot-4.webp
+  title:
+    en_US: WatchSense
+  tagline:
+    en_US: TV series recommendations from your own viewing history and an AI model you pick
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/watchsense/](https://icestore.hsinghhira.me/app/watchsense/) for full details
+
+
+      WatchSense collects what you watched on Netflix, Prime Video, Stremio
+      and Trakt, adds TMDB details and asks an AI model of your choice (cloud
+      or local, like Ollama) what you should watch next. Your thumbs up, thumbs
+      down and taste notes shape the next suggestions.
+
+
+      **Features**
+
+
+      - Imports your history from Netflix (automatic sync, bookmarklet or
+        CSV), Prime Video, Stremio and Trakt
+
+      - TMDB details in your language: posters, genres and where each show
+        is streaming in your country
+
+      - Works with any OpenAI-compatible AI service: OpenRouter, OpenAI,
+        Groq, DeepSeek, Mistral, Kilo, Ollama, LM Studio and more
+
+      - Ratings, show status and taste notes feed the next recommendations
+
+      - Export your whole history (CSV) and viewer profile (JSON) any time
+
+      - Everything in one SQLite file
+
+
+      **How to use?**
+
+
+      1. Open WatchSense from the Zima OS dashboard.
+
+
+      2. Follow the Getting started list on the Home page: language and
+         country, your TMDB key, a viewing source and an AI model.
+
+
+      3. Import or sync your viewing history.
+
+
+      4. Open For you to get recommendations, and rate them to make the next
+         ones better.
+  tips:
+    before_install:
+      en_US: >-
+        1. Get a free TMDB API key at https://www.themoviedb.org/settings/api.
+           You type it in later, in Settings.
+
+
+        2. Pick an AI service, like OpenRouter or a local Ollama. Have its
+           address, key and model name ready.
+
+
+        3. Start the installation. It is ready in a few seconds.
+
+
+        4. Open WatchSense from the Zima OS dashboard, or go to
+           http://[ZIMAOS-IP-ADDRESS]:6173 from another device.
+
+
+        5. Follow the Getting started list on the Home page.
+
+
+        6. Anyone who can open the address can use WatchSense. To ask for a
+           password, add WATCHSENSE_TOKEN in the app settings.
+
+
+        7. More settings, like the language, the country and the AI model,
+           are listed on the WatchSense page at
+           https://icestore.hsinghhira.me/app/watchsense/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6173"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.1.1"
+  update_at: "2026-10-29"
+  release_notes:
+    en_US: |-
+      - First version in IceStore, on port 6173
+      - Uses ghcr.io/peppeg/watchsense 1.1.1 as upstream ships it
+      - The encryption key for saved secrets is made by WatchSense on first start and kept in the data folder
+  repo: "https://github.com/peppeg/watchsense"
+  support: "https://github.com/peppeg/watchsense/issues"
+  docs: "https://github.com/peppeg/watchsense/blob/main/docs/CONFIGURATION.md"
