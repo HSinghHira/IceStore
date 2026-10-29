@@ -1,0 +1,172 @@
+name: heddohon
+
+services:
+  heddohon:
+    image: ghcr.io/zorcerer/heddohon:0.8.0
+    container_name: heddohon
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 3000
+        published: "6135"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 768M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heddohon/icon.png
+    x-casaos:
+      id: com.icestore.heddohon
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the data folder. It is filled in by ZimaOS.
+              Leave it.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the data folder. It is filled in by ZimaOS.
+              Leave it.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Heddohon web player, published on host as 6135
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database, setup.json (with the secret the setup page
+              makes), play history, sessions and the cover cache. Back this
+              folder up.
+
+x-casaos:
+  id: com.icestore.heddohon
+  architectures:
+    - amd64
+    - arm64
+  main: heddohon
+  author: HSinghHira
+  category: Media
+  developer: zorcerer
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heddohon/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heddohon/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heddohon/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heddohon/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heddohon/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heddohon/screenshot-4.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heddohon/screenshot-5.jpg
+  title:
+    en_US: Heddohon
+  tagline:
+    en_US: A web music player for your Navidrome, Subsonic or Jellyfin server
+  description:
+    en_US: >-
+      Heddohon is a web music player you host yourself, in front of the
+      Navidrome, Subsonic or Jellyfin server you already run. The browser only
+      talks to Heddohon, so your music server can stay private.
+
+
+      **Features**
+
+
+      - Listen together: send a link and everyone hears what you play, as you
+        play it
+
+      - Share a song, an album or a playlist with anyone, no account needed
+
+      - Your play history kept on your server: top artists, listening hours,
+        "on this day" and daily mixes
+
+      - Original files up to FLAC 24/192, or transcoded to MP3, Opus or AAC
+
+      - Crossfade, ReplayGain, sleep timer, equaliser with AutoEq, synced
+        lyrics, internet radio, Chromecast and AirPlay
+
+      - Four themes coloured by the artwork, and a keyboard command line
+        (Ctrl+K)
+
+      - Two-step sign-in, passkeys and single sign-on (OIDC)
+
+
+      **How to use?**
+
+
+      1. Open Heddohon from the Zima OS dashboard.
+
+      2. Type the setup code from the app log.
+
+      3. Type your music server's address, like http://[ZIMAOS-IP-ADDRESS]:4533
+         for Navidrome.
+
+      4. Sign in with your account on the music server and press play.
+  tips:
+    before_install:
+      en_US: >-
+        1. You need a Navidrome, Subsonic or Jellyfin server with your music.
+           Heddohon plays music from it.
+
+
+        2. Start the installation. It is ready in a few seconds.
+
+
+        3. Open the app log. Find the setup code.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6135 and type the setup code.
+
+
+        5. Type your music server's address, like
+           http://192.168.1.20:4533 for Navidrome or http://192.168.1.20:8096
+           for Jellyfin. Keep the other choices as they are.
+
+
+        6. Sign in with your music server account.
+
+
+        7. More settings, like single sign-on, lyrics and log level, are
+           listed on the Heddohon page at
+           https://icestore.hsinghhira.me/app/heddohon/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6135"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.8.0"
+  update_at: "2026-10-29"
+  release_notes:
+    en_US: |-
+      - First version in IceStore, on port 6135
+      - ghcr.io/zorcerer/heddohon 0.8.0, as upstream ships it
+      - SQLite in the data folder; the setup page makes the secret on first start
+  repo: "https://github.com/zorcerer/heddohon"
+  support: "https://github.com/zorcerer/heddohon/issues"
+  docs: "https://github.com/zorcerer/heddohon/wiki/Configuration"

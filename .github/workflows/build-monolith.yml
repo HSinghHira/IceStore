@@ -1,0 +1,49 @@
+name: Build monolith
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/monolith/**"
+      - ".github/workflows/build-monolith.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  AIO_VERSION: "1.0.0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image name (GHCR needs lowercase)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/monolith" >> "$GITHUB_ENV"
+
+      - name: Record the upstream images' start-up settings
+        working-directory: docker/monolith
+        run: bash capture-meta.sh
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: docker/monolith
+          platforms: linux/amd64
+          push: true
+          cache-from: type=gha,scope=monolith
+          cache-to: type=gha,mode=max,scope=monolith
+          tags: |
+            ${{ env.IMAGE }}:${{ env.AIO_VERSION }}
+            ${{ env.IMAGE }}:latest

@@ -1,0 +1,186 @@
+name: opentodo
+
+services:
+  opentodo-init:
+    image: busybox:1.38.0
+    container_name: opentodo-init
+    restart: "no"
+    user: "0:0"
+    network_mode: none
+    command: ["chown", "-R", "65532:65532", "/data"]
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 32M
+        reservations:
+          cpus: "0.00"
+          memory: 8M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/icon.png
+    x-casaos:
+      id: com.icestore.opentodo
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The same folder as OpenTodo's data. This one-time step gives it
+              to OpenTodo's user (65532) before OpenTodo starts.
+
+  opentodo:
+    image: ghcr.io/opentodoapp/opentodo:0.16.0
+    container_name: opentodo
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    depends_on:
+      opentodo-init:
+        condition: service_completed_successfully
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6136"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "/opentodo", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/icon.png
+    x-casaos:
+      id: com.icestore.opentodo
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "8080"
+          description:
+            en_US: OpenTodo web app, sync and API, published on host as 6136
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database, attachments, push keys and local backups.
+              Everything OpenTodo stores is here. Back this folder up.
+
+x-casaos:
+  id: com.icestore.opentodo
+  architectures:
+    - amd64
+    - arm64
+  main: opentodo
+  author: HSinghHira
+  category: Productivity
+  developer: OpenTodo
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/screenshot-3.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/screenshot-4.webp
+  title:
+    en_US: OpenTodo
+  tagline:
+    en_US: Your tasks, your server. A local-first to-do app you host yourself
+  description:
+    en_US: >-
+      OpenTodo is a to-do app that runs on your own server. Plan your day,
+      keep projects in order, set reminders and share lists with your family
+      or your team, on your phone and your computer, even offline.
+
+
+      **Features**
+
+
+      - Projects, labels, due dates, priorities, reminders and repeating tasks
+
+      - Today, day planner, boards, filters and a history you can undo
+
+      - Works offline: every device keeps its own copy and syncs when it can
+
+      - Share projects and invite people; no plan per person
+
+      - Import from other apps, export to JSON, scheduled backups to disk, S3
+        or WebDAV
+
+      - Optional calendar apps (CalDAV), webhooks, single sign-on and AI
+        assistants (off by default)
+
+      - One small container with SQLite inside, about 20 MB of memory
+
+
+      **How to use?**
+
+
+      1. Open OpenTodo from the Zima OS dashboard.
+
+      2. Create your account. The first account is the owner.
+
+      3. Add tasks with q, or open Settings to invite people.
+
+      4. Installing it as a phone app, offline use, push reminders and
+         passkeys need an https address (a reverse proxy). Everything else
+         works on http://[ZIMAOS-IP-ADDRESS]:6136.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open http://[ZIMAOS-IP-ADDRESS]:6136 right away.
+
+
+        3. Create your account. The first account becomes the owner. There is
+           no default password.
+
+
+        4. If your ZimaOS can be reached from the internet, add
+           OPENTODO_SETUP_TOKEN first (16 characters or more), so nobody else
+           can make the owner account.
+
+
+        5. More settings, like sign-up, single sign-on, backups and email to
+           task, are listed on the OpenTodo page at
+           https://icestore.hsinghhira.me/app/opentodo/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6136"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.16.0"
+  update_at: "2026-10-29"
+  release_notes:
+    en_US: |-
+      - First version in IceStore, on port 6136
+      - ghcr.io/opentodoapp/opentodo 0.16.0, as upstream ships it
+      - A one-time busybox 1.38.0 step gives the data folder to OpenTodo's user before it starts
+  repo: "https://github.com/OpenTodoApp/OpenTodo"
+  support: "https://github.com/OpenTodoApp/OpenTodo/issues"
+  docs: "https://open-todo.app/docs/self-hosting/"
