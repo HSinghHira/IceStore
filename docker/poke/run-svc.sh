@@ -92,6 +92,12 @@ mapfile -t cmd   < <(jq -r '.Cmd // [] | if type == "string" then [.] else . end
 workdir=$(jq -r '.WorkingDir // ""' "$meta")
 userspec=$(jq -r '.User // ""' "$meta")
 
+# APP-SPECIFIC: the companion image is distroless (no /bin/sh), so the
+# "cd to WorkingDir" wrapper below can't run in its chroot. Its command is
+# already full paths (/tini -- /app/invidious_companion); start it from /.
+# aio-init gives it CONFIG_FILE by full path instead of ./config/.
+[ "$svc" = companion ] && workdir=""
+
 argv=("${entry[@]}" "${cmd[@]}")
 [ "${#argv[@]}" -gt 0 ] || { echo "no entrypoint or command in $meta"; exit 1; }
 

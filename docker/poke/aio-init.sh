@@ -206,7 +206,8 @@ write_env companion "$TZV" \
   "HOST=127.0.0.1" \
   "PORT=8282" \
   "SERVER_BASE_PATH=/companion" \
-  "SERVER_SECRET_KEY=$COMPANION_KEY"
+  "SERVER_SECRET_KEY=$COMPANION_KEY" \
+  "CONFIG_FILE=/app/config/config.toml"
 if [ -n "${POKE_YOUTUBE_PROXY:-}" ]; then
   echo "PROXY=$POKE_YOUTUBE_PROXY" >> "$RUN/companion.env"
 fi
