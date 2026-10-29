@@ -10,8 +10,15 @@ variables:
     default: ""
     description: >-
       More addresses you open OvertChat at, comma-separated, with http(s) and
-      port, like https://chat.example.com. http://localhost:6139 is added for
-      you.
+      port, like https://chat.example.com. Home-network addresses on port 6139
+      are added for you.
+  - name: OVERTCHAT_TRUST_LAN
+    group: Server
+    default: "true"
+    description: >-
+      Set to false so sign-in only works from BETTER_AUTH_URL,
+      http://localhost:6139 and EXTRA_TRUSTED_ORIGINS, not from every
+      home-network address on port 6139.
   - name: HOST_CONNECTOR_URL
     group: Server
     default: ""
@@ -144,4 +151,4 @@ OvertChat is a self-hosted home for everyday AI. Connect vLLM, llama.cpp, SGLang
 
 ## Before you install
 
-**You must set `BETTER_AUTH_URL` first.** It starts as `http://[ZIMAOS-IP-ADDRESS]:6139`: replace `[ZIMAOS-IP-ADDRESS]` with your ZimaOS IP, like `http://192.168.1.20:6139`, or use your https address behind a reverse proxy. Until then only `http://localhost:6139` on the box itself can sign in. After install, the app log shows "Create your administrator account with setup code ..."; use that code for the first account. A model running on the same ZimaOS is at `http://[ZIMAOS-IP-ADDRESS]:<its port>`, not localhost. Voice needs https outside localhost. Every other setting is optional and listed in the Variables tab; to use one, add it in the app settings. OvertChat is ready about a minute after install. Each install makes its own sign-in key on first start.
+Nothing has to be set: sign-in works from your home network at `http://[ZIMAOS-IP-ADDRESS]:6139` (any 192.168.x, 10.x, 172.x, 100.x or .local address on port 6139). For working share links, change `localhost` in `BETTER_AUTH_URL` to your ZimaOS IP, like `http://192.168.1.20:6139`; behind a reverse proxy, put your https address there. After install, the app log shows "Create your administrator account with setup code ..."; use that code for the first account. A model running on the same ZimaOS is at `http://[ZIMAOS-IP-ADDRESS]:<its port>`, not localhost. Voice needs https outside localhost. Every other setting is optional and listed in the Variables tab; to use one, add it in the app settings. OvertChat is ready about a minute after install. Each install makes its own sign-in key on first start.

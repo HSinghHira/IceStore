@@ -4,9 +4,9 @@
 #   - BETTER_AUTH_SECRET set (from the app settings): used and written to the
 #     data folder. Blank or missing: the one in /app/data/.better_auth_secret
 #     is used, or a new random one is made on first start.
-#   - BETTER_AUTH_URL still has [ZIMAOS-IP-ADDRESS] in it: OvertChat starts on
-#     localhost and the log says what to change. Sign-in from other devices
-#     only works once the real address is set.
+#   - Sign-in is allowed from home-network addresses on port 6139 (unless
+#     OVERTCHAT_TRUST_LAN=false); BETTER_AUTH_URL is only needed for share
+#     links and an https domain. Blank (or the old placeholder) = localhost.
 #   - /app/data is given to upstream's nextjs user, then upstream's
 #     entrypoint runs the app as that user.
 # All paths can be moved for testing outside Docker (ICESTORE_DATA, ...).
@@ -41,26 +41,34 @@ BETTER_AUTH_SECRET=$(cat "$SECRET_FILE")
 export BETTER_AUTH_SECRET
 
 # ---- the address people open OvertChat at -------------------------------
+# BETTER_AUTH_URL is only needed for share links and an https domain: sign-in
+# works from any home-network address on this port (below).
 LOCAL_URL=http://localhost:$APP_PORT
-[ -n "${BETTER_AUTH_URL:-}" ] || BETTER_AUTH_URL="http://[ZIMAOS-IP-ADDRESS]:$APP_PORT"
+[ -n "${BETTER_AUTH_URL:-}" ] || BETTER_AUTH_URL=$LOCAL_URL
 case $BETTER_AUTH_URL in
-  *"[ZIMAOS-IP-ADDRESS]"*)
-    log "BETTER_AUTH_URL is still $BETTER_AUTH_URL."
-    log "Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP in the app settings, like http://192.168.1.20:$APP_PORT,"
-    log "or signing in from other devices fails with 'Invalid origin'. Until then only $LOCAL_URL works."
-    BETTER_AUTH_URL=$LOCAL_URL ;;
+  # older IceStore installs shipped this placeholder
+  *"[ZIMAOS-IP-ADDRESS]"*) BETTER_AUTH_URL=$LOCAL_URL ;;
 esac
 BETTER_AUTH_URL=${BETTER_AUTH_URL%/}
 export BETTER_AUTH_URL
 
-# Signing in on the box itself keeps working too, as upstream's "home
-# network" setup does.
-origins=${EXTRA_TRUSTED_ORIGINS:-}
-if [ "$BETTER_AUTH_URL" != "$LOCAL_URL" ]; then
+add_origin() {
   case ",$origins," in
-    *",$LOCAL_URL,"*) ;;
-    *) origins=${origins:+$origins,}$LOCAL_URL ;;
+    *",$1,"*) ;;
+    *) origins=${origins:+$origins,}$1 ;;
   esac
+}
+origins=${EXTRA_TRUSTED_ORIGINS:-}
+add_origin "$LOCAL_URL"
+# Better Auth only accepts sign-ins from trusted origins. Trust the private
+# address ranges (home network, Tailscale, .local names) on this port, like
+# upstream's "home network" setup, so http://<ZimaOS IP>:6139 works without
+# setting anything. Better Auth's '*' also matches dots.
+if [ "${OVERTCHAT_TRUST_LAN:-true}" != false ]; then
+  for p in "http://127.0.0.1" "http://192.168.*" "http://10.*" "http://172.*" \
+           "http://100.*" "http://*.local"; do
+    add_origin "$p:$APP_PORT"
+  done
 fi
 EXTRA_TRUSTED_ORIGINS=$origins
 export EXTRA_TRUSTED_ORIGINS

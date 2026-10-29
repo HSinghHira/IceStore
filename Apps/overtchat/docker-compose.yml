@@ -9,7 +9,7 @@ services:
     network_mode: bridge
     environment:
       - TZ=$TZ
-      - BETTER_AUTH_URL=http://[ZIMAOS-IP-ADDRESS]:6139
+      - BETTER_AUTH_URL=http://localhost:6139
     ports:
       - target: 4717
         published: "6139"
@@ -47,10 +47,11 @@ services:
         - container: BETTER_AUTH_URL
           description:
             en_US: >-
-              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
-              http://192.168.1.20:6139, or your https address behind a
-              reverse proxy. Sign-in only works from this address (and from
-              http://localhost:6139 on the box itself).
+              The address you open OvertChat at. Sign-in already works from
+              your home network at http://[ZIMAOS-IP-ADDRESS]:6139, so you can
+              leave it. Change it to your ZimaOS IP, like
+              http://192.168.1.20:6139, for working share links, or to your
+              https address behind a reverse proxy.
       ports:
         - container: "4717"
           description:
@@ -134,13 +135,13 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        1. Open the app settings before you install.
-
-
-        2. Find BETTER_AUTH_URL. You must change it, or signing in from other
-           devices won't work. It starts as http://[ZIMAOS-IP-ADDRESS]:6139.
-           Put your ZimaOS IP in place of [ZIMAOS-IP-ADDRESS], like
+        1. You don't have to set anything. Want working share links? Change
+           localhost in BETTER_AUTH_URL to your ZimaOS IP, like
            http://192.168.1.20:6139.
+
+
+        2. Using an https address through a reverse proxy? Put that address
+           in BETTER_AUTH_URL instead.
 
 
         3. Start the installation. Wait about one minute.
@@ -172,6 +173,7 @@ x-casaos:
     en_US: |-
       - First version in IceStore, on port 6139
       - Built on ghcr.io/yoloyash/overtchat-app 0.29.0, plus a start script that makes each install's own BETTER_AUTH_SECRET
+      - Sign-in works from any home-network address on port 6139 (192.168.x, 10.x, 172.x, 100.x and .local); BETTER_AUTH_URL is now optional and defaults to http://localhost:6139
       - Single container: upstream's optional Redis, SearXNG, Kokoro and speech-to-text services are not bundled; add your own in Settings
   repo: "https://github.com/yoloyash/overtchat"
   support: "https://github.com/yoloyash/overtchat/issues"
