@@ -1,0 +1,180 @@
+name: kitchen-board
+
+services:
+  kitchen-board:
+    image: ghcr.io/hsinghhira/kitchen-board:latest
+    container_name: kitchen-board
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - ADMIN_EMAIL=CHANGEME@example.com
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8000
+        published: "6179"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/db')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/icon.png
+    x-casaos:
+      id: com.icestore.kitchen-board
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email you sign in with as the first admin. Replace
+              CHANGEME@example.com with your own. Only used on the very first
+              start.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              Optional. The first admin's password, at least 8 characters.
+              Leave it empty and Kitchen Board makes one and prints it in the
+              app log on the line with "Password:". Only used on the very
+              first start.
+      ports:
+        - container: "8000"
+          description:
+            en_US: Kitchen Board web app, published on host as 6179
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database (kitchenboard.db), nightly backups,
+              uploaded photos and .secret_key, this install's own sign-in key
+              made on first start. Back this folder up.
+
+x-casaos:
+  id: com.icestore.kitchen-board
+  architectures:
+    - amd64
+    - arm64
+  main: kitchen-board
+  author: HSinghHira
+  category: Home
+  developer: g33kphr33k
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/screenshot-5.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/screenshot-6.png
+  title:
+    en_US: Kitchen Board
+  tagline:
+    en_US: A family wall board for shopping, meals, calendars, chores and timers
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kitchen-board/](https://icestore.hsinghhira.me/app/kitchen-board/) for full details
+
+
+      Kitchen Board is a household organiser made to live on a kitchen tablet
+      and on everyone's phone. It looks like a paper wall calendar with a
+      shopping list pinned to it, and keeps every screen in sync as people
+      tick things off. Every install makes its own sign-in key on first start.
+
+
+      **Features**
+
+
+      - Shared shopping lists with a focused Shopping Trip mode
+
+      - Stock, meal planning and Mealie recipe import
+
+      - A shared calendar with recurring events, .ics feeds and Google
+        Calendar overlays
+
+      - Chores, rewards, routines, countdowns and kitchen timers
+
+      - Notes, weather and simple statistics
+
+      - A photo-frame screensaver, with an optional Immich album
+
+      - Push, email and Apprise notifications, OIDC single sign-on, and
+        six languages
+
+      - Installs as an app on phones (PWA)
+
+
+      **How to use?**
+
+
+      1. Open Kitchen Board at http://[ZIMAOS-IP-ADDRESS]:6179.
+
+      2. Sign in with your ADMIN_EMAIL and password.
+
+      3. Open Admin to add the people in your household.
+
+      4. Add shopping items, events and chores. Every screen updates by
+         itself.
+
+      5. On a phone, use "Add to Home Screen" to install it like an app.
+  tips:
+    before_install:
+      en_US: >-
+        1. Find ADMIN_EMAIL. Change CHANGEME@example.com to your email.
+
+
+        2. You can set ADMIN_PASSWORD now (8 characters or more). Or leave it
+           empty and Kitchen Board makes one for you.
+
+
+        3. More settings, like email, push notifications and sign in with
+           OIDC, are listed on the Kitchen Board page at
+           https://icestore.hsinghhira.me/app/kitchen-board/ (Variables tab).
+           You can add them now or later in the app settings. Most can also
+           be set in the Admin page.
+
+
+        4. Start the installation. It is ready in about half a minute.
+
+
+        5. If you left the password empty, open the app log and find the
+           line with "Password:". That is your password.
+
+
+        6. Open http://[ZIMAOS-IP-ADDRESS]:6179 and sign in with your email
+           and password.
+  index: /
+  port_map: "6179"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.6"
+  update_at: "2026-10-30"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6179
+      - Built on g33kphr33k/kitchenboard 1.6, plus a start script that makes each install's own SECRET_KEY
+      - No secret in the compose file: it is made on first start and kept in the data folder as .secret_key
+  repo: "https://gitlab.com/g33kphr33k/kitchen-board"
+  support: "https://gitlab.com/g33kphr33k/kitchen-board/-/issues"
+  docs: "https://gitlab.com/g33kphr33k/kitchen-board/-/blob/main/README.md"

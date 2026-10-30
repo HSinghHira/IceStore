@@ -1,0 +1,164 @@
+name: domain-locker
+
+services:
+  domain-locker:
+    image: lissy93/domain-locker:0.3.5
+    container_name: domain-locker
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+      - DL_ENV_TYPE=selfHosted
+      - DL_AUTH_PASSWORD=
+    ports:
+      - target: 3000
+        published: "6180"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1G
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domain-locker/icon.png
+    x-casaos:
+      id: com.icestore.domain-locker
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: DL_ENV_TYPE
+          description:
+            en_US: >-
+              Keep it as selfHosted. It turns on the built-in SQLite database
+              and the built-in scheduler.
+        - container: DL_AUTH_PASSWORD
+          description:
+            en_US: >-
+              Optional but recommended. A password people must type to open
+              Domain Locker. Leave it empty and anyone who can reach the app
+              can see and change your domains.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Domain Locker web app and API, published on host as 6180
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database (domain-locker.db) with your domains, their
+              history, uptime checks and notifications. Back this folder up.
+
+x-casaos:
+  id: com.icestore.domain-locker
+  architectures:
+    - amd64
+    - arm64
+  main: domain-locker
+  author: HSinghHira
+  category: Networking
+  developer: Lissy93
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domain-locker/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domain-locker/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domain-locker/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domain-locker/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domain-locker/screenshot-3.png
+  title:
+    en_US: Domain Locker
+  tagline:
+    en_US: Keep track of every domain name you own, with expiry alerts and monitoring
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/domain-locker/](https://icestore.hsinghhira.me/app/domain-locker/) for full details
+
+
+      Domain Locker is one place for your whole domain name portfolio. Add a
+      domain and it fills in the registrar, expiry date, DNS records, SSL
+      certificate, hosting and IP details by itself, then keeps checking them
+      and tells you before anything expires or changes. This build keeps
+      everything in a SQLite file and runs its own scheduled jobs.
+
+
+      **Features**
+
+
+      - Automatic lookup of registrar, WHOIS, DNS, SSL, host and IP data
+
+      - Expiry reminders and alerts when a record or certificate changes
+
+      - Uptime and response-time monitoring for each domain
+
+      - Charts, a timeline, a map and a value tracker for your portfolio
+
+      - Tags, notes, subdomains and links per domain
+
+      - Import and export, plus an API
+
+      - Notifications by ntfy, Discord or Apprise
+
+
+      **How to use?**
+
+
+      1. Open Domain Locker at http://[ZIMAOS-IP-ADDRESS]:6180.
+
+      2. Type your DL_AUTH_PASSWORD if you set one.
+
+      3. Click Add Domain and type a domain name. The details fill in by
+         themselves.
+
+      4. Open Settings to choose which changes you want to hear about.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set DL_AUTH_PASSWORD to a password. Then only people who know it
+           can open the app.
+
+
+        2. Keep DL_ENV_TYPE as selfHosted.
+
+
+        3. More settings, like notifications and how often domains are
+           checked, are listed on the Domain Locker page at
+           https://icestore.hsinghhira.me/app/domain-locker/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        4. Start the installation. Wait about a minute the first time.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6180 and add your first domain.
+  index: /
+  port_map: "6180"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.3.5"
+  update_at: "2026-10-30"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6180
+      - Uses lissy93/domain-locker 0.3.5 as upstream ships it, with the built-in SQLite database
+      - Runs as root so it can write the data folder ZimaOS makes
+  repo: "https://github.com/Lissy93/domain-locker"
+  support: "https://github.com/Lissy93/domain-locker/issues"
+  docs: "https://domain-locker.com/about"

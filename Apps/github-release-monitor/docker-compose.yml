@@ -1,0 +1,182 @@
+name: github-release-monitor
+
+services:
+  github-release-monitor:
+    image: ghcr.io/hsinghhira/github-release-monitor:latest
+    container_name: github-release-monitor
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - BETTER_AUTH_URL=http://localhost:6182
+      - GITHUB_ACCESS_TOKEN=
+    ports:
+      - target: 3000
+        published: "6182"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/en/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 96M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/github-release-monitor/icon.png
+    x-casaos:
+      id: com.icestore.github-release-monitor
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, used for check times, logs and emails. It is
+              filled in from your ZimaOS time zone. Leave it unless you need
+              another.
+        - container: BETTER_AUTH_URL
+          description:
+            en_US: >-
+              The address you open the app at. Sign-in already works from
+              http://[ZIMAOS-IP-ADDRESS]:6182 on your home network with
+              localhost here. Change it for working links in emails, like
+              http://192.168.1.20:6182, or to your https address behind a
+              reverse proxy.
+        - container: GITHUB_ACCESS_TOKEN
+          description:
+            en_US: >-
+              Recommended. A GitHub personal access token with no scopes. It
+              raises GitHub's limit from 60 to 5000 checks an hour.
+      ports:
+        - container: "3000"
+          description:
+            en_US: GitHub Release Monitor web app, published on host as 6182
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Your watched repositories, settings and sign-in database
+              (auth.db), plus .better_auth_secret and .auth_setup_token, this
+              install's own keys made on first start. Back this folder up.
+
+x-casaos:
+  id: com.icestore.github-release-monitor
+  architectures:
+    - amd64
+    - arm64
+  main: github-release-monitor
+  author: HSinghHira
+  category: Developer
+  developer: iamspido
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/github-release-monitor/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/github-release-monitor/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/github-release-monitor/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/github-release-monitor/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/github-release-monitor/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/github-release-monitor/screenshot-4.png
+  title:
+    en_US: GitHub Release Monitor
+  tagline:
+    en_US: Get told when your favourite GitHub, GitLab, Codeberg and Forgejo projects ship a release
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/github-release-monitor/](https://icestore.hsinghhira.me/app/github-release-monitor/) for full details
+
+
+      GitHub Release Monitor watches the repositories you pick and tells you
+      by email or Apprise (Discord, Telegram, Slack and 70 more) as soon as a
+      new release comes out. No more checking by hand. Every install makes its
+      own secret keys on first start.
+
+
+      **Features**
+
+
+      - Watches GitHub, GitLab, Codeberg and self-hosted Forgejo repositories
+
+      - Email and Apprise notifications, one per release or grouped
+
+      - Pick stable, pre-release or draft releases, for all repositories or
+        one at a time
+
+      - Include and exclude rules for tags, and alpha, beta or rc choices
+
+      - Import and export your list as JSON
+
+      - A test page to check the GitHub connection, email and Apprise
+
+      - Passkeys, two-factor sign-in, dark mode and 19 languages
+
+
+      **How to use?**
+
+
+      1. Open the app log and copy the setup token.
+
+      2. Open http://[ZIMAOS-IP-ADDRESS]:6182 and make your account with the
+         setup token.
+
+      3. Add the repositories you want to watch, like
+         https://github.com/owner/repo.
+
+      4. Open Settings to pick which releases you want and how often to
+         check.
+
+      5. Set up email or Apprise to get notifications, then try them on the
+         Test page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set GITHUB_ACCESS_TOKEN to a GitHub token with no scopes. Without
+           it GitHub only allows 60 checks an hour.
+
+
+        2. You can leave BETTER_AUTH_URL as it is. Sign-in works from
+           http://[ZIMAOS-IP-ADDRESS]:6182 on your home network. Change
+           localhost to your ZimaOS IP if you want working links in emails.
+
+
+        3. Email, Apprise and other settings are listed on the GitHub Release
+           Monitor page at
+           https://icestore.hsinghhira.me/app/github-release-monitor/
+           (Variables tab). You can add them now or later in the app
+           settings.
+
+
+        4. Start the installation. It is ready in about half a minute.
+
+
+        5. Open the app log. Find the line "Setup token:" and copy the long
+           code after it.
+
+
+        6. Open http://[ZIMAOS-IP-ADDRESS]:6182, paste the setup token and
+           make your account.
+  index: /
+  port_map: "6182"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.6.1"
+  update_at: "2026-10-30"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6182
+      - Built on ghcr.io/iamspido/github-release-monitor 2.6.1, plus a start script that makes each install's own BETTER_AUTH_SECRET and setup token
+      - No secrets in the compose file: they are made on first start and kept in the data folder
+      - Works over plain http, and sign-in works from home-network addresses on port 6182 without setting anything
+  repo: "https://github.com/iamspido/github-release-monitor"
+  support: "https://github.com/iamspido/github-release-monitor/issues"
+  docs: "https://github.com/iamspido/github-release-monitor#readme"
