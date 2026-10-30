@@ -1,0 +1,211 @@
+name: dokploy
+
+services:
+  dokploy:
+    image: ghcr.io/hsinghhira/dokploy:latest
+    container_name: dokploy
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - TRAEFIK_PORT=6184
+      - TRAEFIK_SSL_PORT=6185
+    ports:
+      - target: 3000
+        published: "6183"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/docker-config
+        target: /root/.docker
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /etc/dokploy
+        target: /etc/dokploy
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-o", "/dev/null", "http://127.0.0.1:3000/api/trpc/settings.health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dokploy/icon.png
+    x-casaos:
+      id: com.icestore.dokploy
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, used for logs and scheduled jobs. It is filled
+              in from your ZimaOS time zone. Leave it unless you need another.
+        - container: TRAEFIK_PORT
+          description:
+            en_US: >-
+              The port your deployed apps are served on over http. Not 80,
+              which ZimaOS uses itself. To reach apps by domain from the
+              internet, forward port 80 on your router to this port. Change
+              it before the first start; afterwards change it in Dokploy
+              under Web Server > Traefik too.
+        - container: TRAEFIK_SSL_PORT
+          description:
+            en_US: >-
+              The port your deployed apps are served on over https. Not 443.
+              To reach apps by domain from the internet, forward port 443 on
+              your router to this port. Change it before the first start,
+              like TRAEFIK_PORT.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Dokploy dashboard, published on host as 6183
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Dokploy's database (postgres/), plus .better_auth_secret and
+              .postgres_password, this install's own keys made on first
+              start. Back this folder up.
+        - container: /root/.docker
+          description:
+            en_US: >-
+              Docker registry logins Dokploy uses to pull and push your
+              images.
+        - container: /etc/dokploy
+          description:
+            en_US: >-
+              Dokploy's working folder on ZimaOS: Traefik settings and
+              certificates, app source code, compose files, logs and backups.
+              It must be /etc/dokploy on the host too, because Dokploy hands
+              these paths to Docker.
+        - container: /var/run/docker.sock
+          description:
+            en_US: >-
+              The Docker socket. Dokploy uses it to set up Docker Swarm,
+              Postgres and Traefik and to build and run your apps. This gives
+              Dokploy full control of Docker on ZimaOS.
+
+x-casaos:
+  id: com.icestore.dokploy
+  architectures:
+    - amd64
+    - arm64
+  main: dokploy
+  author: HSinghHira
+  category: Developer
+  developer: Dokploy
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dokploy/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dokploy/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dokploy/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dokploy/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dokploy/screenshot-3.png
+  title:
+    en_US: Dokploy
+  tagline:
+    en_US: Your own Vercel, Heroku or Netlify. Deploy apps and databases on ZimaOS with a few clicks
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/dokploy/](https://icestore.hsinghhira.me/app/dokploy/) for full details
+
+
+      Dokploy deploys your apps and databases on your own server. Point it at
+      a Git repository or a Docker image, and it builds, runs and updates the
+      app for you, with domains and free HTTPS certificates through Traefik.
+      This IceStore version runs as one ZimaOS app: on first start it sets up
+      Docker Swarm, its Postgres database and Traefik by itself, and every
+      install gets its own secret keys.
+
+
+      **Features**
+
+
+      - Deploy from GitHub, GitLab, Bitbucket, Gitea, any Git URL or a Docker
+        image
+
+      - Builds with Nixpacks, Railpack, Heroku buildpacks or your Dockerfile
+
+      - Docker Compose stacks and one-click templates
+
+      - Postgres, MySQL, MariaDB, MongoDB, Redis and libSQL databases, with
+        backups to S3
+
+      - Domains and Let's Encrypt certificates through Traefik
+
+      - Logs, a terminal, resource graphs and deploy notifications
+
+      - Teams, roles, an API and a CLI
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6183 and make the admin account.
+
+      2. Make a project, then add an application, a compose stack or a
+         database to it.
+
+      3. Pick where the code comes from and press Deploy.
+
+      4. Add a domain in the app's Domains tab. On your home network, open
+         the app at http://<domain>:6184.
+  tips:
+    before_install:
+      en_US: >-
+        1. Dokploy takes control of Docker on your ZimaOS. On first start it
+           turns on Docker Swarm, and it adds a dokploy-postgres service and a
+           dokploy-traefik container next to the app.
+
+
+        2. Your deployed apps are served on port 6184 (http) and 6185
+           (https), because ZimaOS uses ports 80 and 443 itself. For domains
+           from the internet, forward ports 80 and 443 on your router to 6184
+           and 6185.
+
+
+        3. Start the installation. The first start takes two or three
+           minutes while Postgres and Traefik are downloaded.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6183 and make the admin account.
+
+
+        5. If a deployed app won't start, open its Advanced tab, go to
+           Cluster Settings and set the Endpoint Spec mode to dnsrr.
+
+
+        6. Update Dokploy from the IceStore, not with the Update button
+           inside Dokploy.
+  index: /
+  port_map: "6183"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.30.10"
+  update_at: "2026-10-30"
+  release_notes:
+    en_US: |-
+      - First IceStore release: dashboard on port 6183, deployed apps on 6184 (http) and 6185 (https)
+      - Built on dokploy/dokploy v0.30.10, plus a start script that does the host installer's work: Docker Swarm, dokploy-network, the dokploy-postgres service and the dokploy-traefik container
+      - Each install makes its own BETTER_AUTH_SECRET and Postgres password on first start and keeps them in the data folder
+      - Postgres data is kept in the app's data folder, not in a Docker volume
+  repo: "https://github.com/Dokploy/dokploy"
+  support: "https://github.com/Dokploy/dokploy/issues"
+  docs: "https://docs.dokploy.com"

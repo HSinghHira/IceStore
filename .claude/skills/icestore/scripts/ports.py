@@ -46,6 +46,14 @@ def ports_of(raw):
                 v = parts[-2] if len(parts) > 1 else None
             if v not in (None, ""):
                 found.add(str(v))
+        # Ports a helper container publishes for the app (Dokploy's Traefik)
+        # show up only as *_PORT=61xx settings.
+        env = (svc or {}).get("environment") or []
+        items = env.items() if isinstance(env, dict) else (str(e).partition("=")[::2] for e in env)
+        for k, v in items:
+            v = str(v or "").strip('"')
+            if str(k).endswith("_PORT") and v.isdigit() and LOW <= int(v) <= BLOCK_HIGH:
+                found.add(v)
     pm = (data.get("x-casaos") or {}).get("port_map")
     if pm not in (None, ""):
         found.add(str(pm))
