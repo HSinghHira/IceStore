@@ -19,7 +19,7 @@ site/
   build.py  requirements.txt  site.json  static/  templates/
 store-config.json        store id com.icestore, name, maintainer, url
 supported-languages.json ["en_US"] — write every x-casaos text as en_US only
-justfile                 `just check` runs the checker on every app; `just deploy ["message"]`
+justfile                 `just check` runs the checker on new/changed apps only (`just check-all` = every app); `just deploy ["message"]`
                          (alias `just d`) = check, then git add -A, commit, push
 .gitattributes           forces LF line endings on shell, Dockerfile, nginx and compose files
 README.md                intro + a generated block of SVG pictures (store, app list)

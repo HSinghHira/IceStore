@@ -26,7 +26,7 @@ exec > >(sed -u -e 's|\x1b\[[0-9;?]*[ -/]*[@-~]||g' -e "s/^/[$svc] /") 2>&1
 
 wait_one() {
   case $1 in
-    pg)     /usr/lib/postgresql/17/bin/pg_isready -q -h 127.0.0.1 -p 5432 ;;
+    pg)     /usr/lib/postgresql/16/bin/pg_isready -q -h 127.0.0.1 -p 5432 ;;
     tcp:*)  (exec 3<>"/dev/tcp/127.0.0.1/${1#tcp:}") 2>/dev/null ;;
     http*)  curl -fsS -o /dev/null -m 5 "$1" 2>/dev/null ;;
     sock:*) [ -S "${1#sock:}" ] ;;
@@ -71,18 +71,24 @@ esac
 # ---- APP-SPECIFIC: built-in services (installed with apt in the Dockerfile) ----
 case $svc in
   postgres)
-    exec setpriv --reuid=postgres --regid=postgres --init-groups       /usr/lib/postgresql/16/bin/postgres -D "$DATA/postgres"       -c listen_addresses=127.0.0.1 -c unix_socket_directories=/run/postgresql
+    exec setpriv --reuid=postgres --regid=postgres --init-groups \
+      /usr/lib/postgresql/16/bin/postgres -D "$DATA/postgres" \
+      -c listen_addresses=127.0.0.1 -c unix_socket_directories=/run/postgresql
     ;;
   redis)
     # Cache and Celery broker. Snapshots so queued jobs survive a restart;
     # never evict queued jobs.
-    exec setpriv --reuid=redis --regid=redis --init-groups       redis-server --bind 127.0.0.1 --port 6379 --dir "$DATA/redis"       --save "900 1" --save "300 10" --appendonly no --maxmemory-policy noeviction
+    exec setpriv --reuid=redis --regid=redis --init-groups \
+      redis-server --bind 127.0.0.1 --port 6379 --dir "$DATA/redis" \
+      --save "900 1" --save "300 10" --appendonly no --maxmemory-policy noeviction
     ;;
   setup)
     # Runs upstream's create_initial_organization once, while there is no
     # organization yet. After that this does nothing, so a password you
     # change in TutorLoom is never reset.
-    orgs=$(setpriv --reuid=postgres --regid=postgres --init-groups       psql -h /run/postgresql -U postgres -d tutorloom -Atq       -c "SELECT count(*) FROM organizations_organization;") || { echo "could not read the database"; exit 1; }
+    orgs=$(setpriv --reuid=postgres --regid=postgres --init-groups \
+      psql -h /run/postgresql -U postgres -d tutorloom -Atq \
+      -c "SELECT count(*) FROM organizations_organization;") || { echo "could not read the database"; exit 1; }
     if [ "$orgs" != 0 ]; then
       exit 0
     fi
