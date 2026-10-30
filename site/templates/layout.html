@@ -30,8 +30,10 @@
 <meta name="twitter:description" content="{{description}}" data-route>
 <meta name="twitter:image" content="{{og_image}}" data-route>
 <meta name="twitter:image:alt" content="{{og_alt}}" data-route>
-<link rel="icon" href="{{root}}favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="{{root}}img/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="{{root}}favicon/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/svg+xml" href="{{root}}favicon/favicon.svg">
+<link rel="shortcut icon" href="{{root}}favicon/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="{{root}}favicon/apple-touch-icon.png">
 <link rel="manifest" href="{{root}}manifest.webmanifest">
 <link rel="alternate" type="application/atom+xml" title="{{site_name}} – new and updated apps" href="{{root}}feed.xml">
 <script type="application/ld+json" data-route>{{{jsonld}}}</script>
@@ -54,7 +56,7 @@
 <footer class="foot">
   <p class="m">Made with 🩵 by <a href="{{author_url}}">{{author}}</a> in New Zealand</p>
   <p>A community project, not affiliated with Zima OS, Casa OS and Homeio.</p>
-  <p class="fl"><a href="{{root}}feed.xml">RSS feed</a><a href="{{request_url}}" rel="noopener">Request an app</a><a href="{{repo}}" rel="noopener">GitHub</a></p>
+  <p class="fl"><a href="{{root}}feed.xml" aria-label="RSS feed" title="RSS feed">{{icon:rss}}</a><a href="{{request_url}}" rel="noopener" aria-label="Request an app" title="Request an app">{{icon:plus-circle}}</a><a href="{{repo}}" rel="noopener" aria-label="GitHub" title="GitHub">{{icon:github}}</a></p>
 </footer>
 </div>
 <div class="sr" id="live" aria-live="polite"></div>

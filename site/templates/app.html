@@ -19,10 +19,20 @@
 {{{panels}}}
     </section>
 
-    <section class="sec" style="padding-left:0;padding-right:0" aria-labelledby="inst-h">
+    <section class="sec-bottom" style="padding-left:0;padding-right:0" aria-labelledby="inst-h">
       <h2 id="inst-h" class="sr">Install {{app_name}}</h2>
+      
+      <div class="help alt">
+        <span class="hb" aria-hidden="true">{{icon:issues}}</span>
+        <div>
+          <h3>Something not working with {{app_name}}?</h3>
+          <p class="sub">Report it so it gets fixed, or ask for an app that is not here yet.</p>
+        </div>
+        <div class="cta">
+          <a class="btn p" href="{{problem_url}}" rel="noopener">{{icon:issues}}Report a problem</a><a class="btn" href="{{request_url}}" rel="noopener">{{icon:plus-circle}}Request an app</a>
+        </div>
+      </div>
       <div class="os">{{{install}}}</div>
-      {{{help}}}
     </section>
 {{{related}}}
 {{{pager}}}

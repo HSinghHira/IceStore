@@ -30,7 +30,7 @@ Site files:
   templates/app.html         an app page
   app-badge/                 badge picker page (built here); the badge SVGs come from
                              .github/scripts/app_badges.py, run after this script
-  static/                    copied as-is: css/, js/, favicon.svg, img/
+  static/                    copied as-is: css/, js/, favicon/, img/
 
 Templates use {{name}} (escaped), {{{name}}} (raw HTML) and {{icon:name}} (inline SVG icon).
 Pages are full HTML, so they work without JavaScript and are indexed by search engines;
@@ -449,7 +449,8 @@ def card(a, root=""):
     p = f'<p>{e(a["desc"])}</p>' if a["desc"] else ""
     fallback = root + a["icon_url"] if a["icon_url"] else ""
     return (f'<a class="card" href="{root}app/{a["slug"]}/" data-name="{e(a["name"].lower())}" data-cat="{e(a["category"])}" '
-            f'data-q="{e(q)}" data-added="{a["added"]}" data-updated="{a["updated"]}">{ph(a["name"], a["icon_cdn"], fallback)}'
+            f'data-q="{e(q)}" data-added="{a["added"]}" data-updated="{a["updated"]}" '
+            f'data-stars="{a.get("stars") or 0}" data-forks="{a.get("forks") or 0}">{ph(a["name"], a["icon_cdn"], fallback)}'
             f'<div class="ct">{k}<h3>{e(a["name"])}</h3>{p}</div></a>')
 
 
@@ -512,21 +513,21 @@ def github_repo(url):
     return f"{m.group(1)}/{m.group(2).removesuffix('.git')}" if m else ""
 
 
-def github_stars(apps):
-    """{owner/repo: stars} for the apps' upstream projects. Cached in .cache/ for 12 hours so local
-    rebuilds do not hit the API rate limit; uses $GITHUB_TOKEN when set (as in GitHub Actions).
-    Set ICESTORE_NO_STARS=1 to skip. Any failure just leaves the star chip out."""
+def github_stats(apps):
+    """{owner/repo: {"stars": n, "forks": n}} for the apps' upstream projects. Cached in .cache/ for
+    12 hours so local rebuilds do not hit the API rate limit; uses $GITHUB_TOKEN when set (as in
+    GitHub Actions). Set ICESTORE_NO_STARS=1 to skip. Any failure just leaves the star chip out."""
     if os.environ.get("ICESTORE_NO_STARS"):
         return {}
-    cache_file = ROOT / ".cache" / "github-stars.json"
+    cache_file = ROOT / ".cache" / "github-stats.json"
     try:
         cache = json.loads(cache_file.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         cache = {}
-    stars = cache.get("stars", {})
+    stats = cache.get("repos", {})
     repos = sorted({r for r in (github_repo(a["src"]) for a in apps) if r})
-    if time.time() - cache.get("time", 0) < 12 * 3600 and all(r in stars for r in repos):
-        return stars
+    if time.time() - cache.get("time", 0) < 12 * 3600 and all(r in stats for r in repos):
+        return stats
 
     headers = {"Accept": "application/vnd.github+json", "User-Agent": "IceStore-site-build"}
     if os.environ.get("GITHUB_TOKEN"):
@@ -536,7 +537,8 @@ def github_stars(apps):
         try:
             req = urllib.request.Request(f"https://api.github.com/repos/{repo}", headers=headers)
             with urllib.request.urlopen(req, timeout=8) as r:
-                return repo, int(json.load(r)["stargazers_count"])
+                d = json.load(r)
+                return repo, {"stars": int(d["stargazers_count"]), "forks": int(d["forks_count"])}
         except Exception:
             return repo, None
 
@@ -544,14 +546,14 @@ def github_stars(apps):
         got = {r: n for r, n in pool.map(get, repos) if n is not None}
     if not got:
         warn("could not fetch GitHub stars (offline or rate limited); using the cached numbers")
-        return stars
-    stars.update(got)
+        return stats
+    stats.update(got)
     try:
         cache_file.parent.mkdir(exist_ok=True)
-        cache_file.write_text(json.dumps({"time": time.time(), "stars": stars}), encoding="utf-8")
+        cache_file.write_text(json.dumps({"time": time.time(), "repos": stats}), encoding="utf-8")
     except OSError:
         pass
-    return stars
+    return stats
 
 
 def short_num(n):
@@ -628,7 +630,7 @@ def service_worker(version):
     with the last copy from the cache when the network fails."""
     return f"""/* IceStore offline support, built {version}. Network first; the cache is only a fallback. */
 const V='ice-{version}',PRE=['./','css/style.css','js/icons.js','js/core.js','js/home.js','js/app.js','js/badge.js',
-  'favicon.svg','manifest.webmanifest','img/icon-192.png'];
+  'favicon/favicon.svg','manifest.webmanifest','favicon/web-app-manifest-192x192.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(V).then(c=>c.addAll(PRE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys()
   .then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
@@ -768,9 +770,7 @@ def app_page(a, apps, cfg, tpl, layout):
         "links": f'<div class="cta" style="justify-content:flex-start">{"".join(links)}</div>' if links else "",
         "shots": shots, "details": details, "tabs": tab_html, "panels": panels, "install": install,
         "related": related_html(a, apps), "pager": pager_html(a, apps),
-        "help": (f'<p class="rep">{icon("issues")}<span>Something not working with {e(name)}? '
-                 f'<a href="{e(issue_url(cfg, "app-problem.yml", title=f"[{name}] ", app=name, version=a["app_version"]))}" rel="noopener">Report a problem</a>'
-                 f' or <a href="{e(cfg["request_url"])}" rel="noopener">request another app</a>.</span></p>'),
+        "problem_url": issue_url(cfg, "app-problem.yml", title=f"[{name}] ", app=name, version=a["app_version"]),
     }
     title = f'{name} – ZimaOS, CasaOS & Homeio app | {cfg["site_name"]}'
     desc = f'{a["desc"].rstrip(".")}. ' if a["desc"] else ""
@@ -815,8 +815,8 @@ def manifest(cfg):
         "name": cfg["site_name"], "short_name": cfg["site_name"], "description": cfg["tagline"],
         "start_url": ".", "display": "standalone", "background_color": "#000000", "theme_color": "#000000",
         "icons": [
-            {"src": "img/icon-192.png", "sizes": "192x192", "type": "image/png"},
-            {"src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},
+            {"src": "favicon/web-app-manifest-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+            {"src": "favicon/web-app-manifest-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
         ],
     }, indent=2, ensure_ascii=False) + "\n"
 
@@ -957,9 +957,10 @@ def main():
         warn("no git history: the Newest and Recently updated sorts fall back to A-Z")
     for a in apps:
         a["added"], a["updated"] = dates.get(a["folder"].name, (0, 0))
-    stars = github_stars(apps)
+    stats = github_stats(apps)
     for a in apps:
-        a["stars"] = stars.get(github_repo(a["src"]))
+        st = stats.get(github_repo(a["src"])) or {}
+        a["stars"], a["forks"] = st.get("stars"), st.get("forks")
     for a in apps:
         a["icon_url"] = f'app/{a["slug"]}/{a["icon"].name}' if a["icon"] else ""
         # one 192px WebP per icon (sharp at the largest 96px size), the same URL on every page so it caches
@@ -999,6 +1000,8 @@ def main():
     (out / "sitemap.xml").write_text(sitemap(apps, cfg["base_url"]), encoding="utf-8")
     (out / "robots.txt").write_text(f'User-agent: *\nAllow: /\n\nSitemap: {cfg["base_url"]}sitemap.xml\n', encoding="utf-8")
     (out / "manifest.webmanifest").write_text(manifest(cfg), encoding="utf-8")
+    # browsers ask for /favicon.ico on their own, so keep a copy at the root too
+    shutil.copyfile(STATIC / "favicon" / "favicon.ico", out / "favicon.ico")
     (out / "feed.xml").write_text(feed(apps, cfg), encoding="utf-8")
     (out / "sw.js").write_text(service_worker(time.strftime("%Y%m%d%H%M%S")), encoding="utf-8")
     print(f"Built {len(apps)} app page(s) into {out}")

@@ -204,11 +204,17 @@
           {{icon:search}}<input id="q" type="search" placeholder="Search apps" aria-label="Search apps"
             autocomplete="off" /><kbd class="kb" aria-hidden="true">/</kbd>
         </div>
-        <label class="so"><span class="sr">Sort apps</span><select id="sort">
-          <option value="name">A–Z</option>
-          <option value="added">Newest</option>
-          <option value="updated">Recently updated</option>
-        </select></label>
+        <div class="so" id="sort">
+          <button class="so-b" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="sort-l sort-v"><span class="sr" id="sort-l">Sort apps:</span><span id="sort-v">A–Z</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <ul class="so-m" role="listbox" aria-labelledby="sort-l" tabindex="-1" hidden>
+            <li role="option" data-v="name" aria-selected="true">A–Z</li>
+            <li role="option" data-v="name-desc" aria-selected="false">Z–A</li>
+            <li role="option" data-v="added" aria-selected="false">Newest</li>
+            <li role="option" data-v="updated" aria-selected="false">Recently updated</li>
+            <li role="option" data-v="stars" aria-selected="false">Most stars</li>
+            <li role="option" data-v="forks" aria-selected="false">Most forks</li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="cats" role="group" aria-label="Filter by category">{{{cats}}}</div>
