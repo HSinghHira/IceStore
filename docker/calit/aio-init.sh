@@ -114,7 +114,13 @@ if [[ $PUBLIC_PORT =~ ^[0-9]+$ ]] && [ "$PUBLIC_PORT" != "$GATEWAY_PORT" ]; then
        log "also listening on $PUBLIC_PORT inside the container so services can reach $PUBLIC_URL" ;;
   esac
 fi
-sed -e "s/@GATEWAY_PORT@/$GATEWAY_PORT/g" -e "s/@EXTRA_LISTEN@/$EXTRA_LISTEN/g" "$NGINX_TPL" > "$NGINX_OUT"
+# calit marks its cookies Secure in production. On a plain http:// address the
+# browser would drop them and every form would fail with an empty 400, so the
+# gateway clears the flag there. On https it is left alone.
+COOKIE_FLAGS=""
+case $PUBLIC_URL in http://*) COOKIE_FLAGS="proxy_cookie_flags ~ nosecure;" ;; esac
+sed -e "s/@GATEWAY_PORT@/$GATEWAY_PORT/g" -e "s/@EXTRA_LISTEN@/$EXTRA_LISTEN/g" \
+    -e "s/@COOKIE_FLAGS@/$COOKIE_FLAGS/g" "$NGINX_TPL" > "$NGINX_OUT"
 
 # ---- one env file per service: /run/aio/<service>.env ----
 mkdir -p "$RUN"

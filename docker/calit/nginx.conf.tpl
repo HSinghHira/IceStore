@@ -30,6 +30,11 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
             proxy_read_timeout 300s;
+            # On a plain http:// PUBLIC_URL, aio-init puts "proxy_cookie_flags ~
+            # nosecure;" here: calit marks its csrf-token cookie Secure in
+            # production, browsers drop Secure cookies on http (except
+            # localhost), and every form POST then fails with an empty 400.
+            @COOKIE_FLAGS@
         }
     }
 }
