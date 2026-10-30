@@ -95,7 +95,8 @@ by itself, so a new AIO app needs no change here — only the shapes below.
    `# auto-update: keep-major` only lets the first number stay the same
    (Odoo: `20.0-20261015` → newer `20.0-` builds, never `21.0-`).
    Images that only publish `latest` plus one tag per git commit (`ghcr.io/ente/*`)
-   are pinned to a 40-character commit tag; those follow `latest` (the line moves
+   are pinned to a 40-character commit tag, or a `sha-<short sha>` tag
+   (strava-dawarich-sync); those follow `latest` (the line moves
    to the commit tag with `latest`'s digest), and `x-casaos.version` may be the
    first 7 characters of the main image's commit tag.
 2. For each app that changed it also: raises the patch of `AIO_VERSION` in

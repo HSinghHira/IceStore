@@ -1,0 +1,196 @@
+name: dawarich
+
+services:
+  dawarich:
+    image: ghcr.io/hsinghhira/dawarich:latest
+    container_name: dawarich
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    shm_size: 1g
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6175
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6175"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.25"
+          memory: 768M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/icon.png
+    x-casaos:
+      id: com.icestore.dawarich
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Dawarich uses it for days and times on the map and in stats.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Dawarich at, like http://192.168.1.20:6175.
+              Only used for links in emails: Dawarich works from any address.
+              With an https:// address (your own domain behind HTTPS),
+              Dawarich only allows HTTPS.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password for the first account, demo@dawarich.app. Leave it
+              empty and one is made for you; it is in the app logs on the line
+              "Dawarich login is". Used only until you change the password in
+              Dawarich.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Dawarich web app and API (for the phone apps), published on host as 6175
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database with all your location points, uploaded imports
+              and exports in storage/, the watched/ folder for automatic
+              imports, Redis data, secret keys (state/secrets.env) and the
+              first password (admin-password.txt). Back it up.
+
+x-casaos:
+  id: com.icestore.dawarich
+  architectures:
+    - amd64
+    - arm64
+  main: dawarich
+  author: HSinghHira
+  category: Others
+  developer: Freika
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/screenshot-5.png
+  title:
+    en_US: Dawarich
+  tagline:
+    en_US: Your own location history, like Google Timeline.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/dawarich/](https://icestore.hsinghhira.me/app/dawarich/) for full details
+
+
+      Dawarich keeps your location history on your own server, like Google
+      Timeline (Location History). Send points from your phone, import your
+      old Google data, and see where you've been on a map. This is Dawarich
+      in a single container, with PostgreSQL (with PostGIS) and Redis
+      inside, one port and one data folder. All secret keys and the first
+      password are made for you on first start.
+
+
+      **Features**
+
+
+      - Map of everywhere you've been, with a timeline per day
+
+      - Track your phone with the Dawarich app (iOS, Android), OwnTracks,
+        Overland, GPSLogger or Home Assistant
+
+      - Import Google Takeout and Timeline, GPX, GeoJSON, OwnTracks and
+        photo locations from Immich or Photoprism
+
+      - Visits and places, trips, countries and cities, yearly stats
+
+      - Share your location with family, and make route videos and posters
+
+      - Your data stays on your server; export it any time
+
+
+      **How to use?**
+
+
+      1. Open Dawarich from the Zima OS dashboard.
+
+      2. Sign in as demo@dawarich.app with the password from the app logs
+         (the line "Dawarich login is").
+
+      3. Change the email and password in Account settings.
+
+      4. Import your old data under Imports, or connect a phone app with
+         the API key from Account settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6175. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6175, so
+           links in emails work. Dawarich opens from any address either way.
+
+
+        3. Leave ADMIN_PASSWORD empty to get a new password, or type your
+           own.
+
+
+        4. Email, sign-in with OIDC, place names (reverse geocoding) and
+           other settings are listed on the Dawarich page at
+           https://icestore.hsinghhira.me/app/dawarich/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about five minutes. The first start sets up the database.
+
+
+        7. Open the app logs and find the line that says "Dawarich login
+           is". It shows the email demo@dawarich.app and a password.
+
+
+        8. Open http://[ZIMAOS-IP-ADDRESS]:6175 and sign in with them.
+
+
+        9. Change the email and password in Account settings right away.
+
+
+        10. To track your phone, install the Dawarich app or OwnTracks and
+            use the API key from Account settings, with the server
+            http://[ZIMAOS-IP-ADDRESS]:6175.
+  index: /
+  port_map: "6175"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.19.0"
+  update_at: "2026-10-30"
+  release_notes:
+    en_US: |-
+      - Single-container Dawarich with one port (6175) and one data folder
+      - All secret keys (sessions, two-factor, tokens) and database passwords are made on first start, so each install gets its own
+      - The seeded demo@dawarich.app account gets this install's own password instead of the published "safepassword"
+      - Works from any address you open it at (no APPLICATION_HOSTS needed)
+      - freikin/dawarich 1.19.0
+      - PostgreSQL 17 with PostGIS 3 and Redis inside
+  repo: "https://github.com/Freika/dawarich"
+  support: "https://github.com/Freika/dawarich/issues"
+  docs: "https://dawarich.app/docs/intro"

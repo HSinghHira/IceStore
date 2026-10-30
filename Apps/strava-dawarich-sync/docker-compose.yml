@@ -1,0 +1,201 @@
+name: strava-dawarich-sync
+
+services:
+  strava-dawarich-sync:
+    image: ghcr.io/hsinghhira/strava-dawarich-sync:latest
+    container_name: strava-dawarich-sync
+    restart: unless-stopped
+    stop_grace_period: 20s
+    init: true
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - STRAVA_CLIENT_ID=
+      - STRAVA_CLIENT_SECRET=
+      - DAWARICH_URL=
+      - DAWARICH_API_KEY=
+    ports:
+      - target: 8080
+        published: "6176"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/strava-dawarich-sync/icon.png
+    x-casaos:
+      id: com.icestore.strava-dawarich-sync
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: STRAVA_CLIENT_ID
+          description:
+            en_US: >-
+              Required. The Client ID (a number) of your own Strava API app,
+              from https://www.strava.com/settings/api.
+        - container: STRAVA_CLIENT_SECRET
+          description:
+            en_US: >-
+              Required. The Client Secret of your Strava API app, from the
+              same page.
+        - container: DAWARICH_URL
+          description:
+            en_US: >-
+              Required. Your Dawarich address, without a slash at the end.
+              For Dawarich from IceStore on this ZimaOS, type
+              http://[ZIMAOS-IP-ADDRESS]:6175 with [ZIMAOS-IP-ADDRESS]
+              replaced by your ZimaOS IP, like http://192.168.1.20:6175.
+        - container: DAWARICH_API_KEY
+          description:
+            en_US: >-
+              Required. The API key from Dawarich, under Account settings.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Setup page (connect Strava, see what was imported), published on host as 6176
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The Strava sign-in (tokens.json, which can read your
+              activities, so keep it private) and the list of activities
+              already imported (state.json).
+
+x-casaos:
+  id: com.icestore.strava-dawarich-sync
+  architectures:
+    - amd64
+    - arm64
+  main: strava-dawarich-sync
+  author: HSinghHira
+  category: Others
+  developer: benno93
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/strava-dawarich-sync/icon.png
+  title:
+    en_US: Strava to Dawarich
+  tagline:
+    en_US: Import your Strava activities into Dawarich, on its own.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/strava-dawarich-sync/](https://icestore.hsinghhira.me/app/strava-dawarich-sync/) for full details
+
+
+      Strava to Dawarich (strava-dawarich-sync) copies your Strava
+      activities into your own Dawarich, so your runs, rides and hikes show
+      up in your location history. The first run imports your whole Strava
+      history, then it checks for new activities every hour.
+
+
+      **Features**
+
+
+      - Imports every activity with GPS: runs, rides, hikes, swims and more
+
+      - Skips virtual rides and runs (Zwift, ROUVY and others), so no fake
+        trips end up on your map
+
+      - Never imports anything twice, even if its data folder is lost
+
+      - Waits by itself when Strava's request limits are reached
+
+      - Setup page in the browser to connect Strava, no terminal needed
+
+
+      **How to use?**
+
+
+      1. Make your own Strava API app and copy its Client ID and Client
+         Secret.
+
+      2. Copy the API key from Dawarich, Account settings.
+
+      3. Put all of them in the app settings and start it.
+
+      4. Open the app from the Zima OS dashboard and click the button to
+         connect Strava.
+
+      5. Your activities appear in Dawarich under Imports.
+  tips:
+    before_install:
+      en_US: >-
+        1. You need Dawarich running first. You can install it from IceStore
+           too.
+
+
+        2. Open https://www.strava.com/settings/api and make an app. Fill in
+           anything for the name and website. For Authorization Callback
+           Domain, type localhost.
+
+
+        3. Copy the Client ID and the Client Secret into STRAVA_CLIENT_ID and
+           STRAVA_CLIENT_SECRET.
+
+
+        4. In Dawarich, open Account settings and copy the API key into
+           DAWARICH_API_KEY.
+
+
+        5. You must set DAWARICH_URL. For Dawarich on this ZimaOS, type
+           http://[ZIMAOS-IP-ADDRESS]:6175 and replace [ZIMAOS-IP-ADDRESS]
+           with your ZimaOS IP, like http://192.168.1.20:6175.
+
+
+        6. Start the installation.
+
+
+        7. Open http://[ZIMAOS-IP-ADDRESS]:6176.
+
+
+        8. Click the orange button and then Authorize on Strava. Leave every
+           box ticked.
+
+
+        9. Your browser shows an error page at localhost. That is OK. Copy
+           the whole address from the address bar.
+
+
+        10. Paste it on the setup page and click Connect.
+
+
+        11. The first import can take hours if you have many activities.
+            Strava only allows a few requests at a time.
+
+
+        More settings are listed on the Strava to Dawarich page at
+        https://icestore.hsinghhira.me/app/strava-dawarich-sync/ (Variables
+        tab). You can add them now or later in the app settings.
+  index: /
+  port_map: "6176"
+  scheme: http
+  is_uncontrolled: false
+  version: "sha-5faa02f"
+  update_at: "2026-10-30"
+  release_notes:
+    en_US: |-
+      - Initial IceStore version, built on ghcr.io/benno93/strava-dawarich-sync sha-5faa02f
+      - Adds a setup page on port 6176 that does upstream's Strava sign-in (authorize.py) in the browser
+      - The sync waits until the settings are filled in and Strava is connected, instead of failing every hour
+      - Blank optional settings mean the default
+  repo: "https://github.com/benno93/strava-dawarich-sync"
+  support: "https://github.com/benno93/strava-dawarich-sync/issues"
+  docs: "https://github.com/benno93/strava-dawarich-sync#readme"

@@ -8,7 +8,8 @@ date), so betas, nightlies and `latest` are never picked up. Tags with no digits
 (debian:trixie-slim) are base images and are left alone.
 
 Images that only publish `latest` plus one tag per git commit (ghcr.io/ente/*)
-are pinned to a 40-character commit tag. Those follow `latest`: when `latest`
+are pinned to a 40-character commit tag, or a `sha-<short sha>` tag
+(ghcr.io/benno93/*). Those follow `latest`: when `latest`
 points somewhere else, the line moves to the commit tag with the same digest.
 For them, `version:` in the compose file may be the first 7 characters of the
 main image's commit tag.
@@ -45,7 +46,9 @@ FROM_RE = re.compile(r"^(FROM\s+(?:--platform=\S+\s+)?)(\S+?):([^\s@]+)(\s.*)?$"
 HOLD_RE = re.compile(r"#\s*auto-update:\s*hold", re.I)
 KEEP_MAJOR_RE = re.compile(r"#\s*auto-update:\s*keep-major", re.I)
 NUM_RE = re.compile(r"\d+")
-COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
+# Per-commit tags: a full 40-character sha (ghcr.io/ente/*) or the
+# `sha-<short sha>` tags docker/metadata-action makes. Both follow `latest`.
+COMMIT_RE = re.compile(r"^(?:[0-9a-f]{40}|sha-[0-9a-f]{7,40})$")
 MANIFEST_TYPES = ", ".join([
     "application/vnd.oci.image.index.v1+json",
     "application/vnd.docker.distribution.manifest.list.v2+json",

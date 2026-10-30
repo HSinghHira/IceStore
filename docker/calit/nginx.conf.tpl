@@ -10,11 +10,6 @@ events {
 http {
     access_log off;
 
-    map $http_x_forwarded_proto $proxy_x_forwarded_proto {
-        default $http_x_forwarded_proto;
-        ''      $scheme;
-    }
-
     server {
         listen @GATEWAY_PORT@;
         @EXTRA_LISTEN@
@@ -28,7 +23,12 @@ http {
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+            # Only pass X-Forwarded-Proto on when a reverse proxy in front sent
+            # one (nginx drops the header when the value is empty). Quarkus
+            # resets the port whenever it sees this header, so sending "http"
+            # for a direct visit turned http://<ip>:6137 into http://<ip> and
+            # every redirect (like / -> /setup) went to port 80 instead.
+            proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
             proxy_read_timeout 300s;
             # On a plain http:// PUBLIC_URL, aio-init puts "proxy_cookie_flags ~
             # nosecure;" here: calit marks its csrf-token cookie Secure in

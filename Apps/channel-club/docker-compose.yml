@@ -1,0 +1,163 @@
+name: channel-club
+
+services:
+  channel-club:
+    image: jonnike/channel-club:1.3.2
+    container_name: channel-club
+    restart: unless-stopped
+    stop_grace_period: 20s
+    init: true
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8334
+        published: "6174"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8334/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/channel-club/icon.png
+    x-casaos:
+      id: com.icestore.channel-club
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "8334"
+          description:
+            en_US: Channel Club player, setup wizard and admin panel, published on host as 6174
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Your settings from the setup wizard and admin panel
+              (settings.json, with your Plex token and API keys), the
+              sign-in key and the shared Live state (state.json). Keep this
+              folder private and back it up.
+
+x-casaos:
+  id: com.icestore.channel-club
+  architectures:
+    - amd64
+  main: channel-club
+  author: HSinghHira
+  category: Media
+  developer: jo-nike
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/channel-club/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/channel-club/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/channel-club/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/channel-club/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/channel-club/screenshot-3.png
+  title:
+    en_US: Channel Club
+  tagline:
+    en_US: Watch live TV together, from Dispatcharr or ErsatzTV.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/channel-club/](https://icestore.hsinghhira.me/app/channel-club/) for full details
+
+
+      Channel Club is a live TV player for watching together. Channels come
+      from Dispatcharr and/or ErsatzTV. People sign in with Plex or a local
+      account and either follow one shared Live channel or pick their own.
+
+
+      **Features**
+
+
+      - One shared Live channel everyone can follow, or watch your own
+
+      - Channel guide from Dispatcharr and ErsatzTV
+
+      - Sign in with Plex (members of your server) or a user name and
+        password
+
+      - Chromecast built in, and it installs as an app on phones
+
+      - Optional chat with GIFs, clip capture and export, Zipline uploads,
+        live NHL scores and a feedback button through ntfy
+
+      - Setup wizard in the browser; everything can be changed later in the
+        admin panel
+
+
+      **How to use?**
+
+
+      1. Open Channel Club from the Zima OS dashboard.
+
+      2. The setup wizard opens. The first person to finish it becomes the
+         admin.
+
+      3. Pick how people sign in (Plex or user name and password).
+
+      4. Add your Dispatcharr address and API key, or your ErsatzTV address.
+
+      5. Pick a channel and start watching. Share the address with friends.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation.
+
+
+        2. Open http://[ZIMAOS-IP-ADDRESS]:6174 right away. Whoever finishes
+           the setup wizard first becomes the admin.
+
+
+        3. Pick how people sign in: Plex, or a user name and password.
+
+
+        4. Add where your channels come from: your Dispatcharr address and API
+           key, or your ErsatzTV address. Use an address that phones and
+           laptops can open too, like http://192.168.1.20:9191, not
+           localhost.
+
+
+        5. Turn on the extras you want, like chat or clips, and finish.
+
+
+        6. You can change everything later in the Admin Panel, under Server.
+
+
+        More settings are listed on the Channel Club page at
+        https://icestore.hsinghhira.me/app/channel-club/ (Variables tab). You
+        can add them now or later in the app settings. A setting added there
+        is locked in the app, and any sign-in setting skips the wizard.
+  index: /
+  port_map: "6174"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.3.2"
+  update_at: "2026-10-30"
+  release_notes:
+    en_US: |-
+      - Initial IceStore version, jonnike/channel-club 1.3.2
+      - Runs as root inside the container so it can write to the ZimaOS data folder
+      - amd64 only: upstream publishes no arm64 image
+  repo: "https://github.com/jo-nike/channel_club"
+  support: "https://github.com/jo-nike/channel_club/issues"
+  docs: "https://github.com/jo-nike/channel_club#readme"
