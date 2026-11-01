@@ -78,6 +78,12 @@ log "embed:            $EMBED_URL"
 log "paste:            $PASTE_URL"
 log "locker:           $LOCKER_URL"
 log "public memories:  $MEMORIES_URL"
+# A domain with no port sits behind your own proxy, where the counted ports
+# (like https://photos.example.com:6603) do not exist. Uploads then fail.
+if [[ $hostport != *:* ]]; then
+  [ -n "${ENTE_API_URL:-}" ] || log "WARNING: PUBLIC_URL has no port, so the API is $API_URL. Set ENTE_API_URL to your API address, like https://api.$host"
+  [ -n "${ENTE_S3_URL:-}" ] || log "WARNING: PUBLIC_URL has no port, so photo storage is $S3_URL and uploads will fail. Set ENTE_S3_URL to your storage address, like https://s3.$host"
+fi
 if [ "$host" = localhost ]; then
   log "PUBLIC_URL uses localhost, so phones and other computers cannot reach Ente; set it to http://<your-zimaos-ip>:6660"
 fi

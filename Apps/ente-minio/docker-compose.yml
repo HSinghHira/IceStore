@@ -10,6 +10,15 @@ services:
     environment:
       - TZ=$TZ
       - PUBLIC_URL=http://localhost:6630
+      - ENTE_API_URL=
+      - ENTE_S3_URL=
+      - ENTE_APPS_PUBLIC_ALBUMS=
+      - ENTE_APPS_ACCOUNTS=
+      - ENTE_APPS_CAST=
+      - ENTE_APPS_PUBLIC_LOCKER=
+      - ENTE_APPS_EMBED_ALBUMS=
+      - ENTE_APPS_PUBLIC_PASTE=
+      - ENTE_APPS_PUBLIC_MEMORIES=
     ports:
       - target: 8080
         published: "6630"
@@ -89,7 +98,64 @@ services:
               apps use the same address with the next ports: 6631 API,
               6632 Public Albums, 6633 photo storage, 6634 mail viewer,
               and 6635 to 6642 for Accounts, Auth, Cast, Public Locker,
-              Embed, Paste, Locker and Public Memories.
+              Embed, Paste, Locker and Public Memories. If PUBLIC_URL is your own
+              domain with no port, like https://photos.example.com, set
+              ENTE_API_URL, ENTE_S3_URL and the other addresses below too,
+              or uploads, Locker and shared links will not work.
+        - container: ENTE_API_URL
+          description:
+            en_US: >-
+              The API address (the server address for the phone and desktop apps, and for every web app). Leave it blank to use PUBLIC_URL's host with
+              port 6631. If you use your own domain, set it, like
+              https://api.example.com.
+        - container: ENTE_S3_URL
+          description:
+            en_US: >-
+              The photo storage address. Phones, browsers and the Ente server upload here, so it must be reachable from all of them. Leave it blank to use PUBLIC_URL's host with
+              port 6633. If you use your own domain, set it, like
+              https://s3.example.com.
+        - container: ENTE_APPS_PUBLIC_ALBUMS
+          description:
+            en_US: >-
+              The Public Albums address for shared album links. Leave it blank to use PUBLIC_URL's host with
+              port 6632. If you use your own domain, set it, like
+              https://albums.example.com.
+        - container: ENTE_APPS_ACCOUNTS
+          description:
+            en_US: >-
+              The Accounts app address (passkeys, family invites). Leave it blank to use PUBLIC_URL's host with
+              port 6635. If you use your own domain, set it, like
+              https://accounts.example.com.
+        - container: ENTE_APPS_CAST
+          description:
+            en_US: >-
+              The Cast app address. Leave it blank to use PUBLIC_URL's host with
+              port 6637. If you use your own domain, set it, like
+              https://cast.example.com.
+        - container: ENTE_APPS_PUBLIC_LOCKER
+          description:
+            en_US: >-
+              The Public Locker address for shared Locker links. Leave it blank to use PUBLIC_URL's host with
+              port 6638. If you use your own domain, set it, like
+              https://share.example.com.
+        - container: ENTE_APPS_EMBED_ALBUMS
+          description:
+            en_US: >-
+              The Embed app address. Leave it blank to use PUBLIC_URL's host with
+              port 6639. If you use your own domain, set it, like
+              https://embed.example.com.
+        - container: ENTE_APPS_PUBLIC_PASTE
+          description:
+            en_US: >-
+              The Ente Paste address. Leave it blank to use PUBLIC_URL's host with
+              port 6640. If you use your own domain, set it, like
+              https://paste.example.com.
+        - container: ENTE_APPS_PUBLIC_MEMORIES
+          description:
+            en_US: >-
+              The Public Memories address for shared memories. Leave it blank to use PUBLIC_URL's host with
+              port 6642. If you use your own domain, set it, like
+              https://memories.example.com.
       ports:
         - container: "8080"
           description:
@@ -223,28 +289,34 @@ x-casaos:
            can add them now or later in the app settings.
 
 
-        4. Start the installation.
+        4. Using your own domain? Put each app behind its own address in
+           your reverse proxy, then fill in ENTE_API_URL, ENTE_S3_URL and
+           the other ENTE_APPS addresses. Photo storage needs its own
+           address, or uploads fail.
 
 
-        5. Wait about three minutes. The first start sets up the database.
+        5. Start the installation.
 
 
-        6. Open the app logs and scroll to the top. Find the line that says
+        6. Wait about three minutes. The first start sets up the database.
+
+
+        7. Open the app logs and scroll to the top. Find the line that says
            "mail viewer login". Write down the password.
 
 
-        7. Open http://your-zimaos-ip:6630 in your browser. Sign up with
+        8. Open http://your-zimaos-ip:6630 in your browser. Sign up with
            your email and a password.
 
 
-        8. Open http://your-zimaos-ip:6634 in a new tab. Sign in
+        9. Open http://your-zimaos-ip:6634 in a new tab. Sign in
            as admin with the mail password. Copy the code from the email.
 
 
-        9. Type the code in Ente to finish signing up.
+        10. Type the code in Ente to finish signing up.
 
 
-        10. For the phone app: tap the first screen 7 times. Set the server
+        11. For the phone app: tap the first screen 7 times. Set the server
             to http://your-zimaos-ip:6631 and sign in.
   index: /
   port_map: "6630"
@@ -254,6 +326,8 @@ x-casaos:
   update_at: "2026-10-27"
   release_notes:
     en_US: |-
+      - Every address (ENTE_API_URL, ENTE_S3_URL, ENTE_APPS_*) is now in the app settings, for people
+        who use their own domain; the log warns when PUBLIC_URL has no port and they are blank
       - New ports: 6630 Web App, 6631 API, 6632 Public Albums, 6633 photo storage,
         6634 mail viewer, 6635-6642 the other web apps
       - Adds the Accounts (passkeys), Auth, Cast, Public Locker, Embed, Paste, Locker
