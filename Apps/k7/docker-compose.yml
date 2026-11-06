@@ -1,0 +1,221 @@
+name: k7
+
+services:
+  k7:
+    image: ghcr.io/hsinghhira/k7:latest
+    container_name: k7
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - PUBLIC_URL=http://localhost:6186
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6186"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media
+        target: /media
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/alive"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/icon.png
+    x-casaos:
+      id: com.icestore.k7
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that reads your media files. It is filled in by
+              ZimaOS. Leave it unless your media folder belongs to another
+              user.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that reads your media files. It is filled in by
+              ZimaOS. Leave it unless your media folder belongs to another
+              group.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address of K7. Watching works from every device with the
+              default. For sign-in with OIDC or sharing with other K7
+              servers, change it to http://[ZIMAOS-IP-ADDRESS]:6186 or your
+              https address. Keep the port at 6186.
+        - container: ADMIN_USERNAME
+          description:
+            en_US: >-
+              The user name of the admin account made on first start.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The admin password, used only on first start. Leave it blank
+              and the app makes a random one, shown in the app log and saved
+              in the data folder. Your own needs 10 or more characters with
+              an uppercase letter, a lowercase letter and a number. Change it
+              later in K7's account settings.
+      ports:
+        - container: "8080"
+          description:
+            en_US: K7 web app, API and video streams, published on host as 6186
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database, K7 settings and keys, artwork, logs and the
+              transcoding cache.
+        - container: /media
+          description:
+            en_US: >-
+              Your movies, series and music. Point it at the folder that holds
+              them, like /DATA/Media with Movies, Series and Music inside.
+
+x-casaos:
+  id: com.icestore.k7
+  architectures:
+    - amd64
+    - arm64
+  main: k7
+  author: HSinghHira
+  category: Media
+  developer: kaybi-gh
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/screenshot-5.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/k7/screenshot-6.png
+  title:
+    en_US: K7
+  tagline:
+    en_US: Self-hosted media server for movies, series and music, for family and friends
+  description:
+    en_US: >-
+      K7 is a media server you host yourself, like Plex, Jellyfin or Emby,
+      made for a small circle of family and friends. Watch your movies and
+      series and play your music in the browser, on Android and Android TV,
+      Windows, iOS and Mac. This is K7 in a single container, with
+      PostgreSQL inside, one port and one data folder. Secret keys and the
+      admin account are made for you on first start.
+
+
+      **Features**
+
+
+      - Movies, series and music libraries with artwork and editable
+        details
+
+      - Transcoding with ffmpeg, with Intel and AMD hardware acceleration
+        when the box has a GPU
+
+      - Playlists, smart playlists, collections, history and statistics
+
+      - Sync Play, shared profiles, remote control and Chromecast
+
+      - Two-factor sign-in, guest mode and optional OIDC single sign-on
+
+      - Works with OpenSubsonic music apps
+
+      - Import from Plex, Jellyfin and Spotify; share with friends' K7
+        servers (federation)
+
+
+      **How to use?**
+
+
+      1. Open K7 from the Zima OS dashboard.
+
+      2. Sign in with the admin user name and password.
+
+      3. Go to Administration, Content, Library, New library. Pick a folder
+         under /media.
+  tips:
+    before_install:
+      en_US: >-
+        1. Put your movies, series and music in /DATA/Media, in folders like
+           Movies, Series and Music. Or change the /media folder in the app
+           settings to where they are.
+
+
+        2. Leave ADMIN_PASSWORD blank to get a random one. Or type your own,
+           with 10 or more characters, an uppercase letter, a lowercase
+           letter and a number.
+
+
+        3. Leave PUBLIC_URL as it is to watch on your home network. For OIDC
+           sign-in or sharing with friends' K7 servers, set it to
+           http://[ZIMAOS-IP-ADDRESS]:6186, like http://192.168.1.20:6186.
+
+
+        4. More settings, like sign-up, OIDC and log level, are listed on the
+           K7 page at https://icestore.hsinghhira.me/app/k7/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about 3 minutes for K7 to start the first time.
+
+
+        7. If you left ADMIN_PASSWORD blank, open the app log. Find the line
+           that says "admin password is".
+
+
+        8. Open K7 from the Zima OS dashboard and sign in as admin.
+
+
+        9. Go to Administration, Content, Library, New library. Pick a folder
+           under /media.
+
+
+        10. To check hardware transcoding, go to Administration, Transcoding
+            and run the encoder test.
+  index: /
+  port_map: "6186"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.17.2"
+  update_at: "2026-11-07"
+  release_notes:
+    en_US: |-
+      - Single-container K7 with one port (6186) and one data folder
+      - Secret keys and the first admin are made on first start, so each install gets its own
+      - PostgreSQL 18 inside; your media folder is mounted at /media
+      - ghcr.io/kaybi-gh/k7 1.17.2
+  repo: "https://github.com/kaybi-gh/K7"
+  support: "https://github.com/kaybi-gh/K7/issues"
+  docs: "https://github.com/kaybi-gh/K7/tree/main/docs"
