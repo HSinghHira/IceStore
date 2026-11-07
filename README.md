@@ -1,6 +1,6 @@
 # IceStore - Zima OS / Casa OS / ReCasa OS / Homeio Third Party Community App Store
 
-A community app store for [ZimaOS](https://www.zimaspace.com/ZimaOS), [CasaOS](https://casaos.io/), [ReCasaOS](https://github.com/ReCasaOS/CasaOS) and [Homeio](https://homeio.app/), maintained by [HSinghHira](https://github.com/HSinghHira).
+A community app store for [ZimaOS](https://www.zimaspace.com/ZimaOS), [CasaOS](https://casaos.io/), [ReCasaOS](https://github.com/ReCasaOS/CasaOS),  [Homeio](https://homeio.app/) and [MOS](https://mos-official.net/), maintained by [HSinghHira](https://github.com/HSinghHira).
 
 Browse the apps at **[icestore.hsinghhira.me](https://icestore.hsinghhira.me/)**.
 
@@ -12,9 +12,3 @@ Browse the apps at **[icestore.hsinghhira.me](https://icestore.hsinghhira.me/)**
 ><a href="https://github.com/HSinghHira/IceStore/issues/new"><img src="readme/help.svg" width="100%" align="top" alt="Missing an app? Request it on GitHub"></a
 ></p>
 <!-- README-SVGS:END -->
-
-## MOS
-
-IceStore also works as a [MOS](https://github.com/mos-nas/mos-releases) Hub repository. In MOS open
-**Settings → System Configuration → MOS Hub Settings**, add `https://github.com/HSinghHira/IceStore`
-and click **Refresh**. The MOS templates are made from the same app files (see [platforms/](platforms/README.md)).
