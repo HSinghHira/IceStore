@@ -12,7 +12,9 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address ----
 # Monolith's gateway only accepts an https:// address, or http:// on
@@ -50,13 +52,6 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
 
 # Hex values, as upstream asks: they are URL-safe inside the database URLs.
 ensure_secret MONOLITH_DB_ADMIN_PASSWORD 24
@@ -74,42 +69,9 @@ if ! grep -q ' monolith_db' "$HOSTS"; then
   echo "127.0.0.1 db server gateway monolith_db" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+chroot_extra() {
+  local d=$1 name=$2
   # APP-SPECIFIC: uploaded files and add-ons (storage/addons) live in /data,
   # so they survive image updates.
   if [ "$(basename "$d")" = server ]; then
@@ -119,7 +81,9 @@ for d in "$ROOTFS"/*/; do
     uid=$(awk -F: '$1=="node"{print $3":"$4}' "$d/etc/passwd" 2>/dev/null || true)
     [ -n "$uid" ] && chown -R "$uid" "$DATA/storage"
   fi
-done
+  return 0
+}
+prep_chroots
 
 # ---- gateway: also listen on the PUBLIC_URL port, so calls to PUBLIC_URL
 # ---- from inside the container reach the gateway ----
@@ -200,42 +164,33 @@ for f in "$STATE"/overrides/*.env; do
   cat "$f" >> "$RUN/$svc.env"
 done
 
+# ---- CREDENTIALS banner, printed on every boot once the app answers ----
+cred_reset
+cred_add URL "$(cred_url "$PUBLIC_URL")"
+cred_note "Create your account right away; the first account is the owner."
+
 if [ "${AIO_DRY_RUN:-}" = 1 ]; then
   log "dry run finished"
   exit 0
 fi
 
 # ---- built-in data folders and first-start database ----
-pgbin=/usr/lib/postgresql/17/bin
-id postgres >/dev/null
-mkdir -p /run/postgresql
-chown postgres:postgres /run/postgresql "$DATA/postgres"
-chmod 700 "$DATA/postgres"
+pg_setup /usr/lib/postgresql/17/bin
 
-if [ ! -s "$DATA/postgres/PG_VERSION" ]; then
+if pg_is_new; then
   log "first start: creating the database"
-  pwfile=$(mktemp)
-  printf '%s' "$DB_ADMIN_PASSWORD" > "$pwfile"
-  chown postgres:postgres "$pwfile"
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    $pgbin/initdb -D "$DATA/postgres" -U postgres -E UTF8 --locale=C.UTF-8 \
-    --auth-host=scram-sha-256 --auth-local=trust --pwfile="$pwfile" >/dev/null
-  rm -f "$pwfile"
+  PG_PASSWORD=$DB_ADMIN_PASSWORD pg_initdb
 
   # Upstream's docker/server/init-db.sh: the restricted application role.
   # migrate.sh (run before the server on every start) makes the tables and
   # grants this role what it needs.
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    $pgbin/pg_ctl -D "$DATA/postgres" -o "-c listen_addresses=''" -w start >/dev/null
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    psql -h /run/postgresql -U postgres -v ON_ERROR_STOP=1 -q \
-      -v app_password="$DB_APP_PASSWORD" <<'SQL'
+  pg_start_local
+  pg_psql -v app_password="$DB_APP_PASSWORD" <<'SQL'
 CREATE DATABASE monolith;
 CREATE ROLE monolith_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD :'app_password';
 GRANT CONNECT ON DATABASE monolith TO monolith_app;
 SQL
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    $pgbin/pg_ctl -D "$DATA/postgres" -w stop >/dev/null
+  pg_stop_local
 fi
 
 exec /usr/bin/supervisord -n -c /etc/supervisor/aio.conf

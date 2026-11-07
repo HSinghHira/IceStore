@@ -68,13 +68,19 @@ README, icon or screenshots are only warnings.
 
 ## build-<app>.yml
 
-Runs when `docker/<app>/**` (or the workflow itself) changes, or by hand:
+Runs when `docker/<app>/**`, `docker/_common/**` (apps that copy from it) or
+the workflow itself changes, or by hand. It only names the app and its
+`AIO_VERSION`; the steps are in the shared `build-image.yml`:
 
-1. `bash ../_common/capture-meta.sh` in `docker/<app>` — pulls each upstream image and
-   saves its config to `meta/<name>.json` (that's why `meta/` is git-ignored).
-2. QEMU + Buildx, log in to GHCR with `GITHUB_TOKEN`.
-3. Build `linux/amd64,linux/arm64`, push `:<AIO_VERSION>` and `:latest`.
-   `AIO_VERSION` is the env at the top of the workflow — this image's own version,
+1. All-in-one apps: `test_lib.sh` (shared helpers) and `dry_run.sh <app>`
+   (trial run of the start-up); a failure stops the build before any push.
+2. All-in-one apps: `bash ../_common/capture-meta.sh` in `docker/<app>` — pulls
+   each upstream image and saves its config to `meta/<name>.json` (that's why
+   `meta/` is git-ignored).
+3. QEMU + Buildx, log in to GHCR with `GITHUB_TOKEN`.
+4. Build `linux/amd64,linux/arm64` (or the `platforms:` input), push
+   `:<AIO_VERSION>`, `:<AIO_VERSION>-<short commit>` (never overwritten, for
+   rollback) and `:latest`. `AIO_VERSION` is this image's own version,
    separate from the upstream version in `x-casaos.version`.
 
 Bump `AIO_VERSION` whenever the image changes (new upstream tag, script fix).

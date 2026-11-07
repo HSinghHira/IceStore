@@ -158,6 +158,11 @@ x-casaos:
 
 
         7. Sign up. The first account is yours, and sign-ups close after it.
+
+
+        8. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6152"
   scheme: http

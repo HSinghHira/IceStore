@@ -122,7 +122,8 @@ must cover, when they apply:
    `http://[ZIMAOS-IP-ADDRESS]:<port>` and gives an example with a real IP.
    When it is optional, say what changing `localhost` gives (links in emails).
 3. How long the first start takes.
-4. Where to find a generated password (the app log line, e.g. "admin password is").
+4. Where to find the login: "in the app's logs, in the box marked CREDENTIALS"
+   (apps on docker/_common print it on every start).
 5. First sign-in / account creation.
 6. Extra paths like `/console` or `/mail`, written as
    `http://[ZIMAOS-IP-ADDRESS]:<port>/path`.

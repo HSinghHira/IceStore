@@ -62,7 +62,7 @@ services:
           description:
             en_US: >-
               The password for that account. Leave it empty and one is made
-              for you; it is in the app logs on the line "TutorLoom login is".
+              for you; it is in the app logs in the box marked CREDENTIALS.
               Only used on the first start.
       ports:
         - container: "8080"
@@ -137,8 +137,7 @@ x-casaos:
 
       1. Open TutorLoom from the Zima OS dashboard.
 
-      2. Sign in with ADMIN_EMAIL and the password from the app logs (the
-         line "TutorLoom login is").
+      2. Sign in with ADMIN_EMAIL and the password from the app logs (in the box marked CREDENTIALS).
 
       3. Add trainers and students, make courses in the course builder and
          put learners in batches.
@@ -176,8 +175,7 @@ x-casaos:
         7. Wait about three minutes. The first start sets up the database.
 
 
-        8. Open the app logs and find the line that says "TutorLoom login
-           is". It shows your email and the password.
+        8. Open the app logs and find the box marked CREDENTIALS. It shows your email and the password.
 
 
         9. Open http://[ZIMAOS-IP-ADDRESS]:6177 and sign in with them.

@@ -194,6 +194,11 @@ x-casaos:
         More settings are listed on the Disk Monitor page at
         https://icestore.hsinghhira.me/app/disk-monitor/ (Variables tab). You
         can add them now or later in the app settings.
+
+
+        7. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6170"
   scheme: http

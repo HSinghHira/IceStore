@@ -13,7 +13,9 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address: Outline's URL (links, sign-in callbacks, cookies) ----
 PUBLIC_URL=${PUBLIC_URL:-http://localhost:6155}
@@ -36,13 +38,6 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
 
 # PG_PASSWORD: postgres superuser. OUTLINE_DB_PASSWORD: the "outline" role.
 # SECRET_KEY (32 bytes hex, as Outline wants) and UTILS_SECRET sign sessions
@@ -68,40 +63,28 @@ if [ -z "$MAIL_UI_AUTH" ]; then
     printf 'Mail viewer (/mail) login\nusername: admin\npassword: %s\n' "$MAIL_PASSWORD" > "$MAIL_LOGIN_FILE"
     chmod 600 "$MAIL_LOGIN_FILE"
   fi
-  log "mail viewer (/mail) login is admin / $MAIL_PASSWORD (also saved in $MAIL_LOGIN_FILE)"
 fi
+
+# ---- CREDENTIALS banner, printed on every boot once the app answers ----
+SHOW_URL=$(cred_url "$PUBLIC_URL")
+cred_reset
+cred_add URL "$SHOW_URL"
+if [ -n "${MP_UI_AUTH:-}" ]; then
+  cred_add "MAIL VIEWER" "$SHOW_URL/mail  (the login you set in MP_UI_AUTH)"
+else
+  cred_add "MAIL VIEWER" "$SHOW_URL/mail  admin / $MAIL_PASSWORD"
+  cred_note "Mail viewer login also saved in $MAIL_LOGIN_FILE"
+fi
+cred_note "Sign in with your email on first visit; the sign-in link lands in the mail viewer."
 
 # ---- hostnames from upstream's docker-compose, all pointed at 127.0.0.1 ----
 if ! grep -q 'outline-mailpit' "$HOSTS"; then
   echo "127.0.0.1 postgres redis outline outline-mailpit" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
-
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+chroot_extra() {
+  local d=$1 name=$2
   # APP-SPECIFIC: /data/storage is Outline's /var/lib/outline/data (uploads,
   # avatars and attachments, upstream's volume), owned by the image's
   # "nodejs" user.
@@ -114,18 +97,9 @@ for d in "$ROOTFS"/*/; do
     uid=$(awk -F: '$1=="nodejs"{print $3":"$4}' "$d/etc/passwd" 2>/dev/null || true)
     [ -n "$uid" ] && chown -R "$uid" "$DATA/storage" 2>/dev/null || true
   fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+  return 0
+}
+prep_chroots
 
 # ---- gateway: also listen on the PUBLIC_URL port, so services that call
 # ---- PUBLIC_URL from inside the container reach the gateway ----
@@ -224,31 +198,20 @@ if [ "${AIO_DRY_RUN:-}" = 1 ]; then
 fi
 
 # ---- built-in data folders and first-start database ----
-id postgres >/dev/null
-mkdir -p /run/postgresql
-chown postgres:postgres /run/postgresql "$DATA/postgres"
-chmod 700 "$DATA/postgres"
+pg_setup /usr/lib/postgresql/16/bin
 chown redis:redis "$DATA/redis"
 
-pgbin=/usr/lib/postgresql/16/bin
-as_pg() { setpriv --reuid=postgres --regid=postgres --init-groups "$@"; }
-
-if [ ! -s "$DATA/postgres/PG_VERSION" ]; then
+if pg_is_new; then
   log "first start: creating the database"
-  pwfile=$(mktemp)
-  printf '%s' "$PG_PASSWORD" > "$pwfile"
-  chown postgres:postgres "$pwfile"
-  as_pg $pgbin/initdb -D "$DATA/postgres" -U postgres -E UTF8 --locale=C.UTF-8 \
-    --data-checksums --auth-host=scram-sha-256 --auth-local=trust --pwfile="$pwfile" >/dev/null
-  rm -f "$pwfile"
+  pg_initdb --data-checksums
 
   # Upstream's "outline" user is the Postgres superuser (POSTGRES_USER=outline),
   # so it stays one here: its migrations create extensions.
-  as_pg $pgbin/pg_ctl -D "$DATA/postgres" -o "-c listen_addresses='' -c unix_socket_directories=/run/postgresql" -w start >/dev/null
-  as_pg $pgbin/psql -h /run/postgresql -U postgres -v ON_ERROR_STOP=1 -q \
+  pg_start_local
+  pg_psql \
     -c "CREATE ROLE outline LOGIN SUPERUSER PASSWORD '${OUTLINE_DB_PASSWORD}';" \
     -c "CREATE DATABASE outline OWNER outline;"
-  as_pg $pgbin/pg_ctl -D "$DATA/postgres" -w stop >/dev/null
+  pg_stop_local
   log "first start: database ready"
 fi
 

@@ -12,7 +12,9 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address: allowed browser origin (CORS) and the OIDC callback ----
 PUBLIC_URL=${PUBLIC_URL:-http://localhost:6151}
@@ -30,13 +32,6 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
 
 # SECRET_KEY signs sign-ins (32 bytes, enough for OIDC mode too); changing it
 # signs everyone out. GENERATED_ADMIN_PASSWORD is used while ADMIN_PASSWORD is
@@ -58,10 +53,22 @@ if [ -z "$ADMIN_PASSWORD_V" ]; then
   if [ -z "${AUTH_PASSWORD_HASH:-}" ]; then
     printf 'Homelable login\nusername: %s\npassword: %s\n' "$AUTH_USERNAME_V" "$ADMIN_PASSWORD_V" > "$ADMIN_LOGIN_FILE"
     chmod 600 "$ADMIN_LOGIN_FILE"
-    log "admin login is $AUTH_USERNAME_V / $ADMIN_PASSWORD_V (also saved in $ADMIN_LOGIN_FILE)"
   fi
 else
   rm -f "$ADMIN_LOGIN_FILE"
+fi
+
+# ---- CREDENTIALS banner, printed on every boot once the app answers ----
+cred_reset
+cred_add URL "$(cred_url "$PUBLIC_URL")"
+cred_add USERNAME "$AUTH_USERNAME_V"
+if [ -n "${AUTH_PASSWORD_HASH:-}" ]; then
+  cred_add PASSWORD "(the one behind AUTH_PASSWORD_HASH)"
+elif [ -n "${ADMIN_PASSWORD:-}" ]; then
+  cred_add PASSWORD "(the one you set in ADMIN_PASSWORD)"
+else
+  cred_add PASSWORD "$ADMIN_PASSWORD_V"
+  cred_note "Also saved in $ADMIN_LOGIN_FILE"
 fi
 PASSWORD_HASH=${AUTH_PASSWORD_HASH:-}
 if [ -z "$PASSWORD_HASH" ]; then
@@ -78,32 +85,9 @@ if ! grep -q 'homelable-backend' "$HOSTS"; then
   echo "127.0.0.1 backend homelable-backend" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
-
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+chroot_extra() {
+  local d=$1 name=$2
   # APP-SPECIFIC: /data/homelable is the backend's /app/data (SQLite database
   # and uploaded floor plans, upstream's volume). The image runs as root.
   if [ "$(basename "$d")" = backend ]; then
@@ -113,18 +97,9 @@ for d in "$ROOTFS"/*/; do
         || log "WARNING: could not bind $DATA/homelable to $d/app/data; your diagrams would be lost on update"
     fi
   fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+  return 0
+}
+prep_chroots
 
 # ---- gateway: also listen on the PUBLIC_URL port, so services that call
 # ---- PUBLIC_URL from inside the container reach the gateway ----

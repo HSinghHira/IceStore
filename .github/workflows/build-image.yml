@@ -1,0 +1,81 @@
+# Shared build for every IceStore image. Each build-<app>.yml calls it:
+#
+#   jobs:
+#     build:
+#       uses: ./.github/workflows/build-image.yml
+#       with:
+#         app: <app>
+#         AIO_VERSION: "1.0.0"
+#
+# kind: aio (default; all-in-one, docker/<app>/aio-init.sh) or wrapper.
+# platforms: default linux/amd64,linux/arm64.
+#
+# Editing this file does not rebuild any app (images do not change); each app
+# picks it up on its next build. docker/_common changes do rebuild every app.
+name: Build image (shared)
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        type: string
+        required: true
+      AIO_VERSION:
+        type: string
+        required: true
+      kind:
+        type: string
+        default: aio
+      platforms:
+        type: string
+        default: linux/amd64,linux/arm64
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image name (GHCR needs lowercase) and commit tag
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${{ inputs.app }}" >> "$GITHUB_ENV"
+          echo "SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Test the shared helpers (chroots, Postgres)
+        if: inputs.kind == 'aio'
+        run: sudo bash .github/scripts/test_lib.sh
+
+      - name: Trial run of the start-up (stops a broken image before it is pushed)
+        if: inputs.kind == 'aio'
+        run: bash .github/scripts/dry_run.sh ${{ inputs.app }}
+
+      - name: Record the upstream images' start-up settings
+        if: inputs.kind == 'aio'
+        working-directory: docker/${{ inputs.app }}
+        run: bash ../_common/capture-meta.sh
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: docker/${{ inputs.app }}
+          build-contexts: common=docker/_common
+          platforms: ${{ inputs.platforms }}
+          push: true
+          cache-from: type=gha,scope=${{ inputs.app }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.app }}
+          tags: |
+            ${{ env.IMAGE }}:${{ inputs.AIO_VERSION }}
+            ${{ env.IMAGE }}:${{ inputs.AIO_VERSION }}-${{ env.SHA }}
+            ${{ env.IMAGE }}:latest

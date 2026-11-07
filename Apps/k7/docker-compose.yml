@@ -191,8 +191,7 @@ x-casaos:
         6. Wait about 3 minutes for K7 to start the first time.
 
 
-        7. If you left ADMIN_PASSWORD blank, open the app log. Find the line
-           that says "admin password is".
+        7. If you left ADMIN_PASSWORD blank, open the app log. Find the box marked CREDENTIALS.
 
 
         8. Open K7 from the Zima OS dashboard and sign in as admin.

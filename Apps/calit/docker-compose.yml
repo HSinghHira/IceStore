@@ -180,6 +180,11 @@ x-casaos:
 
 
         7. Create your account. The first account is the admin.
+
+
+        8. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6137"
   scheme: http

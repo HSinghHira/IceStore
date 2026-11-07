@@ -197,4 +197,4 @@ Docmost is an open source alternative to Notion and Confluence: real-time collab
 
 ## Before you install
 
-`PUBLIC_URL` starts as `http://localhost:6147`. Change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6147`, so links in emails and shared pages work from other devices. The first start takes about three minutes. Until you add an SMTP server, emails go to the mail viewer at `/mail/`; its login is in the app logs on the line that says "mail viewer (/mail) login is", and in `mail-password.txt` in the data folder. SMTP, S3 storage and the other settings are in the Variables tab; add them in the app settings.
+`PUBLIC_URL` starts as `http://localhost:6147`. Change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6147`, so links in emails and shared pages work from other devices. The first start takes about three minutes. Until you add an SMTP server, emails go to the mail viewer at `/mail/`; its login is in the app logs in the box marked CREDENTIALS, and in `mail-password.txt` in the data folder. SMTP, S3 storage and the other settings are in the Variables tab; add them in the app settings.

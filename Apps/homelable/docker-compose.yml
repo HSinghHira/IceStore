@@ -122,8 +122,7 @@ x-casaos:
 
       1. Open Homelable from the Zima OS dashboard.
 
-      2. Sign in as admin. The password is in the app logs, on the line that
-         says "admin login is".
+      2. Sign in as admin. The password is in the app logs, in the box marked CREDENTIALS.
 
       3. Click Scan Network to find devices on your network, or add nodes by
          hand.
@@ -160,8 +159,7 @@ x-casaos:
         6. Wait about one minute.
 
 
-        7. If you left ADMIN_PASSWORD empty, open the app logs and find the
-           line that says "admin login is". It shows the user name and
+        7. If you left ADMIN_PASSWORD empty, open the app logs and find the box marked CREDENTIALS. It shows the user name and
            password.
 
 

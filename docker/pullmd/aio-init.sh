@@ -12,7 +12,9 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address ----
 # PullMD follows the browser's address when PUBLIC_URL is not set. It only
@@ -48,28 +50,25 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
 
 # ADMIN_PASSWORD: the first admin's password when PULLMD_ADMIN_PASSWORD is
 # blank. PullMD only reads it while there is no admin yet.
 ensure_secret ADMIN_PASSWORD 9
 ADMIN_PASSWORD=${PULLMD_ADMIN_PASSWORD:-$(secret ADMIN_PASSWORD)}
+# ---- CREDENTIALS banner, printed on every boot once the app answers ----
+cred_reset
+cred_add URL "$(cred_url "$PUBLIC_URL")"
 if [ "$AUTH_MODE" != disabled ]; then
+  cred_add EMAIL "$ADMIN_EMAIL"
   if [ -n "${PULLMD_ADMIN_PASSWORD:-}" ]; then
-    log "sign-in is on ($AUTH_MODE): admin email is $ADMIN_EMAIL, password is the PULLMD_ADMIN_PASSWORD you set"
+    cred_add PASSWORD "(the one you set in PULLMD_ADMIN_PASSWORD)"
   else
-    log "sign-in is on ($AUTH_MODE): admin email is $ADMIN_EMAIL"
-    log "admin password is $ADMIN_PASSWORD (also saved in $SECRETS)"
+    cred_add PASSWORD "$ADMIN_PASSWORD"
+    cred_note "Also saved in $SECRETS"
   fi
-  log "these only make the first admin; change the password later in PullMD's settings"
+  cred_note "These make the first admin only; change the password in PullMD's settings."
 else
-  log "sign-in is off (PULLMD_AUTH_MODE=disabled): anyone who can reach port 6132 can use PullMD"
+  cred_note "Sign-in is off (PULLMD_AUTH_MODE=disabled): anyone who can reach port 6132 can use PullMD."
 fi
 
 # ---- hostnames from upstream's docker-compose, all pointed at 127.0.0.1 ----
@@ -77,31 +76,9 @@ if ! grep -q 'trafilatura' "$HOSTS"; then
   echo "127.0.0.1 pullmd trafilatura markitdown" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+chroot_extra() {
+  local d=$1 name=$2
   # APP-SPECIFIC: PullMD keeps its SQLite cache (and site-recipes.json, if you
   # add one) in /data. Its entrypoint gives the folder to its "app" user.
   if [ "$(basename "$d")" = pullmd ]; then
@@ -109,18 +86,9 @@ for d in "$ROOTFS"/*/; do
     mountpoint -q "$d/data" || mount --bind "$DATA/pullmd" "$d/data" \
       || log "warning: could not bind $DATA/pullmd into $d/data"
   fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+  return 0
+}
+prep_chroots
 
 # ---- gateway: also listen on the PUBLIC_URL port, so services that call
 # ---- PUBLIC_URL from inside the container reach the gateway ----

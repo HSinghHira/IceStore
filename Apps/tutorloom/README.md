@@ -147,11 +147,11 @@ TutorLoom is a learning management system (LMS) for training institutes and team
 ## How to use
 
 1. Open TutorLoom from your dashboard.
-2. Sign in with `ADMIN_EMAIL` and the password from the app logs (the line "TutorLoom login is").
+2. Sign in with `ADMIN_EMAIL` and the password from the app logs (in the box marked CREDENTIALS).
 3. Add trainers and students, make courses in the course builder and put learners in batches.
 4. Trainers grade submissions; students follow their roadmap.
 5. The Django admin is at `http://[ZIMAOS-IP-ADDRESS]:6177/admin/`, with the same login.
 
 ## Before you install
 
-Set `ADMIN_EMAIL` to your own email first: on the first start it becomes the admin of a new organization (named by `TUTORLOOM_ORG_NAME`, "My Academy" if you leave it out). Leave `ADMIN_PASSWORD` empty to get a new password; it is in the app logs on the line "TutorLoom login is" and in `admin-password.txt` in the data folder. `PUBLIC_URL` starts as `http://localhost:6177`; change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6177`, so links in invite emails work on other devices. The web app itself opens from any address. Until you add email settings, invite and password-reset emails are only written to the app logs. The first start takes about three minutes. Email, S3 storage and the other settings are in the Variables tab; add them in the app settings. The image is amd64 only.
+Set `ADMIN_EMAIL` to your own email first: on the first start it becomes the admin of a new organization (named by `TUTORLOOM_ORG_NAME`, "My Academy" if you leave it out). Leave `ADMIN_PASSWORD` empty to get a new password; it is in the app logs in the box marked CREDENTIALS and in `admin-password.txt` in the data folder. `PUBLIC_URL` starts as `http://localhost:6177`; change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6177`, so links in invite emails work on other devices. The web app itself opens from any address. Until you add email settings, invite and password-reset emails are only written to the app logs. The first start takes about three minutes. Email, S3 storage and the other settings are in the Variables tab; add them in the app settings. The image is amd64 only.

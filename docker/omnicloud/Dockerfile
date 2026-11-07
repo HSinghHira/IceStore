@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-# OmniCloud all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
+# OmniCloud all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
 #
 # Upstream publishes no image and no releases, so both halves are built here
 # from one pinned commit of github.com/dimartarmizi/OmniCloud. To update,
@@ -86,7 +86,8 @@ COPY aio-init.sh /usr/local/bin/aio-init
 COPY run-svc.sh /usr/local/bin/run-svc
 COPY supervisord.conf /etc/supervisor/aio.conf
 COPY nginx.conf.tpl /etc/nginx/aio.conf.tpl
-RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc
+COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
+RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc /usr/local/lib/icestore/credentials.sh
 
 LABEL org.opencontainers.image.title="omnicloud" \
       org.opencontainers.image.description="OmniCloud (API and web app) in a single container" \

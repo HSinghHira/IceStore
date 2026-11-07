@@ -319,6 +319,6 @@ Doory is a design editor that runs in the browser. Make posters, social posts, s
 
 ## Before you install
 
-Set `ADMIN_EMAIL` to your own email. Leave `ADMIN_PASSWORD` blank to get a random one; it is shown in the app log on the first start (look for "admin password is") and saved in `/data/state/secrets.env`. Change `localhost` in `PUBLIC_URL` to your box's IP, for example `http://192.168.1.10:6143`, so share links work from other devices. More settings, like email (SMTP), Google or SSO sign-in, stock photo keys and the MCP server, are in the Variables tab; add them in the app settings. The first start takes about ten minutes while it sets up the database and downloads icons, fonts and templates.
+Set `ADMIN_EMAIL` to your own email. Leave `ADMIN_PASSWORD` blank to get a random one; it is shown in the app log on the first start (in the box marked CREDENTIALS) and saved in `/data/state/secrets.env`. Change `localhost` in `PUBLIC_URL` to your box's IP, for example `http://192.168.1.10:6143`, so share links work from other devices. More settings, like email (SMTP), Google or SSO sign-in, stock photo keys and the MCP server, are in the Variables tab; add them in the app settings. The first start takes about ten minutes while it sets up the database and downloads icons, fonts and templates.
 
 Doory is released under the Attribution Assurance License by Siam, creator and maintainer of Doory (https://github.com/shaongitbd/doory). The licence text is in the image at `/usr/share/doc/doory/LICENSE`.

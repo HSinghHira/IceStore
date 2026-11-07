@@ -167,8 +167,7 @@ x-casaos:
         7. Open http://your-zimaos-ip:6142 and sign up.
 
 
-        8. Open the app logs. Find the line that says "mail viewer (/mail)
-           login is". It shows a user name and password.
+        8. Open the app logs. Find the box marked CREDENTIALS. It shows a user name and password.
 
 
         9. Open http://your-zimaos-ip:6142/mail/ and log in with them. Open

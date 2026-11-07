@@ -188,7 +188,7 @@ Fileship is a self-hosted file and media platform: a ShareX upload server, a fil
 
 ## How to use
 
-1. Find the admin password in the app log, on the line that says "Fileship login is".
+1. Find the admin password in the app log, in the box marked CREDENTIALS.
 2. Open Fileship from your dashboard and sign in as `admin`.
 3. Change the password in Settings, Security.
 4. Drop files on the page to upload them, or set up ShareX from Settings.
@@ -196,6 +196,6 @@ Fileship is a self-hosted file and media platform: a ShareX upload server, a fil
 
 ## Before you install
 
-Fileship works from any device at `http://[ZIMAOS-IP-ADDRESS]:6131` with the defaults. `PUBLIC_URL` starts as `http://localhost:6131`; change it to `http://[ZIMAOS-IP-ADDRESS]:6131` with your ZimaOS IP, like `http://192.168.1.20:6131`, or your own domain, so links in emails and single sign-on work. Leave `ADMIN_PASSWORD` blank to get a random one: it is in the app log on the line that says "Fileship login is", and in `admin-password.txt` in the app folder. It replaces upstream's default admin / password login, and is only used until you change the password in Fileship. The first start takes about two minutes. Sign-up, email, single sign-on, AI and the other settings are in the Variables tab; add them in the app settings. Settings saved in Administration, Instance win over them.
+Fileship works from any device at `http://[ZIMAOS-IP-ADDRESS]:6131` with the defaults. `PUBLIC_URL` starts as `http://localhost:6131`; change it to `http://[ZIMAOS-IP-ADDRESS]:6131` with your ZimaOS IP, like `http://192.168.1.20:6131`, or your own domain, so links in emails and single sign-on work. Leave `ADMIN_PASSWORD` blank to get a random one: it is in the app log in the box marked CREDENTIALS, and in `admin-password.txt` in the app folder. It replaces upstream's default admin / password login, and is only used until you change the password in Fileship. The first start takes about two minutes. Sign-up, email, single sign-on, AI and the other settings are in the Variables tab; add them in the app settings. Settings saved in Administration, Instance win over them.
 
 The AI preset starts at `low` (about 4 GB of memory). The app's memory limit is 4 GB; raise it in the app settings before you pick `medium` or `high`. One-click updates from the dashboard are off, because upstream's updater needs the Docker socket; the IceStore image follows new Fileship versions every week.

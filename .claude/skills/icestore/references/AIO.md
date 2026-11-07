@@ -148,6 +148,14 @@ The generic part below needs no changes.
   every browser to `http://localhost:<port>/...`, which looks broken
   ("unknown-session", a blank page) instead of saying what is wrong.
 - `mkdir -p` one folder per stateful service under `$DATA`.
+- Chroot services: call `prep_chroots` (lib.sh). Mounts only one service needs
+  (its data folder, `/media`, `/dev/dri`) go in `chroot_extra <dir> <name>`,
+  which must end with `return 0`. `CHROOT_SHM_SIZE=512m` when upstream sets
+  `shm_size`.
+- CREDENTIALS banner (3.8): `cred_reset`, then `cred_add` for every login the
+  user needs and `cred_note` for how to sign in the first time. Wrap addresses
+  in `cred_url` so localhost shows as `<your ZimaOS IP>`. Never log passwords
+  anywhere else.
 - `ensure_secret NAME BYTES` for every secret (DB password, JWT secret, S3 keys,
   admin password...). Secrets that two services share are one secret used in both
   env files — that's the main benefit over the multi-container compose.
@@ -195,22 +203,26 @@ The generic part below needs no changes.
   nothing.
 - Keep the overrides loop (`/data/state/overrides/<svc>.env`) and the
   `AIO_DRY_RUN` exit.
-- First-start database: `initdb` as in the template. If the app needs extra
-  databases, roles or extensions that it doesn't create itself, do it once with a
-  temporary server, right after initdb:
+- First-start database: the `pg_*` helpers from lib.sh (3.8). If the app needs
+  databases, roles or extensions that it doesn't create itself, make them once
+  with a temporary server, right after `pg_initdb`:
 
   ```bash
-  pgbin=/usr/lib/postgresql/16/bin
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    $pgbin/pg_ctl -D "$DATA/postgres" -o "-c listen_addresses=''" -w start >/dev/null
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    psql -h /run/postgresql -U postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE app2;"
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    $pgbin/pg_ctl -D "$DATA/postgres" -w stop >/dev/null
+  pg_setup /usr/lib/postgresql/16/bin
+  if pg_is_new; then
+    log "first start: creating the database"
+    pg_initdb --data-checksums
+    pg_start_local
+    pg_psql -c "CREATE ROLE app LOGIN PASSWORD '${APP_DB_PASSWORD}';" \
+            -c "CREATE DATABASE app OWNER app;"
+    pg_stop_local
+  fi
   ```
 
-  Guard it so it only runs on first start (inside the `PG_VERSION` check), or
-  make each statement idempotent.
+  `pg_initdb` makes the superuser `postgres` (`PG_SUPERUSER` changes it) with
+  `$PG_PASSWORD`; extra arguments go to initdb. `pg_psql` takes `-d <db>`,
+  `-v name=value` and a heredoc like psql. The trial run stops before this
+  part, so the checker looks for `pg_setup` before the first `pg_*` call.
 
 ### 3.6 Data inside a chroot
 
@@ -292,27 +304,45 @@ into `docker/<app>/`:
 
 - `capture-meta.sh`: the workflow runs `bash ../_common/capture-meta.sh` from
   `docker/<app>`.
-- `lib.sh`: `log`, `ensure_secret NAME BYTES [PREFIX]` (sets `NEW_<NAME>=1`
-  when just made), `secret NAME`, `cred_reset`, `cred_add LABEL VALUE`,
-  `cred_note TEXT`. aio-init.sh sources it from `/usr/local/lib/icestore/lib.sh`.
+- `lib.sh`: `log`, `ensure_secret NAME BYTES [PREFIX]` and `ensure_b64 NAME
+  BYTES` (both set `NEW_<NAME>=1` when just made), `secret NAME`, the banner
+  helpers `cred_reset`, `cred_add LABEL VALUE`, `cred_note TEXT`, `cred_url URL`,
+  `prep_chroots` (with the app's `chroot_extra`), and the Postgres helpers
+  `pg_setup`, `pg_is_new`, `pg_initdb`, `pg_start_local`, `pg_psql`,
+  `pg_stop_local`, `as_pg`. aio-init.sh sources it from
+  `/usr/local/lib/icestore/lib.sh`; the list at the top of lib.sh says what
+  each one does.
 - `credentials.sh`: the CREDENTIALS banner. `[program:credentials]`
   (priority 99, `autorestart=false`, `startsecs=0`) waits for the URL it is
   given (use the HEALTHCHECK path), then prints every `cred_add` line in a
-  `####` box. It prints on every boot, so users never have to dig for logins.
+  `####` box. It is plain sh, so wrapper images use it too (WRAPPER.md). It prints on every boot, so users never have to dig for logins.
   Apps with open sign-up still add `URL` and a note like
   `cred_note "Create your account on first visit"`.
 
 The Dockerfile copies them with `COPY --from=common lib.sh credentials.sh
-/usr/local/lib/icestore/`, and the workflow passes
-`build-contexts: common=docker/_common` and also builds on
+/usr/local/lib/icestore/`. `build-<app>.yml` is a short file that calls the
+shared `.github/workflows/build-image.yml` (which passes
+`build-contexts: common=docker/_common`) and also builds on
 `"docker/_common/**"`, so a shared fix rebuilds every app on it. A change to
 `_common` should be tested on one app first. The checker enforces all of this
 for apps whose Dockerfile has `COPY --from=common`.
 
+Guardrails, because one change here reaches every app on it:
+
+- Only app-neutral code goes in `_common`. Never rename a function or change
+  what an argument means; add a new function instead.
+- `build-image.yml` runs `sudo bash .github/scripts/test_lib.sh` (prep_chroots
+  and the Postgres helpers, on the runner's own PostgreSQL) and
+  `bash .github/scripts/dry_run.sh <app>` (section 6) before building, so a
+  broken change fails the build and the last good image stays in place. Run `just test <app>` before pushing a `_common` change.
+- Every build also pushes `<AIO_VERSION>-<short commit>`, a tag that is never
+  overwritten; pin it in the compose file to roll back.
+
 The ignore file must be named `.gitignore`
 (with the dot) and contain `meta/`. The workflow comes from
 `templates/build-workflow.yml` with `__APP__` replaced; start `AIO_VERSION` at
-`1.0.0`. Keep `workflow_dispatch:` and the `AIO_VERSION: "x.y.z"` form; the
+`1.0.0`. Editing `build-image.yml` rebuilds nothing; each app uses it on its
+next build. Keep `workflow_dispatch:` and the `AIO_VERSION: "x.y.z"` form; the
 weekly bumper needs both.
 
 ### 3.9 Compose file
@@ -408,7 +438,9 @@ still has to happen.
 ## 6. Testing without Docker
 
 The dry run checks secrets, env files and the nginx config with no root and no
-Docker (from the repo root):
+Docker. `just test <app>` (`.github/scripts/dry_run.sh`) does all of this, on a
+first boot and a restart, and fails on a missing env file, a leftover
+`@TOKEN@` or an empty CREDENTIALS banner. By hand (from the repo root):
 
 ```bash
 D=$(mktemp -d); mkdir -p $D/data $D/rootfs $D/run $D/meta; cp /etc/hosts $D/hosts

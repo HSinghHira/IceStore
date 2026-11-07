@@ -173,8 +173,7 @@ x-casaos:
            downloads icons, fonts and templates.
 
 
-        8. If you left ADMIN_PASSWORD blank, open the app log. Find the line
-           that says "admin password is".
+        8. If you left ADMIN_PASSWORD blank, open the app log. Find the box marked CREDENTIALS.
 
 
         9. Open http://your-zimaos-ip:6143 and sign in with your admin email.

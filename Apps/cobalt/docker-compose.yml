@@ -152,6 +152,11 @@ x-casaos:
         8. Some sites need you to be signed in. For those, put a cookies.json
            file in the config folder inside the app's data folder, then
            restart the app.
+
+
+        9. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6144"
   scheme: http

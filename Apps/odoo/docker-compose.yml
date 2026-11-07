@@ -133,8 +133,7 @@ x-casaos:
         3. Wait about three minutes for the first start.
 
 
-        4. If you left ODOO_MASTER_PASSWORD blank, open the app log. Find
-           the line that says "master password is". Write it down.
+        4. If you left ODOO_MASTER_PASSWORD blank, open the app log. Find the box marked CREDENTIALS. Write it down.
 
 
         5. Open http://your-zimaos-ip:6156 in your browser.

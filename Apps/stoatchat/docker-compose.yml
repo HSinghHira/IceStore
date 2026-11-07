@@ -175,6 +175,11 @@ x-casaos:
 
 
         9. Open http://your-zimaos-ip:6167 and make your account.
+
+
+        10. Your login details and the app's address are in the app's
+            logs, in the box marked CREDENTIALS. It is printed again on
+            every start.
   index: /
   port_map: "6167"
   scheme: http

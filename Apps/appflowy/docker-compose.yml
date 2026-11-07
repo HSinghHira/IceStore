@@ -140,6 +140,10 @@ x-casaos:
     before_install:
       en_US: >-
         Visit: [https://icestore.hsinghhira.me/app/appflowy/](https://icestore.hsinghhira.me/app/appflowy/) for full details
+
+
+        Your login details and the app's address are in the app's logs, in the
+        box marked CREDENTIALS. It is printed again on every start.
   thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/screenshot-1.png
   index: /
   port_map: "6101"

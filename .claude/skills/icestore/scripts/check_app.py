@@ -346,8 +346,31 @@ def check_workflow(root, slug, data, aio, shared=False):
         err(f".github/workflows/build-{slug}.yml is missing (nothing builds the image)")
         return
     w = wf.read_text(encoding="utf-8")
-    if f"docker/{slug}" not in w:
-        err(f"build-{slug}.yml does not build docker/{slug}")
+    if "workflow_dispatch" not in w:
+        err(f"build-{slug}.yml needs 'workflow_dispatch:' (update-upstream.yml starts the build with it)")
+    if not re.search(r'(?m)^\s*AIO_VERSION:\s*"\d+\.\d+\.\d+"', w):
+        warn(f'build-{slug}.yml: AIO_VERSION is not in the form "x.y.z", so the weekly bumper cannot raise it')
+    if f'"docker/{slug}/**"' not in w:
+        err(f'build-{slug}.yml must build on changes to "docker/{slug}/**"')
+    if shared and '"docker/_common/**"' not in w:
+        err(f'build-{slug}.yml must also build on changes to "docker/_common/**" (the Dockerfile copies from it)')
+    arm = "arm64" in (data.get("x-casaos") or {}).get("architectures", [])
+
+    if "uses: ./.github/workflows/build-image.yml" in w:
+        # The shared build (build-image.yml) does the test, capture-meta and tags.
+        if not re.search(rf"(?m)^\s*app:\s*{re.escape(slug)}\s*$", w):
+            err(f"build-{slug}.yml must pass 'app: {slug}' to build-image.yml")
+        wrapper = re.search(r"(?m)^\s*kind:\s*wrapper\s*$", w)
+        if aio and wrapper:
+            err(f"build-{slug}.yml says kind: wrapper, but docker/{slug} is an all-in-one app")
+        if not aio and not wrapper:
+            err(f"build-{slug}.yml must pass 'kind: wrapper' (docker/{slug} has no aio-init.sh)")
+        m = re.search(r"(?m)^\s*platforms:\s*(\S+)", w)
+        if arm and m and "linux/arm64" not in m.group(1):
+            err("x-casaos lists arm64 but the workflow does not build linux/arm64")
+        return
+
+    warn(f"build-{slug}.yml does not use the shared build-image.yml (see templates/build-workflow.yml)")
     if not re.search(rf"/{slug}\b", w):
         err(f"build-{slug}.yml does not push ghcr.io/<owner>/{slug}")
     if aio and "capture-meta.sh" not in w:
@@ -355,16 +378,10 @@ def check_workflow(root, slug, data, aio, shared=False):
     if shared:
         if "build-contexts: common=docker/_common" not in w:
             err(f"build-{slug}.yml needs 'build-contexts: common=docker/_common' (the Dockerfile copies from it)")
-        if '"docker/_common/**"' not in w:
-            err(f'build-{slug}.yml must also build on changes to "docker/_common/**"')
-        if "../_common/capture-meta.sh" not in w:
-            err(f"build-{slug}.yml must run bash ../_common/capture-meta.sh")
-    if "linux/arm64" not in w and "arm64" in (data.get("x-casaos") or {}).get("architectures", []):
+        if aio and f"dry_run.sh {slug}" not in w:
+            err(f"build-{slug}.yml must run 'bash .github/scripts/dry_run.sh {slug}' before the build")
+    if arm and "linux/arm64" not in w:
         err("x-casaos lists arm64 but the workflow does not build linux/arm64")
-    if "workflow_dispatch" not in w:
-        err(f"build-{slug}.yml needs 'workflow_dispatch:' (update-upstream.yml starts the build with it)")
-    if not re.search(r'(?m)^\s*AIO_VERSION:\s*"\d+\.\d+\.\d+"', w):
-        warn(f'build-{slug}.yml: AIO_VERSION is not in the form "x.y.z", so the weekly bumper cannot raise it')
 
 
 def check_bumper_shapes(root, slug, data, tags):
@@ -414,7 +431,7 @@ def check_wrapper(root, slug, data):
         err(f"Dockerfile LABEL org.opencontainers.image.source must be https://github.com/{REPO} (GHCR links the package with it)")
     if not re.search(r"(?m)^ENTRYPOINT\b", dockerfile):
         err("a wrapper Dockerfile must set ENTRYPOINT to its start script")
-    check_workflow(root, slug, data, aio=False)
+    check_workflow(root, slug, data, aio=False, shared="COPY --from=common" in dockerfile)
     check_bumper_shapes(root, slug, data, tags)
 
 
@@ -424,9 +441,22 @@ def check_common(d, slug, dockerfile, init, sup):
         err("Dockerfile must COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/")
     if "/usr/local/lib/icestore/lib.sh" not in init:
         err("aio-init.sh must source /usr/local/lib/icestore/lib.sh")
-    for fn in ("log", "ensure_secret", "secret"):
+    for fn in ("log", "ensure_secret", "ensure_b64", "secret", "as_pg", "prep_chroots", "cred_add"):
         if re.search(rf"(?m)^\s*{fn}\s*\(\)", init):
             err(f"aio-init.sh defines its own {fn}(); use the one in docker/_common/lib.sh")
+    # The trial run stops before the database step, so check it here.
+    if re.search(r"\bpg_(is_new|initdb|start_local|stop_local|psql)\b", init):
+        first_use = re.search(r"\bpg_(is_new|initdb|start_local|stop_local|psql)\b", init).start()
+        setup = re.search(r"(?m)^\s*pg_setup /usr/lib/postgresql/\d+/bin", init)
+        if not setup or setup.start() > first_use:
+            err("aio-init.sh uses the pg_* helpers without 'pg_setup /usr/lib/postgresql/<ver>/bin' before them")
+    if "$pgbin" in init and not re.search(r"(?m)^\s*pgbin=", init):
+        err("aio-init.sh uses $pgbin but never sets it (use $PGBIN from pg_setup)")
+    if re.search(r"(?ms)^chroot_extra\(\) \{\n.*?^\}", init) and \
+            not re.search(r"(?ms)^chroot_extra\(\) \{\n.*?\n  return 0\n\}", init):
+        err("chroot_extra must end with 'return 0' (a false test as its last line stops aio-init.sh)")
+    if "prep_chroots" not in init and "/opt/rootfs/" in dockerfile:
+        warn("the Dockerfile has chroot services but aio-init.sh never calls prep_chroots")
     if not re.search(r"(?m)^\s*cred_reset", init):
         err("aio-init.sh must call cred_reset before cred_add (or the banner keeps old lines)")
     if not re.search(r"(?m)^\s*cred_add", init):

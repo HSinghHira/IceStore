@@ -19,7 +19,9 @@ GATEWAY_PORT=8080
 LIVEKIT_TCP_PORT=6168
 LIVEKIT_UDP_PORT=6169
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address: every link and websocket the web app uses ----
 PUBLIC_URL=${PUBLIC_URL:-http://localhost:6167}
@@ -53,13 +55,6 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
 
 # RABBIT_PASSWORD, S3_*: logins between Stoat's own services.
 # FILES_ENCRYPTION_KEY encrypts every uploaded file: lose it and the files
@@ -96,31 +91,9 @@ if ! grep -q 'voice-ingress' "$HOSTS"; then
   echo "127.0.0.1 database redis rabbit minio revolt-uploads.minio api events autumn january gifbox livekit voice-ingress web" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+chroot_extra() {
+  local d=$1 name=$2
   # APP-SPECIFIC: MongoDB keeps its data in /data/db and RabbitMQ in
   # /var/lib/rabbitmq (upstream's volumes); both images' entrypoints give the
   # folder to their own user.
@@ -136,18 +109,9 @@ for d in "$ROOTFS"/*/; do
         || log "WARNING: could not bind $src to $d/$sub; its data would be lost on update"
     fi
   fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+  return 0
+}
+prep_chroots
 
 # ---- Revolt.toml: upstream's generate_config.sh output, for one address ----
 # Every Stoat service reads /Revolt.toml. Secrets come from the environment
@@ -353,6 +317,11 @@ for f in "$STATE"/overrides/*.env; do
   log "applying your overrides to $svc"
   cat "$f" >> "$RUN/$svc.env"
 done
+
+# ---- CREDENTIALS banner, printed on every boot once the app answers ----
+cred_reset
+cred_add URL "$(cred_url "$PUBLIC_URL")"
+cred_note "Make your account on first visit."
 
 if [ "${AIO_DRY_RUN:-}" = 1 ]; then
   log "dry run finished"

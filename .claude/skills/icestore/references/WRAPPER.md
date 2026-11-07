@@ -26,7 +26,7 @@ docker/<app>/
                       LABEL org.opencontainers.image.source, ENTRYPOINT, CMD
   icestore-init.sh    POSIX sh (upstream may be Alpine/busybox): make the
                       secret once, then exec upstream's own entrypoint
-.github/workflows/build-<app>.yml   the AIO template without the capture-meta step and the docker/_common lines
+.github/workflows/build-<app>.yml   templates/build-workflow.yml plus `kind: wrapper`
 ```
 
 ## The start script
@@ -65,3 +65,30 @@ as a wrapper: one pinned FROM, LABEL source, ENTRYPOINT, LF line endings,
 `AIO_VERSION`) and the bumper shapes. Test the script outside Docker by
 pointing its paths at a temp folder and replacing the final `exec` with an
 `echo` of the variables: first start, restart, a value set, the value removed.
+
+## CREDENTIALS banner
+
+A wrapper that makes a login shows it the same way as the all-in-one apps.
+Copy the shared files in the Dockerfile:
+
+```dockerfile
+COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
+RUN chmod +x /usr/local/bin/icestore-init /usr/local/lib/icestore/credentials.sh
+```
+
+and keep the `"docker/_common/**"` line in the workflow. In the start script,
+just before `exec`:
+
+```sh
+export AIO_CRED_FILE=/tmp/icestore-credentials   # only if the root is read-only
+LOG_TAG=icestore
+. /usr/local/lib/icestore/lib.sh
+cred_reset
+cred_add URL "http://<your ZimaOS IP>:61xx"
+cred_add PASSWORD "$PASSWORD"
+/usr/local/lib/icestore/credentials.sh http://127.0.0.1:<port>/<health> &
+```
+
+`credentials.sh` is plain sh: it waits for the URL with curl or wget, or 20
+seconds when the image has neither. Examples: `docker/disk-monitor`,
+`docker/vscode`.

@@ -14,6 +14,7 @@ log() { echo "[icestore] $*"; }
 
 mkdir -p /config
 umask 077
+PASSWORD_SET=${PASSWORD:-}
 if [ -n "${PASSWORD:-}" ]; then
   printf '%s' "$PASSWORD" > "$PASS_FILE.tmp"
   mv "$PASS_FILE.tmp" "$PASS_FILE"
@@ -28,6 +29,20 @@ export PASSWORD
 # ZimaOS passes a variable someone left empty as an empty string.
 [ -n "${CUSTOM_USER:-}" ] || CUSTOM_USER=abc
 export CUSTOM_USER
-log "sign in as $CUSTOM_USER with the password $PASSWORD (also in /DATA/AppData/vscode/password.txt)"
+
+# CREDENTIALS banner (docker/_common), printed in the background once the
+# desktop answers. lib.sh's log keeps the [icestore] tag.
+LOG_TAG=icestore
+. /usr/local/lib/icestore/lib.sh
+cred_reset
+cred_add URL "https://<your ZimaOS IP>:6119"
+cred_add USERNAME "$CUSTOM_USER"
+if [ -n "$PASSWORD_SET" ]; then
+  cred_add PASSWORD "(the one you set in PASSWORD)"
+else
+  cred_add PASSWORD "$PASSWORD"
+  cred_note "Also saved in /DATA/AppData/vscode/password.txt"
+fi
+/usr/local/lib/icestore/credentials.sh http://127.0.0.1:3000/ &
 
 exec /init "$@"

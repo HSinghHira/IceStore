@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-# PullMD all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
+# PullMD all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
 # The weekly bumper (update-upstream.yml) keeps the FROM lines current.
 #
 # Services inside:
@@ -36,7 +36,8 @@ COPY aio-init.sh /usr/local/bin/aio-init
 COPY run-svc.sh /usr/local/bin/run-svc
 COPY supervisord.conf /etc/supervisor/aio.conf
 COPY nginx.conf.tpl /etc/nginx/aio.conf.tpl
-RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc
+COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
+RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc /usr/local/lib/icestore/credentials.sh
 
 LABEL org.opencontainers.image.title="pullmd" \
       org.opencontainers.image.description="PullMD in a single container" \

@@ -151,8 +151,7 @@ x-casaos:
         7. Make your admin account and your workspace.
 
 
-        8. To read invite emails, open the app logs and find the line that
-           says "mail viewer (/mail) login is". It shows a user name and
+        8. To read invite emails, open the app logs and find the box marked CREDENTIALS. It shows a user name and
            password.
 
 

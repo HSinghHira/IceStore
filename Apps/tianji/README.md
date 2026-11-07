@@ -205,7 +205,7 @@ Tianji is an all-in-one insight hub: website analytics like Umami or Google Anal
 
 ## How to use
 
-1. Find the admin password in the app log, on the line that says "Tianji login is".
+1. Find the admin password in the app log, in the box marked CREDENTIALS.
 2. Open Tianji from your dashboard and sign in as `admin`.
 3. Change the password in Settings.
 4. Add a website, a monitor or a server.
@@ -214,4 +214,4 @@ Tianji is an all-in-one insight hub: website analytics like Umami or Google Anal
 
 ## Before you install
 
-`PUBLIC_URL` starts as `http://localhost:6163`. Change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6163`, so tracking scripts and status pages work from other devices. Leave `ADMIN_PASSWORD` blank to get a random one: it is in the app log on the line that says "Tianji login is", and in `admin-password.txt` in the app folder. It replaces upstream's default admin / admin login, and is only used until you change the password in Tianji. The first start takes about two minutes. Sign-up, email, sign in with GitHub, Google or OIDC and the other settings are in the Variables tab; add them in the app settings.
+`PUBLIC_URL` starts as `http://localhost:6163`. Change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6163`, so tracking scripts and status pages work from other devices. Leave `ADMIN_PASSWORD` blank to get a random one: it is in the app log in the box marked CREDENTIALS, and in `admin-password.txt` in the app folder. It replaces upstream's default admin / admin login, and is only used until you change the password in Tianji. The first start takes about two minutes. Sign-up, email, sign in with GitHub, Google or OIDC and the other settings are in the Variables tab; add them in the app settings.

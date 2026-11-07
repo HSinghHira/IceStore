@@ -183,7 +183,7 @@ x-casaos:
 
 
         9. If you turned sign-in on and left the password blank, open the app
-           log. Find the line that says "admin password is".
+           log. Find the box marked CREDENTIALS.
 
 
         10. Open http://[ZIMAOS-IP-ADDRESS]:6132 in your browser.

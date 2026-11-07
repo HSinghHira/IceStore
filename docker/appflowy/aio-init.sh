@@ -12,7 +12,9 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 PUBLIC_URL=${PUBLIC_URL:-http://localhost:6101}
 PUBLIC_URL=${PUBLIC_URL%/}
@@ -30,14 +32,6 @@ SECRETS=$STATE/secrets.env
 touch "$SECRETS"
 chmod 600 "$SECRETS"
 
-NEW_ADMIN_PASSWORD=0
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-    [ "$1" = ADMIN_PASSWORD ] && NEW_ADMIN_PASSWORD=1
-  fi
-  return 0
-}
 ensure_secret PG_PASSWORD 16
 ensure_secret S3_ACCESS_KEY 10
 ensure_secret S3_SECRET_KEY 20
@@ -45,12 +39,12 @@ ensure_secret JWT_SECRET 32
 ensure_secret ADMIN_PASSWORD 12
 ensure_secret MAIL_PASSWORD 12
 
-PG_PASSWORD=$(sed -n 's/^PG_PASSWORD=//p' "$SECRETS")
-S3_ACCESS_KEY=$(sed -n 's/^S3_ACCESS_KEY=//p' "$SECRETS")
-S3_SECRET_KEY=$(sed -n 's/^S3_SECRET_KEY=//p' "$SECRETS")
-JWT_SECRET=$(sed -n 's/^JWT_SECRET=//p' "$SECRETS")
-ADMIN_PASSWORD=$(sed -n 's/^ADMIN_PASSWORD=//p' "$SECRETS")
-MAIL_PASSWORD=$(sed -n 's/^MAIL_PASSWORD=//p' "$SECRETS")
+PG_PASSWORD=$(secret PG_PASSWORD)
+S3_ACCESS_KEY=$(secret S3_ACCESS_KEY)
+S3_SECRET_KEY=$(secret S3_SECRET_KEY)
+JWT_SECRET=$(secret JWT_SECRET)
+ADMIN_PASSWORD=$(secret ADMIN_PASSWORD)
+MAIL_PASSWORD=$(secret MAIL_PASSWORD)
 
 # Mail viewer (/mail) login. It shows password-reset emails, so it is never open:
 # blank MP_UI_AUTH = user "admin" with a password made on first start, kept in
@@ -62,56 +56,34 @@ if [ -z "$MAIL_UI_AUTH" ]; then
   if [ ! -s "$MAIL_LOGIN_FILE" ]; then
     printf 'Mail viewer (/mail) login\nusername: admin\npassword: %s\n' "$MAIL_PASSWORD" > "$MAIL_LOGIN_FILE"
     chmod 600 "$MAIL_LOGIN_FILE"
-    log "first start: mail viewer (/mail) login is admin / $MAIL_PASSWORD (also saved in $MAIL_LOGIN_FILE)"
   fi
 fi
 
+# ---- CREDENTIALS banner, printed on every boot once the app answers ----
+SHOW_URL=$(cred_url "$PUBLIC_URL")
+cred_reset
+cred_add URL "$SHOW_URL"
+cred_add "ADMIN EMAIL" "$ADMIN_EMAIL"
 if [ -n "$ADMIN_PASSWORD_ENV" ]; then
   ADMIN_PASSWORD=$ADMIN_PASSWORD_ENV
-elif [ "$NEW_ADMIN_PASSWORD" = 1 ]; then
-  log "first start: admin email is $ADMIN_EMAIL"
-  log "first start: admin password is $ADMIN_PASSWORD (also saved in $SECRETS)"
+  cred_add "ADMIN PASSWORD" "(the one you set in ADMIN_PASSWORD)"
+else
+  cred_add "ADMIN PASSWORD" "$ADMIN_PASSWORD"
 fi
+cred_add "ADMIN CONSOLE" "$SHOW_URL/console"
+if [ -n "${MP_UI_AUTH:-}" ]; then
+  cred_add "MAIL VIEWER" "$SHOW_URL/mail  (the login you set in MP_UI_AUTH)"
+else
+  cred_add "MAIL VIEWER" "$SHOW_URL/mail  admin / $MAIL_PASSWORD"
+fi
+cred_note "Also saved in $SECRETS (mail viewer: $MAIL_LOGIN_FILE)"
 
 if ! grep -q 'appflowy_postgres' "$HOSTS"; then
   echo "127.0.0.1 appflowy_postgres appflowy_redis appflowy-minio appflowy-mailpit appflowy_gotrue appflowy_cloud appflowy_search appflowy_web appflowy_admin" >> "$HOSTS"
 fi
 
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+prep_chroots
 
 WEB_PORT=80
 if [ -f "$META/web.json" ]; then
@@ -299,7 +271,6 @@ pass_env worker  'APPFLOWY_WORKER_[A-Z0-9_]+'
 pass_env mailpit 'MP_[A-Z0-9_]+'
 pass_env silo    '(MINIO|SILO)_[A-Z0-9_]+'
 
-
 for f in "$STATE"/overrides/*.env; do
   [ -f "$f" ] || continue
   svc=$(basename "$f" .env)
@@ -312,21 +283,12 @@ if [ "${AIO_DRY_RUN:-}" = 1 ]; then
   exit 0
 fi
 
-id postgres >/dev/null
-mkdir -p /run/postgresql
-chown postgres:postgres /run/postgresql "$DATA/postgres"
-chmod 700 "$DATA/postgres"
+pg_setup /usr/lib/postgresql/16/bin
 chown redis:redis "$DATA/redis"
 
-if [ ! -s "$DATA/postgres/PG_VERSION" ]; then
+if pg_is_new; then
   log "first start: creating the database"
-  pwfile=$(mktemp)
-  printf '%s' "$PG_PASSWORD" > "$pwfile"
-  chown postgres:postgres "$pwfile"
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    /usr/lib/postgresql/16/bin/initdb -D "$DATA/postgres" -U postgres -E UTF8 --locale=C.UTF-8 \
-    --auth-host=scram-sha-256 --auth-local=trust --pwfile="$pwfile" >/dev/null
-  rm -f "$pwfile"
+  pg_initdb
 fi
 
 exec /usr/bin/supervisord -n -c /etc/supervisor/aio.conf

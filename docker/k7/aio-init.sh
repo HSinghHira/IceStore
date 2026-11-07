@@ -56,7 +56,7 @@ ADMIN_PASSWORD=$(secret ADMIN_PASSWORD)
 # ---- CREDENTIALS banner, printed on every boot once K7 answers ----
 # K7 only uses the admin values on the very first start (see write_env k7).
 cred_reset
-cred_add URL "$PUBLIC_URL"
+cred_add URL "$(cred_url "$PUBLIC_URL")"
 cred_add USERNAME "$ADMIN_USERNAME"
 if [ -n "$ADMIN_PASSWORD_ENV" ]; then
   ADMIN_PASSWORD=$ADMIN_PASSWORD_ENV
@@ -72,31 +72,9 @@ if ! grep -q ' k7-postgres' "$HOSTS"; then
   echo "127.0.0.1 postgres k7-postgres k7-server" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+chroot_extra() {
+  local d=$1 name=$2
   # APP-SPECIFIC: K7 keeps config, artwork, logs and transcodes in /data, reads
   # the media library from /media, and uses /dev/dri for hardware transcoding.
   # Its own entrypoint gives /data to appuser (PUID/PGID) and joins the
@@ -118,18 +96,9 @@ for d in "$ROOTFS"/*/; do
       log "found /dev/dri: hardware transcoding is available"
     fi
   fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+  return 0
+}
+prep_chroots
 
 # ---- gateway: also listen on the PUBLIC_URL port, so calls to PUBLIC_URL
 # ---- from inside the container reach the gateway ----
@@ -203,37 +172,24 @@ if [ "${AIO_DRY_RUN:-}" = 1 ]; then
 fi
 
 # ---- built-in data folders and first-start database ----
-pgbin=/usr/lib/postgresql/18/bin
-id postgres >/dev/null
-mkdir -p /run/postgresql
-chown postgres:postgres /run/postgresql "$DATA/postgres"
-chmod 700 "$DATA/postgres"
+pg_setup /usr/lib/postgresql/18/bin
 
-if [ ! -s "$DATA/postgres/PG_VERSION" ]; then
+if pg_is_new; then
   log "first start: creating the database"
-  pwfile=$(mktemp)
-  printf '%s' "$PG_PASSWORD" > "$pwfile"
-  chown postgres:postgres "$pwfile"
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    $pgbin/initdb -D "$DATA/postgres" -U postgres -E UTF8 --locale=C.UTF-8 \
-    --auth-host=scram-sha-256 --auth-local=trust --pwfile="$pwfile" >/dev/null
-  rm -f "$pwfile"
+  pg_initdb
 
   # K7's own role and database (upstream's postgres service makes the database
   # from POSTGRES_DB). K7's migrations create the tables on its first start;
   # pg_trgm (used for search) is made here so the role needs no superuser.
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    $pgbin/pg_ctl -D "$DATA/postgres" -o "-c listen_addresses=''" -w start >/dev/null
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    psql -h /run/postgresql -U postgres -v ON_ERROR_STOP=1 -q \
+  pg_start_local
+  pg_psql \
       -v pw="$PG_PASSWORD" <<'SQL'
 CREATE ROLE k7 LOGIN PASSWORD :'pw';
 CREATE DATABASE k7 OWNER k7;
 \c k7
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 SQL
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    $pgbin/pg_ctl -D "$DATA/postgres" -w stop >/dev/null
+  pg_stop_local
 fi
 
 exec /usr/bin/supervisord -n -c /etc/supervisor/aio.conf

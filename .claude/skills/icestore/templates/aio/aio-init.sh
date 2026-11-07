@@ -12,7 +12,8 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-# Shared IceStore helpers: log, ensure_secret, secret, cred_add (docker/_common).
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
 . "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address: default MUST use the app's ledger port ----
@@ -45,8 +46,9 @@ ADMIN_PASSWORD=$(secret ADMIN_PASSWORD)
 
 # ---- APP-SPECIFIC: CREDENTIALS banner, printed on every boot once the app
 # ---- answers. Add every login the user needs; never log passwords elsewhere.
+# ---- Open sign-up: just URL plus cred_note "Create your account on first visit...".
 cred_reset
-cred_add URL "$PUBLIC_URL"
+cred_add URL "$(cred_url "$PUBLIC_URL")"
 cred_add EMAIL "$ADMIN_EMAIL"
 if [ -n "$ADMIN_PASSWORD_ENV" ]; then
   ADMIN_PASSWORD=$ADMIN_PASSWORD_ENV
@@ -62,42 +64,20 @@ if ! grep -q '__APP___postgres' "$HOSTS"; then
   echo "127.0.0.1 __APP___postgres __APP___redis __APP___app" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+# APP-SPECIFIC (optional): mounts for one service, called once per chroot.
+# Keep `return 0` last. Delete the function if no service needs any.
+chroot_extra() {
+  local d=$1 name=$2
+  if [ "$name" = app ]; then
+    mkdir -p "$d/app/data"
+    mountpoint -q "$d/app/data" || mount --bind "$DATA/app" "$d/app/data" 2>/dev/null \
+      || log "warning: could not mount $DATA/app into the app chroot"
   fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+  return 0
+}
+# CHROOT_SHM_SIZE=512m   # only if upstream sets shm_size
+prep_chroots
 
 # ---- gateway: also listen on the PUBLIC_URL port, so services that call
 # ---- PUBLIC_URL from inside the container reach the gateway ----
@@ -162,21 +142,12 @@ if [ "${AIO_DRY_RUN:-}" = 1 ]; then
 fi
 
 # ---- APP-SPECIFIC: built-in data folders and first-start database ----
-id postgres >/dev/null
-mkdir -p /run/postgresql
-chown postgres:postgres /run/postgresql "$DATA/postgres"
-chmod 700 "$DATA/postgres"
+pg_setup /usr/lib/postgresql/16/bin
 chown redis:redis "$DATA/redis"
 
-if [ ! -s "$DATA/postgres/PG_VERSION" ]; then
+if pg_is_new; then
   log "first start: creating the database"
-  pwfile=$(mktemp)
-  printf '%s' "$PG_PASSWORD" > "$pwfile"
-  chown postgres:postgres "$pwfile"
-  setpriv --reuid=postgres --regid=postgres --init-groups \
-    /usr/lib/postgresql/16/bin/initdb -D "$DATA/postgres" -U postgres -E UTF8 --locale=C.UTF-8 \
-    --auth-host=scram-sha-256 --auth-local=trust --pwfile="$pwfile" >/dev/null
-  rm -f "$pwfile"
+  pg_initdb
 fi
 
 exec /usr/bin/supervisord -n -c /etc/supervisor/aio.conf

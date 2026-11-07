@@ -169,6 +169,11 @@ x-casaos:
 
         7. Put your DRM-free games into the files folder. GameVault finds
            them within an hour, or right away from the admin panel.
+
+
+        8. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6149"
   scheme: http

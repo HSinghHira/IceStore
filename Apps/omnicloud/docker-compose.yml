@@ -158,6 +158,11 @@ x-casaos:
 
 
         8. Go to Quota and connect your first cloud account.
+
+
+        9. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6154"
   scheme: http

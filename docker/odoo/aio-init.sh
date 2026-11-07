@@ -13,7 +13,9 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address: only used so internal calls to it reach the gateway ----
 # Odoo learns its own address (web.base.url) from the browser on the first
@@ -35,16 +37,6 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-NEW_MASTER=0
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-    [ "$1" = ODOO_MASTER_PASSWORD ] && NEW_MASTER=1
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
-
 # PG_PASSWORD: postgres superuser. ODOO_DB_PASSWORD: the "odoo" role.
 # ODOO_MASTER_PASSWORD: Odoo's admin_passwd, which guards the database
 # manager (create, copy, back up, restore and delete databases).
@@ -54,42 +46,28 @@ ensure_secret ODOO_MASTER_PASSWORD 12
 PG_PASSWORD=$(secret PG_PASSWORD)
 ODOO_DB_PASSWORD=$(secret ODOO_DB_PASSWORD)
 MASTER=$(secret ODOO_MASTER_PASSWORD)
+[ -z "${ODOO_MASTER_PASSWORD:-}" ] || MASTER=$ODOO_MASTER_PASSWORD
+
+# ---- CREDENTIALS banner, printed on every boot once the app answers ----
+cred_reset
+cred_add URL "$(cred_url "$PUBLIC_URL")"
 if [ -n "${ODOO_MASTER_PASSWORD:-}" ]; then
-  MASTER=$ODOO_MASTER_PASSWORD
-elif [ "$NEW_MASTER" = 1 ]; then
-  log "first start: Odoo master password is $MASTER (also saved in $SECRETS)"
+  cred_add "MASTER PASSWORD" "(the one you set in ODOO_MASTER_PASSWORD)"
+else
+  cred_add "MASTER PASSWORD" "$MASTER"
+  cred_note "Also saved in $SECRETS"
 fi
+cred_note "On first visit, create a database with the master password; you choose"
+cred_note "the admin email and password there."
 
 # ---- hostnames from the old two-container app, all pointed at 127.0.0.1 ----
 if ! grep -q 'odoo-db' "$HOSTS"; then
   echo "127.0.0.1 db odoo-db" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+chroot_extra() {
+  local d=$1 name=$2
   # APP-SPECIFIC: Odoo's two volumes, kept in /data so they survive updates,
   # and given to the image's odoo user.
   if [ "$(basename "$d")" = odoo ]; then
@@ -103,18 +81,9 @@ for d in "$ROOTFS"/*/; do
     uid=$(awk -F: '$1=="odoo"{print $3":"$4}' "$d/etc/passwd" 2>/dev/null || true)
     [ -n "$uid" ] && chown -R "$uid" "$DATA/odoo" "$DATA/addons"
   fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+  return 0
+}
+prep_chroots
 
 # ---- settings: the README variables: list (Apps/odoo/) ----
 # Odoo has no environment variables for these; they are keys in its config
@@ -214,31 +183,20 @@ if [ "${AIO_DRY_RUN:-}" = 1 ]; then
 fi
 
 # ---- built-in data folders and first-start database ----
-id postgres >/dev/null
-mkdir -p /run/postgresql
-chown postgres:postgres /run/postgresql "$DATA/postgres"
-chmod 700 "$DATA/postgres"
+pg_setup /usr/lib/postgresql/16/bin
 
-pgbin=/usr/lib/postgresql/16/bin
-as_pg() { setpriv --reuid=postgres --regid=postgres --init-groups "$@"; }
-
-if [ ! -s "$DATA/postgres/PG_VERSION" ]; then
+if pg_is_new; then
   log "first start: creating the database server"
-  pwfile=$(mktemp)
-  printf '%s' "$PG_PASSWORD" > "$pwfile"
-  chown postgres:postgres "$pwfile"
-  as_pg $pgbin/initdb -D "$DATA/postgres" -U postgres -E UTF8 --locale=C.UTF-8 \
-    --data-checksums --auth-host=scram-sha-256 --auth-local=trust --pwfile="$pwfile" >/dev/null
-  rm -f "$pwfile"
+  pg_initdb --data-checksums
 
   # Upstream's "odoo" user is the Postgres superuser (POSTGRES_USER=odoo), so
   # it stays one here: Odoo creates its databases itself, adds extensions such
   # as unaccent, and backs up and restores with pg_dump/pg_restore. Odoo
   # refuses to connect as "postgres", which is why it gets its own role.
-  as_pg $pgbin/pg_ctl -D "$DATA/postgres" -o "-c listen_addresses='' -c unix_socket_directories=/run/postgresql" -w start >/dev/null
-  as_pg $pgbin/psql -h /run/postgresql -U postgres -v ON_ERROR_STOP=1 -q \
+  pg_start_local
+  pg_psql \
     -c "CREATE ROLE odoo LOGIN SUPERUSER PASSWORD '${ODOO_DB_PASSWORD}';"
-  as_pg $pgbin/pg_ctl -D "$DATA/postgres" -w stop >/dev/null
+  pg_stop_local
   log "first start: database server ready. Open Odoo and create your first database."
 fi
 

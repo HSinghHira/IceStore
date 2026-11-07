@@ -12,5 +12,9 @@ check:
 check-all:
     python .github/scripts/check_changed.py --all
 
+# trial run of an all-in-one app's start-up, no Docker needed: `just test k7`
+test app:
+    bash .github/scripts/dry_run.sh {{app}}
+
 dev:
     python site/serve.py

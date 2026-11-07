@@ -10,7 +10,10 @@
 FROM ghcr.io/isanto1306/disk-monitor:0.32.104
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
-RUN chmod +x /usr/local/bin/icestore-init
+# Shared helpers and the CREDENTIALS banner (docker/_common; built with
+# --build-context common=docker/_common).
+COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
+RUN chmod +x /usr/local/bin/icestore-init /usr/local/lib/icestore/credentials.sh
 
 ENV DISK_MONITOR_PORT=6170
 

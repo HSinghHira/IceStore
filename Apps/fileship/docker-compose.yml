@@ -126,8 +126,7 @@ x-casaos:
       **How to use?**
 
 
-      1. Find the admin password in the app log, on the line that says
-         "Fileship login is".
+      1. Find the admin password in the app log, in the box marked CREDENTIALS.
 
 
       2. Open Fileship from the Zima OS dashboard and sign in as admin.
@@ -168,7 +167,7 @@ x-casaos:
         6. Wait about two minutes. The first start sets up the database.
 
 
-        7. Open the app log. Find the line that says "Fileship login is". It
+        7. Open the app log. Find the box marked CREDENTIALS. It
            shows the admin password. It is also in admin-password.txt in the
            app folder.
 

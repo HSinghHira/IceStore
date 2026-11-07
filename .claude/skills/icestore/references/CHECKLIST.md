@@ -56,6 +56,10 @@ Then check by hand what it can't see:
     "All N apps" list with the new count, plus changed `readme/*.svg`.
 11. **AIO version**: `AIO_VERSION` in the workflow is bumped for any change to
     `docker/<app>/`.
+11a. **CREDENTIALS banner** (AIO, and wrappers that make a login):
+    `just test <app>` passes and the banner it prints shows every login the
+    user needs, with `<your ZimaOS IP>` instead of localhost. The install tips
+    point to "the box marked CREDENTIALS" in the app's logs.
 12. **Weekly bumper can read it** (AIO only): run
     `python .github/scripts/update_upstream.py` from the repo root (dry run, no
     writes). The new app is listed, each FROM shows `ok` or `bump`, and none

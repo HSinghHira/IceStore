@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-# TutorLoom all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
+# TutorLoom all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
 #
 # Upstream publishes no image, so it is built here from one pinned release of
 # github.com/pacewisdomhq/TutorLoom, the way upstream's Dockerfile and
@@ -108,7 +108,8 @@ COPY aio-init.sh /usr/local/bin/aio-init
 COPY run-svc.sh /usr/local/bin/run-svc
 COPY supervisord.conf /etc/supervisor/aio.conf
 COPY nginx.conf.tpl /etc/nginx/aio.conf.tpl
-RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc
+COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
+RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc /usr/local/lib/icestore/credentials.sh
 
 LABEL org.opencontainers.image.title="tutorloom" \
       org.opencontainers.image.description="TutorLoom (Django API, Celery worker, web app, PostgreSQL and Redis) in a single container" \

@@ -179,6 +179,11 @@ x-casaos:
 
         9. Open Templates, pick a starter template, and make your first
            workspace.
+
+
+        10. Your login details and the app's address are in the app's
+            logs, in the box marked CREDENTIALS. It is printed again on
+            every start.
   index: /
   port_map: "6145"
   scheme: http

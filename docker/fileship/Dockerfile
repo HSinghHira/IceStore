@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-# Fileship all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
+# Fileship all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
 # The weekly bumper (update-upstream.yml) keeps the FROM line current.
 #
 # Services inside:
@@ -40,7 +40,8 @@ COPY aio-init.sh /usr/local/bin/aio-init
 COPY run-svc.sh /usr/local/bin/run-svc
 COPY supervisord.conf /etc/supervisor/aio.conf
 COPY nginx.conf.tpl /etc/nginx/aio.conf.tpl
-RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc
+COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
+RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc /usr/local/lib/icestore/credentials.sh
 
 LABEL org.opencontainers.image.title="fileship" \
       org.opencontainers.image.description="Fileship in a single container" \

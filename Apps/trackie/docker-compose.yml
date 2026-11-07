@@ -208,6 +208,11 @@ x-casaos:
         14. More settings are listed on the Trackie page at
             https://icestore.hsinghhira.me/app/trackie/ (Variables tab). You
             can add them now or later in the app settings.
+
+
+        15. Your login details and the app's address are in the app's
+            logs, in the box marked CREDENTIALS. It is printed again on
+            every start.
   index: /
   port_map: "6164"
   scheme: http

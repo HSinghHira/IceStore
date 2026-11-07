@@ -9,7 +9,10 @@
 FROM lscr.io/linuxserver/vscode:1.143.1-ls31
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
-RUN chmod +x /usr/local/bin/icestore-init
+# Shared helpers and the CREDENTIALS banner (docker/_common; built with
+# --build-context common=docker/_common).
+COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
+RUN chmod +x /usr/local/bin/icestore-init /usr/local/lib/icestore/credentials.sh
 
 LABEL org.opencontainers.image.title="vscode" \
       org.opencontainers.image.description="VS Code desktop with a per-install login password" \

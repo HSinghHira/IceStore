@@ -53,19 +53,33 @@ else
   log "first start: made this install's session secret (.session_secret in the cache folder)."
 fi
 
+# CREDENTIALS banner (docker/_common). The root is read-only, so its list
+# goes in /tmp. lib.sh's log keeps the [icestore] tag.
+export AIO_CRED_FILE=/tmp/icestore-credentials
+LOG_TAG=icestore
+. /usr/local/lib/icestore/lib.sh
+cred_reset
+cred_add URL "http://<your ZimaOS IP>:${DISK_MONITOR_PORT:-6170}"
+cred_add USERNAME "$DISK_MONITOR_USERNAME"
+
 # Login password
 if [ -z "${DISK_MONITOR_PASSWORD:-}" ]; then
-  if [ ! -s "$PASS_FILE" ]; then
-    save "$PASS_FILE" "$(random_hex 12)"
-    log "first start: sign in as $DISK_MONITOR_USERNAME with the password $(cat "$PASS_FILE")"
-  fi
+  [ -s "$PASS_FILE" ] || save "$PASS_FILE" "$(random_hex 12)"
   DISK_MONITOR_PASSWORD=$(cat "$PASS_FILE")
-  log "login: $DISK_MONITOR_USERNAME, password in /DATA/AppData/disk-monitor/cache/password.txt"
-elif [ "${#DISK_MONITOR_PASSWORD}" -lt 12 ]; then
-  log "DISK_MONITOR_PASSWORD must have at least 12 characters, or Disk Monitor won't start."
+  cred_add PASSWORD "$DISK_MONITOR_PASSWORD"
+  cred_note "Also saved in /DATA/AppData/disk-monitor/cache/password.txt"
+else
+  cred_add PASSWORD "(the one you set in DISK_MONITOR_PASSWORD)"
+  if [ "${#DISK_MONITOR_PASSWORD}" -lt 12 ]; then
+    log "DISK_MONITOR_PASSWORD must have at least 12 characters, or Disk Monitor won't start."
+  fi
 fi
 
 export DISK_MONITOR_USERNAME DISK_MONITOR_PASSWORD DISK_MONITOR_SESSION_SECRET
+
+# Prints the banner in the background once Disk Monitor answers (it has no
+# curl or wget, so credentials.sh waits a fixed 20 seconds instead).
+/usr/local/lib/icestore/credentials.sh "http://127.0.0.1:${DISK_MONITOR_PORT:-6170}/api/auth/status" &
 
 cd /app
 exec "$@"

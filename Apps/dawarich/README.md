@@ -257,10 +257,10 @@ Dawarich keeps your location history on your own server, like Google Timeline (L
 ## How to use
 
 1. Open Dawarich from your dashboard.
-2. Sign in as `demo@dawarich.app` with the password from the app logs (the line "Dawarich login is").
+2. Sign in as `demo@dawarich.app` with the password from the app logs (in the box marked CREDENTIALS).
 3. Change the email and password in Account settings.
 4. Import your old data under Imports, or connect a phone app with the API key from Account settings and the server `http://[ZIMAOS-IP-ADDRESS]:6175`.
 
 ## Before you install
 
-`PUBLIC_URL` starts as `http://localhost:6175`. Change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6175`, so links in emails work; Dawarich itself opens from any address. Leave `ADMIN_PASSWORD` empty to get a new password: it is in the app logs on the line "Dawarich login is" and in `admin-password.txt` in the data folder. The first start takes about five minutes. Email, OIDC sign-in, place names (reverse geocoding), S3 storage and the other settings are in the Variables tab; add them in the app settings. Plan for 1 to 4 GB of memory, more with large imports. To sync Strava activities into Dawarich, install Strava to Dawarich from IceStore too.
+`PUBLIC_URL` starts as `http://localhost:6175`. Change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6175`, so links in emails work; Dawarich itself opens from any address. Leave `ADMIN_PASSWORD` empty to get a new password: it is in the app logs in the box marked CREDENTIALS and in `admin-password.txt` in the data folder. The first start takes about five minutes. Email, OIDC sign-in, place names (reverse geocoding), S3 storage and the other settings are in the Variables tab; add them in the app settings. Plan for 1 to 4 GB of memory, more with large imports. To sync Strava activities into Dawarich, install Strava to Dawarich from IceStore too.

@@ -259,7 +259,7 @@ Homelable is a self-hosted map of your homelab: scan your network, drop the devi
 ## How to use
 
 1. Open Homelable from your dashboard.
-2. Sign in as `admin`. The password is in the app logs, on the line that says "admin login is".
+2. Sign in as `admin`. The password is in the app logs, in the box marked CREDENTIALS.
 3. Click **Scan Network** to find devices on your network, or add nodes by hand.
 4. Approve the devices you want from the Pending Devices list.
 5. Double-click a node to set its health check, icon and services.
@@ -267,4 +267,4 @@ Homelable is a self-hosted map of your homelab: scan your network, drop the devi
 
 ## Before you install
 
-`PUBLIC_URL` starts as `http://localhost:6151`; change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6151`. Type a password in `ADMIN_PASSWORD`, or leave it empty and one is made for you: it is in the app logs on the line that says "admin login is", and in `admin-password.txt` in the data folder. You no longer need to make a bcrypt hash yourself. The first start takes about a minute. Scan ranges, Proxmox, Unraid, Zigbee and Z-Wave auto-sync and OpenID Connect sign-in are in the Variables tab; add them in the app settings.
+`PUBLIC_URL` starts as `http://localhost:6151`; change `localhost` to your ZimaOS IP, like `http://192.168.1.20:6151`. Type a password in `ADMIN_PASSWORD`, or leave it empty and one is made for you: it is in the app logs in the box marked CREDENTIALS, and in `admin-password.txt` in the data folder. You no longer need to make a bcrypt hash yourself. The first start takes about a minute. Scan ranges, Proxmox, Unraid, Zigbee and Z-Wave auto-sync and OpenID Connect sign-in are in the Variables tab; add them in the app settings.

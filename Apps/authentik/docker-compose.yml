@@ -148,8 +148,7 @@ x-casaos:
         6. Wait about five minutes. The first start sets up the database.
 
 
-        7. If you left ADMIN_PASSWORD blank, open the app log. Find the line
-           that says "the admin password is".
+        7. If you left ADMIN_PASSWORD blank, open the app log. Find the box marked CREDENTIALS.
 
 
         8. Open http://your-zimaos-ip:6123 and sign in. The user name is

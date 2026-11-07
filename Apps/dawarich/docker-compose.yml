@@ -57,8 +57,7 @@ services:
           description:
             en_US: >-
               The password for the first account, demo@dawarich.app. Leave it
-              empty and one is made for you; it is in the app logs on the line
-              "Dawarich login is". Used only until you change the password in
+              empty and one is made for you; it is in the app logs in the box marked CREDENTIALS. Used only until you change the password in
               Dawarich.
       ports:
         - container: "8080"
@@ -131,7 +130,7 @@ x-casaos:
       1. Open Dawarich from the Zima OS dashboard.
 
       2. Sign in as demo@dawarich.app with the password from the app logs
-         (the line "Dawarich login is").
+         (in the box marked CREDENTIALS).
 
       3. Change the email and password in Account settings.
 
@@ -164,8 +163,7 @@ x-casaos:
         6. Wait about five minutes. The first start sets up the database.
 
 
-        7. Open the app logs and find the line that says "Dawarich login
-           is". It shows the email demo@dawarich.app and a password.
+        7. Open the app logs and find the box marked CREDENTIALS. It shows the email demo@dawarich.app and a password.
 
 
         8. Open http://[ZIMAOS-IP-ADDRESS]:6175 and sign in with them.

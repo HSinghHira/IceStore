@@ -135,6 +135,11 @@ x-casaos:
 
         6. If videos stop playing, YouTube may be blocking your address. Add
            POKE_YOUTUBE_PROXY in the app settings.
+
+
+        7. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6133"
   scheme: http

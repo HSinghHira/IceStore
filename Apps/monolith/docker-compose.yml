@@ -159,6 +159,11 @@ x-casaos:
 
         7. Open your PUBLIC_URL address. Create your account right away: the
            first account is the owner.
+
+
+        8. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6138"
   scheme: http

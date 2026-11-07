@@ -301,8 +301,7 @@ x-casaos:
         6. Wait about three minutes. The first start sets up the database.
 
 
-        7. Open the app logs and scroll to the top. Find the line that says
-           "mail viewer login". Write down the password.
+        7. Open the app logs. Find the box marked CREDENTIALS. Write down the password.
 
 
         8. Open http://your-zimaos-ip:6630 in your browser. Sign up with

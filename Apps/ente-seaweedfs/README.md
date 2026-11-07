@@ -159,6 +159,6 @@ Passkeys need the Accounts app on `https` with a domain name; browsers refuse th
 
 ## Before you install
 
-Change `localhost` in `PUBLIC_URL` to your ZimaOS IP, like `http://192.168.1.20:6660`; phones cannot use `localhost`. The other apps use the next ports on that address (see Ports above); the phone and desktop apps need the API on 6661. The first start takes about three minutes. Sign-up codes go to the mail viewer on port 6664: open the app logs, scroll to the top and find the line that says "mail viewer login" for its password. To send real email instead, and for the other settings, see the Variables tab; add them in the app settings. If you put Ente behind your own domains, set `ENTE_API_URL`, `ENTE_S3_URL` and the `ENTE_APPS_*` addresses too.
+Change `localhost` in `PUBLIC_URL` to your ZimaOS IP, like `http://192.168.1.20:6660`; phones cannot use `localhost`. The other apps use the next ports on that address (see Ports above); the phone and desktop apps need the API on 6661. The first start takes about three minutes. Sign-up codes go to the mail viewer on port 6664: open the app logs and find the box marked CREDENTIALS for its password. To send real email instead, and for the other settings, see the Variables tab; add them in the app settings. If you put Ente behind your own domains, set `ENTE_API_URL`, `ENTE_S3_URL` and the `ENTE_APPS_*` addresses too.
 
 Updating from the old ports (6137-6140)? Your install keeps working as it is. To get the new apps' ports, reinstall the app, or change the ports and `PUBLIC_URL` to 6660 and up.

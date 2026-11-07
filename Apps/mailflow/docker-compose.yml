@@ -147,6 +147,11 @@ x-casaos:
 
         9. Add your email account. For Gmail and iCloud, make an app password
            in your Google or Apple account and use it here.
+
+
+        10. Your login details and the app's address are in the app's
+            logs, in the box marked CREDENTIALS. It is printed again on
+            every start.
   index: /
   port_map: "6130"
   scheme: http

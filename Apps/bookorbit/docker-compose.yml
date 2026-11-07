@@ -143,8 +143,7 @@ x-casaos:
       1. Open BookOrbit from the Zima OS dashboard.
 
       2. The setup wizard opens. It asks for a setup token. To get it, open
-         the app logs and scroll to the top. Find the line that says "the
-         setup token is".
+         the app logs. Find the box marked CREDENTIALS.
 
       3. Create your first library and pick a folder under /books.
 
@@ -179,8 +178,7 @@ x-casaos:
         6. Wait about two minutes. The first start sets up the database.
 
 
-        7. Open the app logs and scroll to the top. Find the line that says
-           "the setup token is". Copy the token after it.
+        7. Open the app logs. Find the box marked CREDENTIALS. Copy the token after it.
 
 
         8. Open http://your-zimaos-ip:6124 in your browser. Paste the setup

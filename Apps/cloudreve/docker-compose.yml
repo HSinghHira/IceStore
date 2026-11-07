@@ -161,6 +161,11 @@ x-casaos:
 
 
         8. All other settings are in the admin panel in the app.
+
+
+        9. Your login details and the app's address are in the app's
+           logs, in the box marked CREDENTIALS. It is printed again on
+           every start.
   index: /
   port_map: "6125"
   scheme: http

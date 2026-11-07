@@ -13,7 +13,9 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers (docker/_common/lib.sh): log, ensure_secret, secret,
+# cred_add, prep_chroots, pg_*.
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address: only used for links in emails (DOMAIN) and to turn on
 # ---- HTTPS-only mode for an https:// address. The app itself follows the
@@ -41,13 +43,6 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
 
 # PG_PASSWORD: postgres superuser. DB_PASSWORD: the "dawarich" role.
 # SECRET_KEY_BASE signs sessions (changing it signs everyone out). The three
@@ -73,38 +68,27 @@ if [ -z "${ADMIN_PASSWORD:-}" ] && [ ! -s "$ADMIN_FILE" ]; then
   printf 'Dawarich login\nemail: demo@dawarich.app\npassword: %s\n' "$ADMIN_PW" > "$ADMIN_FILE"
   chmod 600 "$ADMIN_FILE"
 fi
-log "Dawarich login is demo@dawarich.app / $ADMIN_PW (until you change it in Dawarich)"
+
+# ---- CREDENTIALS banner, printed on every boot once the app answers ----
+cred_reset
+cred_add URL "$(cred_url "$PUBLIC_URL")"
+cred_add EMAIL demo@dawarich.app
+if [ -n "${ADMIN_PASSWORD:-}" ]; then
+  cred_add PASSWORD "(the one you set in ADMIN_PASSWORD)"
+else
+  cred_add PASSWORD "$ADMIN_PW"
+  cred_note "Also saved in $ADMIN_FILE"
+fi
+cred_note "Changed it in Dawarich? Your new password is the one that works."
 
 # ---- hostnames from upstream's docker-compose, all pointed at 127.0.0.1 ----
 if ! grep -q 'dawarich_redis' "$HOSTS"; then
   echo "127.0.0.1 dawarich_db dawarich_redis dawarich_app" >> "$HOSTS"
 fi
 
-# ---- generic: prepare every chroot filesystem under /opt/rootfs ----
-for d in "$ROOTFS"/*/; do
-  [ -d "$d" ] || continue
-  mkdir -p "$d/dev" "$d/etc" "$d/tmp" "$d/proc" "$d/sys"
-  chmod 1777 "$d/tmp"
-  cat "$HOSTS" > "$d/etc/hosts"
-  [ -f /etc/resolv.conf ] && cat /etc/resolv.conf > "$d/etc/resolv.conf"
-
-  if ! mountpoint -q "$d/proc"; then
-    mount -t proc proc "$d/proc" 2>/dev/null || mount --rbind /proc "$d/proc" 2>/dev/null || {
-      err=$(mount --rbind /proc "$d/proc" 2>&1 || true)
-      log "warning: could not mount proc into $d/proc: $err"
-    }
-  fi
-  mountpoint -q "$d/sys" || mount --rbind /sys "$d/sys" 2>/dev/null || true
-  mkdir -p "$d/dev/shm"
-  mountpoint -q "$d/dev/shm" || mount -t tmpfs tmpfs "$d/dev/shm" 2>/dev/null || true
-  chmod 1777 "$d/dev/shm" 2>/dev/null || true
-  [ -e "$d/dev/fd" ] || ln -s /proc/self/fd "$d/dev/fd" 2>/dev/null || true
-  if [ -f "$d/proc/version" ]; then
-    log "$d procfs mounted successfully"
-  else
-    log "WARNING: $d procfs is NOT mounted"
-  fi
-
+# ---- chroot services: the generic part is prep_chroots (lib.sh) ----
+chroot_extra() {
+  local d=$1 name=$2
   # APP-SPECIFIC: upstream's volumes. /data/storage is /var/app/storage
   # (imports, exports, route videos) and /data/watched is
   # /var/app/tmp/imports/watched (drop files there to import them). The app
@@ -120,18 +104,9 @@ for d in "$ROOTFS"/*/; do
       fi
     done
   fi
-
-  [ -e "$d/dev/null" ]    || mknod -m 666 "$d/dev/null" c 1 3    2>/dev/null || log "warning: could not create $d/dev/null"
-  [ -e "$d/dev/zero" ]    || mknod -m 666 "$d/dev/zero" c 1 5    2>/dev/null || true
-  [ -e "$d/dev/random" ]  || mknod -m 666 "$d/dev/random" c 1 8  2>/dev/null || true
-  [ -e "$d/dev/urandom" ] || mknod -m 666 "$d/dev/urandom" c 1 9 2>/dev/null || true
-  [ -e "$d/dev/stdin" ] || : > "$d/dev/stdin"
-  for f in stdout stderr; do
-    [ -p "$d/dev/$f" ] && continue
-    rm -f "$d/dev/$f"
-    mkfifo -m 666 "$d/dev/$f" 2>/dev/null || : > "$d/dev/$f"
-  done
-done
+  return 0
+}
+prep_chroots
 
 # ---- gateway: also listen on the PUBLIC_URL port, so services that call
 # ---- PUBLIC_URL from inside the container reach the gateway ----
@@ -213,34 +188,23 @@ if [ "${AIO_DRY_RUN:-}" = 1 ]; then
 fi
 
 # ---- built-in data folders and first-start database ----
-id postgres >/dev/null
-mkdir -p /run/postgresql
-chown postgres:postgres /run/postgresql "$DATA/postgres"
-chmod 700 "$DATA/postgres"
+pg_setup /usr/lib/postgresql/17/bin
 chown redis:redis "$DATA/redis"
 
-pgbin=/usr/lib/postgresql/17/bin
-as_pg() { setpriv --reuid=postgres --regid=postgres --init-groups "$@"; }
-
-if [ ! -s "$DATA/postgres/PG_VERSION" ]; then
+if pg_is_new; then
   log "first start: creating the database"
-  pwfile=$(mktemp)
-  printf '%s' "$PG_PASSWORD" > "$pwfile"
-  chown postgres:postgres "$pwfile"
-  as_pg $pgbin/initdb -D "$DATA/postgres" -U postgres -E UTF8 --locale=C.UTF-8 \
-    --data-checksums --auth-host=scram-sha-256 --auth-local=trust --pwfile="$pwfile" >/dev/null
-  rm -f "$pwfile"
+  pg_initdb --data-checksums
 
   # Upstream connects as the Postgres superuser (POSTGRES_USER=postgres), so
   # the "dawarich" role is one too: its migrations create the postgis
   # extension.
-  as_pg $pgbin/pg_ctl -D "$DATA/postgres" -o "-c listen_addresses='' -c unix_socket_directories=/run/postgresql" -w start >/dev/null
-  as_pg $pgbin/psql -h /run/postgresql -U postgres -v ON_ERROR_STOP=1 -q \
+  pg_start_local
+  pg_psql \
     -c "CREATE ROLE dawarich LOGIN SUPERUSER PASSWORD '${DB_PASSWORD}';" \
     -c "CREATE DATABASE dawarich_production OWNER dawarich;"
-  as_pg $pgbin/psql -h /run/postgresql -U postgres -d dawarich_production -v ON_ERROR_STOP=1 -q \
+  pg_psql -d dawarich_production \
     -c "CREATE EXTENSION IF NOT EXISTS postgis;"
-  as_pg $pgbin/pg_ctl -D "$DATA/postgres" -w stop >/dev/null
+  pg_stop_local
   log "first start: database ready"
 fi
 

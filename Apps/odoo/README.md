@@ -116,4 +116,4 @@ Odoo is a suite of open source business apps that run your company in one place,
 
 ## Before you install
 
-There is nothing you must set. Leave `ODOO_MASTER_PASSWORD` blank to get a random one, or type your own. The first start takes about three minutes. If you left it blank, find the line "master password is" in the app log; you need it to create, back up, restore and delete databases. Then open `http://your-zimaos-ip:6156` and create your first database and admin account. Your own modules go in `addons/` inside the app's data folder. Email, worker and log settings are in the Variables tab; add them in the app settings.
+There is nothing you must set. Leave `ODOO_MASTER_PASSWORD` blank to get a random one, or type your own. The first start takes about three minutes. If you left it blank, find the box marked CREDENTIALS in the app log; you need it to create, back up, restore and delete databases. Then open `http://your-zimaos-ip:6156` and create your first database and admin account. Your own modules go in `addons/` inside the app's data folder. Email, worker and log settings are in the Variables tab; add them in the app settings.
