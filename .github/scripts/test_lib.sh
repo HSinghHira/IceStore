@@ -8,12 +8,21 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 [ "$(id -u)" = 0 ] || { echo "run as root (sudo)"; exit 1; }
 
+# Run in a private mount namespace. The host's mounts are shared, so
+# unmounting the test's rbind of /sys would also unmount the host's
+# /sys/fs/cgroup and break Docker for the rest of the job. A private namespace
+# drops every test mount on exit without touching the host.
+if [ -z "${TEST_LIB_NS:-}" ]; then
+  exec unshare --mount --propagation private env TEST_LIB_NS=1 bash "$0" "$@"
+fi
+
 T=$(mktemp -d)
 chmod 755 "$T"   # the postgres user must be able to reach $T/data/postgres
 cleanup() {
   [ -n "${PGBIN:-}" ] && [ -s "$T/data/postgres/postmaster.pid" ] && pg_stop_local || true
-  for m in $(awk -v t="$T" 'index($2, t) == 1 {print $2}' /proc/mounts | sort -r); do umount -l "$m" || true; done
-  rm -rf "$T"
+  # safe here: unmounts stay inside this private namespace (see above)
+  for m in $(awk -v t="$T" 'index($2, t) == 1 {print $2}' /proc/mounts | sort -r); do umount -l "$m" 2>/dev/null || true; done
+  rm -rf --one-file-system "$T" 2>/dev/null || true
 }
 trap cleanup EXIT
 
