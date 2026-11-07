@@ -94,7 +94,8 @@ Rules for the table:
 
 One `[program:<svc>]` per service, all with
 `command=/usr/local/bin/run-svc %(program_name)s`. Priorities: 10 data stores,
-20 storage/mail, 30 auth, 40 main API, 50 workers/frontends, 60 gateway.
+20 storage/mail, 30 auth, 40 main API, 50 workers/frontends, 60 gateway,
+99 the shared `[program:credentials]` banner (3.8; not a run-svc service).
 Postgres gets `stopsignal=INT` and `stopwaitsecs=60`. Priority only orders the
 starts; real ordering comes from the waits in run-svc.sh.
 
@@ -284,9 +285,31 @@ fill in the placeholders in aio-init on every start into a world-readable
 folder outside `$RUN` (aio-init's `umask 077` would hide it from nginx), and
 serve them with `root ...; try_files $uri /index.html;`.
 
-### 3.8 capture-meta.sh, .gitignore, workflow
+### 3.8 Shared folder (docker/_common), .gitignore, workflow
 
-capture-meta.sh is generic; copy it. The ignore file must be named `.gitignore`
+`docker/_common/` holds what every all-in-one app shares; do not copy these
+into `docker/<app>/`:
+
+- `capture-meta.sh`: the workflow runs `bash ../_common/capture-meta.sh` from
+  `docker/<app>`.
+- `lib.sh`: `log`, `ensure_secret NAME BYTES [PREFIX]` (sets `NEW_<NAME>=1`
+  when just made), `secret NAME`, `cred_reset`, `cred_add LABEL VALUE`,
+  `cred_note TEXT`. aio-init.sh sources it from `/usr/local/lib/icestore/lib.sh`.
+- `credentials.sh`: the CREDENTIALS banner. `[program:credentials]`
+  (priority 99, `autorestart=false`, `startsecs=0`) waits for the URL it is
+  given (use the HEALTHCHECK path), then prints every `cred_add` line in a
+  `####` box. It prints on every boot, so users never have to dig for logins.
+  Apps with open sign-up still add `URL` and a note like
+  `cred_note "Create your account on first visit"`.
+
+The Dockerfile copies them with `COPY --from=common lib.sh credentials.sh
+/usr/local/lib/icestore/`, and the workflow passes
+`build-contexts: common=docker/_common` and also builds on
+`"docker/_common/**"`, so a shared fix rebuilds every app on it. A change to
+`_common` should be tested on one app first. The checker enforces all of this
+for apps whose Dockerfile has `COPY --from=common`.
+
+The ignore file must be named `.gitignore`
 (with the dot) and contain `meta/`. The workflow comes from
 `templates/build-workflow.yml` with `__APP__` replaced; start `AIO_VERSION` at
 `1.0.0`. Keep `workflow_dispatch:` and the `AIO_VERSION: "x.y.z"` form; the
@@ -391,8 +414,10 @@ Docker (from the repo root):
 D=$(mktemp -d); mkdir -p $D/data $D/rootfs $D/run $D/meta; cp /etc/hosts $D/hosts
 AIO_DATA=$D/data AIO_ROOTFS=$D/rootfs AIO_META=$D/meta AIO_RUN=$D/run AIO_HOSTS=$D/hosts \
 AIO_NGINX_TPL=docker/<app>/nginx.conf.tpl AIO_NGINX_OUT=$D/nginx.conf AIO_DRY_RUN=1 \
+AIO_LIB=docker/_common/lib.sh AIO_CRED_FILE=$D/credentials \
 bash docker/<app>/aio-init.sh
 cat $D/nginx.conf; head $D/run/*.env
+CRED_WAIT_SECONDS=0 AIO_CRED_FILE=$D/credentials bash docker/_common/credentials.sh
 ```
 
 Run it a second time with a few README variables set and one left blank
@@ -406,6 +431,7 @@ is installed, `nginx -t -c $D/nginx.conf`.
 With Docker available, the full test is:
 
 ```bash
-cd docker/<app> && bash capture-meta.sh && docker build -t <app>-test .
+(cd docker/<app> && bash ../_common/capture-meta.sh)
+docker buildx build --load --build-context common=docker/_common -t <app>-test docker/<app>
 docker run --rm --privileged -p 61xx:8080 -v "$PWD/test-data:/data" <app>-test
 ```

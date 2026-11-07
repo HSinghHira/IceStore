@@ -13,7 +13,8 @@ NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 MEDIA=${AIO_MEDIA:-/media}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers: log, ensure_secret, secret, cred_add (docker/_common).
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address: K7's BaseUrl. The web app follows the browser's own
 # ---- address; BaseUrl matters for sign-in with OIDC, federation and share
@@ -40,37 +41,31 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-NEW_ADMIN_PASSWORD=0
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    if [ "$1" = ADMIN_PASSWORD ]; then
-      # K7's password rules: 10+ characters with an uppercase letter, a
-      # lowercase letter and a digit. Hex alone has no uppercase.
-      echo "$1=K7a-$(openssl rand -hex "$2")" >> "$SECRETS"
-      NEW_ADMIN_PASSWORD=1
-    else
-      echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-    fi
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
-
 ensure_secret PG_PASSWORD 16
 # HMAC secret for API key hashes. K7 refuses to start without it; changing it
 # later invalidates every API key.
 ensure_secret API_KEYS_HASH_SECRET 32
-ensure_secret ADMIN_PASSWORD 8
+# K7's password rules: 10+ characters with an uppercase letter, a lowercase
+# letter and a digit. Hex alone has no uppercase, hence the K7a- prefix.
+ensure_secret ADMIN_PASSWORD 8 K7a-
 
 PG_PASSWORD=$(secret PG_PASSWORD)
 API_KEYS_HASH_SECRET=$(secret API_KEYS_HASH_SECRET)
 ADMIN_PASSWORD=$(secret ADMIN_PASSWORD)
+
+# ---- CREDENTIALS banner, printed on every boot once K7 answers ----
+# K7 only uses the admin values on the very first start (see write_env k7).
+cred_reset
+cred_add URL "$PUBLIC_URL"
+cred_add USERNAME "$ADMIN_USERNAME"
 if [ -n "$ADMIN_PASSWORD_ENV" ]; then
   ADMIN_PASSWORD=$ADMIN_PASSWORD_ENV
-elif [ "$NEW_ADMIN_PASSWORD" = 1 ]; then
-  log "first start: admin username is $ADMIN_USERNAME"
-  log "first start: admin password is $ADMIN_PASSWORD (also saved in $SECRETS)"
+  cred_add PASSWORD "(the one you set in ADMIN_PASSWORD)"
+else
+  cred_add PASSWORD "$ADMIN_PASSWORD"
 fi
+cred_note "Also saved in $SECRETS"
+cred_note "Changed it in K7? Your new password is the one that works."
 
 # ---- hostnames from upstream's docker-compose, all pointed at 127.0.0.1 ----
 if ! grep -q ' k7-postgres' "$HOSTS"; then

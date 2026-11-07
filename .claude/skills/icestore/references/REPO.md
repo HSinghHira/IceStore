@@ -13,7 +13,8 @@ Apps/<app>/
   icon.png               app icon (store and site)
   screenshot-1.png ...   screenshots for the site slider, in number order
 docker/<app>/            all-in-one and wrapper apps: the image's build context
-  all-in-one: Dockerfile  aio-init.sh  run-svc.sh  capture-meta.sh  supervisord.conf  nginx.conf.tpl  .gitignore
+  all-in-one: Dockerfile  aio-init.sh  run-svc.sh  supervisord.conf  nginx.conf.tpl  .gitignore
+  shared by all-in-one apps, docker/_common/: capture-meta.sh  lib.sh  credentials.sh (AIO.md 3.8)
   wrapper:    Dockerfile (one FROM, the upstream image)  icestore-init.sh
 site/
   build.py  requirements.txt  site.json  static/  templates/
@@ -69,7 +70,7 @@ README, icon or screenshots are only warnings.
 
 Runs when `docker/<app>/**` (or the workflow itself) changes, or by hand:
 
-1. `bash capture-meta.sh` in `docker/<app>` — pulls each upstream image and
+1. `bash ../_common/capture-meta.sh` in `docker/<app>` — pulls each upstream image and
    saves its config to `meta/<name>.json` (that's why `meta/` is git-ignored).
 2. QEMU + Buildx, log in to GHCR with `GITHUB_TOKEN`.
 3. Build `linux/amd64,linux/arm64`, push `:<AIO_VERSION>` and `:latest`.

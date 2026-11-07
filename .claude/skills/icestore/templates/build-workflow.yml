@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "docker/__APP__/**"
+      - "docker/_common/**"
       - ".github/workflows/build-__APP__.yml"
   workflow_dispatch:
 
@@ -26,7 +27,7 @@ jobs:
 
       - name: Record the upstream images' start-up settings
         working-directory: docker/__APP__
-        run: bash capture-meta.sh
+        run: bash ../_common/capture-meta.sh
 
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
@@ -40,6 +41,7 @@ jobs:
       - uses: docker/build-push-action@v6
         with:
           context: docker/__APP__
+          build-contexts: common=docker/_common
           platforms: linux/amd64,linux/arm64
           push: true
           cache-from: type=gha,scope=__APP__

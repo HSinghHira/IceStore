@@ -26,7 +26,7 @@ docker/<app>/
                       LABEL org.opencontainers.image.source, ENTRYPOINT, CMD
   icestore-init.sh    POSIX sh (upstream may be Alpine/busybox): make the
                       secret once, then exec upstream's own entrypoint
-.github/workflows/build-<app>.yml   the AIO template without the capture-meta step
+.github/workflows/build-<app>.yml   the AIO template without the capture-meta step and the docker/_common lines
 ```
 
 ## The start script

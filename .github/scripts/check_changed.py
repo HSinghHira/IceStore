@@ -6,7 +6,8 @@
 
 An app counts as changed when anything under Apps/<app>/, docker/<app>/ or
 .github/workflows/build-<app>.yml is new, edited or committed but not pushed.
-If the checker itself changed, every app is checked.
+If the checker itself changed, every app is checked. If docker/_common/ changed,
+every app built on it (its Dockerfile copies --from=common) is checked.
 Stops on the first app with an ERROR (exit code 1).
 """
 import re
@@ -39,12 +40,20 @@ def all_apps():
     return sorted(p.name for p in (ROOT / "Apps").iterdir() if p.is_dir())
 
 
+def common_apps():
+    return sorted(p.parent.name for p in (ROOT / "docker").glob("*/Dockerfile")
+                  if "COPY --from=common" in p.read_text(encoding="utf-8", errors="ignore"))
+
+
 def main():
     files = changed_files()
     if "--all" in sys.argv or CHECKER in files:
         apps = all_apps()
     else:
-        apps = sorted({m.group(1) for f in files for p in PATTERNS if (m := p.match(f))})
+        apps = {m.group(1) for f in files for p in PATTERNS if (m := p.match(f))}
+        if any(f.startswith("docker/_common/") for f in files):
+            apps |= set(common_apps())
+        apps = sorted(apps)
         # skip apps that were deleted
         apps = [a for a in apps if (ROOT / "Apps" / a).is_dir()]
 

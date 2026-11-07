@@ -340,7 +340,7 @@ def sh_ok(path):
         err(f"{path.name} has a shell syntax error: {r.stderr.strip()}")
 
 
-def check_workflow(root, slug, data, aio):
+def check_workflow(root, slug, data, aio, shared=False):
     wf = Path(root, ".github", "workflows", f"build-{slug}.yml")
     if not wf.exists():
         err(f".github/workflows/build-{slug}.yml is missing (nothing builds the image)")
@@ -352,6 +352,13 @@ def check_workflow(root, slug, data, aio):
         err(f"build-{slug}.yml does not push ghcr.io/<owner>/{slug}")
     if aio and "capture-meta.sh" not in w:
         err(f"build-{slug}.yml must run capture-meta.sh before the build")
+    if shared:
+        if "build-contexts: common=docker/_common" not in w:
+            err(f"build-{slug}.yml needs 'build-contexts: common=docker/_common' (the Dockerfile copies from it)")
+        if '"docker/_common/**"' not in w:
+            err(f'build-{slug}.yml must also build on changes to "docker/_common/**"')
+        if "../_common/capture-meta.sh" not in w:
+            err(f"build-{slug}.yml must run bash ../_common/capture-meta.sh")
     if "linux/arm64" not in w and "arm64" in (data.get("x-casaos") or {}).get("architectures", []):
         err("x-casaos lists arm64 but the workflow does not build linux/arm64")
     if "workflow_dispatch" not in w:
@@ -411,6 +418,32 @@ def check_wrapper(root, slug, data):
     check_bumper_shapes(root, slug, data, tags)
 
 
+def check_common(d, slug, dockerfile, init, sup):
+    """Rules for apps built on docker/_common (AIO.md 'Shared folder')."""
+    if not re.search(r"COPY --from=common .*lib\.sh.*credentials\.sh.* /usr/local/lib/icestore/", dockerfile):
+        err("Dockerfile must COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/")
+    if "/usr/local/lib/icestore/lib.sh" not in init:
+        err("aio-init.sh must source /usr/local/lib/icestore/lib.sh")
+    for fn in ("log", "ensure_secret", "secret"):
+        if re.search(rf"(?m)^\s*{fn}\s*\(\)", init):
+            err(f"aio-init.sh defines its own {fn}(); use the one in docker/_common/lib.sh")
+    if not re.search(r"(?m)^\s*cred_reset", init):
+        err("aio-init.sh must call cred_reset before cred_add (or the banner keeps old lines)")
+    if not re.search(r"(?m)^\s*cred_add", init):
+        err("aio-init.sh never calls cred_add, so the CREDENTIALS banner is empty")
+    if re.search(r"(?i)log .*password is \$", init):
+        warn("aio-init.sh still logs a password; the CREDENTIALS banner shows it now")
+    m = re.search(r"(?ms)^\[program:credentials\]\n(.*?)(?=^\[|\Z)", sup)
+    if not m:
+        err("supervisord.conf has no [program:credentials] (the CREDENTIALS banner)")
+    else:
+        body = m.group(1)
+        for need in ("command=/usr/local/lib/icestore/credentials.sh", "priority=99",
+                     "autorestart=false", "startsecs=0", "stdout_logfile=/dev/stdout"):
+            if need not in body:
+                err(f"[program:credentials] needs {need}")
+
+
 def check_aio(root, slug, data):
     d = Path(root, "docker", slug)
     if not d.is_dir():
@@ -419,12 +452,20 @@ def check_aio(root, slug, data):
     if (d / "Dockerfile").exists() and not (d / "aio-init.sh").exists():
         check_wrapper(root, slug, data)
         return
+    # Apps on docker/_common (Dockerfile has COPY --from=common) use the shared
+    # capture-meta.sh, lib.sh and CREDENTIALS banner instead of their own copies.
+    shared = "COPY --from=common" in ((d / "Dockerfile").read_text(encoding="utf-8")
+                                      if (d / "Dockerfile").exists() else "")
     for f in AIO_FILES:
+        if shared and f == "capture-meta.sh":
+            if (d / f).exists():
+                err(f"docker/{slug}/capture-meta.sh is not used; the workflow runs docker/_common/capture-meta.sh")
+            continue
         if not (d / f).exists():
             err(f"docker/{slug}/{f} is missing")
     if (d / "gitignore").exists():
         err(f"docker/{slug}/gitignore must be named .gitignore (with the dot) or git ignores it")
-    if any(not (d / f).exists() for f in AIO_FILES[:6]):
+    if any(not (d / f).exists() for f in AIO_FILES[:6] if not (shared and f == "capture-meta.sh")):
         return
     for f in d.iterdir():
         if not f.is_file():
@@ -438,7 +479,8 @@ def check_aio(root, slug, data):
                       "nginx.conf.tpl") and "\r\n" in body:
             err(f"docker/{slug}/{f.name} has Windows (CRLF) line endings; it must be LF to run in the image")
     for f in ("aio-init.sh", "run-svc.sh", "capture-meta.sh"):
-        sh_ok(d / f)
+        if (d / f).exists():
+            sh_ok(d / f)
 
     dockerfile = (d / "Dockerfile").read_text(encoding="utf-8")
     init = (d / "aio-init.sh").read_text(encoding="utf-8")
@@ -466,7 +508,13 @@ def check_aio(root, slug, data):
     if "gateway" not in programs:
         err("supervisord.conf has no [program:gateway]")
     case_labels = set(re.findall(r"(?m)^\s+([\w-]+)\)", runsvc))
+    if shared:
+        check_common(d, slug, dockerfile, init, sup)
+    else:
+        warn("not on docker/_common yet (shared helpers and the CREDENTIALS banner); see AIO.md 'Shared folder'")
     for p in programs:
+        if p == "credentials" and shared:
+            continue
         if p not in strict and p not in case_labels:
             err(f"[program:{p}] is neither an img-{p} stage nor a built-in case in run-svc.sh")
     for name in strict:
@@ -524,7 +572,7 @@ def check_aio(root, slug, data):
     elif m2 and m1.group(1).strip('"') != m2.group(1).strip('"'):
         err(f"compose healthcheck path {m1.group(1)} differs from the Dockerfile HEALTHCHECK {m2.group(1)}")
 
-    check_workflow(root, slug, data, aio=True)
+    check_workflow(root, slug, data, aio=True, shared=shared)
     tags = re.findall(r"(?m)^FROM [^ :]+:(\S+) AS img-[a-z0-9]+$", dockerfile)
     check_bumper_shapes(root, slug, data, tags)
 

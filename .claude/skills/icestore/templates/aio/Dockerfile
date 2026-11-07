@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1.7
 #
-# __TITLE__ all-in-one. CI runs ./capture-meta.sh first (it fills ./meta).
+# __TITLE__ all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
+# Shared files come from docker/_common, so build with:
+#   docker buildx build --build-context common=docker/_common docker/__APP__
 # To bump a version, change the tag on a FROM line below and rebuild.
 #
 # 1) One "FROM <image>:<pinned tag> AS img-<service>" line per upstream image.
@@ -45,7 +47,8 @@ COPY aio-init.sh /usr/local/bin/aio-init
 COPY run-svc.sh /usr/local/bin/run-svc
 COPY supervisord.conf /etc/supervisor/aio.conf
 COPY nginx.conf.tpl /etc/nginx/aio.conf.tpl
-RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc
+COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
+RUN chmod +x /usr/local/bin/aio-init /usr/local/bin/run-svc /usr/local/lib/icestore/credentials.sh
 
 LABEL org.opencontainers.image.title="__APP__" \
       org.opencontainers.image.description="__TITLE__ in a single container" \

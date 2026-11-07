@@ -4,7 +4,8 @@
 # and run-svc.sh uses it to start each service the way its own image would.
 # Every "FROM <image> AS img-<name>" line in the Dockerfile is captured.
 set -euo pipefail
-cd "$(dirname "$0")"
+# Run from the app folder: cd docker/<app> && bash ../_common/capture-meta.sh
+cd "${1:-.}"
 mkdir -p meta
 expected=$(grep -cE '^FROM .* AS img-' Dockerfile || true)
 count=0

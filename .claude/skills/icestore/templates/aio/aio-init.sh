@@ -12,7 +12,8 @@ NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
 GATEWAY_PORT=8080
 
-log() { echo "[init] $*"; }
+# Shared IceStore helpers: log, ensure_secret, secret, cred_add (docker/_common).
+. "${AIO_LIB:-/usr/local/lib/icestore/lib.sh}"
 
 # ---- public address: default MUST use the app's ledger port ----
 PUBLIC_URL=${PUBLIC_URL:-http://localhost:__PORT__}
@@ -32,17 +33,8 @@ touch "$SECRETS"
 chmod 600 "$SECRETS"
 
 # ---- secrets: made once, kept in /data/state/secrets.env forever ----
-NEW_ADMIN_PASSWORD=0
-ensure_secret() {
-  if ! grep -q "^$1=" "$SECRETS"; then
-    echo "$1=$(openssl rand -hex "$2")" >> "$SECRETS"
-    [ "$1" = ADMIN_PASSWORD ] && NEW_ADMIN_PASSWORD=1
-  fi
-  return 0
-}
-secret() { sed -n "s/^$1=//p" "$SECRETS"; }
-
-# APP-SPECIFIC: every secret the services need (name, bytes of randomness)
+# APP-SPECIFIC: every secret the services need (name, bytes of randomness,
+# optional prefix for apps with password rules, e.g. ensure_secret X 8 Abc-)
 ensure_secret PG_PASSWORD 16
 ensure_secret APP_SECRET_KEY 32
 ensure_secret ADMIN_PASSWORD 12
@@ -50,12 +42,19 @@ ensure_secret ADMIN_PASSWORD 12
 PG_PASSWORD=$(secret PG_PASSWORD)
 APP_SECRET_KEY=$(secret APP_SECRET_KEY)
 ADMIN_PASSWORD=$(secret ADMIN_PASSWORD)
+
+# ---- APP-SPECIFIC: CREDENTIALS banner, printed on every boot once the app
+# ---- answers. Add every login the user needs; never log passwords elsewhere.
+cred_reset
+cred_add URL "$PUBLIC_URL"
+cred_add EMAIL "$ADMIN_EMAIL"
 if [ -n "$ADMIN_PASSWORD_ENV" ]; then
   ADMIN_PASSWORD=$ADMIN_PASSWORD_ENV
-elif [ "$NEW_ADMIN_PASSWORD" = 1 ]; then
-  log "first start: admin email is $ADMIN_EMAIL"
-  log "first start: admin password is $ADMIN_PASSWORD (also saved in $SECRETS)"
+  cred_add PASSWORD "(the one you set in ADMIN_PASSWORD)"
+else
+  cred_add PASSWORD "$ADMIN_PASSWORD"
 fi
+cred_note "Also saved in $SECRETS"
 
 # ---- APP-SPECIFIC: hostnames from upstream's docker-compose, all pointed at 127.0.0.1 ----
 # Keeps upstream defaults (like http://app_db:5432) working without rewriting them.
