@@ -149,7 +149,7 @@ def main():
         failed |= counts["error"] > 0
 
     out_root.mkdir(parents=True, exist_ok=True)
-    (out_root / "report.md").write_text(report(all_results, cfg), encoding="utf-8")
+    (out_root / "report.md").write_text(report(all_results, cfg), encoding="utf-8", newline="\n")
     print(f"report: {out_root / 'report.md'}")
     return 1 if failed and args.check else 0
 

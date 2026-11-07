@@ -2,7 +2,7 @@ alias d := deploy
 
 # check changed apps, then commit everything and push: `just deploy "Add Immich"`
 deploy msg="Building": check platforms
-    git add -A && git commit -m "{{msg}}" && git push
+    git add -A && (git diff --cached --quiet || git commit -m "{{msg}}") && git push
 
 # run the IceStore checker on new or changed apps only; stops on the first app with an ERROR
 check:

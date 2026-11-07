@@ -215,7 +215,7 @@ class MOS(Adapter):
         deep_merge(t, ov.get("template"))
         d = out / "docker"
         d.mkdir(parents=True, exist_ok=True)
-        (d / f"{name}.json").write_text(json.dumps(t, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        (d / f"{name}.json").write_text(json.dumps(t, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
         result.path = d / f"{name}.json"
 
     def not_carried(self, svc, result):
@@ -308,16 +308,16 @@ class MOS(Adapter):
         (d / "compose.yaml").write_text(
             f"# Generated from Apps/{app.slug}/docker-compose.yml by platforms/generate.py.\n"
             f"# Do not edit here; change the master file or platforms/mos/overrides/{app.slug}.yml.\n" + body,
-            encoding="utf-8")
-        (d / ".env").write_text("\n".join(env_lines) + "\n", encoding="utf-8")
-        (d / "template.json").write_text(json.dumps(t, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            encoding="utf-8", newline="\n")
+        (d / ".env").write_text("\n".join(env_lines) + "\n", encoding="utf-8", newline="\n")
+        (d / "template.json").write_text(json.dumps(t, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
         result.path = d
 
     # ------------------------------------------------------------------ store
     def build_store(self, apps, results, out):
         (out / "maintainer.json").write_text(
             json.dumps({"maintainer": self.store.get("maintainer"), "donation": self.store.get("donation")},
-                       indent=2) + "\n", encoding="utf-8")
+                       indent=2) + "\n", encoding="utf-8", newline="\n")
 
     # MOS reads docker/*.json (files only) and compose/*/ from the repo root. IceStore's own
     # docker/<app>/ build folders sit beside the templates and MOS skips them.
