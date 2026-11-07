@@ -1,0 +1,55 @@
+# Generated from Apps/claudecode/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/claudecode.yml.
+name: claudecode
+services:
+  claudecode:
+    image: ghcr.io/worph/claude-code-container:1.0.28
+    container_name: claudecode
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    entrypoint:
+    - /bin/sh
+    - -c
+    - |
+      export CLAUDE_CONFIG_DIR="$${CLAUDE_CONFIG_DIR:-/home/claude/.claude}"
+      f=/home/claude/.claude/password.txt
+      if [ -z "$$AUTH_PASSWORD" ]; then
+        if [ ! -s "$$f" ]; then
+          head -c 18 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$$f" || { echo "[icestore] cannot write $$f"; exit 1; }
+          chmod 600 "$$f"
+          echo "[icestore] first start: your login password is $$(cat "$$f")"
+        fi
+        AUTH_PASSWORD=$$(cat "$$f")
+        export AUTH_PASSWORD
+        echo "[icestore] login password: see ${APPDATA}/config/password.txt"
+      fi
+      exec /init
+    environment:
+    - TZ=$TZ
+    - ANTHROPIC_API_KEY=
+    - AUTH_PASSWORD=
+    - MCP_ENABLED=false
+    ports:
+    - target: 8080
+      published: '6104'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}/workspace
+      target: /home/claude/workspace
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${APPDATA}/config
+      target: /home/claude/.claude
+      bind:
+        create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: '2.00'
+          memory: 2048M
+        reservations:
+          cpus: '0.25'
+          memory: 512M

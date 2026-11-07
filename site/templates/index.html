@@ -239,6 +239,58 @@
         </div>
       </div>
     </div>
+    <div class="panel sp" role="tabpanel" id="p-mos" aria-labelledby="mos" hidden>
+      <div class="stores">
+        <article class="store">
+          <header>
+            <img src="{{mos_logo}}" alt="" width="48" height="48" loading="lazy" />
+            <div>
+              <h3>MOS</h3>
+              <p>Adds {{site_name}} as a MOS Hub repository.</p>
+            </div>
+          </header>
+          <div class="url">
+            <div><code>{{{mos_url_wbr}}}</code></div>
+            <button class="ic" type="button" data-copy="{{mos_url}}" aria-label="Copy MOS Hub repository URL">
+              {{icon:copy}}
+            </button>
+          </div>
+          <ol class="steps">
+            <li>
+              <span>Open <b>Settings</b>, then <b>System Configuration</b>.</span>
+            </li>
+            <li>
+              <span>Open <b>MOS Hub Settings</b> and paste the URL above in the <b>MOS Hub</b> section.</span>
+            </li>
+            <li>
+              <span>Click <b>Refresh</b>.</span>
+            </li>
+            <li>
+              <span>Find the apps in <b>Docker</b> → <b>MOS Hub</b>.</span>
+            </li>
+          </ol>
+          <div class="fn">
+            {{icon:info}}<span>The link stays the same when new apps are added.</span>
+          </div>
+        </article>
+        <div class="tip">
+          <header><span>Good to know</span></header>
+          <ul>
+            <li>
+              The link is the {{site_name}} GitHub repository itself, not a zip. MOS Hub
+              downloads it and reads the templates from it.
+            </li>
+            <li>
+              App data goes in <code>/mnt/cache/appdata/&lt;app&gt;</code>. If your pool
+              is not called <code>cache</code>, change the path when you install.
+            </li>
+            <li>
+              Apps that only run on Intel/AMD are hidden on ARM machines.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="wrap sec" id="apps" aria-labelledby="apps-h">

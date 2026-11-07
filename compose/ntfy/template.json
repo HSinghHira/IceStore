@@ -1,0 +1,17 @@
+{
+  "name": "ntfy",
+  "category": [
+    "Productivity"
+  ],
+  "web_ui_url": "http://[IP]:6113/",
+  "website": "https://ntfy.sh/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ntfy/icon.png",
+  "project": "https://ntfy.sh/",
+  "support": "https://github.com/binwiederhier/ntfy/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/ntfy/",
+  "description": "Send push notifications to your phone or desktop with simple HTTP requests.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

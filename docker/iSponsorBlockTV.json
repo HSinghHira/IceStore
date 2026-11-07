@@ -1,0 +1,47 @@
+{
+  "name": "iSponsorBlockTV",
+  "repo": "ghcr.io/hsinghhira/isponsorblocktv:latest",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/hsinghhira/isponsorblocktv/pkgs/container/isponsorblocktv",
+  "network": "host",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --init --stop-timeout=20 --memory=256m --cpus=0.50 --memory-reservation=64m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:6129/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/isponsorblocktv/icon.png",
+  "project": "https://github.com/dmunozv04/iSponsorBlockTV",
+  "support": "https://github.com/dmunozv04/iSponsorBlockTV/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/isponsorblocktv/",
+  "description": "Skip sponsors, intros and ads in the YouTube app on your TV.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/isponsorblocktv/data",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "The settings made in the setup wizard (config.json): your paired TVs, the segment types to skip and your options. Back this folder up so you don't have to pair your TVs again."
+    }
+  ],
+  "ports": [],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

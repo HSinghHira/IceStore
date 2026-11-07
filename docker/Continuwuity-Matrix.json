@@ -1,0 +1,83 @@
+{
+  "name": "Continuwuity-Matrix",
+  "repo": "forgejo.ellis.link/continuwuation/continuwuity:v26.9.1",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://forgejo.ellis.link/continuwuation/continuwuity",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=60 --memory=1024m --cpus=2.00 --memory-reservation=256m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8008]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/continuwuity/icon.png",
+  "project": "https://continuwuity.org",
+  "support": "https://forgejo.ellis.link/continuwuation/continuwuity/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/continuwuity/",
+  "description": "A fast, lightweight Matrix homeserver written in Rust",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Continuwuity",
+      "host": "/mnt/cache/appdata/continuwuity/db",
+      "container": "/var/lib/continuwuity",
+      "mode": "rw",
+      "description": "The RocksDB database: all rooms, messages, media and accounts. This is the only data the server has, so back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6146",
+      "container": "8008",
+      "description": "Matrix client and federation API, published on host as 6146. Put an HTTPS reverse proxy in front of it to federate with other servers."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "CONTINUWUITY_SERVER_NAME",
+      "key": "CONTINUWUITY_SERVER_NAME",
+      "value": "CHANGEME.example.com",
+      "mask": false,
+      "description": "Your Matrix server's name, like matrix.example.com. It becomes part of every user name (@you:matrix.example.com) and can never be changed without deleting all data, so set it before the first start. For use at home only, your server IP and port work too, like 192.168.1.20:6146."
+    },
+    {
+      "name": "CONTINUWUITY_DATABASE_PATH",
+      "key": "CONTINUWUITY_DATABASE_PATH",
+      "value": "/var/lib/continuwuity",
+      "mask": false,
+      "description": "Where the database is kept inside the container. Leave it as /var/lib/continuwuity."
+    },
+    {
+      "name": "CONTINUWUITY_ADDRESS",
+      "key": "CONTINUWUITY_ADDRESS",
+      "value": "0.0.0.0",
+      "mask": false,
+      "description": "The address the server listens on inside the container. Leave it as 0.0.0.0."
+    },
+    {
+      "name": "CONTINUWUITY_PORT",
+      "key": "CONTINUWUITY_PORT",
+      "value": "8008",
+      "mask": false,
+      "description": "The port the server listens on inside the container. Leave it as 8008."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

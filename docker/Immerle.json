@@ -1,0 +1,76 @@
+{
+  "name": "Immerle",
+  "repo": "ghcr.io/immerle/immerle:0.0.14",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/immerle/immerle/pkgs/container/immerle",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=1024m --cpus=2.00 --memory-reservation=128m --health-cmd=\"wget -qO- http://127.0.0.1:4533/ping\" --health-interval=30s --health-timeout=10s --health-start-period=30s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:4533]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/immerle/icon.png",
+  "project": "https://immerle.com/",
+  "support": "https://github.com/immerle/immerle/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/immerle/",
+  "description": "Your music, self-hosted, and it sings.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "AppData",
+      "host": "/mnt/cache/appdata/immerle",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database, settings, and the random auth secret that Immerle makes on first start."
+    },
+    {
+      "name": "Music",
+      "host": "/mnt/cache/media/Music",
+      "container": "/music",
+      "mode": "ro",
+      "description": "Your music library, mounted read-only from /mnt/cache/media/Music."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6108",
+      "container": "4533",
+      "description": "Web UI, API and Subsonic endpoint, published on host as 6108."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "DATABASE_DSN",
+      "key": "DATABASE_DSN",
+      "value": "/data/immerle.db",
+      "mask": false,
+      "description": "Where the SQLite database file is saved, inside the data folder. Leave it as is."
+    },
+    {
+      "name": "LIBRARY_DATA_DIR",
+      "key": "LIBRARY_DATA_DIR",
+      "value": "/data",
+      "mask": false,
+      "description": "The folder where Immerle keeps its own data and settings. Leave it as /data."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

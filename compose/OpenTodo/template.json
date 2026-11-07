@@ -1,0 +1,17 @@
+{
+  "name": "OpenTodo",
+  "category": [
+    "Productivity"
+  ],
+  "web_ui_url": "http://[IP]:6136/",
+  "website": "https://open-todo.app",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opentodo/icon.png",
+  "project": "https://open-todo.app",
+  "support": "https://github.com/OpenTodoApp/OpenTodo/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/opentodo/",
+  "description": "Your tasks, your server. A local-first to-do app you host yourself",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

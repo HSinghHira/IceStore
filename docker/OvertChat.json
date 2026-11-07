@@ -1,0 +1,62 @@
+{
+  "name": "OvertChat",
+  "repo": "ghcr.io/hsinghhira/overtchat:latest",
+  "category": [
+    "AI"
+  ],
+  "registry": "https://github.com/hsinghhira/overtchat/pkgs/container/overtchat",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=1024m --cpus=2.00 --memory-reservation=192m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:4717]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/overtchat/icon.png",
+  "project": "https://overtchat.com",
+  "support": "https://github.com/yoloyash/overtchat/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/overtchat/",
+  "description": "A clean self-hosted chat for your local AI models, with search, voice and family accounts",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/overtchat/data",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "The SQLite database with every account, chat, project and file, and .better_auth_secret, this install's own sign-in key made on first start. Back this folder up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6139",
+      "container": "4717",
+      "description": "OvertChat web app and API, published on host as 6139"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "BETTER_AUTH_URL",
+      "key": "BETTER_AUTH_URL",
+      "value": "http://localhost:6139",
+      "mask": false,
+      "description": "The address you open OvertChat at. Sign-in already works from your home network at http://YOUR-SERVER-IP:6139, so you can leave it. Change it to your server IP, like http://192.168.1.20:6139, for working share links, or to your https address behind a reverse proxy."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

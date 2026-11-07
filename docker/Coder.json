@@ -1,0 +1,62 @@
+{
+  "name": "Coder",
+  "repo": "ghcr.io/hsinghhira/coder:latest",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/hsinghhira/coder/pkgs/container/coder",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=4096m --cpus=2.00 --memory-reservation=512m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/healthz\" --health-interval=30s --health-timeout=10s --health-start-period=180s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/coder/icon.png",
+  "project": "https://coder.com",
+  "support": "https://github.com/coder/coder/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/coder/",
+  "description": "Self-hosted, browser-based remote development environments",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/coder/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database (users, templates, workspaces, audit logs), the Terraform cache in coder/, and the database password in state/. Back up this folder."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6145",
+      "container": "8080",
+      "description": "Coder web UI, API, web terminals and workspace connections, published on host as 6145"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://localhost:6145",
+      "mask": false,
+      "description": "The address you open Coder at. Change localhost to your server IP, like http://192.168.1.20:6145, or use your own HTTPS domain like https://coder.example.com. Workspaces connect back to Coder at this address, so it must work from other devices."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

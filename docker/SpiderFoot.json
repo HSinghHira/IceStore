@@ -1,0 +1,61 @@
+{
+  "name": "SpiderFoot",
+  "repo": "joshuapfritz/spiderfoot:v4.0",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://hub.docker.com/r/joshuapfritz/spiderfoot",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=1024m --cpus=1.00 --memory-reservation=256m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:5001]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/spiderfoot/icon.png",
+  "project": "https://www.spiderfoot.net/",
+  "support": "https://github.com/smicallef/spiderfoot/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/spiderfoot/",
+  "description": "Automated OSINT reconnaissance for any domain, IP or identity.",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "AppData",
+      "host": "/mnt/cache/appdata/spiderfoot",
+      "container": "/data",
+      "mode": "rw",
+      "description": "SpiderFoot's SQLite database, scan results and settings."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6117",
+      "container": "5001",
+      "description": "Web UI for running and reviewing OSINT scans, published on host as 6117."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "HOME",
+      "key": "HOME",
+      "value": "/data",
+      "mask": false,
+      "description": "Tells SpiderFoot to keep its settings, database and logs in the data folder, so nothing is lost on restart. Do not change."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

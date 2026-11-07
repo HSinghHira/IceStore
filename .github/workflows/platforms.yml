@@ -1,0 +1,78 @@
+name: Build MOS Hub templates
+
+# Makes the MOS Hub templates from Apps/ (platforms/generate.py), checks them,
+# and commits them to the root of this repo, where MOS Hub reads them:
+#   maintainer.json + compose/<Name>/ + docker/<Name>.json
+# (MOS only reads *.json files directly in docker/, so IceStore's
+# docker/<app>/ build folders are left alone.)
+# ZimaOS, CasaOS, ReCasaOS and Homeio are still built by release-store.yml
+# straight from Apps/.
+#
+# `just deploy` already writes these files before it commits, so this job
+# usually finds nothing to change. It catches edits made on GitHub and merged
+# pull requests. Its own commit does not start any workflow (GITHUB_TOKEN pushes
+# never do), so it cannot loop.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Apps/**"
+      - "platforms/**"
+      - ".github/workflows/platforms.yml"
+  pull_request:
+    paths:
+      - "Apps/**"
+      - "platforms/**"
+      - ".github/workflows/platforms.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: platforms-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyyaml==6.0.2
+
+      - name: Generate and check
+        run: |
+          python platforms/generate.py --check --compose-config
+          cat _platforms/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the MOS templates
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Retry on top of the newest main if someone pushed meanwhile; the files are
+          # made again from that commit, so there is never a merge to resolve.
+          for try in 1 2 3; do
+            git fetch --quiet origin main
+            git reset --quiet --hard origin/main
+            python platforms/generate.py --write-repo > /dev/null
+            git add -A -- maintainer.json compose ':(glob)docker/*.json'
+            if git diff --cached --quiet; then
+              echo "MOS templates are up to date."
+              exit 0
+            fi
+            git commit --quiet -m "Update MOS Hub templates from Apps/"
+            if git push --quiet origin HEAD:main; then
+              echo "Pushed the updated MOS templates."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Could not push the MOS templates after 3 tries"
+          exit 1

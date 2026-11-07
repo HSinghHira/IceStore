@@ -1,0 +1,17 @@
+{
+  "name": "openGym",
+  "category": [
+    "Productivity"
+  ],
+  "web_ui_url": "http://[IP]:6115/",
+  "website": "https://gitlab.com/DuarteSantos8/opengym",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengym/icon.png",
+  "project": "https://gitlab.com/DuarteSantos8/opengym",
+  "support": "https://gitlab.com/DuarteSantos8/opengym/-/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/opengym/",
+  "description": "Self-hosted gym and body-weight tracker with passkey login",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

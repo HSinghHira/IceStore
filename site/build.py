@@ -65,10 +65,10 @@ IMG_EXT = {".png", ".webp", ".jpg", ".jpeg", ".gif", ".svg"}
 SECRET = r"(?:pass(?:word)?|secret|token|api[_-]?key|private[_-]?key|encryption[_-]?key)"
 DEFAULTS = {
     "site_name": "IceStore",
-    "tagline": "3rd-Party Community AppStore for Zima OS, Casa OS, ReCasa OS and Homeio",
-    "title": "IceStore – Community AppStore for ZimaOS, CasaOS, ReCasaOS & Homeio",
+    "tagline": "3rd-Party Community AppStore for Zima OS, Casa OS, ReCasa OS, Homeio and MOS",
+    "title": "IceStore – Community AppStore for ZimaOS, CasaOS, ReCasaOS, Homeio & MOS",
     "description": "Browse self-hosted apps and add the IceStore community app store to ZimaOS, CasaOS, "
-                   "ReCasaOS or Homeio with one link. Free, open source and community maintained.",
+                   "ReCasaOS, Homeio or MOS with one link. Free, open source and community maintained.",
     "repo": "https://github.com/HSinghHira/IceStore",
     "base_url": "https://icestore.hsinghhira.me/",
     "author": "Harman Singh Hira",
@@ -79,7 +79,12 @@ OSES = [  # id, name, logo
     ("casaos", "CasaOS", "https://casaos.zimaspace.com/favicon/apple-touch-icon.png"),
     ("recasaos", "ReCasaOS", "https://raw.githubusercontent.com/ReCasaOS/.github/main/assets/recasaos-avatar.png"),
     ("homeio", "Homeio", "https://homeio.app/icon.webp"),
+    # MOS ships a transparent black mark; this copy (site/static/img/os/) sits on white so it shows
+    # on the dark theme. A path without https:// is a file the site serves itself.
+    ("mos", "MOS", "img/os/mos.png"),
 ]
+# How each OS finds an app once the store is added (app page install cards)
+OS_FIND = {"mos": "Add the repository in MOS Hub Settings, then find {app} in Docker → MOS Hub and install it."}
 # x-casaos architectures -> plain names for the chip's tooltip
 ARCH_NAMES = {"amd64": "Intel/AMD 64-bit", "arm64": "ARM 64-bit", "arm": "ARM 32-bit", "arm/v7": "ARM 32-bit",
               "386": "Intel/AMD 32-bit", "riscv64": "RISC-V 64-bit"}
@@ -124,6 +129,11 @@ ICONS = {
     "download": '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
     "globe": '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/>',
 }
+
+
+def os_logo(logo, cfg):
+    """OSES logos are full URLs, or a path under site/static/ that the site serves itself."""
+    return logo if logo.startswith(("http://", "https://")) else cfg["base_url"] + logo
 
 
 def warn(msg):
@@ -492,11 +502,11 @@ def home_page(apps, cfg, tpl, layout):
         for c in order)
     tabs = "".join(
         f'<button class="tab" role="tab" type="button" id="{i}" data-hash="{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}">'
-        f'<img src="{logo}" alt="" width="24" height="24" loading="lazy">{n}</button>'
+        f'<img src="{os_logo(logo, cfg)}" alt="" width="24" height="24" loading="lazy">{n}</button>'
         for j, (i, n, logo) in enumerate(OSES))
     values = {
         **cfg, "app_count": len(apps), "marquee": marquee(apps), "cards": cards, "cats": cats, "os_tabs": tabs,
-        **{f"{i}_logo": logo for i, _, logo in OSES},
+        **{f"{i}_logo": os_logo(logo, cfg) for i, _, logo in OSES},
         **{f"{i}_url_wbr": wbr(cfg[f"{i}_url"]) for i, _, _ in OSES},
     }
     ld = {"@context": "https://schema.org", "@graph": [
@@ -718,7 +728,7 @@ def app_page(a, apps, cfg, tpl, layout):
             '      <h2 id="det-h" class="sr">Open the app</h2>\n'
             f'      <label class="host">{icon("server")}<span>Server address</span>'
             '<input id="host" type="text" placeholder="localhost" autocomplete="off" spellcheck="false" inputmode="url" '
-            'aria-describedby="host-n"><small id="host-n">IP of your ZimaOS, CasaOS, ReCasaOS or Homeio device. Saved for every app.</small></label>\n'
+            'aria-describedby="host-n"><small id="host-n">IP of your ZimaOS, CasaOS, ReCasaOS, Homeio or MOS device. Saved for every app.</small></label>\n'
             f'      <div class="svs">{cards}</div>\n    </section>')
 
     tabs = [("intro", "info", "Introduction", f'<div class="md">{a["intro"]}</div>')]
@@ -761,8 +771,8 @@ def app_page(a, apps, cfg, tpl, layout):
         for i, _, _, body in tabs)
 
     install = "".join(
-        f'<a href="../../#{i}"><h3><img src="{logo}" alt="" width="32" height="32" loading="lazy">{n}</h3>'
-        f'<p>Add the store link, then find {e(name)} in the App Store and install it.</p></a>'
+        f'<a href="../../#{i}"><h3><img src="{os_logo(logo, cfg)}" alt="" width="32" height="32" loading="lazy">{n}</h3>'
+        f'<p>{e(OS_FIND.get(i, "Add the store link, then find {app} in the App Store and install it.").format(app=name))}</p></a>'
         for i, n, logo in OSES)
 
     values = {
@@ -774,9 +784,9 @@ def app_page(a, apps, cfg, tpl, layout):
         "related": related_html(a, apps), "pager": pager_html(a, apps),
         "problem_url": issue_url(cfg, "app-problem.yml", title=f"[{name}] ", app=name, version=a["app_version"]),
     }
-    title = f'{name} – ZimaOS, CasaOS, ReCasaOS & Homeio app | {cfg["site_name"]}'
+    title = f'{name} – ZimaOS, CasaOS, ReCasaOS, Homeio & MOS app | {cfg["site_name"]}'
     desc = f'{a["desc"].rstrip(".")}. ' if a["desc"] else ""
-    desc += f'Install it on ZimaOS, CasaOS, ReCasaOS or Homeio from the {cfg["site_name"]} community app store.'
+    desc += f'Install it on ZimaOS, CasaOS, ReCasaOS, Homeio or MOS from the {cfg["site_name"]} community app store.'
     app_ld = {
         "@type": "SoftwareApplication", "name": name, "description": a["desc"] or desc, "url": url,
         "image": url + a["shots"][0].name if a["shots"] else base + "img/og.png",
@@ -998,6 +1008,8 @@ def main():
     # real files with real extensions, so GitHub Pages serves the right content type
     cfg["zimaos_url"] = cfg["base_url"] + "store.json"
     cfg["casaos_url"] = cfg["recasaos_url"] = cfg["homeio_url"] = cfg["base_url"] + "store.zip"
+    # MOS Hub clones this repo and reads the templates platforms/generate.py writes to its root
+    cfg["mos_url"] = cfg["repo"]
     cfg["request_url"] = issue_url(cfg, "app-request.yml", title="[App request] ")
 
     apps, errors = [], []

@@ -1,0 +1,69 @@
+{
+  "name": "Job-Application-Tracker",
+  "repo": "ghcr.io/hsinghhira/job-application-tracker:latest",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/hsinghhira/job-application-tracker/pkgs/container/job-application-tracker",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=512m --cpus=1.00 --memory-reservation=96m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8770]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/job-application-tracker/icon.png",
+  "project": "https://waddington.github.io/job-application-tracker/",
+  "support": "https://github.com/waddington/job-application-tracker/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/job-application-tracker/",
+  "description": "Track your job search on your own server, with a Kanban board, recruiter CRM and insights",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/job-application-tracker/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Your whole job search: the SQLite database, a plain-text export (JSON Lines), Markdown notes, attached files and emails, and the git history of automatic snapshots. Back this folder up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6172",
+      "container": "8770",
+      "description": "Job Application Tracker web app and API, published on host as 6172"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

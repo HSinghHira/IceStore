@@ -1,0 +1,65 @@
+# Generated from Apps/ntfy/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/ntfy.yml.
+name: ntfy
+services:
+  ntfy:
+    image: binwiederhier/ntfy:v2.32.0
+    container_name: ntfy
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    init: true
+    entrypoint:
+    - /bin/sh
+    - -c
+    - |
+      export NTFY_CACHE_FILE="$${NTFY_CACHE_FILE:-/var/lib/ntfy/cache.db}"
+      export NTFY_AUTH_FILE="$${NTFY_AUTH_FILE:-/var/lib/ntfy/auth.db}"
+      export NTFY_AUTH_DEFAULT_ACCESS="$${NTFY_AUTH_DEFAULT_ACCESS:-deny-all}"
+      export NTFY_ENABLE_LOGIN="$${NTFY_ENABLE_LOGIN:-true}"
+      export NTFY_REQUIRE_LOGIN="$${NTFY_REQUIRE_LOGIN:-true}"
+      f=/var/lib/ntfy/password.txt
+      if [ -z "$$NTFY_AUTH_USERS" ]; then
+        if [ ! -s "$$f" ]; then
+          head -c 18 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$$f" || { echo "[icestore] cannot write $$f"; exit 1; }
+          chmod 600 "$$f"
+          echo "[icestore] first start: sign in as admin with the password $$(cat "$$f")"
+        fi
+        pw=$$(cat "$$f")
+        hash=$$(printf '%s\n%s\n' "$$pw" "$$pw" | ntfy user hash 2>/dev/null)
+        [ -n "$$hash" ] || { echo "[icestore] could not hash the password in $$f"; exit 1; }
+        NTFY_AUTH_USERS="admin:$$hash:admin"
+        export NTFY_AUTH_USERS
+        echo "[icestore] admin password: see ${APPDATA}/password.txt"
+      fi
+      exec ntfy serve
+    environment:
+    - TZ=$TZ
+    - NTFY_BASE_URL=http://localhost:6113
+    ports:
+    - target: 80
+      published: '6113'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}
+      target: /var/lib/ntfy
+      bind:
+        create_host_path: true
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q --tries=1 http://127.0.0.1:80/v1/health -O - | grep -Eo '"healthy"\s*:\s*true' || exit
+        1
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 256M
+        reservations:
+          cpus: '0.00'
+          memory: 64M

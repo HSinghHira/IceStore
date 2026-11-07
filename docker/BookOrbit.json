@@ -1,0 +1,69 @@
+{
+  "name": "BookOrbit",
+  "repo": "ghcr.io/hsinghhira/bookorbit:latest",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/hsinghhira/bookorbit/pkgs/container/bookorbit",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=3072m --cpus=2.00 --memory-reservation=512m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/api/v1/health\" --health-interval=30s --health-timeout=10s --health-start-period=180s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bookorbit/icon.png",
+  "project": "https://bookorbit.app",
+  "support": "https://github.com/bookorbit/bookorbit/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/bookorbit/",
+  "description": "Your self-hosted library for ebooks, audiobooks, comics and PDFs.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/bookorbit/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database, covers, cache, Book Dock, conversion files, secret keys and settings."
+    },
+    {
+      "name": "Books",
+      "host": "/mnt/cache/appdata/bookorbit/books",
+      "container": "/books",
+      "mode": "rw",
+      "description": "Your book files - EPUB, MOBI, AZW3, PDF, CBZ/CBR comics and M4B/MP3 audiobooks. Point it at your own books folder if you have one."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6124",
+      "container": "8080",
+      "description": "BookOrbit web app, API, OPDS and Kobo/KOReader sync, published on host as 6124"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://localhost:6124",
+      "mask": false,
+      "description": "The address you open BookOrbit at, like http://your-server-ip:6124. Links in emails, Kobo sync and OPDS use it. Change localhost to your server IP, or to your own domain if you put BookOrbit behind HTTPS."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

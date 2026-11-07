@@ -1,7 +1,7 @@
 alias d := deploy
 
 # check changed apps, then commit everything and push: `just deploy "Add Immich"`
-deploy msg="Building": check
+deploy msg="Building": check platforms
     git add -A && git commit -m "{{msg}}" && git push
 
 # run the IceStore checker on new or changed apps only; stops on the first app with an ERROR
@@ -18,3 +18,11 @@ test app:
 
 dev:
     python site/serve.py
+
+# make the MOS Hub templates from Apps/ and update them in the repo root (deploy runs this)
+platforms:
+    python platforms/generate.py --check --write-repo
+
+# try the generator without touching the repo: `just platforms-preview --app ntfy` -> _platforms/
+platforms-preview *args:
+    python platforms/generate.py --check {{args}}

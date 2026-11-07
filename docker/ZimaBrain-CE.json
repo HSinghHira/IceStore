@@ -1,0 +1,89 @@
+{
+  "name": "ZimaBrain-CE",
+  "repo": "gelbuilding/zimabrain-ce:1.6.2-beta",
+  "category": [
+    "AI"
+  ],
+  "registry": "https://hub.docker.com/r/gelbuilding/zimabrain-ce",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=512m --cpus=1.00 --memory-reservation=128m --pid=host --add-host=host.docker.internal:host-gateway",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8601]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zimabrain-ce/icon.png",
+  "project": "https://github.com/Jacko88888/zimabrain-ce/tree/main/docs",
+  "support": "https://github.com/Jacko88888/zimabrain-ce/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/zimabrain-ce/",
+  "description": "Local, verifier-first diagnostic assistant for MOS",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "AppData",
+      "host": "/mnt/cache/appdata/zimabrain-ce",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Reports, trend history, your login password (as a hash) and the session key. Both are made on first start."
+    },
+    {
+      "name": "Docs",
+      "host": "/mnt/cache/appdata/zimabrain-ce/docs",
+      "container": "/app/docs",
+      "mode": "ro",
+      "description": "Read-only. Put extra manuals or notes in the docs folder of the app folder and ZimaBrain CE uses them in its answers."
+    },
+    {
+      "name": "Proc",
+      "host": "/proc",
+      "container": "/host/proc",
+      "mode": "ro",
+      "description": "Read-only view of the host's processes, for diagnostics"
+    },
+    {
+      "name": "Sys",
+      "host": "/sys",
+      "container": "/host/sys",
+      "mode": "ro",
+      "description": "Read-only view of the host's hardware and disks, for diagnostics"
+    },
+    {
+      "name": "Hostname",
+      "host": "/etc/hostname",
+      "container": "/host/etc/hostname",
+      "mode": "ro",
+      "description": "Read-only host name of your MOS box"
+    },
+    {
+      "name": "Docker.Sock",
+      "host": "/var/run/docker.sock",
+      "container": "/var/run/docker.sock",
+      "mode": "ro",
+      "description": "Read-only access to Docker, to check your containers and their mounts"
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6162",
+      "container": "8601",
+      "description": "ZimaBrain CE web UI, published on host as 6162"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

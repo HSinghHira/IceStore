@@ -1,0 +1,67 @@
+# Store-wide settings for each platform the generator writes.
+#
+# The master source is Apps/<app>/ (docker-compose.yml with x-casaos, README.md,
+# icon.png, screenshot-N.png). ZimaOS, CasaOS, ReCasaOS and Homeio read it
+# as-is (release-store.yml). Every other platform gets its own copy, made by
+# platforms/generate.py with the adapter in platforms/adapters/<platform>.py.
+#
+# Per-app changes go in platforms/<platform>/overrides/<app>.yml (see
+# platforms/README.md), never in the generated output.
+
+store:
+  name: IceStore
+  maintainer: HSinghHira
+  repo: https://github.com/HSinghHira/IceStore
+  site: https://icestore.hsinghhira.me
+
+platforms:
+  # Read straight from Apps/ by IceWhaleTech/build-appstore-action. Nothing is
+  # generated; listed so the report shows every supported platform.
+  casaos:
+    title: ZimaOS / CasaOS / ReCasaOS / Homeio
+    native: true
+
+  mos:
+    title: MOS
+    # MOS Hub clones the default branch and reads maintainer.json, docker/*.json
+    # (files only; IceStore's docker/<app>/ build folders are ignored) and
+    # compose/*/ from the repo root, so the generated templates live there.
+    path_map:
+      /DATA/AppData/$AppID: /mnt/cache/appdata/{slug}
+      /DATA/Downloads: /mnt/cache/downloads
+      /DATA/Media: /mnt/cache/media
+    # docker/ templates have no variables, so these are written in directly.
+    # compose/ stacks keep $TZ, $PUID, $PGID and get them from .env instead.
+    vars:
+      AppID: "{slug}"
+      TZ: Etc/UTC
+      PUID: "500"
+      PGID: "500"
+    # Literal text in env values.
+    placeholders:
+      "[ZIMAOS-IP-ADDRESS]": YOUR-SERVER-IP
+      "[SERVER-IP]": YOUR-SERVER-IP
+    # Text in descriptions, in order.
+    text_replace:
+      - ["[ZIMAOS-IP-ADDRESS]", "YOUR-SERVER-IP"]
+      - ["YOUR-ZIMAOS-IP", "YOUR-SERVER-IP"]
+      - ["your-zimaos-ip", "your-server-ip"]
+      - ["/DATA/AppData/", "/mnt/cache/appdata/"]
+      - ["/DATA/Downloads", "/mnt/cache/downloads"]
+      - ["/DATA/Media", "/mnt/cache/media"]
+      - ["ZimaOS IP", "server IP"]
+      - ["Zima OS dashboard", "MOS dashboard"]
+      - ["ZimaOS dashboard", "MOS dashboard"]
+      - ["Zima OS", "MOS"]
+      - ["ZimaOS", "MOS"]
+    # MOS Hub categories are case sensitive.
+    categories:
+      Media: Media
+      Productivity: Productivity
+      Home: Home Automation
+      Networking: Network
+      AI: AI
+      Finance: Productivity
+      Social: Network
+      Developer: Utilities
+      Others: Misc

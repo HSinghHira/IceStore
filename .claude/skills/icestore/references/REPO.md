@@ -88,6 +88,20 @@ Bump `AIO_VERSION` whenever the image changes (new upstream tag, script fix).
 Cache uses `scope=<app>` so apps don't evict each other's build cache.
 Keep `workflow_dispatch:` — update-upstream.yml starts the build with it.
 
+## platforms.yml (MOS)
+
+`platforms/generate.py` turns every `Apps/<app>/` into a MOS Hub template,
+written into this repo's root (`docker/<Name>.json` for one-container apps,
+`compose/<Name>/` for the rest, plus `maintainer.json`). `just deploy` and the
+`platforms.yml` workflow both regenerate them. Write the app for ZimaOS as
+usual and never edit those generated files. After adding or changing an app,
+run `just platforms-preview --app <app>` and read `_platforms/report.md`. When
+an app needs something different on MOS, put only that in
+`platforms/mos/overrides/<app>.yml`. See `platforms/README.md`. The generator
+relies on the conventions in COMPOSE.md: `x-casaos.main` and `port_map` naming
+the web port, data under `/DATA/AppData/$AppID`, and `[ZIMAOS-IP-ADDRESS]` for
+the server address.
+
 ## update-upstream.yml
 
 Runs every Monday 03:00 UTC, or by hand. It finds every `docker/*/Dockerfile`

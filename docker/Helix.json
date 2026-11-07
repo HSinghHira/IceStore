@@ -1,0 +1,89 @@
+{
+  "name": "Helix",
+  "repo": "ghcr.io/unifiedkings/helix:0.3.0",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/unifiedkings/helix/pkgs/container/helix",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=2048m --cpus=2.00 --memory-reservation=256m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/helix/icon.png",
+  "project": "https://github.com/UnifiedKings/helix",
+  "support": "https://github.com/UnifiedKings/helix/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/helix/",
+  "description": "A self-hosted Pandora or Spotify built on your own music library.",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/helix/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Helix's own data: its database, logs, stream cache and station cover art."
+    },
+    {
+      "name": "Inbound_Yt",
+      "host": "/mnt/cache/appdata/helix/inbound_yt",
+      "container": "/inbound_yt",
+      "mode": "rw",
+      "description": "Staging folder for tracks Helix downloads before they are imported into your library."
+    },
+    {
+      "name": "Beets",
+      "host": "/mnt/cache/appdata/helix/beets_config",
+      "container": "/data/helix/beets",
+      "mode": "rw",
+      "description": "Beets settings Helix uses to fix metadata and import tracks into your library."
+    },
+    {
+      "name": "Stations",
+      "host": "/mnt/cache/appdata/helix/custom_stations",
+      "container": "/data/plugins/stations",
+      "mode": "rw",
+      "description": "Optional folder for custom Python station plugins. Only used when HELIX_ENABLE_CUSTOM_STATION_TYPES is true."
+    },
+    {
+      "name": "Music",
+      "host": "/mnt/cache/media/Music",
+      "container": "/data/music",
+      "mode": "rw",
+      "description": "Your music library, the same folder your Navidrome or Subsonic server reads. Change the host path to match your setup, or remove this mount if you won't use Helix's import features."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6105",
+      "container": "8000",
+      "description": "Helix web interface, published on host as 6105."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "HELIX_COOKIE_SECURE",
+      "key": "HELIX_COOKIE_SECURE",
+      "value": "false",
+      "mask": false,
+      "description": "Keep this false when you open Helix with http://, as you do on MOS. Set it to true only when Helix is behind HTTPS, or login will not stick."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

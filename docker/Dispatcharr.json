@@ -1,0 +1,62 @@
+{
+  "name": "Dispatcharr",
+  "repo": "ghcr.io/dispatcharr/dispatcharr:0.33.0",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/dispatcharr/dispatcharr/pkgs/container/dispatcharr",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=60 --memory=4096m --cpus=4 --memory-reservation=1024m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:9191]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dispatcharr/icon.png",
+  "project": "https://dispatcharr.github.io/Dispatcharr-Docs/",
+  "support": "https://github.com/Dispatcharr/Dispatcharr/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/dispatcharr/",
+  "description": "Your ultimate IPTV and stream management companion.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "AppData",
+      "host": "/mnt/cache/appdata/dispatcharr",
+      "container": "/data",
+      "mode": "rw",
+      "description": "All app data: the bundled PostgreSQL database, Redis data, uploaded logos and artwork, DVR recordings, and logs."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6106",
+      "container": "9191",
+      "description": "Web UI, HDHomeRun tuner emulation, and stream/M3U/EPG/XC output, published on host as 6106."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "DISPATCHARR_ENV",
+      "key": "DISPATCHARR_ENV",
+      "value": "aio",
+      "mask": false,
+      "description": "Runs Dispatcharr in all-in-one mode, with PostgreSQL and Redis inside the container. Do not change."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

@@ -338,7 +338,7 @@ td:first-child code,td:nth-child(2) code{word-break:normal;overflow-wrap:anywher
 .md strong{color:#fff}
 .md a{color:var(--ac2);border-bottom:1px solid rgba(76,201,240,.5)}
 .md code{font:500 13px var(--mono);background:rgba(255,255,255,.08);padding:2px 7px;border-radius:6px}
-.os{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.os{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
 .os a{display:block;padding:26px;border:1px solid var(--line);background:var(--card);border-radius:22px;transition:border-color .2s,background .2s}
 .os a:hover{border-color:rgba(76,201,240,.55);background:rgba(76,201,240,.05)}
 .os h3{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:600;margin-bottom:8px}

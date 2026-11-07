@@ -1,0 +1,17 @@
+{
+  "name": "OmniRoute",
+  "category": [
+    "AI"
+  ],
+  "web_ui_url": "http://[IP]:6114/",
+  "website": "https://github.com/diegosouzapw/OmniRoute",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omniroute/icon.png",
+  "project": "https://github.com/diegosouzapw/OmniRoute",
+  "support": "https://github.com/diegosouzapw/OmniRoute/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/omniroute/",
+  "description": "Self-hosted AI gateway for 290+ providers.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

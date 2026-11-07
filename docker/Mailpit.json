@@ -1,0 +1,69 @@
+{
+  "name": "Mailpit",
+  "repo": "axllent/mailpit:v1.30.7",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://hub.docker.com/r/axllent/mailpit",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=256m --cpus=0.50 --memory-reservation=64m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8025]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mailpit/icon.png",
+  "project": "https://mailpit.axllent.org",
+  "support": "https://github.com/axllent/mailpit/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/mailpit/",
+  "description": "SMTP testing tool and email catcher for developers.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/mailpit/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "SQLite database of captured emails."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6109",
+      "container": "8025",
+      "description": "Web UI for reading captured emails, published on host as 6109. Anyone who can reach it can read every email unless MP_UI_AUTH is set."
+    },
+    {
+      "name": "Port 1025",
+      "protocol": "tcp",
+      "host": "6110",
+      "container": "1025",
+      "description": "SMTP port other apps send mail to, published on host as 6110."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "MP_DATABASE",
+      "key": "MP_DATABASE",
+      "value": "/data/mailpit.db",
+      "mask": false,
+      "description": "Where captured emails are saved, so they survive restarts. Leave it as is."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

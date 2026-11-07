@@ -1,0 +1,17 @@
+{
+  "name": "Homedex",
+  "category": [
+    "Network"
+  ],
+  "web_ui_url": "http://[IP]:6150/",
+  "website": "https://github.com/HarshShah0203/homedex",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homedex/icon.png",
+  "project": "https://github.com/HarshShah0203/homedex",
+  "support": "https://github.com/HarshShah0203/homedex/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/homedex/",
+  "description": "The missing inventory for your homelab",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

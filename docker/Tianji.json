@@ -1,0 +1,69 @@
+{
+  "name": "Tianji",
+  "repo": "ghcr.io/hsinghhira/tianji:latest",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/hsinghhira/tianji/pkgs/container/tianji",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=1536m --cpus=2.00 --memory-reservation=384m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/health\" --health-interval=30s --health-timeout=10s --health-start-period=180s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tianji/icon.png",
+  "project": "https://tianji.dev",
+  "support": "https://github.com/msgbyte/tianji/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/tianji/",
+  "description": "Website analytics, uptime monitoring and server status in one app.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/tianji/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database (websites, monitors, servers, surveys and accounts), the secret keys and admin-password.txt."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6163",
+      "container": "8080",
+      "description": "Tianji dashboard, API, tracker script and reporter endpoint, published on host as 6163"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://localhost:6163",
+      "mask": false,
+      "description": "The address you open Tianji at, like http://192.168.1.20:6163. Change localhost to your server IP so tracking scripts, status pages and links work from other devices. Use your own domain if you put Tianji behind HTTPS."
+    },
+    {
+      "name": "ADMIN_PASSWORD",
+      "key": "ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The first password for the admin account. Leave it blank and the app makes one on first start and shows it in the app log. It is only used until you change the password in Tianji."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

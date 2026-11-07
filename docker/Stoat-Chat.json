@@ -1,0 +1,76 @@
+{
+  "name": "Stoat-Chat",
+  "repo": "ghcr.io/hsinghhira/stoatchat:latest",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/hsinghhira/stoatchat/pkgs/container/stoatchat",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=3072m --cpus=4.00 --memory-reservation=768m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/api/\" --health-interval=30s --health-timeout=10s --health-start-period=240s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/stoatchat/icon.png",
+  "project": "https://stoat.chat",
+  "support": "https://github.com/stoatchat/self-hosted/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/stoatchat/",
+  "description": "A modern self-hosted chat platform, Discord-style.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/stoatchat/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database (mongodb/), uploaded files (silo/), the message broker (rabbit/) and the secret keys (state/). Back up the whole folder: without state/secrets.env uploaded files can't be read."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6167",
+      "container": "8080",
+      "description": "Stoat web app, API, websocket and file server, published on host as 6167"
+    },
+    {
+      "name": "Port 6168",
+      "protocol": "tcp",
+      "host": "6168",
+      "container": "6168",
+      "description": "Voice and video (LiveKit) over TCP, published on host as 6168. Must stay 6168."
+    },
+    {
+      "name": "Port 6169",
+      "protocol": "udp",
+      "host": "6169",
+      "container": "6169",
+      "description": "Voice and video (LiveKit) over UDP, published on host as 6169. Must stay 6169."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://localhost:6167",
+      "mask": false,
+      "description": "Your main address for Stoat, like https://chat.example.com or http://192.168.1.20:6167. Stoat works from any address you open it at; this one is used for links in emails and, when it is an IP, for voice. Voice and video need HTTPS."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

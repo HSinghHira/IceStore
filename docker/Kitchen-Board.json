@@ -1,0 +1,69 @@
+{
+  "name": "Kitchen-Board",
+  "repo": "ghcr.io/hsinghhira/kitchen-board:latest",
+  "category": [
+    "Home Automation"
+  ],
+  "registry": "https://github.com/hsinghhira/kitchen-board/pkgs/container/kitchen-board",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=512m --cpus=1.00 --memory-reservation=64m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchen-board/icon.png",
+  "project": "https://gitlab.com/g33kphr33k/kitchen-board",
+  "support": "https://gitlab.com/g33kphr33k/kitchen-board/-/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/kitchen-board/",
+  "description": "A family wall board for shopping, meals, calendars, chores and timers",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/kitchen-board/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The SQLite database (kitchenboard.db), nightly backups, uploaded photos and .secret_key, this install's own sign-in key made on first start. Back this folder up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6179",
+      "container": "8000",
+      "description": "Kitchen Board web app, published on host as 6179"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "ADMIN_EMAIL",
+      "key": "ADMIN_EMAIL",
+      "value": "CHANGEME@example.com",
+      "mask": false,
+      "description": "The email you sign in with as the first admin. Replace CHANGEME@example.com with your own. Only used on the very first start."
+    },
+    {
+      "name": "ADMIN_PASSWORD",
+      "key": "ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "Optional. The first admin's password, at least 8 characters. Leave it empty and Kitchen Board makes one and prints it in the app log on the line with \"Password:\". Only used on the very first start."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

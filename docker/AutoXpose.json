@@ -1,0 +1,76 @@
+{
+  "name": "AutoXpose",
+  "repo": "mostafawahied/autoxpose:0.6.0",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://hub.docker.com/r/mostafawahied/autoxpose",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=512m --cpus=1.00 --memory-reservation=128m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/autoxpose/icon.png",
+  "project": "https://github.com/mostafa-wahied/autoxpose",
+  "support": "https://github.com/mostafa-wahied/autoxpose/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/autoxpose/",
+  "description": "Label a container, and AutoXpose builds the DNS record and reverse proxy for it.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/autoxpose/data",
+      "container": "/app/packages/backend/data",
+      "mode": "rw",
+      "description": "The SQLite database with your provider settings and exposed services."
+    },
+    {
+      "name": "Docker.Sock",
+      "host": "/var/run/docker.sock",
+      "container": "/var/run/docker.sock",
+      "mode": "ro",
+      "description": "Read-only access to Docker, used to find other containers and read their autoxpose labels."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6103",
+      "container": "3000",
+      "description": "AutoXpose web interface, published on host as 6103."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "SERVER_IP",
+      "key": "SERVER_IP",
+      "value": "CHANGEME_PUBLIC_IP",
+      "mask": false,
+      "description": "Your public IP address or hostname. AutoXpose points new DNS A records at it. Replace CHANGEME_PUBLIC_IP before you install."
+    },
+    {
+      "name": "LAN_IP",
+      "key": "LAN_IP",
+      "value": "CHANGEME_LAN_IP",
+      "mask": false,
+      "description": "The local IP address of your MOS box, like 192.168.1.10. Your reverse proxy sends traffic here. Replace CHANGEME_LAN_IP before you install."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

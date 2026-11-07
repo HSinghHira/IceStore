@@ -1,0 +1,107 @@
+# Generated from Apps/opengym/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/opengym.yml.
+name: opengym
+services:
+  opengym-media:
+    image: alpine/git:2.54.0
+    container_name: opengym-media
+    restart: 'no'
+    networks:
+    - opengym_network
+    entrypoint:
+    - /bin/sh
+    - -c
+    command:
+    - |
+      if [ -z "$$(ls -A /out/img 2>/dev/null)" ]; then
+        git clone --depth 1 https://github.com/hasaneyldrm/exercises-dataset /tmp/ds
+        cp /tmp/ds/images/*.jpg /out/img/ && cp /tmp/ds/videos/*.gif /out/gif/
+      fi
+    volumes:
+    - type: bind
+      source: ${APPDATA}/media/img
+      target: /out/img
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${APPDATA}/media/gif
+      target: /out/gif
+      bind:
+        create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 256M
+        reservations:
+          cpus: '0.00'
+          memory: 64M
+  opengym-api:
+    image: registry.gitlab.com/duartesantos8/opengym/api:1.4.2
+    container_name: opengym-api
+    restart: unless-stopped
+    stop_grace_period: 40s
+    networks:
+      opengym_network:
+        aliases:
+        - api
+    environment:
+    - TZ=$TZ
+    - DATA_DIR=/data
+    - RP_ID=CHANGEME_RP_ID
+    - ORIGIN=CHANGEME_ORIGIN
+    - COACH_DISABLED=1
+    volumes:
+    - type: bind
+      source: ${APPDATA}/data
+      target: /data
+      bind:
+        create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 512M
+        reservations:
+          cpus: '0.00'
+          memory: 128M
+  opengym:
+    image: registry.gitlab.com/duartesantos8/opengym/web:1.4.2
+    container_name: opengym
+    restart: unless-stopped
+    stop_grace_period: 40s
+    networks:
+      opengym_network:
+        aliases:
+        - web
+    depends_on:
+    - opengym-media
+    - opengym-api
+    ports:
+    - target: 80
+      published: '6115'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}/media/img
+      target: /usr/share/nginx/html/img
+      read_only: true
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${APPDATA}/media/gif
+      target: /usr/share/nginx/html/gif
+      read_only: true
+      bind:
+        create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 256M
+        reservations:
+          cpus: '0.00'
+          memory: 64M
+networks:
+  opengym_network:
+    driver: bridge

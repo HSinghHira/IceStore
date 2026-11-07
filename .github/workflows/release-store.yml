@@ -45,6 +45,10 @@ jobs:
             -x "_site/*" \
             -x "site/*" \
             -x "docker/*" \
+            -x "platforms/*" \
+            -x "_platforms/*" \
+            -x "compose/*" \
+            -x "maintainer.json" \
             -x "justfile"
 
       - name: Check the store files

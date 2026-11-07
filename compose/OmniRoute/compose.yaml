@@ -1,0 +1,52 @@
+# Generated from Apps/omniroute/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/omniroute.yml.
+name: omniroute
+services:
+  omniroute:
+    image: diegosouzapw/omniroute:3.8.52
+    container_name: omniroute
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    entrypoint:
+    - /bin/sh
+    - -c
+    - |
+      f=/app/data/password.txt
+      if [ -z "$$INITIAL_PASSWORD" ]; then
+        if [ -s "$$f" ]; then
+          INITIAL_PASSWORD=$$(cat "$$f")
+        else
+          INITIAL_PASSWORD=$$(head -c 18 /dev/urandom | od -An -tx1 | tr -d ' \n')
+          if printf '%s' "$$INITIAL_PASSWORD" > "$$f" 2>/dev/null; then
+            chmod 600 "$$f"
+          else
+            echo "[icestore] cannot write $$f, so the password below is only shown here"
+          fi
+          echo "[icestore] first start: your first dashboard password is $$INITIAL_PASSWORD"
+        fi
+        export INITIAL_PASSWORD
+        echo "[icestore] first dashboard password: see ${APPDATA}/password.txt"
+      fi
+      exec /app/check-permissions.sh node dev/run-standalone.mjs
+    environment:
+    - TZ=$TZ
+    - INITIAL_PASSWORD=
+    ports:
+    - target: 20128
+      published: '6114'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}
+      target: /app/data
+      bind:
+        create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.40'
+          memory: 1012M
+        reservations:
+          cpus: '0.00'
+          memory: 512M

@@ -1,0 +1,90 @@
+{
+  "name": "VS-Code",
+  "repo": "ghcr.io/hsinghhira/vscode:latest",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/hsinghhira/vscode/pkgs/container/vscode",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=4096m --cpus=2.00 --memory-reservation=512m --shm-size=1gb --cap-add=IPC_LOCK",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "https://[IP]:[PORT:3001]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vscode/icon.png",
+  "project": "https://code.visualstudio.com/",
+  "support": "https://github.com/linuxserver/docker-vscode/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/vscode/",
+  "description": "The full Visual Studio Code desktop app, streamed straight to your browser.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "AppData",
+      "host": "/mnt/cache/appdata/vscode",
+      "container": "/config",
+      "mode": "rw",
+      "description": "Your VS Code home folder, with your login session, editor settings, extensions and project files."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6119",
+      "container": "3001",
+      "description": "HTTPS web interface with a self-signed certificate. Open this one in your browser. Published on host as 6119."
+    },
+    {
+      "name": "Port 3000",
+      "protocol": "tcp",
+      "host": "6120",
+      "container": "3000",
+      "description": "Plain HTTP web interface, meant to sit behind a reverse proxy. Published on host as 6120."
+    }
+  ],
+  "variables": [
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "CUSTOM_USER",
+      "key": "CUSTOM_USER",
+      "value": "admin",
+      "mask": false,
+      "description": "The username for the VS Code login screen. admin is fine, or pick your own."
+    },
+    {
+      "name": "PASSWORD",
+      "key": "PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The password for the VS Code login screen. Leave it blank and the app makes a random one on first start. Find it in /mnt/cache/appdata/vscode/password.txt (open it with the Files app) or in the app log. Or type your own here."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

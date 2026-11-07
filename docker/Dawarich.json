@@ -1,0 +1,69 @@
+{
+  "name": "Dawarich",
+  "repo": "ghcr.io/hsinghhira/dawarich:latest",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://github.com/hsinghhira/dawarich/pkgs/container/dawarich",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=4096m --cpus=2.00 --memory-reservation=768m --shm-size=1g --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/api/v1/health\" --health-interval=30s --health-timeout=10s --health-start-period=300s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dawarich/icon.png",
+  "project": "https://dawarich.app",
+  "support": "https://github.com/Freika/dawarich/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/dawarich/",
+  "description": "Your own location history, like Google Timeline.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/dawarich/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database with all your location points, uploaded imports and exports in storage/, the watched/ folder for automatic imports, Redis data, secret keys (state/secrets.env) and the first password (admin-password.txt). Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6175",
+      "container": "8080",
+      "description": "Dawarich web app and API (for the phone apps), published on host as 6175"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://localhost:6175",
+      "mask": false,
+      "description": "The address you open Dawarich at, like http://192.168.1.20:6175. Only used for links in emails: Dawarich works from any address. With an https:// address (your own domain behind HTTPS), Dawarich only allows HTTPS."
+    },
+    {
+      "name": "ADMIN_PASSWORD",
+      "key": "ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The password for the first account, demo@dawarich.app. Leave it empty and one is made for you; it is in the app logs in the box marked CREDENTIALS. Used only until you change the password in Dawarich."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

@@ -1,0 +1,64 @@
+# Generated from Apps/searxng/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/searxng.yml.
+name: searxng
+services:
+  searxng:
+    image: docker.io/searxng/searxng:2026.8.10-0a118066d
+    container_name: searxng
+    restart: unless-stopped
+    stop_grace_period: 40s
+    depends_on:
+    - searxng-valkey
+    environment:
+    - TZ=$TZ
+    - SEARXNG_BASE_URL=http://localhost:6116/
+    ports:
+    - target: 8080
+      published: '6116'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}/config
+      target: /etc/searxng
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${APPDATA}/data
+      target: /var/cache/searxng
+      bind:
+        create_host_path: true
+    networks:
+    - searxng_network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+  searxng-valkey:
+    image: docker.io/valkey/valkey:9-alpine
+    container_name: searxng-valkey
+    restart: unless-stopped
+    stop_grace_period: 40s
+    command: valkey-server --save 30 1 --loglevel warning
+    volumes:
+    - type: bind
+      source: ${APPDATA}/valkey
+      target: /data
+      bind:
+        create_host_path: true
+    networks:
+    - searxng_network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+        reservations:
+          cpus: '0.00'
+          memory: 64M
+networks:
+  searxng_network:
+    driver: bridge

@@ -1,0 +1,66 @@
+# Generated from Apps/n8n-oidc/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/n8n-oidc.yml.
+name: n8n-oidc
+services:
+  n8n-oidc-init:
+    image: alpine:3.20
+    container_name: n8n-oidc-init
+    restart: 'no'
+    network_mode: bridge
+    command:
+    - sh
+    - -c
+    - mkdir -p /n8n && wget -q -O /n8n/hooks.js https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@8667d4dab6806586798c4f96919bac77d6352e69/Apps/n8n-oidc/hooks.js
+      && echo "51243d919f9d0289f5312d1d2fe507b6f771e84afaa48ea105b868cad6d99757  /n8n/hooks.js" | sha256sum
+      -c - && chown 1000:1000 /n8n /n8n/hooks.js && chmod 644 /n8n/hooks.js
+    volumes:
+    - type: bind
+      source: ${APPDATA}/n8n
+      target: /n8n
+      bind:
+        create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 64M
+        reservations:
+          cpus: '0.00'
+          memory: 16M
+  n8n-oidc:
+    image: n8nio/n8n:2.30.1
+    container_name: n8n-oidc
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    depends_on:
+      n8n-oidc-init:
+        condition: service_completed_successfully
+    environment:
+    - TZ=$TZ
+    - N8N_SECURE_COOKIE=false
+    - EXTERNAL_HOOK_FILES=/home/node/.n8n/hooks.js
+    - EXTERNAL_FRONTEND_HOOKS_URLS=/assets/oidc-frontend-hook.js
+    - N8N_ADDITIONAL_NON_UI_ROUTES=auth
+    - OIDC_ISSUER_URL=CHANGEME_OIDC_ISSUER_URL
+    - OIDC_CLIENT_ID=CHANGEME_OIDC_CLIENT_ID
+    - OIDC_CLIENT_SECRET=CHANGEME_OIDC_CLIENT_SECRET
+    - OIDC_REDIRECT_URI=CHANGEME_OIDC_REDIRECT_URI
+    ports:
+    - target: 5678
+      published: '6111'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}/n8n
+      target: /home/node/.n8n
+      bind:
+        create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: '2.00'
+          memory: 2048M
+        reservations:
+          cpus: '0.00'
+          memory: 512M

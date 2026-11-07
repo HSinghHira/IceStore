@@ -1,0 +1,62 @@
+{
+  "name": "Nodecast-TV",
+  "repo": "ghcr.io/technomancer702/nodecast-tv:2.2.1",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/technomancer702/nodecast-tv/pkgs/container/nodecast-tv",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=2048m --cpus=2.00 --memory-reservation=256m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nodecast-tv/icon.png",
+  "project": "https://github.com/technomancer702/nodecast-tv",
+  "support": "https://github.com/technomancer702/nodecast-tv/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/nodecast-tv/",
+  "description": "Stream Live TV, Movies and Series from your Xtream Codes or M3U provider, right in your browser.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "AppData",
+      "host": "/mnt/cache/appdata/nodecast-tv",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "SQLite database, playlists, favorites and app settings."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6112",
+      "container": "3000",
+      "description": "Web UI and API, published on host as 6112."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "NODE_ENV",
+      "key": "NODE_ENV",
+      "value": "production",
+      "mask": false,
+      "description": "Runs the app in production mode. Do not change."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

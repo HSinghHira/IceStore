@@ -1,0 +1,83 @@
+{
+  "name": "Strava-to-Dawarich",
+  "repo": "ghcr.io/hsinghhira/strava-dawarich-sync:latest",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://github.com/hsinghhira/strava-dawarich-sync/pkgs/container/strava-dawarich-sync",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --init --stop-timeout=20 --memory=256m --cpus=0.50 --memory-reservation=32m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/strava-dawarich-sync/icon.png",
+  "project": "https://github.com/benno93/strava-dawarich-sync#readme",
+  "support": "https://github.com/benno93/strava-dawarich-sync/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/strava-dawarich-sync/",
+  "description": "Import your Strava activities into Dawarich, on its own.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/strava-dawarich-sync/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The Strava sign-in (tokens.json, which can read your activities, so keep it private) and the list of activities already imported (state.json)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6176",
+      "container": "8080",
+      "description": "Setup page (connect Strava, see what was imported), published on host as 6176"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "STRAVA_CLIENT_ID",
+      "key": "STRAVA_CLIENT_ID",
+      "value": "",
+      "mask": false,
+      "description": "Required. The Client ID (a number) of your own Strava API app, from https://www.strava.com/settings/api."
+    },
+    {
+      "name": "STRAVA_CLIENT_SECRET",
+      "key": "STRAVA_CLIENT_SECRET",
+      "value": "",
+      "mask": true,
+      "description": "Required. The Client Secret of your Strava API app, from the same page."
+    },
+    {
+      "name": "DAWARICH_URL",
+      "key": "DAWARICH_URL",
+      "value": "",
+      "mask": false,
+      "description": "Required. Your Dawarich address, without a slash at the end. For Dawarich from IceStore on this MOS, type http://YOUR-SERVER-IP:6175 with YOUR-SERVER-IP replaced by your server IP, like http://192.168.1.20:6175."
+    },
+    {
+      "name": "DAWARICH_API_KEY",
+      "key": "DAWARICH_API_KEY",
+      "value": "",
+      "mask": true,
+      "description": "Required. The API key from Dawarich, under Account settings."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

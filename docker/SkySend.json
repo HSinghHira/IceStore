@@ -1,0 +1,69 @@
+{
+  "name": "SkySend",
+  "repo": "skyfay/skysend:v3.2.0",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://hub.docker.com/r/skyfay/skysend",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=15 --memory=512m --cpus=1.00 --memory-reservation=128m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/skysend/icon.png",
+  "project": "https://skysend.app",
+  "support": "https://github.com/Skyfay/SkySend/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/skysend/",
+  "description": "End-to-end encrypted, zero-knowledge file and note sharing",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/skysend/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "SkySend's database and any branding files you add."
+    },
+    {
+      "name": "Uploads",
+      "host": "/mnt/cache/appdata/skysend/uploads",
+      "container": "/uploads",
+      "mode": "rw",
+      "description": "The encrypted files people upload. SkySend never sees what is inside them."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6159",
+      "container": "3000",
+      "description": "Web UI for sharing encrypted files and notes, published on host as 6159"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "BASE_URL",
+      "key": "BASE_URL",
+      "value": "http://localhost:6159",
+      "mask": false,
+      "description": "The address you type in your browser. Share links are built from it. It starts as localhost, which only works on this device. For other devices, change `localhost` to your server IP, or use your own https address. Keep the port at 6159 unless you use a reverse proxy."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

@@ -1,0 +1,76 @@
+{
+  "name": "portracker",
+  "repo": "mostafawahied/portracker:1.3.14",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://hub.docker.com/r/mostafawahied/portracker",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=512m --cpus=1.00 --memory-reservation=128m --pid=host --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN --security-opt=apparmor:unconfined",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:4999]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/portracker/icon.png",
+  "project": "https://github.com/mostafa-wahied/portracker",
+  "support": "https://github.com/mostafa-wahied/portracker/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/portracker/",
+  "description": "Live, self-hosted port monitoring and discovery for your homelab",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/portracker/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The SQLite database with your settings, peers and login."
+    },
+    {
+      "name": "Docker.Sock",
+      "host": "/var/run/docker.sock",
+      "container": "/var/run/docker.sock",
+      "mode": "ro",
+      "description": "Read-only access to Docker, used to find your containers and their ports."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6158",
+      "container": "4999",
+      "description": "Dashboard web UI, published on host as 6158"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "ENABLE_AUTH",
+      "key": "ENABLE_AUTH",
+      "value": "true",
+      "mask": false,
+      "description": "Turns on portracker's login screen and setup wizard. Set to false to leave the dashboard open to anyone on your network."
+    },
+    {
+      "name": "SESSION_SECRET",
+      "key": "SESSION_SECRET",
+      "value": "da0a97ffbde6f4866988abf1f976cdad3145a020546f7013b994e2bc32e1ff87",
+      "mask": true,
+      "description": "Pre-filled with a random value. It keeps you signed in when the app restarts. You can replace it with your own random text."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

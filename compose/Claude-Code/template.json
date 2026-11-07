@@ -1,0 +1,17 @@
+{
+  "name": "Claude Code",
+  "category": [
+    "Utilities"
+  ],
+  "web_ui_url": "http://[IP]:6104/",
+  "website": "https://github.com/anthropics/claude-code",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/claudecode/icon.png",
+  "project": "https://github.com/anthropics/claude-code",
+  "support": "https://github.com/worph/claude-code-container/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/claudecode/",
+  "description": "Anthropic's Claude Code CLI in a browser terminal, with an optional API for automation.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

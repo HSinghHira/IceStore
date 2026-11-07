@@ -1,0 +1,61 @@
+{
+  "name": "Monolith",
+  "repo": "ghcr.io/hsinghhira/monolith:latest",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/hsinghhira/monolith/pkgs/container/monolith",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=3072m --cpus=2.00 --memory-reservation=512m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/healthz\" --health-interval=30s --health-timeout=10s --health-start-period=300s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/monolith/icon.png",
+  "project": "https://monolith-site-maxjafars-projects.vercel.app",
+  "support": "https://github.com/MaxJafar/monolith/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/monolith/",
+  "description": "A personal workspace for pages, projects, calendar and databases",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/monolith/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The PostgreSQL database (postgres), uploaded files and installed add-ons (storage) and this install's own keys (state/secrets.env). Back this folder up; the data can't be read without the keys."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6138",
+      "container": "8080",
+      "description": "Monolith web app and API, published on host as 6138"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://localhost:6138",
+      "mask": false,
+      "description": "The https address you open Monolith at, like https://monolith.example.com. Monolith only signs you in on https, or on http://localhost:6138 on the MOS box itself, so to use it from other devices put it behind a reverse proxy (or Tailscale) with https and type that address here."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

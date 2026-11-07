@@ -1,0 +1,76 @@
+{
+  "name": "Pocket-ID",
+  "repo": "ghcr.io/hsinghhira/pocket-id:latest",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/hsinghhira/pocket-id/pkgs/container/pocket-id",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=512m --cpus=1.00 --memory-reservation=128m --health-cmd=\"/app/pocket-id healthcheck\" --health-interval=1m30s --health-timeout=5s --health-start-period=10s --health-retries=2",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:1411]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pocket-id/icon.png",
+  "project": "https://pocket-id.org",
+  "support": "https://github.com/pocket-id/pocket-id/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/pocket-id/",
+  "description": "A simple, passkey-only OIDC and OAuth 2.0 provider for your self-hosted apps",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/pocket-id/data",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "The SQLite database, uploaded logos and pictures, the GeoLite2 location database and .encryption_key, this install's own key made on first start. Back this folder up; the data can't be read without the key."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6157",
+      "container": "1411",
+      "description": "Pocket ID web UI and API, published on host as 6157"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "APP_URL",
+      "key": "APP_URL",
+      "value": "http://localhost:6157",
+      "mask": false,
+      "description": "The exact address you open Pocket ID at, like https://id.example.com. Passkeys only work on https, or on http://localhost on this device. Passkeys are locked to this address, so set it before you make your admin account and do not change it later."
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

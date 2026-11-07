@@ -1,0 +1,76 @@
+{
+  "name": "VSCodium",
+  "repo": "ghcr.io/hsinghhira/vscodium:latest",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/hsinghhira/vscodium/pkgs/container/vscodium",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=2048m --cpus=2.00 --memory-reservation=256m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vscodium/icon.png",
+  "project": "https://vscodium.com/",
+  "support": "https://github.com/linuxserver/docker-vscodium-web/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/vscodium/",
+  "description": "The open-source VS Code editor in your browser, no remote desktop needed.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "AppData",
+      "host": "/mnt/cache/appdata/vscodium",
+      "container": "/config",
+      "mode": "rw",
+      "description": "Your VSCodium home folder, with editor settings, extensions, SSH keys (.ssh), your projects and connection-token.txt."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6160",
+      "container": "8000",
+      "description": "VSCodium in your browser, published on host as 6160"
+    }
+  ],
+  "variables": [
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "CONNECTION_TOKEN",
+      "key": "CONNECTION_TOKEN",
+      "value": "",
+      "mask": true,
+      "description": "The secret you add to the address (?tkn=...) to open VSCodium. Leave it blank and the app makes a random one on first start. Find it in /mnt/cache/appdata/vscodium/connection-token.txt (open it with the Files app) or in the app log. Or type your own here."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

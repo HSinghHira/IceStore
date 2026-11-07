@@ -1,0 +1,61 @@
+{
+  "name": "atreoLINK",
+  "repo": "ghcr.io/atreolabs/atreoagent:1.3.1",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/atreolabs/atreoagent/pkgs/container/atreoagent",
+  "network": "host",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=256m --cpus=1.00 --memory-reservation=32m --cap-add=NET_ADMIN",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:6140/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/atreolink/icon.png",
+  "project": "https://atreolink.com",
+  "support": "https://github.com/atreoLABS/atreoAGENT/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/atreolink/",
+  "description": "Let your family reach the apps on your MOS from anywhere, over an encrypted tunnel",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Atreoagent",
+      "host": "/mnt/cache/appdata/atreolink/data",
+      "container": "/var/lib/atreoagent",
+      "mode": "rw",
+      "description": "The agent's settings, its identity and WireGuard keys, the pairing with your atreoLINK account, family members' access and the TLS certificates. Back this folder up, or you have to pair the server again."
+    }
+  ],
+  "ports": [],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PROXY_HTTP_PORT",
+      "key": "PROXY_HTTP_PORT",
+      "value": "6140",
+      "mask": false,
+      "description": "The plain http port of the agent's built-in proxy. It is 6140 so it doesn't clash with the MOS dashboard on port 80. Leave it."
+    }
+  ],
+  "devices": [
+    {
+      "name": "Device 1",
+      "host": "/dev/net/tun",
+      "container": "/dev/net/tun",
+      "description": null
+    }
+  ],
+  "labels": [],
+  "gpus": []
+}

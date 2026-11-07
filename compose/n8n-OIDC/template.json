@@ -1,0 +1,17 @@
+{
+  "name": "n8n (OIDC)",
+  "category": [
+    "Productivity"
+  ],
+  "web_ui_url": "http://[IP]:6111/",
+  "website": "https://n8n.io/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/n8n-oidc/icon.png",
+  "project": "https://n8n.io/",
+  "support": "https://github.com/cweagans/n8n-oidc/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/n8n-oidc/",
+  "description": "n8n workflow automation with single sign-on through any OIDC provider.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

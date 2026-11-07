@@ -1,0 +1,67 @@
+# Generated from Apps/opentodo/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/opentodo.yml.
+name: opentodo
+services:
+  opentodo-init:
+    image: busybox:1.38.0
+    container_name: opentodo-init
+    restart: 'no'
+    user: 0:0
+    network_mode: none
+    command:
+    - chown
+    - -R
+    - 65532:65532
+    - /data
+    volumes:
+    - type: bind
+      source: ${APPDATA}/data
+      target: /data
+      bind:
+        create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 32M
+        reservations:
+          cpus: '0.00'
+          memory: 8M
+  opentodo:
+    image: ghcr.io/opentodoapp/opentodo:0.16.0
+    container_name: opentodo
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    depends_on:
+      opentodo-init:
+        condition: service_completed_successfully
+    environment:
+    - TZ=$TZ
+    ports:
+    - target: 8080
+      published: '6136'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}/data
+      target: /data
+      bind:
+        create_host_path: true
+    healthcheck:
+      test:
+      - CMD
+      - /opentodo
+      - healthcheck
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 256M
+        reservations:
+          cpus: '0.00'
+          memory: 32M

@@ -1,0 +1,90 @@
+{
+  "name": "calit",
+  "repo": "ghcr.io/hsinghhira/calit:latest",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/hsinghhira/calit/pkgs/container/calit",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=1536m --cpus=2.00 --memory-reservation=384m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/q/health/live\" --health-interval=30s --health-timeout=10s --health-start-period=180s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/calit/icon.png",
+  "project": "https://asm0dey.github.io/calit/",
+  "support": "https://github.com/asm0dey/calit/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/calit/",
+  "description": "Self-hosted, multi-user Calendly alternative. Scheduling you own",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/calit/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The PostgreSQL database (postgres) and this install's own keys (state/secrets.env). Back this folder up; Google connections can't be read without the keys."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6137",
+      "container": "8080",
+      "description": "calit web pages (booking pages and dashboard), published on host as 6137"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://localhost:6137",
+      "mask": false,
+      "description": "The address people open your booking pages at. Every booking link and email link starts with it. It starts as localhost, which only works on this device: change `localhost` to your server IP, like http://192.168.1.20:6137, or set your https address. Keep the port at 6137 unless you use a domain."
+    },
+    {
+      "name": "MAIL_HOST",
+      "key": "MAIL_HOST",
+      "value": "",
+      "mask": false,
+      "description": "Your email server, like smtp.gmail.com. calit sends every booking confirmation, reminder and password reset by email. Left blank, bookings still work but nobody gets an email; the mail waits and goes out once you set this."
+    },
+    {
+      "name": "MAIL_USERNAME",
+      "key": "MAIL_USERNAME",
+      "value": "",
+      "mask": false,
+      "description": "The user name for your email server, usually your email address."
+    },
+    {
+      "name": "MAIL_PASSWORD",
+      "key": "MAIL_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The password for your email server. For Gmail, use an app password."
+    },
+    {
+      "name": "MAIL_FROM",
+      "key": "MAIL_FROM",
+      "value": "",
+      "mask": false,
+      "description": "The address emails come from, like calit@example.com."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

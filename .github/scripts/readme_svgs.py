@@ -81,6 +81,8 @@ def num(v):
 
 
 def fetch(url):
+    if not url.startswith(("http://", "https://")):  # a logo the site serves from site/static/
+        return (SITE / "static" / url).read_bytes()
     req = urllib.request.Request(url, headers={"User-Agent": "IceStore-readme-svgs"})
     with urllib.request.urlopen(req, timeout=60) as r:
         return r.read()
@@ -393,10 +395,22 @@ STORES = {  # os id: note, steps, footnote, terminal lines ($ = prompt); mirrors
                 "Paste the URL and name it, for example “IceStore”.", "Click **Add Source**."],
                "The link stays the same when new apps are added.",
                None),  # no terminal: the "Good to know" box instead
+    "mos": ("Adds IceStore as a MOS Hub repository.",
+            ["Open **Settings**, then **System Configuration**.",
+             "Open **MOS Hub Settings** and paste the URL above in the **MOS Hub** section.",
+             "Click **Refresh**.", "Find the apps in **Docker** → **MOS Hub**."],
+            "The link stays the same when new apps are added.",
+            None),
 }
-HOMEIO_TIPS = ["Homeio, CasaOS and ReCasaOS share one link, so a single zip serves all three.",
+# "Good to know" box, for the stores above that have no terminal
+TIPS = {
+    "homeio": ["Homeio, CasaOS and ReCasaOS share one link, so a single zip serves all three.",
                "Apps appear in the App Store a few seconds after the source is added.",
-               "If the source is rejected, try `latest.zip` in place of `store.zip`."]
+               "If the source is rejected, try `latest.zip` in place of `store.zip`."],
+    "mos": ["The link is the IceStore GitHub repository itself, not a zip. MOS Hub downloads it and reads the templates from it.",
+            "App data goes in `/mnt/cache/appdata/<app>`. If your pool is not called `cache`, change the path when you install.",
+            "Apps that only run on Intel/AMD are hidden on ARM machines."],
+}
 CYCLE = 5  # seconds each store tab stays on screen
 
 
@@ -498,7 +512,7 @@ def stores(cfg, logos, urls):
             p += (rect(rx + .5, y0 + .5, rw - 1, ch - 1, 24, "#080808", LINE)
                   + text("regular", "Good to know", 14, rx + 22, y0 + 30, MUT) + rect(rx, y0 + 48, rw, 1, fill=LINE))
             ty = y0 + 48 + 22 + 15
-            for tip in HOMEIO_TIPS:
+            for tip in TIPS[i]:
                 s, lines = rich(tip, 15, rx + 44, ty, rw - 44 - 26, 23)
                 p += f'<circle cx="{rx + 30}" cy="{num(ty - 5)}" r="2.5" fill="{AC}"/>' + s
                 ty += lines * 23 + 12
@@ -563,7 +577,7 @@ def help_panel(cfg):
         + text("regular", a, 15, fx, fy, "rgba(255,255,255,.85)")
         + f'<path fill="{AC2}" transform="translate({fx + wa:.1f},{fy - 12:.1f}) scale(.62)" d="{heart}"/>'
         + text("regular", b, 15, fx + wa + 16, fy, "rgba(255,255,255,.85)")
-        + text("regular", "A community project, not affiliated with Zima OS, Casa OS, ReCasa OS and Homeio.", 14, W / 2, fy + 26, MUT, "middle")
+        + text("regular", "A community project, not affiliated with Zima OS, Casa OS, ReCasa OS, Homeio or MOS.", 14, W / 2, fy + 26, MUT, "middle")
     )
     return svg(W, h, body, defs=defs, clip=clip_round(W, h, 0, R))
 
@@ -582,7 +596,7 @@ def readme_block(apps, cfg):
     parts = [
         img("hero.svg", "100%", f'{cfg["site_name"]}: {cfg["tagline"]}'),
         img("marquee.svg", "100%", f'Icons of the {len(apps)} apps in {cfg["site_name"]}'),
-        link(base + "#stores", img("stores.svg", "100%", f'Add {cfg["site_name"]} to ZimaOS, CasaOS, ReCasaOS or Homeio')),
+        link(base + "#stores", img("stores.svg", "100%", f'Add {cfg["site_name"]} to ZimaOS, CasaOS, ReCasaOS, Homeio or MOS')),
         link(base + "#apps", img("apps.svg", "100%", f'All {len(apps)} apps: ' + ", ".join(a["name"] for a in apps))),
         link(cfg["repo"] + "/issues/new", img("help.svg", "100%", "Missing an app? Request it on GitHub")),
     ]
@@ -597,7 +611,7 @@ def main():
     cfg["base_url"] = cfg["base_url"].rstrip("/") + "/"
     urls = {"zimaos": cfg["base_url"] + "store.json", "casaos": cfg["base_url"] + "store.zip",
             "recasaos": cfg["base_url"] + "store.zip",
-            "homeio": cfg["base_url"] + "store.zip"}
+            "homeio": cfg["base_url"] + "store.zip", "mos": cfg["repo"]}
 
     apps = []
     for folder in sorted(p for p in (ROOT / "Apps").iterdir() if p.is_dir() and not p.name.startswith(".")):
