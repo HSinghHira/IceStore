@@ -64,10 +64,10 @@ IMG_EXT = {".png", ".webp", ".jpg", ".jpeg", ".gif", ".svg"}
 SECRET = r"(?:pass(?:word)?|secret|token|api[_-]?key|private[_-]?key|encryption[_-]?key)"
 DEFAULTS = {
     "site_name": "IceStore",
-    "tagline": "3rd-Party Community AppStore for Zima OS, Casa OS and Homeio",
-    "title": "IceStore – Community AppStore for ZimaOS, CasaOS & Homeio",
-    "description": "Browse self-hosted apps and add the IceStore community app store to ZimaOS, CasaOS "
-                   "or Homeio with one link. Free, open source and community maintained.",
+    "tagline": "3rd-Party Community AppStore for Zima OS, Casa OS, ReCasa OS and Homeio",
+    "title": "IceStore – Community AppStore for ZimaOS, CasaOS, ReCasaOS & Homeio",
+    "description": "Browse self-hosted apps and add the IceStore community app store to ZimaOS, CasaOS, "
+                   "ReCasaOS or Homeio with one link. Free, open source and community maintained.",
     "repo": "https://github.com/HSinghHira/IceStore",
     "base_url": "https://icestore.hsinghhira.me/",
     "author": "Harman Singh Hira",
@@ -76,6 +76,7 @@ DEFAULTS = {
 OSES = [  # id, name, logo
     ("zimaos", "ZimaOS", "https://www.zimaspace.com/apple-touch-icon.png"),
     ("casaos", "CasaOS", "https://casaos.zimaspace.com/favicon/apple-touch-icon.png"),
+    ("recasaos", "ReCasaOS", "https://raw.githubusercontent.com/ReCasaOS/.github/main/assets/recasaos-avatar.png"),
     ("homeio", "Homeio", "https://homeio.app/icon.webp"),
 ]
 # x-casaos architectures -> plain names for the chip's tooltip
@@ -716,7 +717,7 @@ def app_page(a, apps, cfg, tpl, layout):
             '      <h2 id="det-h" class="sr">Open the app</h2>\n'
             f'      <label class="host">{icon("server")}<span>Server address</span>'
             '<input id="host" type="text" placeholder="localhost" autocomplete="off" spellcheck="false" inputmode="url" '
-            'aria-describedby="host-n"><small id="host-n">IP of your ZimaOS, CasaOS or Homeio device. Saved for every app.</small></label>\n'
+            'aria-describedby="host-n"><small id="host-n">IP of your ZimaOS, CasaOS, ReCasaOS or Homeio device. Saved for every app.</small></label>\n'
             f'      <div class="svs">{cards}</div>\n    </section>')
 
     tabs = [("intro", "info", "Introduction", f'<div class="md">{a["intro"]}</div>')]
@@ -772,9 +773,9 @@ def app_page(a, apps, cfg, tpl, layout):
         "related": related_html(a, apps), "pager": pager_html(a, apps),
         "problem_url": issue_url(cfg, "app-problem.yml", title=f"[{name}] ", app=name, version=a["app_version"]),
     }
-    title = f'{name} – ZimaOS, CasaOS & Homeio app | {cfg["site_name"]}'
+    title = f'{name} – ZimaOS, CasaOS, ReCasaOS & Homeio app | {cfg["site_name"]}'
     desc = f'{a["desc"].rstrip(".")}. ' if a["desc"] else ""
-    desc += f'Install it on ZimaOS, CasaOS or Homeio from the {cfg["site_name"]} community app store.'
+    desc += f'Install it on ZimaOS, CasaOS, ReCasaOS or Homeio from the {cfg["site_name"]} community app store.'
     app_ld = {
         "@type": "SoftwareApplication", "name": name, "description": a["desc"] or desc, "url": url,
         "image": url + a["shots"][0].name if a["shots"] else base + "img/og.png",
@@ -938,7 +939,7 @@ def main():
     cfg["base_url"] = cfg["base_url"].rstrip("/") + "/"
     # real files with real extensions, so GitHub Pages serves the right content type
     cfg["zimaos_url"] = cfg["base_url"] + "store.json"
-    cfg["casaos_url"] = cfg["homeio_url"] = cfg["base_url"] + "store.zip"
+    cfg["casaos_url"] = cfg["recasaos_url"] = cfg["homeio_url"] = cfg["base_url"] + "store.zip"
     cfg["request_url"] = issue_url(cfg, "app-request.yml", title="[App request] ")
 
     apps, errors = [], []

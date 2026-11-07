@@ -382,13 +382,19 @@ STORES = {  # os id: note, steps, footnote, terminal lines ($ = prompt); mirrors
                "The link stays the same when new apps are added.",
                ["$sudo casaos-cli app-management \\", "    register app-store \\", "    {url}",
                 "$sudo casaos-cli app-management \\", "    list app-stores"]),
+    "recasaos": ("Uses the same zip as CasaOS.",
+                 ["Open **App Store** in the ReCasaOS dashboard.", "Click **+ More apps**.",
+                  "Paste the store URL above.", "Click **Add**."],
+                 "The link stays the same when new apps are added.",
+                 ["$URL={url}", "$curl -s -X POST \\", '  -H "Authorization: $TOKEN" \\',
+                  '  "http://localhost/v2/app_management/appstore?url=$URL"']),
     "homeio": ("Uses the same zip as CasaOS.",
                ["Open **App Store** in the Homeio dashboard.", "Click **+ Install**, then **Manage Sources**.",
                 "Paste the URL and name it, for example “IceStore”.", "Click **Add Source**."],
                "The link stays the same when new apps are added.",
                None),  # no terminal: the "Good to know" box instead
 }
-HOMEIO_TIPS = ["Homeio and CasaOS share one link, so a single zip serves both.",
+HOMEIO_TIPS = ["Homeio, CasaOS and ReCasaOS share one link, so a single zip serves all three.",
                "Apps appear in the App Store a few seconds after the source is added.",
                "If the source is rejected, try `latest.zip` in place of `store.zip`."]
 CYCLE = 5  # seconds each store tab stays on screen
@@ -557,7 +563,7 @@ def help_panel(cfg):
         + text("regular", a, 15, fx, fy, "rgba(255,255,255,.85)")
         + f'<path fill="{AC2}" transform="translate({fx + wa:.1f},{fy - 12:.1f}) scale(.62)" d="{heart}"/>'
         + text("regular", b, 15, fx + wa + 16, fy, "rgba(255,255,255,.85)")
-        + text("regular", "A community project, not affiliated with Zima OS, Casa OS and Homeio.", 14, W / 2, fy + 26, MUT, "middle")
+        + text("regular", "A community project, not affiliated with Zima OS, Casa OS, ReCasa OS and Homeio.", 14, W / 2, fy + 26, MUT, "middle")
     )
     return svg(W, h, body, defs=defs, clip=clip_round(W, h, 0, R))
 
@@ -576,7 +582,7 @@ def readme_block(apps, cfg):
     parts = [
         img("hero.svg", "100%", f'{cfg["site_name"]}: {cfg["tagline"]}'),
         img("marquee.svg", "100%", f'Icons of the {len(apps)} apps in {cfg["site_name"]}'),
-        link(base + "#stores", img("stores.svg", "100%", f'Add {cfg["site_name"]} to ZimaOS, CasaOS or Homeio')),
+        link(base + "#stores", img("stores.svg", "100%", f'Add {cfg["site_name"]} to ZimaOS, CasaOS, ReCasaOS or Homeio')),
         link(base + "#apps", img("apps.svg", "100%", f'All {len(apps)} apps: ' + ", ".join(a["name"] for a in apps))),
         link(cfg["repo"] + "/issues/new", img("help.svg", "100%", "Missing an app? Request it on GitHub")),
     ]
@@ -590,6 +596,7 @@ def main():
         cfg.update(json.loads((SITE / "site.json").read_text(encoding="utf-8")))
     cfg["base_url"] = cfg["base_url"].rstrip("/") + "/"
     urls = {"zimaos": cfg["base_url"] + "store.json", "casaos": cfg["base_url"] + "store.zip",
+            "recasaos": cfg["base_url"] + "store.zip",
             "homeio": cfg["base_url"] + "store.zip"}
 
     apps = []

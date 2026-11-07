@@ -22,6 +22,7 @@ body:
       options:
         - ZimaOS
         - CasaOS
+        - ReCasaOS
         - Homeio
     validations:
       required: true

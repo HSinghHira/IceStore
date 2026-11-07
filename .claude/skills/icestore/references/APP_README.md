@@ -71,7 +71,7 @@ Without `services`, the site shows one "Web UI" card at `x-casaos.index`.
 
 ## How to use
 1. ...                        (same steps, "your dashboard" instead of "Zima OS dashboard",
-                               since the page also serves CasaOS and Homeio)
+                               since the page also serves CasaOS, ReCasaOS and Homeio)
 
 ## Before you install
 <one short paragraph: which variables to set, where a generated password appears,

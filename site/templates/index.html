@@ -139,6 +139,53 @@
         </div>
       </div>
     </div>
+    <div class="panel sp" role="tabpanel" id="p-recasaos" aria-labelledby="recasaos" hidden>
+      <div class="stores">
+        <article class="store">
+          <header>
+            <img src="{{recasaos_logo}}" alt="" width="48" height="48" loading="lazy" />
+            <div>
+              <h3>ReCasaOS</h3>
+              <p>Uses the same zip as CasaOS.</p>
+            </div>
+          </header>
+          <div class="url">
+            <div><code>{{{recasaos_url_wbr}}}</code></div>
+            <button class="ic" type="button" data-copy="{{recasaos_url}}" aria-label="Copy ReCasaOS store URL">
+              {{icon:copy}}
+            </button>
+          </div>
+          <ol class="steps">
+            <li>
+              <span>Open <b>App Store</b> in the ReCasaOS dashboard.</span>
+            </li>
+            <li>
+              <span>Click <b>+ More apps</b>.</span>
+            </li>
+            <li><span>Paste the store URL above.</span></li>
+            <li>
+              <span>Click <b>Add</b>.</span>
+            </li>
+          </ol>
+          <div class="fn">
+            {{icon:info}}<span>The link stays the same when new apps are added.</span>
+          </div>
+        </article>
+        <div class="term">
+          <header>
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@recasaos:
+              ~</span><button class="ic" type="button" data-copy-from="#cmd-recasa"
+              aria-label="Copy ReCasaOS terminal command">
+              {{icon:copy}}
+            </button>
+          </header>
+          <pre><span class="pr"><span class="u">user@recasaos</span>:<span class="d">~</span>$</span> <code id="cmd-recasa">curl -s -X POST \
+  -H &quot;Authorization: $TOKEN&quot; \
+  &quot;http://localhost/v2/app_management/appstore?url={{recasaos_url}}&quot;</code>
+<span class="pr"><span class="u">user@recasaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre>
+        </div>
+      </div>
+    </div>
     <div class="panel sp" role="tabpanel" id="p-homeio" aria-labelledby="homeio" hidden>
       <div class="stores">
         <article class="store">
@@ -177,7 +224,7 @@
           <header><span>Good to know</span></header>
           <ul>
             <li>
-              Homeio and CasaOS share one link, so a single zip serves both.
+              Homeio, CasaOS and ReCasaOS share one link, so a single zip serves all three.
             </li>
             <li>
               Apps appear in the App Store a few seconds after the source is
