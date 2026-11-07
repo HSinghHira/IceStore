@@ -1,0 +1,17 @@
+[
+  {"name": "Windows", "category": "Utilities", "desc": "Windows inside a Docker container.", "url": "https://github.com/dockur/windows", "icon": "windows.png"},
+  {"name": "Musike", "category": "Music", "desc": "Open-source music player for YouTube Music's catalog, with genres, full albums and playlists.", "url": "https://github.com/Ernani1234/musike", "icon": "musike.png"},
+  {"name": "TryPost", "category": "Social", "desc": "Open-source social media scheduler built for AI agents and the teams behind them.", "url": "https://github.com/trypostit/trypost", "icon": "trypost.png"},
+  {"name": "OpenPanel", "category": "Analytics", "desc": "Open-source web and product analytics, an alternative to Mixpanel.", "url": "https://github.com/Openpanel-dev/openpanel", "icon": "openpanel.png"},
+  {"name": "Tolgee", "category": "Developer", "desc": "Developer and translator friendly web-based localization platform.", "url": "https://github.com/tolgee/tolgee-platform", "icon": "tolgee.svg"},
+  {"name": "Kasm Workspaces", "category": "Utilities", "desc": "Desktops, browsers and apps streamed to your browser from containers.", "url": "https://hub.docker.com/u/kasmweb", "icon": "kasm.png"},
+  {"name": "Fluxer", "category": "Chat", "desc": "Free and open source instant messaging and VoIP chat for friends, groups and communities.", "url": "https://github.com/fluxerapp/fluxer", "icon": "fluxer.png"},
+  {"name": "OpenCadence", "category": "Productivity", "desc": "Workspace for freelancers to manage clients, projects, tasks, follow-ups and notes.", "url": "https://github.com/OpenCadence/opencadence", "icon": "opencadence.png"},
+  {"name": "Openship", "category": "Developer", "desc": "Self-hosted deployment platform.", "url": "https://github.com/oblien/openship", "icon": "openship.png"},
+  {"name": "Natel", "category": "Productivity", "desc": "Lightweight web app to browse and edit the contacts on your CardDAV server.", "url": "https://github.com/KewinDousse/natel", "icon": "natel.png"},
+  {"name": "Torsher", "category": "Media", "desc": "Your home cinema in one container, built for the TV first.", "url": "https://github.com/torsher-app/torsher", "icon": "torsher.svg"},
+  {"name": "Byparr", "category": "Utilities", "desc": "Get valid anti-bot cookies yourself. A FlareSolverr alternative.", "url": "https://github.com/ThePhaseless/Byparr", "icon": "byparr.svg"},
+  {"name": "Reelsaw", "category": "Video", "desc": "Self-hosted AI clipper: long videos to vertical shorts with reframing, cuts and captions.", "url": "https://github.com/osbytes/reelsaw", "icon": "reelsaw.png"},
+  {"name": "Lemmary", "category": "Documents", "desc": "Turns scans, PDFs and office files into a library you can search and research.", "url": "https://github.com/buldezir/lemmary", "icon": "lemmary.png"},
+  {"name": "Busnes (Ky Suite)", "category": "Business", "desc": "Self-hosted suite: identity, mail, calendar, drive, notes, chat and DNS.", "url": "https://github.com/Busnes-app", "icon": "busnes.png"}
+]

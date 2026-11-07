@@ -74,6 +74,14 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    block by hand. Check `git diff README.md` shows the new app in the list and
    the new count (`references/REPO.md`). A "no ports found" warning is normal
    for host-network apps.
+6b. **Roadmap.** `site/roadmap.json` lists planned apps for the site's
+   `/roadmap/` page; the page also lists every app in `Apps/` on its own,
+   faded and labelled "Live", so never add live apps there. When a planned app
+   is added, its entry drops out of the planned list by itself once the
+   app's source link (README `source:`, else x-casaos `repo:`) is the same
+   GitHub repo as the entry's `url` (case does not matter). If
+   the entry's `url` is not that repo (a Docker Hub page, a GitHub org), add
+   `"slug": "<Apps folder slug>"` to the entry instead.
 7. **Run the checker**: `python3 scripts/check_app.py <repo root> <app>`. Fix every
    ERROR. Read each WARN and fix it or tell the user why it stays. Then go through
    `references/CHECKLIST.md` for what the script cannot see.

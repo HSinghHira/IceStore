@@ -30,6 +30,7 @@ Site files:
   templates/app.html         an app page
   app-badge/                 badge picker page (built here); the badge SVGs come from
                              .github/scripts/app_badges.py, run after this script
+  roadmap.json               apps planned for the store, shown on roadmap/ (icons in static/img/roadmap/)
   static/                    copied as-is: css/, js/, favicon/, img/
 
 Templates use {{name}} (escaped), {{{name}}} (raw HTML) and {{icon:name}} (inline SVG icon).
@@ -804,7 +805,8 @@ def app_page(a, apps, cfg, tpl, layout):
 
 
 def sitemap(apps, base):
-    urls = [f"  <url><loc>{e(base)}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>"]
+    urls = [f"  <url><loc>{e(base)}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>",
+            f"  <url><loc>{e(base)}roadmap/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>"]
     urls += [f'  <url><loc>{e(base)}app/{a["slug"]}/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>'
              for a in apps]
     return ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -914,6 +916,62 @@ def badge_page(apps, cfg, layout):
     return page(layout, content, head)
 
 
+def roadmap_page(apps, cfg, layout):
+    """roadmap/: tiles for the apps planned for the store, read from site/roadmap.json.
+    Each entry: name, category, desc, url, icon (a file in static/img/roadmap/), and an optional
+    slug (the Apps/ folder slug) for entries whose url is not the app's GitHub repo.
+    An entry whose GitHub repo matches an app's source link (or whose slug matches) is already
+    in the store: its tile is greyed out, labelled "In store", links to the app page and goes last."""
+    base = cfg["base_url"]
+    url = base + "roadmap/"
+    items = json.loads((HERE / "roadmap.json").read_text(encoding="utf-8"))
+    by_repo = {github_repo(a["src"]).lower(): a for a in apps if github_repo(a["src"])}
+    by_slug = {a["slug"]: a for a in apps}
+
+    def added(r):
+        return by_slug.get(r.get("slug", "")) or by_repo.get(github_repo(r["url"]).lower())
+
+    planned = [r for r in items if not added(r)]
+
+    def tile(r):
+        img = ph(r["name"], "../img/roadmap/" + r["icon"] if r.get("icon") else "")
+        return (f'<a class="card" href="{e(r["url"])}" rel="noopener" target="_blank">{img}'
+                f'<div class="ct"><span class="k">{e(r.get("category", ""))}</span>'
+                f'<h3>{e(r["name"])}</h3><p>{e(r.get("desc", ""))}</p></div></a>')
+
+    def live(a):
+        # every app already in the store, faded, after the planned ones (apps are sorted A-Z)
+        img = ph(a["name"], a["icon_cdn"], "../" + a["icon_url"] if a["icon_url"] else "")
+        p = f'<p>{e(a["desc"])}</p>' if a["desc"] else ""
+        return (f'<a class="card done" href="../app/{a["slug"]}/">{img}'
+                f'<div class="ct"><span class="k">Live</span><h3>{e(a["name"])}</h3>{p}</div></a>')
+
+    tiles = "".join(tile(r) for r in planned) + "".join(live(a) for a in apps)
+    count = f'{len(planned)} apps on the way to {e(cfg["site_name"])}, {len(apps)} already live'
+    content = (
+        '<div class="wrap">\n'
+        f'  <div class="top"><a class="logo" href="../">{e(cfg["site_name"])}</a>'
+        f'<a class="back" href="../#apps">{icon("arrow-left")}All apps</a></div>\n'
+        '  <main id="main" tabindex="-1" data-page="roadmap">\n'
+        '    <section class="bhero" aria-labelledby="r-h">\n'
+        '      <h1 id="r-h">Roadmap</h1>\n'
+        f'      <p class="lead">{count}. Want something else?</p>\n'
+        f'      <div class="cta" style="justify-content:flex-start"><a class="btn p" href="{e(cfg["request_url"])}" '
+        f'rel="noopener">{icon("plus-circle")}Request an app</a></div>\n'
+        '    </section>\n'
+        '    <section class="sec" style="padding-left:0;padding-right:0" aria-label="Planned apps">\n'
+        f'      <div class="grid">{tiles}</div>\n'
+        '    </section>\n'
+        '  </main>\n</div>')
+    ld = {"@context": "https://schema.org", "@type": "WebPage", "name": "Roadmap", "url": url,
+          "isPartOf": {"@id": base + "#website"}}
+    head = {**cfg, "root": "../", "url": url, "og_image": base + "img/og.png",
+            "title": f'Roadmap – {cfg["site_name"]}',
+            "description": f'Apps planned for {cfg["site_name"]}.',
+            "og_alt": cfg["site_name"], "jsonld": js(ld)}
+    return page(layout, content, head)
+
+
 def redirect_page(target, base):
     """A tiny page that sends the visitor on, for folders that have no page of their own."""
     t = e(target)
@@ -991,6 +1049,8 @@ def main():
     (out / "404.html").write_text(not_found_page(apps, cfg, layout), encoding="utf-8")
     (out / "app-badge").mkdir(parents=True, exist_ok=True)
     (out / "app-badge" / "index.html").write_text(badge_page(apps, cfg, layout), encoding="utf-8")
+    (out / "roadmap").mkdir(parents=True, exist_ok=True)
+    (out / "roadmap" / "index.html").write_text(roadmap_page(apps, cfg, layout), encoding="utf-8")
     # /app/ has no page of its own: send people to the homepage
     (out / "app").mkdir(parents=True, exist_ok=True)
     (out / "app" / "index.html").write_text(redirect_page("../", cfg["base_url"]), encoding="utf-8")

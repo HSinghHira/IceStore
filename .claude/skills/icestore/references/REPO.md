@@ -18,6 +18,7 @@ docker/<app>/            all-in-one and wrapper apps: the image's build context
   wrapper:    Dockerfile (one FROM, the upstream image)  icestore-init.sh
 site/
   build.py  requirements.txt  site.json  static/  templates/
+  roadmap.json           planned apps for /roadmap/ (icons in static/img/roadmap/); every Apps/ app is shown after them, faded, as "Live" (SKILL.md 6b)
 store-config.json        store id com.icestore, name, maintainer, url
 supported-languages.json ["en_US"] — write every x-casaos text as en_US only
 justfile                 `just check` runs the checker on new/changed apps only (`just check-all` = every app); `just deploy ["message"]`

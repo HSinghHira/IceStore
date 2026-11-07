@@ -405,3 +405,10 @@ td:first-child code,td:nth-child(2) code{word-break:normal;overflow-wrap:anywher
 }
 @media(max-width:560px){.bstage{flex-wrap:wrap}}
 .card[aria-current]{border-color:rgba(76,201,240,.55);background:rgba(76,201,240,.05)}
+
+/* roadmap: apps already in the store fade to black and white */
+.card.done{opacity:.55;transition:opacity .2s,border-color .2s,background .2s}
+.card.done .ph{filter:grayscale(1);transition:filter .2s}
+.card.done .k{color:var(--mut)}
+.card.done:hover{opacity:1}
+.card.done:hover .ph{filter:none}
