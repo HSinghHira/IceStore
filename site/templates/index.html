@@ -273,9 +273,30 @@
             {{icon:info}}<span>The link stays the same when new apps are added.</span>
           </div>
         </article>
+        <div class="tstack">
+        <div class="term">
+          <header>
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ttl">user@mos:
+              ~</span><button class="ic" type="button" data-copy-from="#cmd-mos"
+              aria-label="Copy MOS terminal command">
+              {{icon:copy}}
+            </button>
+          </header>
+          <pre><span class="pr"><span class="u">user@mos</span>:<span class="d">~</span>$</span> <code id="cmd-mos">read -rsp &quot;MOS API Token: &quot; TOKEN
+echo
+curl -s -X POST http://localhost/api/v1/mos/hub/repositories \
+  -H &quot;Authorization: Bearer $TOKEN&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;[&quot;{{mos_url}}&quot;]&#x27; | jq .</code>
+<span class="pr"><span class="u">user@mos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre>
+        </div>
         <div class="tip">
           <header><span>Good to know</span></header>
           <ul>
+            <li>
+              Create an API token in the MOS WebUI: <b>Settings</b> → <b>Network</b> →
+              <b>Token</b> → <b>Add</b> → <b>Create</b>.
+            </li>
             <li>
               The link is the {{site_name}} GitHub repository itself, not a zip. MOS Hub
               downloads it and reads the templates from it.
@@ -288,6 +309,7 @@
               Apps that only run on Intel/AMD are hidden on ARM machines.
             </li>
           </ul>
+        </div>
         </div>
       </div>
     </div>
