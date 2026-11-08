@@ -4,7 +4,7 @@
   {"name": "TryPost", "category": "Social", "desc": "Open-source social media scheduler built for AI agents and the teams behind them.", "url": "https://github.com/trypostit/trypost", "icon": "trypost.png"},
   {"name": "OpenPanel", "category": "Analytics", "desc": "Open-source web and product analytics, an alternative to Mixpanel.", "url": "https://github.com/Openpanel-dev/openpanel", "icon": "openpanel.png"},
   {"name": "Tolgee", "category": "Developer", "desc": "Developer and translator friendly web-based localization platform.", "url": "https://github.com/tolgee/tolgee-platform", "icon": "tolgee.svg"},
-  {"name": "Kasm Workspaces", "category": "Utilities", "desc": "Desktops, browsers and apps streamed to your browser from containers.", "url": "https://hub.docker.com/u/kasmweb", "icon": "kasm.png"},
+  {"name": "Kasm Workspaces", "category": "Utilities", "desc": "Desktops, browsers and apps streamed to your browser from containers.", "url": "https://hub.docker.com/u/kasmweb", "icon": "kasm.png", "slug": "kasm"},
   {"name": "Fluxer", "category": "Chat", "desc": "Free and open source instant messaging and VoIP chat for friends, groups and communities.", "url": "https://github.com/fluxerapp/fluxer", "icon": "fluxer.png"},
   {"name": "OpenCadence", "category": "Productivity", "desc": "Workspace for freelancers to manage clients, projects, tasks, follow-ups and notes.", "url": "https://github.com/OpenCadence/opencadence", "icon": "opencadence.png"},
   {"name": "Openship", "category": "Developer", "desc": "Self-hosted deployment platform.", "url": "https://github.com/oblien/openship", "icon": "openship.png"},
