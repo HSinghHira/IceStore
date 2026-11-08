@@ -1,0 +1,175 @@
+name: openpanel
+
+services:
+  openpanel:
+    image: ghcr.io/hsinghhira/openpanel:latest
+    container_name: openpanel
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6191
+    ports:
+      - target: 8080
+        published: "6191"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.25"
+          memory: 1024M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/icon.png
+    x-casaos:
+      id: com.icestore.openpanel
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6191, or use your https address. The
+              dashboard and the tracking script on your websites talk to it.
+              Keep the port at 6191.
+      ports:
+        - container: "8080"
+          description:
+            en_US: OpenPanel dashboard and tracking API (at /api), published on host as 6191
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The PostgreSQL and ClickHouse databases with all your events,
+              Redis, and this install's secret keys (state/secrets.env). Back
+              up the whole folder.
+
+x-casaos:
+  id: com.icestore.openpanel
+  architectures:
+    - amd64
+    - arm64
+  main: openpanel
+  author: HSinghHira
+  category: Developer
+  developer: Openpanel-dev
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/screenshot-4.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/screenshot-5.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openpanel/screenshot-6.jpg
+  title:
+    en_US: OpenPanel
+  tagline:
+    en_US: Open-source web and product analytics, an alternative to Mixpanel
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/openpanel/](https://icestore.hsinghhira.me/app/openpanel/) for full details
+
+
+      OpenPanel is web and product analytics you host yourself: page views,
+      visitors and sources like Plausible, plus events, funnels, retention
+      and user profiles like Mixpanel. This is OpenPanel in a single
+      container, with PostgreSQL, ClickHouse and Redis inside, one port and
+      one data folder. Secret keys are made for you on first start.
+
+
+      **Features**
+
+
+      - Web analytics: visitors, pages, referrers, countries and devices
+
+      - Product analytics: events, funnels, retention and conversion
+
+      - User profiles and sessions, and a real-time view
+
+      - Custom dashboards and reports, shareable with a link
+
+      - Cookieless tracking with SDKs for websites, React, Next.js, apps and
+        servers
+
+      - Teams with invitations, and an optional AI chat about your data
+
+
+      **How to use?**
+
+
+      1. Open OpenPanel from the Zima OS dashboard.
+
+
+      2. Create your account. The first account is the owner.
+
+
+      3. Add a project, then put the tracking snippet it shows on your
+         website.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set PUBLIC_URL first. You must do this, or the dashboard won't
+           load. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6191.
+
+
+        2. More settings, like email and sign-in with Google or GitHub, are
+           listed on the OpenPanel page at
+           https://icestore.hsinghhira.me/app/openpanel/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        3. Start the installation.
+
+
+        4. Wait about 5 minutes for OpenPanel to start the first time.
+
+
+        5. Open OpenPanel from the Zima OS dashboard.
+
+
+        6. Create your account. The first person to sign up is the owner.
+           Sign-up then closes; invite others from your organization's
+           Members page.
+
+
+        7. Add a project and copy the tracking snippet into your website.
+  index: /
+  port_map: "6191"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.3.0"
+  update_at: "2026-11-08"
+  release_notes:
+    en_US: |-
+      - Single-container OpenPanel with one port (6191) and one data folder
+      - PostgreSQL 14, Redis and ClickHouse inside, as in upstream's self-hosting compose
+      - Secret keys are made on first start, so each install gets its own
+      - The worker's queue dashboard (Bull Board) is left out
+      - lindesvard/openpanel-api 2.3.0
+      - lindesvard/openpanel-worker 2.3.0
+      - lindesvard/openpanel-dashboard 2.3.0
+      - clickhouse/clickhouse-server 25.10.2.65
+  repo: "https://github.com/Openpanel-dev/openpanel"
+  support: "https://github.com/Openpanel-dev/openpanel/issues"
+  docs: "https://openpanel.dev/docs/self-hosting/self-hosting"
