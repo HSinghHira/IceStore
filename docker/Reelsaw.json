@@ -1,0 +1,83 @@
+{
+  "name": "Reelsaw",
+  "repo": "ghcr.io/hsinghhira/reelsaw:latest",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/hsinghhira/reelsaw/pkgs/container/reelsaw",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=6144m --cpus=4.00 --memory-reservation=1024m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/api/health\" --health-interval=30s --health-timeout=10s --health-start-period=180s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/reelsaw/icon.png",
+  "project": "https://reelsaw.com",
+  "support": "https://github.com/osbytes/reelsaw/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/reelsaw/",
+  "description": "Self-hosted AI clipper that turns long videos into vertical shorts",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/reelsaw/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The PostgreSQL database, uploaded and downloaded videos, rendered clips, the library and this install's secret keys (state/secrets.env). Videos need a lot of room."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6690",
+      "container": "8080",
+      "description": "Reelsaw web app, API and MCP server (/api/mcp), published on host as 6690"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://YOUR-SERVER-IP:6690",
+      "mask": false,
+      "description": "Required. Replace YOUR-SERVER-IP with your server IP, like http://192.168.1.20:6690, or use your https address. Sign-in only works on this address. Keep the port at 6690."
+    },
+    {
+      "name": "AI_MODEL",
+      "key": "AI_MODEL",
+      "value": "openai:gpt-4o-mini",
+      "mask": false,
+      "description": "The language model that picks the moments, as provider:model, like openai:gpt-4o-mini, anthropic:claude-sonnet-4-5 or compat:qwen2.5:7b for your own Ollama. Admins can change it later in Settings."
+    },
+    {
+      "name": "TRANSCRIPTION_MODEL",
+      "key": "TRANSCRIPTION_MODEL",
+      "value": "openai:whisper-1",
+      "mask": false,
+      "description": "The speech-to-text model, as provider:model. It must give word times: openai:whisper-1, groq:whisper-large-v3-turbo or deepgram:nova-3."
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "key": "OPENAI_API_KEY",
+      "value": "",
+      "mask": true,
+      "description": "Required with the default models. Your OpenAI API key. Using another provider instead? Leave it blank and add that provider's key from the Variables tab."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

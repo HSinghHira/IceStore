@@ -1,0 +1,195 @@
+name: reelsaw
+
+services:
+  reelsaw:
+    image: ghcr.io/hsinghhira/reelsaw:latest
+    container_name: reelsaw
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6690
+      - AI_MODEL=openai:gpt-4o-mini
+      - TRANSCRIPTION_MODEL=openai:whisper-1
+      - OPENAI_API_KEY=
+    ports:
+      - target: 8080
+        published: "6690"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 6144M
+        reservations:
+          cpus: "0.25"
+          memory: 1024M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/reelsaw/icon.png
+    x-casaos:
+      id: com.icestore.reelsaw
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6690, or use your https address. Sign-in
+              only works on this address. Keep the port at 6690.
+        - container: AI_MODEL
+          description:
+            en_US: >-
+              The language model that picks the moments, as provider:model,
+              like openai:gpt-4o-mini, anthropic:claude-sonnet-4-5 or
+              compat:qwen2.5:7b for your own Ollama. Admins can change it
+              later in Settings.
+        - container: TRANSCRIPTION_MODEL
+          description:
+            en_US: >-
+              The speech-to-text model, as provider:model. It must give word
+              times: openai:whisper-1, groq:whisper-large-v3-turbo or
+              deepgram:nova-3.
+        - container: OPENAI_API_KEY
+          description:
+            en_US: >-
+              Required with the default models. Your OpenAI API key. Using
+              another provider instead? Leave it blank and add that
+              provider's key from the Variables tab.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Reelsaw web app, API and MCP server (/api/mcp), published on host as 6690
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The PostgreSQL database, uploaded and downloaded videos, rendered
+              clips, the library and this install's secret keys
+              (state/secrets.env). Videos need a lot of room.
+
+x-casaos:
+  id: com.icestore.reelsaw
+  architectures:
+    - amd64
+    - arm64
+  main: reelsaw
+  author: HSinghHira
+  category: Media
+  developer: osbytes
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/reelsaw/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/reelsaw/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/reelsaw/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/reelsaw/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/reelsaw/screenshot-3.jpg
+  title:
+    en_US: Reelsaw
+  tagline:
+    en_US: Self-hosted AI clipper that turns long videos into vertical shorts
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/reelsaw/](https://icestore.hsinghhira.me/app/reelsaw/) for full details
+
+
+      Reelsaw turns long videos into vertical 9:16 shorts. Paste a YouTube
+      link or upload a video: it transcribes it, asks an AI for the best
+      moments, cuts out fillers and renders clips with face-tracked framing
+      and word-highlight captions. This is Reelsaw in a single container,
+      with PostgreSQL inside, one port and one data folder. The AI runs at a
+      provider you choose, or on your own Ollama.
+
+
+      **Features**
+
+
+      - Any AI provider: OpenAI, Anthropic, Google, Groq, Deepgram, or local
+        Ollama and Whisper servers
+
+      - Picks and ranks the most clippable moments, with an optional topic
+
+      - Smart 9:16 framing: follows the speaker, splits two people, stacks
+        slides and webcam
+
+      - Captions with highlighted words, hook overlay, filler cuts you can
+        accept or undo
+
+      - Clip editor with timeline, layers, music, intros, outros and
+        templates
+
+      - Export with titles and captions, share links, webhooks and an MCP
+        server for AI agents
+
+
+      **How to use?**
+
+
+      1. Open Reelsaw from the Zima OS dashboard and sign up. The first
+         account is the admin.
+
+
+      2. Paste a YouTube link or upload a video.
+
+
+      3. Wait for the clips, then edit, download or share them.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set PUBLIC_URL first. You must do this, or sign-in won't work.
+           Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6690.
+
+
+        2. Set OPENAI_API_KEY to your OpenAI key. You must set an AI
+           provider, or Reelsaw won't start.
+
+
+        3. Using another provider, like Groq, Anthropic or your own Ollama?
+           Change AI_MODEL and TRANSCRIPTION_MODEL, and add its key or
+           address. They are listed on the Reelsaw page at
+           https://icestore.hsinghhira.me/app/reelsaw/ (Variables tab).
+
+
+        4. Start the installation.
+
+
+        5. Wait about 2 minutes for Reelsaw to start the first time.
+
+
+        6. Open Reelsaw from the Zima OS dashboard and sign up. The first
+           account is the admin. Others who sign up wait for your approval.
+
+
+        7. Paste a YouTube link or upload a video.
+  index: /
+  port_map: "6690"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.32.3"
+  update_at: "2026-11-08"
+  release_notes:
+    en_US: |-
+      - Single-container Reelsaw with one port (6690) and one data folder
+      - PostgreSQL 17 inside; web app and pipeline workers in one process, as in upstream's compose
+      - The auth secret and database password are made on first start, so each install gets its own
+      - Ollama, Speaches and MinIO are not included: use a hosted provider or your own servers
+      - ghcr.io/osbytes/reelsaw 0.32.3
+  repo: "https://github.com/osbytes/reelsaw"
+  support: "https://github.com/osbytes/reelsaw/issues"
+  docs: "https://github.com/osbytes/reelsaw/blob/main/docs/CONFIG.md"
