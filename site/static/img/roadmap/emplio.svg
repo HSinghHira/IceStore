@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="4 40 58 58">
+  <!-- the logo's "e" (Fredoka 500, logo.tsx coordinates): top hole filled, a closed-eye slit cut through it -->
+  <style>path.e{fill:#1a613f}@media (prefers-color-scheme:dark){path.e{fill:#49a072}}</style>
+  <mask id="eye" maskUnits="userSpaceOnUse" x="0" y="30" width="70" height="70">
+    <rect x="0" y="30" width="70" height="70" fill="#fff"/>
+    <path d="M25.66 61.08 A9.96 7.47 0 0 1 45.58 61.08" fill="none" stroke="#000" stroke-width="6.57" stroke-linecap="round"/>
+  </mask>
+  <g mask="url(#eye)"><path class="e" transform="translate(6 92) scale(0.1 -0.1)" d="M290 -16.5Q225 -16.5 176.25 4.75Q127.5 26 95.25 62.25Q63 98.5 46.5 144.0Q30 189.5 30 238.5Q30 310.5 63.0 366.5Q96 422.5 154.5 454.75Q213 487 288.5 487Q342.5 487 383.5 470.0Q424.5 453 452.25 425.5Q480 398 494.25 365.0Q508.5 332 508.5 300.5Q508.5 247.5 483.25 223.75Q458 200 420 200H156Q157 165.5 177.5 140.75Q198 116 229.25 102.5Q260.5 89 293.5 89Q319 89 338.25 91.75Q357.5 94.5 371.5 99.25Q385.5 104 396.25 108.75Q407 113.5 415.75 117.5Q424.5 121.5 432.5 123Q444 124 454.75 117.75Q465.5 111.5 473 97Q479 87 481.5 78.5Q484 70 484 61.5Q484 42 459.75 24.25Q435.5 6.5 392.0 -5.0Q348.5 -16.5 290 -16.5Z"/></g>
+</svg>

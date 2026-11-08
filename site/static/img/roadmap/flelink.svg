@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34.48 -21.38 68.97 68.97" role="img" aria-label="FLE Link">
+  <title>FLE Link</title>
+  <!-- nine experts on a plane; the three active for this token rise and light up -->
+  <defs>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd0e8"/><stop offset="0.55" stop-color="#ff5cac"/><stop offset="1" stop-color="#ff2d95"/></linearGradient>
+    <linearGradient id="side-l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6007a"/><stop offset="1" stop-color="#5a0a38"/></linearGradient>
+    <linearGradient id="side-r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a30f61"/><stop offset="1" stop-color="#3a0b26"/></linearGradient>
+    <radialGradient id="spill"><stop offset="0" stop-color="#ff5cac" stop-opacity="0.42"/><stop offset="1" stop-color="#ff5cac" stop-opacity="0"/></radialGradient>
+    <linearGradient id="link" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ff2d95"/></linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.62" r="0.55"><stop offset="0" stop-color="#ff2d95" stop-opacity="0.38"/><stop offset="1" stop-color="#ff2d95" stop-opacity="0"/></radialGradient>
+  </defs>
+  
+  
+  <ellipse cx="0.00" cy="6.50" rx="12.50" ry="7.20" fill="url(#spill)"/>
+  <ellipse cx="10.91" cy="25.40" rx="12.50" ry="7.20" fill="url(#spill)"/>
+  <ellipse cx="-10.91" cy="25.40" rx="12.50" ry="7.20" fill="url(#spill)"/>
+  <polygon points="-8.66,-4.00 0.00,1.00 0.00,10.00 -8.66,5.00" fill="url(#side-l)"/>
+  <polygon points="8.66,-4.00 0.00,1.00 0.00,10.00 8.66,5.00" fill="url(#side-r)"/>
+  <polygon points="0.00,-9.00 8.66,-4.00 0.00,1.00 -8.66,-4.00" fill="url(#top)"/>
+  <polygon points="0.00,-9.00 8.66,-4.00 0.00,1.00 -8.66,-4.00" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="0.5" stroke-linejoin="round"/>
+  <polygon points="-10.91,6.30 -2.25,11.30 -10.91,16.30 -19.57,11.30" fill="#94a0b2" fill-opacity="0.16" stroke="#94a0b2" stroke-opacity="0.32" stroke-width="0.5"/>
+  <polygon points="10.91,6.30 19.57,11.30 10.91,16.30 2.25,11.30" fill="#94a0b2" fill-opacity="0.16" stroke="#94a0b2" stroke-opacity="0.32" stroke-width="0.5"/>
+  <polygon points="-21.82,12.60 -13.16,17.60 -21.82,22.60 -30.48,17.60" fill="#94a0b2" fill-opacity="0.16" stroke="#94a0b2" stroke-opacity="0.32" stroke-width="0.5"/>
+  <polygon points="0.00,12.60 8.66,17.60 0.00,22.60 -8.66,17.60" fill="#94a0b2" fill-opacity="0.16" stroke="#94a0b2" stroke-opacity="0.32" stroke-width="0.5"/>
+  <polygon points="21.82,12.60 30.48,17.60 21.82,22.60 13.16,17.60" fill="#94a0b2" fill-opacity="0.16" stroke="#94a0b2" stroke-opacity="0.32" stroke-width="0.5"/>
+  <polygon points="-19.57,17.40 -10.91,22.40 -10.91,28.90 -19.57,23.90" fill="url(#side-l)"/>
+  <polygon points="-2.25,17.40 -10.91,22.40 -10.91,28.90 -2.25,23.90" fill="url(#side-r)"/>
+  <polygon points="-10.91,12.40 -2.25,17.40 -10.91,22.40 -19.57,17.40" fill="url(#top)"/>
+  <polygon points="-10.91,12.40 -2.25,17.40 -10.91,22.40 -19.57,17.40" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="0.5" stroke-linejoin="round"/>
+  <polygon points="2.25,10.90 10.91,15.90 10.91,28.90 2.25,23.90" fill="url(#side-l)"/>
+  <polygon points="19.57,10.90 10.91,15.90 10.91,28.90 19.57,23.90" fill="url(#side-r)"/>
+  <polygon points="10.91,5.90 19.57,10.90 10.91,15.90 2.25,10.90" fill="url(#top)"/>
+  <polygon points="10.91,5.90 19.57,10.90 10.91,15.90 2.25,10.90" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="0.5" stroke-linejoin="round"/>
+  <polygon points="0.00,25.20 8.66,30.20 0.00,35.20 -8.66,30.20" fill="#94a0b2" fill-opacity="0.16" stroke="#94a0b2" stroke-opacity="0.32" stroke-width="0.5"/>
+  <polyline points="0.00,-4.00 10.91,10.90 -10.91,17.40" fill="none" stroke="url(#link)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+  <circle cx="0.00" cy="-4.00" r="1.35" fill="#ffffff"/>
+  <circle cx="10.91" cy="10.90" r="1.35" fill="#ffffff"/>
+  <circle cx="-10.91" cy="17.40" r="1.35" fill="#ffffff"/>
+</svg>

@@ -91,6 +91,12 @@ websites.
    scratchpad first, open it with Read to check it is the right logo, then
    copy it in. Never leave out `icon`: the tile falls back to a letter, which
    looks broken next to the others.
+   To check many at once, write an HTML grid of the files and screenshot it
+   with headless Edge (`msedge --headless --screenshot=<png> --window-size=1200,900 file:///<html>`),
+   then Read the PNG. The roadmap page is **dark**: a thin black logo, or an
+   SVG that switches colour with `prefers-color-scheme`, disappears. Use a
+   PNG version, or wrap the SVG on a light rounded `<rect>`. Never use a
+   person's photo avatar; a wordmark logo can be cropped to its symbol.
 
 6. **Update the task file.**
    - Remove every link that is now on the roadmap (added this run or already
@@ -100,12 +106,17 @@ websites.
      `https://github.com/x/y — skipped: desktop app only`
    - Keep one blank line between the remaining links. If nothing is left, leave
      the file empty (do not delete it).
+   - If the file is a table, keep its header and remove the added rows; put
+     the skip reason after the link in the skipped rows.
 
 7. **Build and check the page.** From the repo root:
    `python site/build.py`, then check
    `_site/roadmap/index.html` has a tile for each new app (grep the names) and
    the "N apps on the way" count went up by the number added. Fix any missing
-   icon or JSON error.
+   icon or JSON error. If the build stops on an `::error::` in an `Apps/`
+   folder you did not touch (another app half-added), leave that folder
+   alone: copy the tracked files without it (`git ls-files`) plus your new
+   files into a scratchpad folder and build there instead.
 
 8. **Report** in a short table: app, added or skipped, and why (for skipped
    ones, and for added ones that need `/dev/kvm`, a GPU, lots of RAM or many

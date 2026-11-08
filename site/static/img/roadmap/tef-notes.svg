@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated from mobile/assets/logo/foreground.svg and packages/core/src/theme.ts. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="260 200 504 624" width="1024" height="1024">
+  <path id="mark" fill="#ffa070" fill-rule="evenodd" d="M368 244H656A64 64 0 0 1 720 308V716A64 64 0 0 1 656 780H368A64 64 0 0 1 304 716V308A64 64 0 0 1 368 244ZM336 380A16 16 0 1 0 368 380A16 16 0 1 0 336 380ZM336 512A16 16 0 1 0 368 512A16 16 0 1 0 336 512ZM336 644A16 16 0 1 0 368 644A16 16 0 1 0 336 644ZM468 404H652A26 26 0 0 1 652 456H468A26 26 0 0 1 468 404ZM546 456V600Q546 690 632 690H656A26 26 0 0 0 656 638H634Q598 638 598 600V456Z"/>
+</svg>

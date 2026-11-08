@@ -1,0 +1,190 @@
+name: trypost
+
+services:
+  trypost:
+    image: ghcr.io/hsinghhira/trypost:latest
+    container_name: trypost
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6190
+      - ADMIN_EMAIL=CHANGEME@example.com
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6190"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/up"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.10"
+          memory: 384M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trypost/icon.png
+    x-casaos:
+      id: com.icestore.trypost
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6190, or use your https address. Images,
+              videos and social network sign-ins are linked from it. Keep the
+              port at 6190.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              Your email. It is the sign-in of the first account, made on the
+              first start.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password of the first account, used only on the first
+              start. Leave it blank and the app makes a random one, shown in
+              the app log in the box marked CREDENTIALS. Change it later in
+              TryPost's profile settings.
+      ports:
+        - container: "8080"
+          description:
+            en_US: TryPost web app, API, MCP and live updates, published on host as 6190
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database, uploaded images and videos, and this install's
+              secret keys (state/secrets.env and the Passport keys). Back up
+              the whole folder.
+
+x-casaos:
+  id: com.icestore.trypost
+  architectures:
+    - amd64
+    - arm64
+  main: trypost
+  author: HSinghHira
+  category: Social
+  developer: trypostit
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trypost/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trypost/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trypost/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trypost/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trypost/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trypost/screenshot-4.png
+  title:
+    en_US: TryPost
+  tagline:
+    en_US: Social media scheduler built for AI agents and the teams behind them
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/trypost/](https://icestore.hsinghhira.me/app/trypost/) for full details
+
+
+      TryPost plans, schedules and publishes posts to every social network.
+      Write them in a composer with a live preview, or let AI agents do it
+      through MCP and the REST API. This is TryPost in a single container,
+      with PostgreSQL and Redis inside, one port and one data folder. Secret
+      keys and the first account are made for you on first start.
+
+
+      **Features**
+
+
+      - Instagram, TikTok, LinkedIn, X, YouTube, Facebook, Threads, Bluesky,
+        Pinterest, Mastodon, Google Business, Telegram and Discord
+
+      - Composer that adapts each post per network, with a live preview
+
+      - Calendar and per-channel queues with posting times
+
+      - Approvals, workspaces for each brand or client, and team members
+
+      - MCP server with 80+ tools and a REST API with webhooks
+
+      - Ideas board, labels, signatures and insights per channel
+
+      - Every feature of TryPost Cloud, no paid tiers
+
+
+      **How to use?**
+
+
+      1. Open TryPost from the Zima OS dashboard.
+
+
+      2. Sign in with ADMIN_EMAIL and the password from the app log.
+
+
+      3. Connect a channel, then write your first post and schedule it.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set PUBLIC_URL first. You must do this, or images and social
+           sign-ins won't work. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS
+           IP, like http://192.168.1.20:6190.
+
+
+        2. Set ADMIN_EMAIL to your own email.
+
+
+        3. Leave ADMIN_PASSWORD blank to get a random one. Or type your own.
+
+
+        4. More settings, like email (SMTP), the app keys for each social
+           network and AI, are listed on the TryPost page at
+           https://icestore.hsinghhira.me/app/trypost/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation.
+
+
+        6. Wait about 3 minutes for TryPost to start the first time.
+
+
+        7. Open the app log. Find the box marked CREDENTIALS. It has your
+           email and password.
+
+
+        8. Open TryPost from the Zima OS dashboard and sign in.
+
+
+        9. To add your team, go to Settings, Members and invite them.
+  index: /
+  port_map: "6190"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.0.1"
+  update_at: "2026-11-08"
+  release_notes:
+    en_US: |-
+      - Single-container TryPost with one port (6190) and one data folder
+      - PostgreSQL 16 and Redis inside; Reverb, Horizon and the scheduler run as upstream ships them
+      - APP_KEY, Passport keys, database and Reverb secrets and the first account are made on first start, so each install gets its own
+      - Live updates follow the address you open, so they work from every device
+      - ghcr.io/trypostit/trypost 2.0.1
+  repo: "https://github.com/trypostit/trypost"
+  support: "https://github.com/trypostit/trypost/issues"
+  docs: "https://docs.trypost.it"

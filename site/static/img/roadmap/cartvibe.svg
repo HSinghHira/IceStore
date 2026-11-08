@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#252A34" />
+      <stop offset="100%" stop-color="#151920" />
+    </linearGradient>
+    
+    <!-- Bar Chart Gradient -->
+    <linearGradient id="bar-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#19E68C" />
+      <stop offset="100%" stop-color="#119966" />
+    </linearGradient>
+
+    <!-- Blue Arrow Gradient -->
+    <linearGradient id="arrow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0D6EFD" />
+      <stop offset="100%" stop-color="#0099FF" />
+    </linearGradient>
+  </defs>
+
+  <!-- App Icon Squircle Background -->
+  <rect width="512" height="512" rx="115" fill="url(#bg-dark)" stroke="#383F4D" stroke-width="6" />
+
+  <!-- Green Bar Chart -->
+  <g fill="url(#bar-grad)">
+    <rect x="172" y="210" width="38" height="122" rx="4" />
+    <rect x="228" y="168" width="38" height="164" rx="4" />
+    <rect x="284" y="128" width="38" height="204" rx="4" />
+  </g>
+
+  <!-- Trend Arrow Background Knockout (Creates the gap over bars) -->
+  <g stroke="#1C2129" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M 164 306 L 236 244 L 274 282 L 368 192" />
+  </g>
+
+  <!-- Shopping Cart Frame & Base -->
+  <g stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Handle, Basket, and Right Wall -->
+    <path d="M 88 144 H 126 L 166 332 H 332 L 352 248" />
+    <!-- Bottom Return Loop -->
+    <path d="M 166 332 C 140 332, 140 368, 166 368 H 322" />
+  </g>
+
+  <!-- Cart Wheels -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="14">
+    <circle cx="188" cy="402" r="16" />
+    <circle cx="300" cy="402" r="16" />
+  </g>
+
+  <!-- Blue Trend Arrow -->
+  <g>
+    <path d="M 164 306 L 236 244 L 274 282 L 368 192" stroke="url(#arrow-grad)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <polygon points="392,168 340,180 378,218" fill="url(#arrow-grad)" />
+  </g>
+</svg>
