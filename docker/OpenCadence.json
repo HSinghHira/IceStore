@@ -1,0 +1,69 @@
+{
+  "name": "OpenCadence",
+  "repo": "ghcr.io/hsinghhira/opencadence:latest",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/hsinghhira/opencadence/pkgs/container/opencadence",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=512m --cpus=1.00 --memory-reservation=128m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/icon.png",
+  "project": "https://opencadence.app",
+  "support": "https://github.com/OpenCadence/opencadence/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/opencadence/",
+  "description": "Workspace for freelancers to manage clients, projects, tasks, follow-ups and notes",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/opencadence/data",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "Your workspace (cadence.sqlite), backups made with the backup script, and icestore-password.txt. Back up this folder: it holds your client information and notes."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6195",
+      "container": "8080",
+      "description": "OpenCadence, behind a password, published on host as 6195"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "USERNAME",
+      "key": "USERNAME",
+      "value": "admin",
+      "mask": false,
+      "description": "The user name your browser asks for before OpenCadence opens."
+    },
+    {
+      "name": "PASSWORD",
+      "key": "PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The password your browser asks for. Leave it blank and the app makes a random one, shown in the app log in the box marked CREDENTIALS and saved as icestore-password.txt in the data folder."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

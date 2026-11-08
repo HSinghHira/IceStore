@@ -1,0 +1,153 @@
+name: opencadence
+
+services:
+  opencadence:
+    image: ghcr.io/hsinghhira/opencadence:latest
+    container_name: opencadence
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - USERNAME=admin
+      - PASSWORD=
+    ports:
+      - target: 8080
+        published: "6195"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/icon.png
+    x-casaos:
+      id: com.icestore.opencadence
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: USERNAME
+          description:
+            en_US: >-
+              The user name your browser asks for before OpenCadence opens.
+        - container: PASSWORD
+          description:
+            en_US: >-
+              The password your browser asks for. Leave it blank and the app
+              makes a random one, shown in the app log in the box marked
+              CREDENTIALS and saved as icestore-password.txt in the data
+              folder.
+      ports:
+        - container: "8080"
+          description:
+            en_US: OpenCadence, behind a password, published on host as 6195
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Your workspace (cadence.sqlite), backups made with the backup
+              script, and icestore-password.txt. Back up this folder: it holds
+              your client information and notes.
+
+x-casaos:
+  id: com.icestore.opencadence
+  architectures:
+    - amd64
+    - arm64
+  main: opencadence
+  author: HSinghHira
+  category: Productivity
+  developer: OpenCadence
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/screenshot-1.jpg
+  title:
+    en_US: OpenCadence
+  tagline:
+    en_US: Workspace for freelancers to manage clients, projects, tasks, follow-ups and notes
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/opencadence/](https://icestore.hsinghhira.me/app/opencadence/) for full details
+
+
+      OpenCadence is a calm, private workspace for freelancers and
+      independent professionals: clients, leads, projects, tasks, follow-ups
+      and notes in one place, so you always know what needs your attention
+      next. OpenCadence itself has no login, so IceStore puts a password in
+      front of it, made for you on first start.
+
+
+      **Features**
+
+
+      - Today view with tasks due or overdue, follow-ups, active projects
+        and recent notes
+
+      - Leads and clients with conversations and follow-up reminders
+
+      - Projects with their tasks and notes, and progress at a glance
+
+      - Search across clients, projects, tasks and notes
+
+      - Optional AI assistant through MCP
+
+      - One SQLite file, easy to back up
+
+
+      **How to use?**
+
+
+      1. Open OpenCadence from the Zima OS dashboard.
+
+
+      2. Type the user name and password from the app log.
+
+
+      3. Choose the example workspace to look around, or start empty.
+  tips:
+    before_install:
+      en_US: >-
+        1. Leave PASSWORD blank to get a random one. Or type your own.
+
+
+        2. Start the installation.
+
+
+        3. Open the app log. Find the box marked CREDENTIALS. It has the user
+           name and password.
+
+
+        4. Open OpenCadence from the Zima OS dashboard. Your browser asks for
+           the user name and password. Type them.
+
+
+        5. Choose the example workspace to look around, or start empty.
+  index: /
+  port_map: "6195"
+  scheme: http
+  is_uncontrolled: false
+  version: "31b9ba0"
+  update_at: "2026-11-08"
+  release_notes:
+    en_US: |-
+      - First IceStore version, on port 6195
+      - Built from upstream commit 31b9ba0 (upstream publishes no image and no release tags yet), on node 22.23.4-bookworm-slim
+      - OpenCadence has no login, so nginx asks for a password first; the password is made on first start, so each install gets its own
+      - Single user, like upstream's Community edition
+  repo: "https://github.com/OpenCadence/opencadence"
+  support: "https://github.com/OpenCadence/opencadence/issues"
+  docs: "https://github.com/OpenCadence/opencadence/blob/main/docs/SELF_HOSTING.md"
