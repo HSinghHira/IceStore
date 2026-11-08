@@ -1,0 +1,121 @@
+name: byparr
+
+services:
+  byparr:
+    image: ghcr.io/thephaseless/byparr:3.1.1
+    container_name: byparr
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    shm_size: "1gb"
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8191
+        published: "6199"
+        protocol: tcp
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/byparr/icon.png
+    x-casaos:
+      id: com.icestore.byparr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "8191"
+          description:
+            en_US: >-
+              Byparr API (FlareSolverr-compatible, docs at /docs), published
+              on host as 6199
+
+x-casaos:
+  id: com.icestore.byparr
+  architectures:
+    - amd64
+    - arm64
+  main: byparr
+  author: HSinghHira
+  category: Networking
+  developer: ThePhaseless
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/byparr/icon.png
+  title:
+    en_US: Byparr
+  tagline:
+    en_US: Get valid anti-bot cookies yourself. A FlareSolverr alternative.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/byparr/](https://icestore.hsinghhira.me/app/byparr/) for full details
+
+
+      Byparr opens websites in a real, hidden browser to get past
+      Cloudflare and similar anti-bot checks, then hands the page and its
+      cookies to the app that asked. It speaks FlareSolverr's API, so
+      Prowlarr, Jackett and the other *arr apps use it the same way. It can
+      also fetch pages for Open WebUI.
+
+
+      **Features**
+
+
+      - Drop-in replacement for FlareSolverr (same /v1 API on the same
+        kind of address)
+
+      - Works with Prowlarr, Jackett, Sonarr, Radarr and others
+
+      - Optional proxy, browser language and time zone
+
+      - Web loader for Open WebUI at /load
+
+      - No data to keep and nothing to set up
+
+
+      **How to use?**
+
+
+      1. In Prowlarr, go to Settings, Indexers, add a FlareSolverr proxy.
+
+
+      2. Set its host to http://[ZIMAOS-IP-ADDRESS]:6199/ and give it a tag.
+
+
+      3. Add the same tag to the indexers that need it.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing needs to be set first.
+
+
+        2. Start the installation. The first start downloads a small
+           location database, so give it a minute.
+
+
+        3. In Prowlarr or Jackett, use http://[ZIMAOS-IP-ADDRESS]:6199/ as
+           the FlareSolverr address, like http://192.168.1.20:6199/.
+
+
+        4. Proxy, language and other settings are listed on the Byparr page
+           at https://icestore.hsinghhira.me/app/byparr/ (Variables tab).
+  index: /docs
+  port_map: "6199"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.1.1"
+  update_at: "2026-11-08"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/thephaseless/byparr 3.1.1
+      - FlareSolverr-compatible API on port 6199
+  repo: "https://github.com/ThePhaseless/Byparr"
+  support: "https://github.com/ThePhaseless/Byparr/issues"
+  docs: "https://github.com/ThePhaseless/Byparr#readme"

@@ -1,0 +1,47 @@
+{
+  "name": "Byparr",
+  "repo": "ghcr.io/thephaseless/byparr:3.1.1",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/thephaseless/byparr/pkgs/container/byparr",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=2048m --cpus=2.00 --memory-reservation=256m --shm-size=1gb",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8191]/docs",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/byparr/icon.png",
+  "project": "https://github.com/ThePhaseless/Byparr#readme",
+  "support": "https://github.com/ThePhaseless/Byparr/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/byparr/",
+  "description": "Get valid anti-bot cookies yourself. A FlareSolverr alternative.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6199",
+      "container": "8191",
+      "description": "Byparr API (FlareSolverr-compatible, docs at /docs), published on host as 6199"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
