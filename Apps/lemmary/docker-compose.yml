@@ -1,0 +1,170 @@
+name: lemmary
+
+services:
+  lemmary:
+    image: ghcr.io/buldezir/lemmary:2026.11.6
+    container_name: lemmary
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - INGEST_DIR=/consume
+    ports:
+      - target: 80
+        published: "6691"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/pb_data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/consume
+        target: /consume
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/icon.png
+    x-casaos:
+      id: com.icestore.lemmary
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: INGEST_DIR
+          description:
+            en_US: >-
+              The folder Lemmary watches for new files (the consume folder
+              below). Subfolders become tags. Leave it at /consume, or clear
+              it to turn the folder off.
+      ports:
+        - container: "80"
+          description:
+            en_US: Lemmary web app, Paperless-compatible API and MCP server, published on host as 6691
+      volumes:
+        - container: /app/pb_data
+          description:
+            en_US: >-
+              The database (data.db with all text and metadata), your
+              original files and thumbnails (storage/) and the search index.
+              Back up this folder.
+        - container: /consume
+          description:
+            en_US: >-
+              Drop files here and Lemmary imports them on its own. Point it
+              at a shared folder your scanner saves to.
+
+x-casaos:
+  id: com.icestore.lemmary
+  architectures:
+    - amd64
+    - arm64
+  main: lemmary
+  author: HSinghHira
+  category: Productivity
+  developer: buldezir
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/screenshot-4.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/screenshot-5.jpg
+  title:
+    en_US: Lemmary
+  tagline:
+    en_US: Turns scans, PDFs and office files into a library you can search and research
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/lemmary/](https://icestore.hsinghhira.me/app/lemmary/) for full details
+
+
+      Lemmary is a document archive: upload scans, PDFs, Word and Excel
+      files, and it reads them (OCR), names, dates, tags and summarises them
+      with AI, then lets you search and ask questions across the whole
+      library in plain language. It speaks Paperless-ngx's API, so
+      Paperless apps work with it too.
+
+
+      **Features**
+
+
+      - OCR and AI metadata: title, date, type, tags, correspondent and
+        summary
+
+      - Full-text search, AI assisted search and Deep Research with cited
+        answers
+
+      - Review inbox for low-confidence results and possible duplicates
+
+      - Import from a watched folder, an email inbox, a network scanner,
+        Paperless-ngx or Papra
+
+      - Paperless-ngx compatible API and an MCP server for AI agents
+
+      - Passkeys, full backup and restore, optional encryption at rest
+
+
+      **How to use?**
+
+
+      1. Open Lemmary from the Zima OS dashboard.
+
+
+      2. Follow the setup wizard: create the admin account and add your AI
+         key.
+
+
+      3. Upload documents, or drop them in the consume folder.
+  tips:
+    before_install:
+      en_US: >-
+        1. Get an AI key first. One Mistral key covers reading scans, naming
+           and search. OpenAI, Anthropic, OpenRouter and others work too.
+
+
+        2. Start the installation.
+
+
+        3. Open Lemmary from the Zima OS dashboard.
+
+
+        4. Follow the setup wizard. Create your admin account and type your
+           AI key.
+
+
+        5. Upload documents, or drop files in
+           /DATA/AppData/lemmary/consume.
+
+
+        6. More settings, like email import and encryption, are listed on the
+           Lemmary page at https://icestore.hsinghhira.me/app/lemmary/
+           (Variables tab). Most can also be changed in Lemmary's Admin
+           page.
+  index: /
+  port_map: "6691"
+  scheme: http
+  is_uncontrolled: false
+  version: "2026.11.6"
+  update_at: "2026-11-08"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/buldezir/lemmary 2026.11.6
+      - Port 6691; data in /app/pb_data, a consume folder at /consume
+      - Lemmary is source-available under the PolyForm Noncommercial license
+  repo: "https://github.com/buldezir/lemmary"
+  support: "https://github.com/buldezir/lemmary/issues"
+  docs: "https://github.com/buldezir/lemmary/blob/main/docs/setup.md"

@@ -1,0 +1,69 @@
+{
+  "name": "Lemmary",
+  "repo": "ghcr.io/buldezir/lemmary:2026.11.6",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/buldezir/lemmary/pkgs/container/lemmary",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=2048m --cpus=2.00 --memory-reservation=256m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:80]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lemmary/icon.png",
+  "project": "https://lemmary.app",
+  "support": "https://github.com/buldezir/lemmary/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/lemmary/",
+  "description": "Turns scans, PDFs and office files into a library you can search and research",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Pb_Data",
+      "host": "/mnt/cache/appdata/lemmary/data",
+      "container": "/app/pb_data",
+      "mode": "rw",
+      "description": "The database (data.db with all text and metadata), your original files and thumbnails (storage/) and the search index. Back up this folder."
+    },
+    {
+      "name": "Consume",
+      "host": "/mnt/cache/appdata/lemmary/consume",
+      "container": "/consume",
+      "mode": "rw",
+      "description": "Drop files here and Lemmary imports them on its own. Point it at a shared folder your scanner saves to."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6691",
+      "container": "80",
+      "description": "Lemmary web app, Paperless-compatible API and MCP server, published on host as 6691"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "INGEST_DIR",
+      "key": "INGEST_DIR",
+      "value": "/consume",
+      "mask": false,
+      "description": "The folder Lemmary watches for new files (the consume folder below). Subfolders become tags. Leave it at /consume, or clear it to turn the folder off."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
