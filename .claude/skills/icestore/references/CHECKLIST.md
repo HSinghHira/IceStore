@@ -65,6 +65,12 @@ Then check by hand what it can't see:
     writes). The new app is listed, each FROM shows `ok` or `bump`, and none
     shows `WARN`. A tag it should not move has `# auto-update: hold` above it.
 
+13. **MOS template**: `just platforms-preview --app <app>` shows no error for
+    the app in `_platforms/report.md`, every "not carried into the MOS form"
+    line is harmless (or the app is forced to a stack with an override), and
+    no generated `compose/`, `docker/*.json` or `maintainer.json` was edited by
+    hand.
+
 In the reply, remind the user to check after the first push that the
 `ghcr.io/hsinghhira/<app>` package is public and that the image finished
 building before installing.

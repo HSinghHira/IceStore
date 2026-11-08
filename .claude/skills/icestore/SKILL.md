@@ -1,11 +1,11 @@
 ---
 name: advanced-zimaos-app-creator
-description: Use when adding or updating an app in IceStore (the HSinghHira/IceStore GitHub repo), the community app store for ZimaOS, CasaOS, ReCasaOS and Homeio, especially an all-in-one app that bundles several upstream images (database, auth, API, web, workers) into one container built by GitHub Actions. Produces the Apps/ folder (docker-compose.yml with x-casaos, README.md with site front matter), the docker/ build folder (Dockerfile, aio-init.sh, run-svc.sh, supervisord.conf, nginx.conf.tpl, on the shared docker/_common helpers with a CREDENTIALS banner) and the build workflow, claims a 61xx port, and runs the checker. Trigger on requests like add an app to IceStore, make an all-in-one or single-container version of an app, port an app to the AppFlowy pattern, bump an app in IceStore, or any edit under Apps/, docker/ or build-*.yml in that repo.
+description: Use when adding or updating an app in IceStore (the HSinghHira/IceStore GitHub repo), the community app store for ZimaOS, CasaOS, ReCasaOS, Homeio and MOS (MOS Hub templates generated from the same Apps/ folder), especially an all-in-one app that bundles several upstream images (database, auth, API, web, workers) into one container built by GitHub Actions. Produces the Apps/ folder (docker-compose.yml with x-casaos, README.md with site front matter), the docker/ build folder (Dockerfile, aio-init.sh, run-svc.sh, supervisord.conf, nginx.conf.tpl, on the shared docker/_common helpers with a CREDENTIALS banner) and the build workflow, claims a 61xx port, runs the checker and previews the generated MOS template. Trigger on requests like add an app to IceStore, make an all-in-one or single-container version of an app, port an app to the AppFlowy pattern, bump an app in IceStore, or any edit under Apps/, docker/, platforms/ or build-*.yml in that repo, including making an app work on MOS.
 ---
 
 # Adding or updating an app in IceStore
 
-IceStore is a GitHub repo (`HSinghHira/IceStore`) that is two things at once:
+IceStore is a GitHub repo (`HSinghHira/IceStore`) that is three things at once:
 
 1. **An app store.** `release-store.yml` runs `IceWhaleTech/build-appstore-action`
    over `Apps/*/docker-compose.yml` and publishes `store.json` (ZimaOS) and
@@ -13,6 +13,13 @@ IceStore is a GitHub repo (`HSinghHira/IceStore`) that is two things at once:
 2. **A website.** The same workflow runs `site/build.py`, which makes one page per
    `Apps/<app>/` folder from its compose file, `README.md`, `icon.png` and
    `screenshot-N.png`.
+3. **A MOS Hub repository.** `platforms/generate.py` turns every `Apps/<app>/`
+   into a MOS template in the repo root (`docker/<Name>.json` install forms,
+   `compose/<Name>/` stacks, `maintainer.json`). MOS users add
+   `https://github.com/HSinghHira/IceStore` under MOS Hub Settings.
+
+Every app is written once, for ZimaOS, in `Apps/`. CasaOS, ReCasaOS and Homeio
+read the same store, and MOS gets a generated copy, so one app serves all five.
 
 Some apps are **all-in-one (AIO)**: a multi-container upstream (AppFlowy: Postgres,
 Redis, MinIO, GoTrue, API, worker, search, web, admin, mail) is rebuilt as one
@@ -82,14 +89,22 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    GitHub repo as the entry's `url` (case does not matter). If
    the entry's `url` is not that repo (a Docker Hub page, a GitHub org), add
    `"slug": "<Apps folder slug>"` to the entry instead.
+6c. **MOS.** Run `just platforms-preview --app <app>` from the repo root and
+   read `_platforms/report.md`. Fix anything listed as an error or "not
+   carried into the MOS form" that matters. If the app needs something
+   different on MOS (a different format, a setting removed, left out with a
+   reason), put only that in `platforms/mos/overrides/<app>.yml`
+   (`references/REPO.md` § platforms.yml). Never edit the generated
+   `compose/`, `docker/*.json` or `maintainer.json`; `just deploy` and the
+   `platforms.yml` workflow rewrite them.
 7. **Run the checker**: `python3 scripts/check_app.py <repo root> <app>`. Fix every
    ERROR. Read each WARN and fix it or tell the user why it stays. Then go through
    `references/CHECKLIST.md` for what the script cannot see.
 8. **Deliver** the files in the repo's own layout (`Apps/<app>/...`,
    `docker/<app>/...`, `.github/workflows/build-<app>.yml`). If the repo is attached
    or on the user's computer, write them there; otherwise zip them in that layout.
-   Tell the user which port you used, which images to add, and what to verify on
-   first install (below).
+   Tell the user which port you used, which images to add, what the MOS report
+   said, and what to verify on first install (below).
 
 ### Porting an app from the old ZimaAppStore
 
@@ -169,6 +184,12 @@ folder, the compose `name:`, the main service name, the image name
   a "set PUBLIC_URL to ..." page instead of redirecting browsers to localhost
   (`references/AIO.md` §3.5). Prefer making the app follow the browser's
   address when it can (`references/AIO.md` §3.7).
+- **One source for every OS.** Write the app only in `Apps/` (and `docker/<app>/`
+  for builds). The MOS generator relies on `x-casaos.main` and `port_map` naming
+  the web port, data under `/DATA/AppData/$AppID`, `$TZ`/`$PUID`/`$PGID`, and
+  `[ZIMAOS-IP-ADDRESS]` for the server address; it maps each to MOS. Breaking
+  those conventions breaks the MOS template too. MOS-only differences go in
+  `platforms/mos/overrides/<app>.yml`, never in `Apps/`.
 - **Pin every upstream tag** in the Dockerfile `FROM ... AS img-<name>` lines.
 - **AIO apps are kept current by `update-upstream.yml`** every Monday: it bumps
   the FROM tags, `AIO_VERSION`, `version`, `update_at` and `release_notes`, then
@@ -190,12 +211,15 @@ folder, the compose `name:`, the main service name, the image name
 - The store release ran after the image existed. Both workflows run on the same
   push, so a brand-new app may appear in the store a few minutes before its
   image is pullable.
+- MOS: after the push, the `platforms.yml` run is green and the app shows in
+  MOS Hub after **Refresh** (amd64-only apps are hidden on ARM machines).
 - The log shows every service started and the healthcheck turns healthy within
   `start_period`.
 
 ## Files in this skill
 
-- `references/REPO.md` — the IceStore tree, both workflows, what the site reads.
+- `references/REPO.md` — the IceStore tree, the workflows, what the site reads,
+  and the MOS generator (`platforms/README.md` in the repo has the full rules).
 - `references/COMPOSE.md` — compose and x-casaos rules, variables, secrets, tips.
 - `references/AIO.md` — how the all-in-one image works and how to port a new app.
 - `references/WRAPPER.md` — upstream image + a start script for per-install secrets.
