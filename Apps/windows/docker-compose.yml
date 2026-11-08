@@ -1,0 +1,220 @@
+name: windows
+
+services:
+  windows:
+    image: ghcr.io/hsinghhira/windows:latest
+    container_name: windows
+    restart: unless-stopped
+    stop_grace_period: 2m
+    network_mode: bridge
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/kvm:/dev/kvm
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - TZ=$TZ
+      - VERSION=11
+      - RAM_SIZE=4G
+      - CPU_CORES=2
+      - DISK_SIZE=64G
+      - USERNAME=Docker
+      - PASSWORD=
+    ports:
+      - target: 8006
+        published: "6187"
+        protocol: tcp
+      - target: 3389
+        published: "6188"
+        protocol: tcp
+      - target: 3389
+        published: "6188"
+        protocol: udp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/storage
+        target: /storage
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/shared
+        target: /shared
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 16384M
+        reservations:
+          cpus: "0.50"
+          memory: 2048M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/windows/icon.png
+    x-casaos:
+      id: com.icestore.windows
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: VERSION
+          description:
+            en_US: >-
+              Which Windows to download and install. 11 is Windows 11 Pro.
+              Others: 11l (11 LTSC), 10 (10 Pro), 10l (10 LTSC), 2025 or
+              2022 (Server), tiny11, xp, 7u. The full list is on the Windows
+              page in IceStore. Pick it before the first start.
+        - container: RAM_SIZE
+          description:
+            en_US: >-
+              Memory for Windows, like 4G or 8G. Keep it below the memory
+              your ZimaOS box has free, and below 16G.
+        - container: CPU_CORES
+          description:
+            en_US: >-
+              How many processor cores Windows may use, like 2 or 4.
+        - container: DISK_SIZE
+          description:
+            en_US: >-
+              The size of the Windows disk, like 64G or 128G. You can make it
+              bigger later; then extend the C drive in Windows Disk
+              Management.
+        - container: USERNAME
+          description:
+            en_US: >-
+              The Windows user made when Windows installs. Pick it before the
+              first start.
+        - container: PASSWORD
+          description:
+            en_US: >-
+              The password of that user, used when Windows installs. Leave it
+              blank and the app makes a random one, shown in the app log in
+              the box marked CREDENTIALS. Change it later inside Windows.
+      ports:
+        - container: "8006"
+          description:
+            en_US: Web viewer (the Windows screen in your browser), published on host as 6187
+        - container: "3389"
+          description:
+            en_US: Remote Desktop (RDP), TCP and UDP, published on host as 6188
+      volumes:
+        - container: /storage
+          description:
+            en_US: >-
+              The Windows disk, the downloaded installer and
+              icestore-password.txt. Needs at least 32 GB free, more for a
+              bigger DISK_SIZE.
+        - container: /shared
+          description:
+            en_US: >-
+              A folder shared with Windows. It shows as Shared on the desktop
+              and as drive Z.
+
+x-casaos:
+  id: com.icestore.windows
+  architectures:
+    - amd64
+  main: windows
+  author: HSinghHira
+  category: Others
+  developer: dockur
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/windows/icon.png
+  title:
+    en_US: Windows
+  tagline:
+    en_US: Windows inside a Docker container, installed for you
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/windows/](https://icestore.hsinghhira.me/app/windows/) for full details
+
+
+      Run a full Windows computer on your ZimaOS box. The app downloads
+      Windows from Microsoft and installs it by itself; you watch it in your
+      browser and use it there or with Remote Desktop. Each install gets its
+      own Windows password instead of the shared default "admin".
+
+
+      **Features**
+
+
+      - Windows 11, 10, Server, LTSC and older versions back to Windows 95
+
+      - Downloads and installs on its own, no ISO or clicks needed
+
+      - Near-native speed with KVM
+
+      - Choose the memory, processor cores and disk size
+
+      - A shared folder between ZimaOS and Windows (drive Z)
+
+      - Use it in the browser or with any Remote Desktop app
+
+
+      **How to use?**
+
+
+      1. Open Windows from the Zima OS dashboard.
+
+
+      2. Watch Windows install itself. It takes 10 to 30 minutes.
+
+
+      3. Use Windows in the browser, or connect a Remote Desktop app to
+         [ZIMAOS-IP-ADDRESS]:6188 with the user name and password from the
+         app log.
+  tips:
+    before_install:
+      en_US: >-
+        1. Your ZimaOS box must support KVM (Intel VT-x or AMD-V turned on in
+           the BIOS). Without it Windows will not start.
+
+
+        2. Make sure there is at least 32 GB of free space, more if you pick
+           a bigger DISK_SIZE.
+
+
+        3. Pick the Windows you want in VERSION. 11 is Windows 11 Pro.
+
+
+        4. Set RAM_SIZE and CPU_CORES. 4G and 2 is fine to start.
+
+
+        5. Leave PASSWORD blank to get a random one. Or type your own.
+
+
+        6. More settings, like language and keyboard, are listed on the
+           Windows page at https://icestore.hsinghhira.me/app/windows/
+           (Variables tab). Add them now. Windows only reads them when it
+           installs.
+
+
+        7. Start the installation.
+
+
+        8. Open Windows from the Zima OS dashboard. Watch it download and
+           install. This takes 10 to 30 minutes.
+
+
+        9. Open the app log. Find the box marked CREDENTIALS. It has your
+           user name and password.
+
+
+        10. For a faster screen, use a Remote Desktop app. Connect to
+            [ZIMAOS-IP-ADDRESS]:6188, like 192.168.1.20:6188.
+  index: /
+  port_map: "6187"
+  scheme: http
+  is_uncontrolled: false
+  version: "6.06"
+  update_at: "2026-11-08"
+  release_notes:
+    en_US: |-
+      - First IceStore version, built on dockurr/windows 6.06
+      - Each install gets its own Windows password (upstream's default is "admin")
+      - Web viewer on 6187, Remote Desktop on 6188 (TCP and UDP)
+      - amd64 only; ARM boxes need dockur/windows-arm
+  repo: "https://github.com/dockur/windows"
+  support: "https://github.com/dockur/windows/issues"
+  docs: "https://github.com/dockur/windows#faq-"

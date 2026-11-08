@@ -1,0 +1,130 @@
+{
+  "name": "Windows",
+  "repo": "ghcr.io/hsinghhira/windows:latest",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://github.com/hsinghhira/windows/pkgs/container/windows",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=120 --memory=16384m --cpus=4.00 --memory-reservation=2048m --cap-add=NET_ADMIN",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8006]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/windows/icon.png",
+  "project": "https://github.com/dockur/windows#faq-",
+  "support": "https://github.com/dockur/windows/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/windows/",
+  "description": "Windows inside a Docker container, installed for you",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "Storage",
+      "host": "/mnt/cache/appdata/windows/storage",
+      "container": "/storage",
+      "mode": "rw",
+      "description": "The Windows disk, the downloaded installer and icestore-password.txt. Needs at least 32 GB free, more for a bigger DISK_SIZE."
+    },
+    {
+      "name": "Shared",
+      "host": "/mnt/cache/appdata/windows/shared",
+      "container": "/shared",
+      "mode": "rw",
+      "description": "A folder shared with Windows. It shows as Shared on the desktop and as drive Z."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6187",
+      "container": "8006",
+      "description": "Web viewer (the Windows screen in your browser), published on host as 6187"
+    },
+    {
+      "name": "Port 3389",
+      "protocol": "tcp",
+      "host": "6188",
+      "container": "3389",
+      "description": "Remote Desktop (RDP), TCP and UDP, published on host as 6188"
+    },
+    {
+      "name": "Port 3389",
+      "protocol": "udp",
+      "host": "6188",
+      "container": "3389",
+      "description": "Remote Desktop (RDP), TCP and UDP, published on host as 6188"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "VERSION",
+      "key": "VERSION",
+      "value": "11",
+      "mask": false,
+      "description": "Which Windows to download and install. 11 is Windows 11 Pro. Others: 11l (11 LTSC), 10 (10 Pro), 10l (10 LTSC), 2025 or 2022 (Server), tiny11, xp, 7u. The full list is on the Windows page in IceStore. Pick it before the first start."
+    },
+    {
+      "name": "RAM_SIZE",
+      "key": "RAM_SIZE",
+      "value": "4G",
+      "mask": false,
+      "description": "Memory for Windows, like 4G or 8G. Keep it below the memory your MOS box has free, and below 16G."
+    },
+    {
+      "name": "CPU_CORES",
+      "key": "CPU_CORES",
+      "value": "2",
+      "mask": false,
+      "description": "How many processor cores Windows may use, like 2 or 4."
+    },
+    {
+      "name": "DISK_SIZE",
+      "key": "DISK_SIZE",
+      "value": "64G",
+      "mask": false,
+      "description": "The size of the Windows disk, like 64G or 128G. You can make it bigger later; then extend the C drive in Windows Disk Management."
+    },
+    {
+      "name": "USERNAME",
+      "key": "USERNAME",
+      "value": "Docker",
+      "mask": false,
+      "description": "The Windows user made when Windows installs. Pick it before the first start."
+    },
+    {
+      "name": "PASSWORD",
+      "key": "PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The password of that user, used when Windows installs. Leave it blank and the app makes a random one, shown in the app log in the box marked CREDENTIALS. Change it later inside Windows."
+    }
+  ],
+  "devices": [
+    {
+      "name": "Device 1",
+      "host": "/dev/kvm",
+      "container": "/dev/kvm",
+      "description": null
+    },
+    {
+      "name": "Device 2",
+      "host": "/dev/net/tun",
+      "container": "/dev/net/tun",
+      "description": null
+    }
+  ],
+  "labels": [],
+  "gpus": []
+}
