@@ -1,0 +1,165 @@
+name: musike
+
+services:
+  musike:
+    image: ghcr.io/ernani1234/musike:1.5.1
+    container_name: musike
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+      - MUSIKE_LOCATION=US
+    ports:
+      - target: 4180
+        published: "6189"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/cache
+        target: /cache
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/icon.png
+    x-casaos:
+      id: com.icestore.musike
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: MUSIKE_LOCATION
+          description:
+            en_US: >-
+              Your country, as a two-letter code like US, GB, DE or IN. It
+              decides which YouTube Music results and charts you see.
+      ports:
+        - container: "4180"
+          description:
+            en_US: Musike web player and API, published on host as 6189
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Your library: playlists, favorites and history (library.json).
+              Back this folder up.
+        - container: /cache
+          description:
+            en_US: >-
+              HD music videos already downloaded. Safe to delete; it is
+              limited to 2 GB by default.
+
+x-casaos:
+  id: com.icestore.musike
+  architectures:
+    - amd64
+    - arm64
+  main: musike
+  author: HSinghHira
+  category: Media
+  developer: Ernani1234
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/screenshot-4.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/screenshot-5.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/musike/screenshot-6.jpg
+  title:
+    en_US: Musike
+  tagline:
+    en_US: Music player for YouTube Music's catalog, with genres, full albums and playlists
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/musike/](https://icestore.hsinghhira.me/app/musike/) for full details
+
+
+      Musike is a personal music player for YouTube's catalog: any song or
+      music video, as audio or video, with no ads, no account and no
+      subscription. Your server fetches the music, so every device on your
+      network can play it in the browser.
+
+
+      **Features**
+
+
+      - Search YouTube Music for songs, videos and albums, or paste a
+        YouTube link
+
+      - Browse by genre, open artists and play full albums in order
+
+      - Search a list: type several songs at once and play them all
+
+      - Queue, shuffle, repeat and autoplay radio
+
+      - Video mode with the official music video, cinema mode and HD
+
+      - Playlists, favorites and history, with backup to a file
+
+      - Dark and light themes, any accent color, installable as an app on
+        phones
+
+
+      **How to use?**
+
+
+      1. Open Musike from the Zima OS dashboard.
+
+
+      2. Search for a song, artist or album, or click Genres.
+
+
+      3. Press play. Add songs to a playlist or your favorites to keep them.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set MUSIKE_LOCATION to your country, like US or GB.
+
+
+        2. More settings, like cookies for YouTube's bot checks and the video
+           cache size, are listed on the Musike page at
+           https://icestore.hsinghhira.me/app/musike/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        3. Start the installation.
+
+
+        4. Open Musike from the Zima OS dashboard. There is no account; it
+           opens straight away.
+
+
+        5. On a phone, open http://[ZIMAOS-IP-ADDRESS]:6189 and add it to
+           your home screen.
+  index: /
+  port_map: "6189"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.5.1"
+  update_at: "2026-11-08"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/ernani1234/musike 1.5.1
+      - Port 6189, library in /data, HD video cache in /cache
+      - Runs as root inside the container so it can write to the ZimaOS data folders
+  repo: "https://github.com/Ernani1234/musike"
+  support: "https://github.com/Ernani1234/musike/issues"
+  docs: "https://github.com/Ernani1234/musike#configuration"
