@@ -98,7 +98,9 @@ services:
           description:
             en_US: >-
               Your movies, series and music. Point it at the folder that holds
-              them, like /DATA/Media with Movies, Series and Music inside.
+              them, like /DATA/Media with Movies, Series and Music inside. You
+              can add more folders in the app settings, at any container path
+              like /movies or /tv. K7 sees each one at that path.
 
 x-casaos:
   id: com.icestore.k7
@@ -160,14 +162,15 @@ x-casaos:
 
       2. Sign in with the admin user name and password.
 
-      3. Go to Administration, Content, Library, New library. Pick a folder
-         under /media.
+      3. Go to Administration, Content, Library, New library. Pick /media or
+         any folder you added.
   tips:
     before_install:
       en_US: >-
         1. Put your movies, series and music in /DATA/Media, in folders like
            Movies, Series and Music. Or change the /media folder in the app
-           settings to where they are.
+           settings to where they are. You can also add more folders, at any
+           container path like /movies, /tv or /doc.
 
 
         2. Leave ADMIN_PASSWORD blank to get a random one. Or type your own,
@@ -197,8 +200,8 @@ x-casaos:
         8. Open K7 from the Zima OS dashboard and sign in as admin.
 
 
-        9. Go to Administration, Content, Library, New library. Pick a folder
-           under /media.
+        9. Go to Administration, Content, Library, New library. Pick /media
+           or any folder you added.
 
 
         10. To check hardware transcoding, go to Administration, Transcoding
@@ -208,12 +211,13 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "1.17.2"
-  update_at: "2026-11-07"
+  update_at: "2026-11-08"
   release_notes:
     en_US: |-
+      - Add as many media folders as you like, at any container path (/movies, /tv, /doc ...)
       - Single-container K7 with one port (6186) and one data folder
       - Secret keys and the first admin are made on first start, so each install gets its own
-      - PostgreSQL 18 inside; your media folder is mounted at /media
+      - PostgreSQL 18 inside; media folders at /media or any path you add
       - ghcr.io/kaybi-gh/k7 1.17.2
   repo: "https://github.com/kaybi-gh/K7"
   support: "https://github.com/kaybi-gh/K7/issues"

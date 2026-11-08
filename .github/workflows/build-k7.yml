@@ -19,4 +19,4 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       app: k7
-      AIO_VERSION: "1.1.0"
+      AIO_VERSION: "1.1.1"

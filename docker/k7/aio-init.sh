@@ -10,7 +10,6 @@ RUN=${AIO_RUN:-/run/aio}
 HOSTS=${AIO_HOSTS:-/etc/hosts}
 NGINX_TPL=${AIO_NGINX_TPL:-/etc/nginx/aio.conf.tpl}
 NGINX_OUT=${AIO_NGINX_OUT:-/etc/nginx/aio.conf}
-MEDIA=${AIO_MEDIA:-/media}
 GATEWAY_PORT=8080
 
 # Shared IceStore helpers: log, ensure_secret, secret, cred_add (docker/_common).
@@ -72,24 +71,63 @@ if ! grep -q ' k7-postgres' "$HOSTS"; then
   echo "127.0.0.1 postgres k7-postgres k7-server" >> "$HOSTS"
 fi
 
+# ---- media folders: every volume the user added, at any container path ----
+# Upstream K7 reads media from whatever paths are mounted (/media, /movies,
+# /tv ...). K7 runs in a chroot here, so each user volume is mounted into it at
+# the same path. System paths and /data (handled on its own) are skipped, and
+# a path inside another one is left to that one's rbind.
+media_mounts() {
+  local mp
+  while read -r _ _ _ _ mp _; do
+    mp=$(printf '%b' "$mp")
+    case $mp in
+      /|/data|/data/*) continue ;;
+    esac
+    case ${mp#/} in
+      proc|proc/*|sys|sys/*|dev|dev/*|etc|etc/*|usr|usr/*|bin|bin/*|sbin|sbin/*) continue ;;
+      lib|lib/*|lib32|lib32/*|lib64|lib64/*|libx32|libx32/*|opt|opt/*|run|run/*) continue ;;
+      tmp|tmp/*|var|var/*|root|root/*|boot|boot/*|k7|k7/*|app|app/*) continue ;;
+    esac
+    printf '%s\n' "$mp"
+  done < /proc/self/mountinfo | LC_ALL=C sort -u | {
+    local kept=() k
+    while IFS= read -r mp; do
+      for k in "${kept[@]}"; do
+        case $mp in "$k"/*) continue 2 ;; esac
+      done
+      kept+=("$mp")
+      printf '%s\n' "$mp"
+    done
+  }
+}
+
 # ---- chroot services: the generic part is prep_chroots (lib.sh) ----
 chroot_extra() {
   local d=$1 name=$2
   # APP-SPECIFIC: K7 keeps config, artwork, logs and transcodes in /data, reads
-  # the media library from /media, and uses /dev/dri for hardware transcoding.
-  # Its own entrypoint gives /data to appuser (PUID/PGID) and joins the
-  # /dev/dri groups; /media keeps its host owner.
+  # media from every user volume (see media_mounts), and uses /dev/dri for
+  # hardware transcoding. Its own entrypoint gives /data to appuser (PUID/PGID)
+  # and joins the /dev/dri groups; media folders keep their host owner.
   if [ "$(basename "$d")" = k7 ]; then
     mkdir -p "$d/data"
     mountpoint -q "$d/data" || mount --bind "$DATA/k7" "$d/data" 2>/dev/null \
       || log "warning: could not mount $DATA/k7 into the k7 chroot"
-    if [ -d "$MEDIA" ]; then
-      mkdir -p "$d/media"
-      mountpoint -q "$d/media" || mount --rbind "$MEDIA" "$d/media" 2>/dev/null \
-        || log "warning: could not mount $MEDIA into the k7 chroot"
-    else
-      log "no media folder at $MEDIA: add one in the app settings to build libraries"
-    fi
+    local p found=0
+    while IFS= read -r p; do
+      [ -n "$p" ] || continue
+      found=1
+      if [ -d "$p" ]; then
+        mkdir -p "$d$p"
+      else
+        mkdir -p "$(dirname "$d$p")"; [ -e "$d$p" ] || : > "$d$p"
+      fi
+      if mountpoint -q "$d$p" || mount --rbind "$p" "$d$p" 2>/dev/null; then
+        log "media folder $p is available to K7"
+      else
+        log "warning: could not mount $p into the k7 chroot"
+      fi
+    done < <(media_mounts)
+    [ "$found" = 1 ] || log "no media folder found: add a volume in the app settings (like /media or /movies) to build libraries"
     if [ -d /dev/dri ]; then
       mkdir -p "$d/dev/dri"
       mountpoint -q "$d/dev/dri" || mount --rbind /dev/dri "$d/dev/dri" 2>/dev/null || true
