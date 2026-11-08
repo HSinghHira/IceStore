@@ -35,7 +35,7 @@
       "host": "/mnt/cache/media",
       "container": "/media",
       "mode": "rw",
-      "description": "Your movies, series and music. Point it at the folder that holds them, like /mnt/cache/media with Movies, Series and Music inside."
+      "description": "Your movies, series and music. Point it at the folder that holds them, like /mnt/cache/media with Movies, Series and Music inside. You can add more folders in the app settings, at any container path like /movies or /tv. K7 sees each one at that path."
     }
   ],
   "ports": [
