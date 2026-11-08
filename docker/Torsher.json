@@ -1,0 +1,97 @@
+{
+  "name": "Torsher",
+  "repo": "ghcr.io/torsher-app/torsher:1.5.2",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/torsher-app/torsher/pkgs/container/torsher",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=2048m --cpus=4.00 --memory-reservation=256m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/panel/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/torsher/icon.png",
+  "project": "https://torsher.app",
+  "support": "https://github.com/torsher-app/torsher/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/torsher/",
+  "description": "Your home cinema in one container, built for the TV first",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/torsher/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database and its keys (db/), downloads and the watch cache (torrents/) and the files you keep (library/). Keep them in this one folder so kept files are hard-linked, not copied."
+    },
+    {
+      "name": "Zimaos",
+      "host": "/mnt/cache/media",
+      "container": "/media/zimaos",
+      "mode": "ro",
+      "description": "Your existing movies and series, read-only. Add the folders inside it in the control panel under Library."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6197",
+      "container": "8080",
+      "description": "Torsher showcase (/), control panel (/panel/) and API, published on host as 6197"
+    },
+    {
+      "name": "Port 6198",
+      "protocol": "tcp",
+      "host": "6198",
+      "container": "6198",
+      "description": "Torrent peer connections, TCP and UDP, published on host as 6198"
+    },
+    {
+      "name": "Port 6198",
+      "protocol": "udp",
+      "host": "6198",
+      "container": "6198",
+      "description": "Torrent peer connections, TCP and UDP, published on host as 6198"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "ENGINE_PEER_PORT",
+      "key": "ENGINE_PEER_PORT",
+      "value": "6198",
+      "mask": false,
+      "description": "The port torrent peers connect to. It must be the same number inside and outside the container. Leave it at 6198, and forward 6198 on your router for faster downloads."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
