@@ -1,12 +1,12 @@
-name: Build opencadence
+name: Build opencadence-community
 
 on:
   push:
     branches: [main]
     paths:
-      - "docker/opencadence/**"
+      - "docker/opencadence-community/**"
       - "docker/_common/**"
-      - ".github/workflows/build-opencadence.yml"
+      - ".github/workflows/build-opencadence-community.yml"
   workflow_dispatch:
 
 permissions:
@@ -18,6 +18,6 @@ jobs:
   build:
     uses: ./.github/workflows/build-image.yml
     with:
-      app: opencadence
+      app: opencadence-community
       AIO_VERSION: "1.0.0"
       kind: wrapper

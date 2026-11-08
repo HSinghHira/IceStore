@@ -6,7 +6,7 @@
 # from one pinned commit of github.com/OpenCadence/opencadence, the same way
 # upstream's own Dockerfile does it (pnpm install, Next.js standalone build).
 # To update, change CADENCE_REF below (and x-casaos.version in the compose
-# file), bump AIO_VERSION in build-opencadence.yml and rebuild.
+# file), bump AIO_VERSION in build-opencadence-community.yml and rebuild.
 #
 # OpenCadence has no login and only answers to localhost. IceStore adds one
 # thing in front of it: nginx on 8080 with a password made on first start
@@ -35,7 +35,7 @@ COPY icestore-init.sh /usr/local/bin/icestore-init
 COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
 RUN chmod +x /usr/local/bin/icestore-init /usr/local/lib/icestore/credentials.sh
 
-LABEL org.opencontainers.image.title="opencadence" \
+LABEL org.opencontainers.image.title="opencadence-community" \
       org.opencontainers.image.description="OpenCadence, built from upstream source, with a password in front" \
       org.opencontainers.image.version="${CADENCE_REF}" \
       org.opencontainers.image.source="https://github.com/HSinghHira/IceStore"

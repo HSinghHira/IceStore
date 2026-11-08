@@ -1,9 +1,9 @@
-name: opencadence
+name: opencadence-community
 
 services:
-  opencadence:
-    image: ghcr.io/hsinghhira/opencadence:latest
-    container_name: opencadence
+  opencadence-community:
+    image: ghcr.io/hsinghhira/opencadence-community:latest
+    container_name: opencadence-community
     restart: unless-stopped
     stop_grace_period: 30s
     network_mode: bridge
@@ -30,9 +30,9 @@ services:
           cpus: "0.00"
           memory: 128M
     labels:
-      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/icon.png
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence-community/icon.png
     x-casaos:
-      id: com.icestore.opencadence
+      id: com.icestore.opencadence-community
       envs:
         - container: TZ
           description:
@@ -63,25 +63,25 @@ services:
               your client information and notes.
 
 x-casaos:
-  id: com.icestore.opencadence
+  id: com.icestore.opencadence-community
   architectures:
     - amd64
     - arm64
-  main: opencadence
+  main: opencadence-community
   author: HSinghHira
   category: Productivity
   developer: OpenCadence
-  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/icon.png
-  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/screenshot-1.jpg
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence-community/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence-community/screenshot-1.jpg
   screenshot_link:
-    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opencadence-community/screenshot-1.jpg
   title:
     en_US: OpenCadence
   tagline:
     en_US: Workspace for freelancers to manage clients, projects, tasks, follow-ups and notes
   description:
     en_US: >-
-      Visit: [https://icestore.hsinghhira.me/app/opencadence/](https://icestore.hsinghhira.me/app/opencadence/) for full details
+      Visit: [https://icestore.hsinghhira.me/app/opencadence-community/](https://icestore.hsinghhira.me/app/opencadence-community/) for full details
 
 
       OpenCadence is a calm, private workspace for freelancers and
@@ -148,6 +148,7 @@ x-casaos:
       - Built from upstream commit 31b9ba0 (upstream publishes no image and no release tags yet), on node 22.23.4-bookworm-slim
       - OpenCadence has no login, so nginx asks for a password first; the password is made on first start, so each install gets its own
       - Single user, like upstream's Community edition
+      - Named opencadence-community because ghcr.io/hsinghhira/opencadence belongs to another build
   repo: "https://github.com/OpenCadence/opencadence"
   support: "https://github.com/OpenCadence/opencadence/issues"
   docs: "https://github.com/OpenCadence/opencadence/blob/main/docs/SELF_HOSTING.md"
