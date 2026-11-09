@@ -119,8 +119,8 @@ x-casaos:
         1. Open the app configuration before you install.
 
 
-        2. Find BASE_URL. It starts as http://[ZIMAOS-IP-ADDRESS]:6710. Put
-           your ZimaOS IP in place of [ZIMAOS-IP-ADDRESS], like
+        2. Find BASE_URL. It starts as http://[ZIMAOS-IP-ADDRESS]:6710 and
+           needs your ZimaOS IP in place of [ZIMAOS-IP-ADDRESS], like
            http://192.168.1.20:6710 for the IP 192.168.1.20, and save. You
            must do this, or live updates won't work.
 
