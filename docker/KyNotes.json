@@ -1,0 +1,68 @@
+{
+  "name": "KyNotes",
+  "repo": "ghcr.io/busnes-app/kynotes-server:0.6.0",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/busnes-app/kynotes-server/pkgs/container/kynotes-server",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=60 --memory=1024m --cpus=1.00 --memory-reservation=64m --user=0:0 --health-cmd=\"/kynotes-server healthcheck\" --health-interval=30s --health-timeout=5s --health-start-period=20s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kynotes/icon.png",
+  "project": "https://busnes.app",
+  "support": "https://github.com/Busnes-app/KyNotes-server/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/kynotes/",
+  "description": "End-to-end encrypted notes with text, handwriting and team notebooks.",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/kynotes/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database, the encrypted notes and attachments, and the server's keys. Back up the whole folder; KyNotes can also make sealed backups to KyRecovery."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6696",
+      "container": "8080",
+      "description": "KyNotes web app and API, published on host as 6696"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PORT",
+      "key": "PORT",
+      "value": "8080",
+      "mask": false,
+      "description": "The port KyNotes listens on inside the container. Leave it as 8080."
+    },
+    {
+      "name": "KYNOTES_DATA_DIR",
+      "key": "KYNOTES_DATA_DIR",
+      "value": "/data",
+      "mask": false,
+      "description": "Where KyNotes keeps its data inside the container. Leave it as /data."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
