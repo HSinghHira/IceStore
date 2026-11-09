@@ -1,0 +1,168 @@
+name: trackhop
+
+services:
+  trackhop:
+    image: ghcr.io/hsinghhira/trackhop:latest
+    container_name: trackhop
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - SONGPORT_URL=http://[ZIMAOS-IP-ADDRESS]:6715
+    ports:
+      - target: 8080
+        published: "6715"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 768M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackhop/icon.png
+    x-casaos:
+      id: com.icestore.trackhop
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for scheduled syncs. It is filled in from your
+              ZimaOS time zone.
+        - container: SONGPORT_URL
+          description:
+            en_US: >-
+              Required. The address you open Trackhop at: replace
+              [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6715. Music service sign-ins come back to
+              this address followed by /callback. Spotify, YouTube Music and
+              Deezer only accept an https address, like
+              https://music.example.com through your reverse proxy.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Trackhop web app, published on host as 6715
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Your syncs, reports and settings (store.json), music service
+              sign-ins (tokens.json), playlist files and this install's
+              password (.icestore-password).
+
+x-casaos:
+  id: com.icestore.trackhop
+  architectures:
+    - amd64
+    - arm64
+  main: trackhop
+  author: HSinghHira
+  category: Media
+  developer: xlollx
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackhop/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackhop/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackhop/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackhop/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackhop/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trackhop/screenshot-4.jpg
+  title:
+    en_US: Trackhop
+  tagline:
+    en_US: Keeps playlists in sync across Spotify, Apple Music, YouTube Music, TIDAL, Plex, Jellyfin and more.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/trackhop/](https://icestore.hsinghhira.me/app/trackhop/) for full details
+
+
+      Trackhop keeps playlists identical across Spotify, Apple Music, YouTube
+      Music, Amazon Music, TIDAL, Deezer, SoundCloud, Navidrome, Jellyfin,
+      Emby and Plex. Scheduled syncs run on your server, and tracks it can't
+      find are easy to review. No Trackhop account: your sign-ins stay on
+      your server.
+
+
+      **Features**
+
+
+      - Two-way and one-way playlist syncs between music services and your
+        own servers
+
+      - Scheduled syncs, with a report of what was matched
+
+      - Review and replace tracks that weren't found or can't be played
+
+      - Playlist files (CSV, M3U, iTunes XML) and Last.fm, ListenBrainz
+        sources
+
+      - Optional separate accounts for each person
+
+
+      **How to use?**
+
+
+      1. Set SONGPORT_URL to your ZimaOS IP (or your https address) before
+         you install.
+
+
+      2. Open Trackhop and sign in with any name and the password from the
+         app's logs.
+
+
+      3. Connect your music services, then create a sync.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find SONGPORT_URL. It starts as http://[ZIMAOS-IP-ADDRESS]:6715
+           and needs your ZimaOS IP in place of [ZIMAOS-IP-ADDRESS], like
+           http://192.168.1.20:6715 for the IP 192.168.1.20 (use yours). You
+           must do this, and always open Trackhop at exactly that address.
+
+
+        3. Spotify, YouTube Music and Deezer only allow https sign-ins. For
+           them, use a reverse proxy with your own domain pointed at
+           http://[ZIMAOS-IP-ADDRESS]:6715 and set SONGPORT_URL to it, like
+           https://music.example.com. Navidrome, Jellyfin and Plex work
+           without https.
+
+
+        4. Start the installation. It is ready in about half a minute.
+
+
+        5. Look in the app's logs for the box marked CREDENTIALS. It has the
+           password. Sign in with any user name and that password.
+
+
+        6. Service keys and more settings are listed on the Trackhop page at
+           https://icestore.hsinghhira.me/app/trackhop/ (Variables tab).
+  index: /
+  port_map: "6715"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.8.1"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/xlollx/trackhop 1.8.1, plus a start script that makes this install's SONGPORT_PASSWORD on first start and keeps it in the data folder.
+      - Port 6715; the data folder is /DATA/AppData/trackhop/data.
+  repo: "https://github.com/xlollx/Trackhop"
+  support: "https://github.com/xlollx/Trackhop/issues"
+  docs: "https://trackhop.org/guide/docker"
