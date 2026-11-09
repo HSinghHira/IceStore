@@ -27,7 +27,7 @@ RUN set -eux; \
         libzip-dev libicu-dev libonig-dev libpq-dev \
         jpegoptim optipng; \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif; \
-    docker-php-ext-install -j"$(nproc)" pdo_mysql pdo_pgsql mbstring gd zip intl bcmath opcache; \
+    docker-php-ext-install -j"$(nproc)" pdo_mysql pdo_pgsql mbstring gd zip intl bcmath; \
     pecl install apcu; \
     docker-php-ext-enable apcu; \
     rm -rf /var/lib/apt/lists/* /tmp/pear; \
