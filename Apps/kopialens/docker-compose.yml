@@ -1,0 +1,165 @@
+name: kopialens
+
+services:
+  kopialens:
+    image: anshulj99/kopialens:1.0.1
+    container_name: kopialens
+    hostname: kopialens
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 7123
+        published: "6708"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopialens/icon.png
+    x-casaos:
+      id: com.icestore.kopialens
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for the nightly index time. It is filled in from
+              your ZimaOS time zone.
+      ports:
+        - container: "7123"
+          description:
+            en_US: KopiaLens web app (https, with its own certificate), published on host as 6708
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              KopiaLens's settings, the index, kopia's cache and connection
+              files.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS storage, at the same path inside, so Kopia
+              repositories and backed-up folders under /DATA keep their paths.
+              Repositories elsewhere (S3, B2, SFTP) need nothing here.
+
+x-casaos:
+  id: com.icestore.kopialens
+  architectures:
+    - amd64
+    - arm64
+  main: kopialens
+  author: HSinghHira
+  category: Others
+  developer: AnshulJ999
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopialens/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopialens/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopialens/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopialens/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopialens/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopialens/screenshot-4.jpg
+  title:
+    en_US: KopiaLens
+  tagline:
+    en_US: Kopia backups you can see inside, with schedules, restores and real folder sizes.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kopialens/](https://icestore.hsinghhira.me/app/kopialens/) for full details
+
+
+      KopiaLens is a backup app for Kopia with an analysis engine built in. It
+      creates repositories, runs your backups on a schedule, restores files
+      and runs maintenance, and it shows what Kopia can't show quickly: what
+      each folder really costs after deduplication, which snapshots hold a
+      file, how your backups grow, and what isn't backed up at all.
+
+
+      **Features**
+
+
+      - Scheduled, encrypted, deduplicated backups to disks, S3, B2, SFTP and
+        more, with Kopia inside
+
+      - Restore or download any file from any snapshot; policies and
+        retention
+
+      - Real sizes after deduplication, search across every snapshot, tree
+        and churn views
+
+      - Excluded view: the folders no backup covers
+
+      - Notifications, an HTTP API and the klens command line; clean-up tools
+        in the Pro version
+
+
+      **How to use?**
+
+
+      1. Open KopiaLens from the Zima OS dashboard (https; accept the
+         certificate warning).
+
+
+      2. Finish the first-time setup and choose a sign-in password.
+
+
+      3. Connect your Kopia repository or create a new one, for example in
+         /DATA/Backup/kopia.
+
+
+      4. Add folders under /DATA to back up.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open https://[ZIMAOS-IP-ADDRESS]:6708 within 30 minutes. Your
+           browser warns about the certificate; that is KopiaLens's own one,
+           so go on.
+
+
+        3. In the setup, set a sign-in password. Without it, anyone on your
+           network can open KopiaLens.
+
+
+        4. After 30 minutes the setup asks for a setup code. It is in the
+           app's logs.
+
+
+        5. All of /DATA is visible inside at the same path. Put a new
+           repository in a folder like /DATA/Backup/kopia.
+
+
+        6. Mounting snapshots as folders needs extra rights (FUSE); see the
+           KopiaLens page at https://icestore.hsinghhira.me/app/kopialens/.
+           Everything else works without it.
+  index: /
+  port_map: "6708"
+  scheme: https
+  is_uncontrolled: false
+  version: "1.0.1"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore version: anshulj99/kopialens 1.0.1
+      - Port 6708 (https with KopiaLens's own certificate). /DATA is mounted at the same path, so repositories and backed-up folders there keep their paths.
+      - Snapshot mounting (FUSE) is left off; the rest works without it.
+  repo: "https://github.com/AnshulJ999/KopiaLens"
+  support: "https://github.com/AnshulJ999/KopiaLens/issues"
+  docs: "https://kopialens.com/docs"

@@ -1,0 +1,62 @@
+{
+  "name": "KopiaLens",
+  "repo": "anshulj99/kopialens:1.0.1",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://hub.docker.com/r/anshulj99/kopialens",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=2048m --cpus=2.00 --memory-reservation=128m --hostname=kopialens",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "https://[IP]:[PORT:7123]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopialens/icon.png",
+  "project": "https://kopialens.com",
+  "support": "https://github.com/AnshulJ999/KopiaLens/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/kopialens/",
+  "description": "Kopia backups you can see inside, with schedules, restores and real folder sizes.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/kopialens/config",
+      "container": "/config",
+      "mode": "rw",
+      "description": "KopiaLens's settings, the index, kopia's cache and connection files."
+    },
+    {
+      "name": "Data",
+      "host": "/DATA",
+      "container": "/DATA",
+      "mode": "rw",
+      "description": "Your MOS storage, at the same path inside, so Kopia repositories and backed-up folders under /DATA keep their paths. Repositories elsewhere (S3, B2, SFTP) need nothing here."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6708",
+      "container": "7123",
+      "description": "KopiaLens web app (https, with its own certificate), published on host as 6708"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
