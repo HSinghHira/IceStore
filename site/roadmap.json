@@ -43,5 +43,6 @@
   {"name": "AppRankly", "category": "Analytics", "desc": "Mobile app analytics and ASO dashboard for Google Play and the App Store.", "url": "https://github.com/zmsp/AppRankly", "icon": "apprankly.png"},
   {"name": "FLE Link", "category": "AI", "desc": "Runs large local AI models on one GPU and serves an OpenAI and Anthropic compatible API.", "url": "https://github.com/sirfyyn/flelink", "icon": "flelink.svg"},
   {"name": "AI Gude", "category": "AI", "desc": "Your own morning podcast from the news sources you follow, narrated by AI.", "url": "https://github.com/alex0ptr/aigude", "icon": "aigude.svg"},
-  {"name": "kovi", "category": "Documents", "desc": "Reading dashboard for your KOReader statistics: books, progress and reading time.", "url": "https://git.sysmd.uk/mdaleo404/kovi", "icon": "kovi.png", "slug": "kovi"}
+  {"name": "kovi", "category": "Documents", "desc": "Reading dashboard for your KOReader statistics: books, progress and reading time.", "url": "https://git.sysmd.uk/mdaleo404/kovi", "icon": "kovi.png", "slug": "kovi"},
+  {"name": "OpenSignup", "category": "Productivity", "desc": "Sign-up sheets for snack rotations, volunteer shifts and carpools, no participant accounts.", "url": "https://github.com/richshaw/OpenSignup", "icon": "opensignup.png"}
 ]
