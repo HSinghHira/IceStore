@@ -1,0 +1,160 @@
+name: yt-dlp-z
+
+services:
+  yt-dlp-z:
+    image: ghcr.io/zxy101/yt-dlp-z:0.1.5
+    container_name: yt-dlp-z
+    restart: unless-stopped
+    stop_grace_period: 10m
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 9742
+        published: "6705"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Downloads/yt-dlp-z
+        target: /downloads
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yt-dlp-z/icon.png
+    x-casaos:
+      id: com.icestore.yt-dlp-z
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for logs and schedules. It is filled in from your
+              ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the downloads and settings. Filled in by
+              ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the downloads and settings. Filled in by
+              ZimaOS.
+      ports:
+        - container: "9742"
+          description:
+            en_US: yt-dlp-z web app, published on host as 6705
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              The database, the secret key, job logs and uploaded cookies.
+        - container: /downloads
+          description:
+            en_US: >-
+              Your downloads, in /DATA/Downloads/yt-dlp-z, where the Files app
+              and media servers can see them.
+
+x-casaos:
+  id: com.icestore.yt-dlp-z
+  architectures:
+    - amd64
+    - arm64
+  main: yt-dlp-z
+  author: HSinghHira
+  category: Media
+  developer: ZXY101
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yt-dlp-z/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yt-dlp-z/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yt-dlp-z/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yt-dlp-z/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yt-dlp-z/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yt-dlp-z/screenshot-4.jpg
+  title:
+    en_US: yt-dlp-z
+  tagline:
+    en_US: Web dashboard for yt-dlp with presets, channel watching and live-stream recording.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/yt-dlp-z/](https://icestore.hsinghhira.me/app/yt-dlp-z/) for full details
+
+
+      yt-dlp-z puts a web app in front of yt-dlp. Paste a link from your
+      phone, pick a preset, and it downloads on your server. Point it at a
+      YouTube channel and new uploads show up on their own; when the channel
+      goes live, the stream is recorded from the start.
+
+
+      **Features**
+
+
+      - Any site yt-dlp supports, with every yt-dlp option, grouped and
+        searchable
+
+      - Presets, a link check before you download, and a live queue
+
+      - Channel and playlist watching, with live-stream recording from the
+        start
+
+      - Jellyfin, Plex and Kodi friendly output, cookies, proxies and ntfy
+        alerts
+
+      - An MCP server so AI agents can start downloads
+
+
+      **How to use?**
+
+
+      1. Open yt-dlp-z from the Zima OS dashboard right after installing.
+
+
+      2. Choose the admin password and the download folder (/downloads).
+
+
+      3. Paste a link, pick a preset and download.
+
+
+      4. Find your files in the Files app under Downloads, yt-dlp-z.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open http://[ZIMAOS-IP-ADDRESS]:6705 right away. The first person
+           to open it chooses the admin password, so do it before anyone
+           else. To set it in advance, add YTDLPZ_ADMIN_PASSWORD in the app
+           settings (Variables tab on
+           https://icestore.hsinghhira.me/app/yt-dlp-z/).
+
+
+        3. Keep /downloads as the download folder. Files land in the Files
+           app under Downloads, yt-dlp-z.
+  index: /
+  port_map: "6705"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.1.5"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/zxy101/yt-dlp-z 0.1.5
+      - Port 6705; settings in /DATA/AppData/yt-dlp-z/config and downloads in /DATA/Downloads/yt-dlp-z.
+  repo: "https://github.com/ZXY101/yt-dlp-z"
+  support: "https://github.com/ZXY101/yt-dlp-z/issues"
+  docs: "https://github.com/ZXY101/yt-dlp-z/tree/main/docs"
