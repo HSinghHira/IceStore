@@ -28,6 +28,9 @@ except ImportError:
 REPO = "HSinghHira/IceStore"
 LOW, HIGH = 6101, 6199
 BLOCK_LOW, BLOCK_HIGH, BLOCK = 6600, 6699, 30
+# 61xx is full (Nov 2026): single apps continue here, after the Ente blocks.
+NEXT_LOW, NEXT_HIGH = 6690, 6799
+FIXED_PORTS = {"53"}  # DNS servers (KyDNS): clients can't use another port
 SOURCES = [
     f"https://codeload.github.com/{REPO}/tar.gz/refs/heads/main",
     f"https://github.com/{REPO}/archive/refs/heads/main.tar.gz",
@@ -105,7 +108,7 @@ def main():
             if not p.isdigit():
                 problems.append(f"{app}: port '{p}' is not a number (a $PORT variable?)")
                 continue
-            if not (LOW <= int(p) <= HIGH or BLOCK_LOW <= int(p) <= BLOCK_HIGH):
+            if p not in FIXED_PORTS and not (LOW <= int(p) <= HIGH or BLOCK_LOW <= int(p) <= NEXT_HIGH):
                 problems.append(f"{app}: port {p} is outside {LOW}-{HIGH} and {BLOCK_LOW}-{BLOCK_HIGH}")
             if p in owner and owner[p] != app:
                 problems.append(f"port {p} is used by both {owner[p]} and {app}")
@@ -130,7 +133,12 @@ def main():
     for msg in problems:
         print(f"WARNING: {msg}")
     if start is None:
-        sys.exit(f"no {args.count} free port(s) in a row left in {LOW}-{HIGH}; ask the user which range to use next")
+        for p in range(NEXT_LOW, NEXT_HIGH - args.count + 2):
+            if all(q not in used for q in range(p, p + args.count)):
+                start = p
+                break
+    if start is None:
+        sys.exit(f"no {args.count} free port(s) in a row left in {LOW}-{HIGH} or {NEXT_LOW}-{NEXT_HIGH}; ask the user which range to use next")
     block = ", ".join(str(p) for p in range(start, start + args.count))
     print(f"Next free: {block}")
 

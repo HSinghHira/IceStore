@@ -51,9 +51,11 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    from GitHub). It reads every `Apps/*/docker-compose.yml`, so there is no ledger
    file. If it cannot reach the repo, ask the user which ports are taken. Never
    guess. Older apps outside 61xx only show as warnings; leave their ports alone.
-   **6101–6199 is full (Nov 2026).** New apps take the next free numbers after
-   the last block, from 6690 up (Reelsaw 6690, Lemmary 6691, Fluxer
-   6692–6694); `ports.py` lists what is taken.
+   **6101–6199 is full (Nov 2026).** New apps take the next free numbers in
+   6690–6799 (Reelsaw 6690, Lemmary 6691, Fluxer 6692–6694, KyIdentity
+   6695, ...); `ports.py` falls through to that range by itself and the
+   checker accepts it. A port a protocol fixes (DNS on 53, KyDNS) is
+   published as itself; it is in `FIXED_PORTS` in both scripts.
 2. **Gather upstream facts first**: every image and pinned tag, ports, env vars
    (the full list of settings people can change, from upstream's `.env`
    example, config reference and docs — not just what its compose file sets;

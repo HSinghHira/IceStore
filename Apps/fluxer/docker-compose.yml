@@ -96,6 +96,9 @@ x-casaos:
     en_US: Free and open source chat and voice for friends, groups and communities.
   description:
     en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/fluxer/](https://icestore.hsinghhira.me/app/fluxer/) for full details
+
+
       Fluxer is a free and open source instant messaging and VoIP chat app,
       Discord-style: communities, channels, direct messages, voice and video.
       This is Fluxer in a single container, with PostgreSQL, Valkey, NATS,
