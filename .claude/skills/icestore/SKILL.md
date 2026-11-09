@@ -51,6 +51,9 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    from GitHub). It reads every `Apps/*/docker-compose.yml`, so there is no ledger
    file. If it cannot reach the repo, ask the user which ports are taken. Never
    guess. Older apps outside 61xx only show as warnings; leave their ports alone.
+   **6101–6199 is full (Nov 2026).** New apps take the next free numbers after
+   the last block, from 6690 up (Reelsaw 6690, Lemmary 6691, Fluxer
+   6692–6694); `ports.py` lists what is taken.
 2. **Gather upstream facts first**: every image and pinned tag, ports, env vars
    (the full list of settings people can change, from upstream's `.env`
    example, config reference and docs — not just what its compose file sets;
@@ -184,6 +187,18 @@ folder, the compose `name:`, the main service name, the image name
   a "set PUBLIC_URL to ..." page instead of redirecting browsers to localhost
   (`references/AIO.md` §3.5). Prefer making the app follow the browser's
   address when it can (`references/AIO.md` §3.7).
+- **Apps upstream says need a domain and HTTPS** (Fluxer, Stoat: Caddy edge
+  with Let's Encrypt, `FLUXER_DOMAIN`): don't bundle a TLS server. Replace the
+  edge with the nginx gateway, ship `PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:<port>`
+  with the guard page, derive every scheme/host/port/origin variable from
+  PUBLIC_URL in aio-init, and tell people plainly (tips, README, envs, logs)
+  what works over plain http and that for the rest they point a reverse proxy
+  or tunnel with their domain at the port and set `PUBLIC_URL=https://chat.example.com`.
+  Fluxer (`docker/fluxer`) is the example. Apps that cannot run at all
+  without it, or need Docker itself (Openship), stay on the roadmap.
+- **Upstream pins images by digest only** (Fluxer's release compose): find the
+  version tag with the same digest (registry API, `update_upstream.digest`)
+  and pin that tag, so the bumper can follow it.
 - **One source for every OS.** Write the app only in `Apps/` (and `docker/<app>/`
   for builds). The MOS generator relies on `x-casaos.main` and `port_map` naming
   the web port, data under `/DATA/AppData/$AppID`, `$TZ`/`$PUID`/`$PGID`, and

@@ -1,0 +1,76 @@
+{
+  "name": "Fluxer",
+  "repo": "ghcr.io/hsinghhira/fluxer:latest",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/hsinghhira/fluxer/pkgs/container/fluxer",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": true,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=6144m --cpus=4.00 --memory-reservation=1536m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/api/_health\" --health-interval=30s --health-timeout=10s --health-start-period=300s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluxer/icon.png",
+  "project": "https://fluxer.com",
+  "support": "https://feedback.fluxer.com",
+  "readme_url": "https://icestore.hsinghhira.me/app/fluxer/",
+  "description": "Free and open source chat and voice for friends, groups and communities.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/fluxer/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The database (postgres/), uploaded files (seaweedfs/), search (meilisearch/), the message bus (nats/), Valkey (valkey/) and the secret keys (state/). Back up the whole folder: the keys in state/secrets.env can't be changed once Fluxer has data."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6692",
+      "container": "8080",
+      "description": "Fluxer web app, API, websocket, media and admin panel, published on host as 6692"
+    },
+    {
+      "name": "Port 6693",
+      "protocol": "tcp",
+      "host": "6693",
+      "container": "6693",
+      "description": "Voice and video (LiveKit) over TCP, published on host as 6693. Must stay 6693."
+    },
+    {
+      "name": "Port 6694",
+      "protocol": "udp",
+      "host": "6694",
+      "container": "6694",
+      "description": "Voice and video (LiveKit) over UDP, published on host as 6694. Must stay 6694."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUBLIC_URL",
+      "key": "PUBLIC_URL",
+      "value": "http://YOUR-SERVER-IP:6692",
+      "mask": false,
+      "description": "Required. Replace YOUR-SERVER-IP with your server IP, like http://192.168.1.20:6692. Fluxer only works at this one address. For voice, video, passkeys and notifications use HTTPS: put Fluxer behind a reverse proxy with your own domain (pointed at port 6692) and set this to it, like https://chat.example.com."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
