@@ -1,0 +1,170 @@
+name: inkling
+
+services:
+  inkling:
+    image: ghcr.io/hsinghhira/inkling:latest
+    container_name: inkling
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6703
+    ports:
+      - target: 8080
+        published: "6703"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1536M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/inkling/icon.png
+    x-casaos:
+      id: com.icestore.inkling
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              decides "today" for due dates and daily notes.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open Inkling at, like http://192.168.1.20:6703 or
+              https://notes.example.com. Inkling opens from any address; this
+              one is used in email links, share previews and AI agent (MCP)
+              sign-in. With https, sign-in cookies are marked secure.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Inkling web app, API, live editing and MCP, published on host as 6703
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (postgres/), uploaded files and plugins (inkling/)
+              and the keys and first signup key (state/). Back up the whole
+              folder.
+
+x-casaos:
+  id: com.icestore.inkling
+  architectures:
+    - amd64
+    - arm64
+  main: inkling
+  author: HSinghHira
+  category: Productivity
+  developer: PROVE1352
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/inkling/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/inkling/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/inkling/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/inkling/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/inkling/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/inkling/screenshot-4.jpg
+  title:
+    en_US: Inkling
+  tagline:
+    en_US: Notes with Notion-style databases, linked pages, a graph, canvases and live collaboration.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/inkling/](https://icestore.hsinghhira.me/app/inkling/) for full details
+
+
+      Inkling puts Notion-style databases and Obsidian-style links, graph and
+      JSON Canvas in one self-hosted notes app, with real-time collaboration
+      and a built-in MCP server for AI agents. PostgreSQL is inside this one
+      container.
+
+
+      **Features**
+
+
+      - Block editor with tables, code, checklists, math, wikilinks, tags and
+        daily notes
+
+      - Databases with table, board, calendar, gallery and timeline views
+
+      - Backlinks, a link graph and an infinite canvas (JSON Canvas)
+
+      - Live co-editing, workspaces, roles, comments and share links
+
+      - MCP server for Claude and other agents; Markdown, Notion and Obsidian
+        import
+
+
+      **How to use?**
+
+
+      1. Copy the sign-up link from the app's logs (CREDENTIALS box).
+
+
+      2. Open it and create your account. You become the admin.
+
+
+      3. Make a workspace and start writing.
+
+
+      4. Invite others with signup keys from the Admin page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6703. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6703, so
+           links and AI agent sign-in work. Inkling opens from any address
+           either way.
+
+
+        3. More settings, like email and sign-in with Google or Authentik,
+           are listed on the Inkling page at
+           https://icestore.hsinghhira.me/app/inkling/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        4. Start the installation.
+
+
+        5. Wait about a minute. The first start sets up the database.
+
+
+        6. Look in the app's logs for the box marked CREDENTIALS. It has a
+           sign-up link with your first signup key.
+
+
+        7. Open that link and create your account. The first account is the
+           admin.
+  index: /
+  port_map: "6703"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.8.0"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore release: Inkling in one container with PostgreSQL 16, on port 6703 with one data folder.
+      - The database password, APP_SECRET_KEY (for two-step verification) and a first signup key are made on first start; the sign-up link is in the CREDENTIALS box.
+      - Left out: upstream's backup sidecar. Back up /DATA/AppData/inkling instead.
+      - ghcr.io/prove1352/inkling 0.8.0
+  repo: "https://github.com/PROVE1352/inkling"
+  support: "https://github.com/PROVE1352/inkling/issues"
+  docs: "https://github.com/PROVE1352/inkling/blob/main/deploy/DEPLOY.md"
