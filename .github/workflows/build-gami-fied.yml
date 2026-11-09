@@ -1,0 +1,22 @@
+name: Build gami-fied
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/gami-fied/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-gami-fied.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: gami-fied
+      AIO_VERSION: "1.0.0"

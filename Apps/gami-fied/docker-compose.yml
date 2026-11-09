@@ -1,0 +1,167 @@
+name: gami-fied
+
+services:
+  gami-fied:
+    image: ghcr.io/hsinghhira/gami-fied:latest
+    container_name: gami-fied
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6709
+    ports:
+      - target: 8080
+        published: "6709"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.10"
+          memory: 384M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gami-fied/icon.png
+    x-casaos:
+      id: com.icestore.gami-fied
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6709, or use your https domain. Sign-in only
+              works on this address, and your apps send events to it.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Gami.Fied dashboard and API (/api, /v1), published on host as 6709
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (postgres/), Redis (redis/), backups (backups/) and
+              the secret keys (state/). Back up the whole folder: without
+              state/secrets.env, stored credentials and webhook secrets can't
+              be read.
+
+x-casaos:
+  id: com.icestore.gami-fied
+  architectures:
+    - amd64
+    - arm64
+  main: gami-fied
+  author: HSinghHira
+  category: Developer
+  developer: gami-fied
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gami-fied/icon.png
+  title:
+    en_US: Gami.Fied
+  tagline:
+    en_US: Self-hosted gamification engine for points, badges, levels and leaderboards in your apps.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/gami-fied/](https://icestore.hsinghhira.me/app/gami-fied/) for full details
+
+
+      Gami.Fied is a self-hosted gamification engine. Your app sends it
+      events, and rules you set up turn them into XP, levels, achievements,
+      challenges and leaderboards, with notifications and webhooks included.
+      Your users' data stays on your server. PostgreSQL and Redis are inside
+      this one container.
+
+
+      **Features**
+
+
+      - Rules engine with conditions, a simulator and a trace of why a rule
+        fired
+
+      - XP, levels, achievements, challenges and daily, weekly, monthly and
+        all-time leaderboards
+
+      - In-app notifications, email, signed webhooks and Discord
+
+      - Dashboard with analytics, audit logs and roles; scoped API keys
+
+      - A stable /v1 API and a TypeScript SDK
+
+
+      **How to use?**
+
+
+      1. Set PUBLIC_URL to your ZimaOS IP before you install.
+
+
+      2. Open Gami.Fied and sign up.
+
+
+      3. Open /admin and enter the bootstrap secret from the app's logs to
+         become the platform admin.
+
+
+      4. Make a project, create an API key and send events from your app to
+         the /v1 API.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://[ZIMAOS-IP-ADDRESS]:6709.
+           Put your ZimaOS IP in place of [ZIMAOS-IP-ADDRESS], like
+           http://192.168.1.20:6709 for the IP 192.168.1.20, and save. You
+           must do this, or sign-in won't work.
+
+
+        3. More settings, like email (SMTP), are listed on the Gami.Fied page
+           at https://icestore.hsinghhira.me/app/gami-fied/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        4. Start the installation.
+
+
+        5. Wait about two minutes. The first start sets up the database.
+
+
+        6. Open your PUBLIC_URL and sign up.
+
+
+        7. Look in the app's logs for the box marked CREDENTIALS. Open the
+           admin address it shows and enter the bootstrap secret to become
+           the platform admin.
+  index: /
+  port_map: "6709"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.1.0"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore release: upstream's published stack in one container, on port 6709 with one data folder. /api and /v1 go to the API and the rest to the dashboard, as in upstream's Caddyfile.example.
+      - Every secret (auth, encryption, webhook and Redis keys, the database password and the platform bootstrap secret) is made on first start.
+      - gami-api 1.1.0
+      - gami-worker 1.1.0
+      - gami-dashboard 1.1.0
+      - PostgreSQL 17 and Redis inside
+  repo: "https://github.com/gami-fied/gami.fied"
+  support: "https://github.com/gami-fied/gami.fied/issues"
+  docs: "https://github.com/gami-fied/gami.fied/tree/main/docs"
