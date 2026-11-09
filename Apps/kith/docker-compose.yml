@@ -1,0 +1,150 @@
+name: kith
+
+services:
+  kith:
+    image: ghcr.io/hsinghhira/kith:latest
+    container_name: kith
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8000
+        published: "6707"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.10"
+          memory: 192M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kith/icon.png
+    x-casaos:
+      id: com.icestore.kith
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              sets when the nightly jobs and weekly email run.
+      ports:
+        - container: "8000"
+          description:
+            en_US: Kith family history site, published on host as 6707
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (mysql/), photos and documents (media/), the site's
+              own files and secret key (instance/) and the passwords made on
+              first start (state/). Back up the whole folder.
+
+x-casaos:
+  id: com.icestore.kith
+  architectures:
+    - amd64
+    - arm64
+  main: kith
+  author: HSinghHira
+  category: Home
+  developer: dreed47
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kith/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kith/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kith/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kith/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kith/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kith/screenshot-4.jpg
+  title:
+    en_US: Kith
+  tagline:
+    en_US: Private family history website for your family tree.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kith/](https://icestore.hsinghhira.me/app/kith/) for full details
+
+
+      Kith is a private family history website you host yourself: your family
+      tree, people's stories, photos and documents, for your family to see
+      and add to. Built here from upstream's source, with MariaDB and the
+      scheduled jobs inside one container.
+
+
+      **Features**
+
+
+      - Family tree with people, families, events, places and sources
+
+      - Charts, a family hourglass, census and timeline views
+
+      - Photos and documents (PDF thumbnails), and a map of places
+
+      - Accounts for family members with their own rights, invitations and
+        "what's new"
+
+      - GEDCOM and TNG import, five themes including large print
+
+
+      **How to use?**
+
+
+      1. Copy the admin password from the app's logs (CREDENTIALS box).
+
+
+      2. Open Kith from the Zima OS dashboard and log in as admin.
+
+
+      3. Add people, or import a GEDCOM file from another program.
+
+
+      4. Invite your family from the admin page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing to set first. Start the installation.
+
+
+        2. Wait about a minute. The first start creates the database and the
+           admin account.
+
+
+        3. Look in the app's logs for the box marked CREDENTIALS. It has the
+           admin user name and password. It is printed again on every start.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6707 and log in as admin. Change
+           the password under your account.
+
+
+        5. Email, the theme and HTTPS settings are listed on the Kith page at
+           https://icestore.hsinghhira.me/app/kith/ (Variables tab). You can
+           add them later in the app settings.
+  index: /
+  port_map: "6707"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.4.5"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore release: Kith v0.4.5, built from upstream's source (upstream publishes no image), with MariaDB 11.8 and the scheduled jobs (place coordinates, version check, weekly email) in one container.
+      - Port 6707 and one data folder. The database password and the first admin password are made on first start.
+  repo: "https://github.com/dreed47/kith"
+  support: "https://github.com/dreed47/kith/issues"
+  docs: "https://github.com/dreed47/kith#readme"
