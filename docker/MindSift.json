@@ -1,0 +1,61 @@
+{
+  "name": "MindSift",
+  "repo": "ghcr.io/mindsift-app/mindsift:v0.89.0",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/mindsift-app/mindsift/pkgs/container/mindsift",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=512m --cpus=1.00 --memory-reservation=32m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mindsift/icon.png",
+  "project": "https://mindsift.app/en/",
+  "support": "https://github.com/mindsift-app/mindsift/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/mindsift/",
+  "description": "Notes, tasks and shared lists with quick capture, an outliner, kanban and an MCP server.",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/mindsift/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The SQLite database, uploaded images and audio, backups and the keys MindSift makes on first start (secrets.key encrypts hidden values in notes). Back up the whole folder."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6710",
+      "container": "8080",
+      "description": "MindSift web app, published on host as 6710"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "BASE_URL",
+      "key": "BASE_URL",
+      "value": "http://YOUR-SERVER-IP:6710",
+      "mask": false,
+      "description": "Required. Replace YOUR-SERVER-IP with your server IP, like http://192.168.1.20:6710, or use your https domain. Live updates only work from this address, and email links use it."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
