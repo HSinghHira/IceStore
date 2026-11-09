@@ -1,0 +1,142 @@
+name: kestello
+
+services:
+  kestello:
+    image: ghcr.io/hsinghhira/kestello:latest
+    container_name: kestello
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6704"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/site
+        target: /var/www/html
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kestello/icon.png
+    x-casaos:
+      id: com.icestore.kestello
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              is used by PHP too.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Kestello site and admin, published on host as 6704
+      volumes:
+        - container: /var/www/html
+          description:
+            en_US: >-
+              The whole site: Kestello itself (copied in on the first start and
+              updated by Kestello), its config, the SQLite database, content,
+              uploads, themes and plugins. Back up the whole folder.
+
+x-casaos:
+  id: com.icestore.kestello
+  architectures:
+    - amd64
+    - arm64
+  main: kestello
+  author: HSinghHira
+  category: Developer
+  developer: kestellohq
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kestello/icon.png
+  title:
+    en_US: Kestello
+  tagline:
+    en_US: Self-hosted CMS with a visual editor, plugins, themes and signed updates.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kestello/](https://icestore.hsinghhira.me/app/kestello/) for full details
+
+
+      Kestello is a content management system for the people who run a
+      website and the developers who build it. Pages are written in a visual
+      editor that shows the real page; plugins, themes, forms, media, search,
+      backups and updates are built in. Written in PHP and Vue, with zero PHP
+      dependencies. This container runs it with PHP-FPM and nginx, and can use
+      SQLite, so nothing else is needed.
+
+
+      **Features**
+
+
+      - Visual editor that shows the real page
+
+      - Plugins and themes, with signed updates installed from the admin
+
+      - Forms, media library, search and backups built in
+
+      - SQLite, MySQL, MariaDB or PostgreSQL
+
+
+      **How to use?**
+
+
+      1. Open Kestello from the Zima OS dashboard.
+
+
+      2. Follow the installer: choose SQLite (or your own database) and make
+         the admin account.
+
+
+      3. Sign in at /admin and build your site.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open http://[ZIMAOS-IP-ADDRESS]:6704 and follow the installer.
+
+
+        3. Pick SQLite for the database unless you already run MySQL,
+           MariaDB or PostgreSQL. SQLite keeps everything in the app's
+           folder.
+
+
+        4. Make your admin account, then sign in at
+           http://[ZIMAOS-IP-ADDRESS]:6704/admin.
+
+
+        5. Kestello updates itself from its admin page. This is a release
+           candidate (0.1.0-rc.1), so back up the site folder
+           (AppData, kestello, site) before updates.
+  index: /
+  port_map: "6704"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.1.0-rc.1"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore version: Kestello 0.1.0-rc.1 (the release zip) with PHP 8.5 FPM and nginx in one container.
+      - Port 6704. The whole site lives in /DATA/AppData/kestello/site; it is copied in on the first start and Kestello's own updater keeps it current.
+      - The scheduler (scheduled jobs) starts once the installer has finished.
+  repo: "https://github.com/kestellohq/cms"
+  support: "https://github.com/kestellohq/cms/issues"
+  docs: "https://docs.kestello.com"

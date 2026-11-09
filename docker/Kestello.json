@@ -1,0 +1,55 @@
+{
+  "name": "Kestello",
+  "repo": "ghcr.io/hsinghhira/kestello:latest",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/hsinghhira/kestello/pkgs/container/kestello",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=512m --cpus=1.00 --memory-reservation=64m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:8080/\" --health-interval=30s --health-timeout=5s --health-start-period=30s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kestello/icon.png",
+  "project": "https://kestello.com",
+  "support": "https://github.com/kestellohq/cms/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/kestello/",
+  "description": "Self-hosted CMS with a visual editor, plugins, themes and signed updates.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Html",
+      "host": "/mnt/cache/appdata/kestello/site",
+      "container": "/var/www/html",
+      "mode": "rw",
+      "description": "The whole site: Kestello itself (copied in on the first start and updated by Kestello), its config, the SQLite database, content, uploads, themes and plugins. Back up the whole folder."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6704",
+      "container": "8080",
+      "description": "Kestello site and admin, published on host as 6704"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
