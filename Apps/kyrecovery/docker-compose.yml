@@ -1,0 +1,163 @@
+name: kyrecovery
+
+services:
+  kyrecovery:
+    image: ghcr.io/busnes-app/kyrecovery-server:0.6.0.1
+    container_name: kyrecovery
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - KYRECOVERY_DATA_DIR=/app/data
+    ports:
+      - target: 8095
+        published: "6698"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8095/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyrecovery/icon.png
+    x-casaos:
+      id: com.icestore.kyrecovery
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: KYRECOVERY_DATA_DIR
+          description:
+            en_US: >-
+              Where KyRecovery keeps its data inside the container. Leave it
+              as /app/data.
+      ports:
+        - container: "8095"
+          description:
+            en_US: KyRecovery web app and deposit API, published on host as 6698
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              The database, the stored backups (capsules/), the server key
+              (secret.key) and initial-admin-password. Copy the whole folder
+              somewhere else too: it is the backup of your other Ky apps.
+
+x-casaos:
+  id: com.icestore.kyrecovery
+  architectures:
+    - amd64
+  main: kyrecovery
+  author: HSinghHira
+  category: Others
+  developer: Busnes-app
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyrecovery/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyrecovery/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyrecovery/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyrecovery/screenshot-2.jpg
+  title:
+    en_US: KyRecovery
+  tagline:
+    en_US: Encrypted backup store for the Ky Suite apps, with recovery cards you keep.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kyrecovery/](https://icestore.hsinghhira.me/app/kyrecovery/) for full details
+
+
+      KyRecovery is a "blind" backup store for the Busnes Ky Suite. KyIdentity,
+      KyNotes, KyDNS and the other Ky apps seal their own backups and send
+      them here; KyRecovery keeps them but can't open them. Only the recovery
+      key you make in your browser, split into custodian cards, can restore
+      them.
+
+
+      **Features**
+
+
+      - Stores the sealed backups of every paired Ky app
+
+      - Recovery key made in your browser and split into cards (Shamir), so
+        no single person or server holds it
+
+      - Pair apps with a one-time six-digit code
+
+      - Audit log of every backup, pairing and key change
+
+      - Local sign-in, or sign-in with KyIdentity
+
+
+      **How to use?**
+
+
+      1. Put KyRecovery behind your reverse proxy with an https domain.
+
+
+      2. Sign in as admin with the password from initial-admin-password in
+         the data folder.
+
+
+      3. Run the recovery ceremony to make the key and print the cards.
+
+
+      4. Pair each Ky app with a code, from its admin page.
+  tips:
+    before_install:
+      en_US: >-
+        1. KyRecovery needs https. The other Ky apps only send backups to an
+           https address, and your browser only makes the recovery key on
+           https. Set up a reverse proxy (like Nginx Proxy Manager or a
+           Cloudflare tunnel) with your own domain, like
+           https://recovery.example.com, pointed at
+           http://[ZIMAOS-IP-ADDRESS]:6698.
+
+
+        2. More settings, like your proxy's address, are listed on the
+           KyRecovery page at https://icestore.hsinghhira.me/app/kyrecovery/
+           (Variables tab). Add KYRECOVERY_TRUSTED_PROXIES once you know
+           your proxy's address.
+
+
+        3. Start the installation. It is ready in a few seconds.
+
+
+        4. Open the Files app and go to AppData, kyrecovery, data. Open
+           initial-admin-password to see the admin password.
+
+
+        5. Open your https address and sign in as admin. Change the
+           password, then delete the file.
+
+
+        6. Run the ceremony on the dashboard and keep the cards safe.
+  index: /
+  port_map: "6698"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.6.0.1"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/busnes-app/kyrecovery-server 0.6.0.1
+      - Port 6698; the data folder is /DATA/AppData/kyrecovery/data. The image gives it to its own user on every start.
+  repo: "https://github.com/Busnes-app/KyRecovery-server"
+  support: "https://github.com/Busnes-app/KyRecovery-server/issues"
+  docs: "https://github.com/Busnes-app/KyRecovery-server/blob/main/INSTALL.md"
