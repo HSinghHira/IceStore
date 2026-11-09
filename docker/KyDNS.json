@@ -1,0 +1,69 @@
+{
+  "name": "KyDNS",
+  "repo": "ghcr.io/busnes-app/kydns-server:0.6.0.1",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/busnes-app/kydns-server/pkgs/container/kydns-server",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=256m --cpus=1.00 --memory-reservation=32m --user=0:0",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8053]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kydns/icon.png",
+  "project": "https://busnes.app",
+  "support": "https://github.com/Busnes-app/KyDNS-server/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/kydns/",
+  "description": "DNS for your home network with easy service names and ad blocking.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Kydns",
+      "host": "/mnt/cache/appdata/kydns/data",
+      "container": "/var/lib/kydns",
+      "mode": "rw",
+      "description": "The database (kydns.db) with your names, records and settings, and the setup-token and bootstrap-token files. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6697",
+      "container": "8053",
+      "description": "KyDNS admin web page and API, published on host as 6697"
+    },
+    {
+      "name": "Port 53",
+      "protocol": "udp",
+      "host": "53",
+      "container": "53",
+      "description": "DNS, published on host as 53 (UDP and TCP). Devices that use your MOS as their DNS server ask here. Nothing else on the box may use port 53."
+    },
+    {
+      "name": "Port 53",
+      "protocol": "tcp",
+      "host": "53",
+      "container": "53",
+      "description": "DNS, published on host as 53 (UDP and TCP). Devices that use your MOS as their DNS server ask here. Nothing else on the box may use port 53."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
