@@ -1,0 +1,82 @@
+{
+  "name": "KyIdentity",
+  "repo": "ghcr.io/busnes-app/kyidentity-server:0.6.0",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/busnes-app/kyidentity-server/pkgs/container/kyidentity-server",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=256m --cpus=1.00 --memory-reservation=32m --user=0:0 --health-cmd=\"wget -q --spider http://localhost:5867/readyz || exit 1\" --health-interval=30s --health-timeout=5s --health-start-period=20s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:5867]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyidentity/icon.png",
+  "project": "https://busnes.app",
+  "support": "https://github.com/Busnes-app/KyIdentity-server/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/kyidentity/",
+  "description": "Sign-in, users and MFA for the Ky Suite (Busnes) and any OpenID Connect app.",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/kyidentity/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The user database, the token signing key, the secret and encryption keys (made on first start) and first-run-password.txt. Back up the whole folder: without the keys, MFA secrets can't be read and connected apps must be paired again."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6695",
+      "container": "5867",
+      "description": "KyIdentity web app and OpenID Connect provider, published on host as 6695"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "KYIDENTITY_ISSUER_URL",
+      "key": "KYIDENTITY_ISSUER_URL",
+      "value": "https://id.example.com",
+      "mask": false,
+      "description": "Required. The https address of KyIdentity through your reverse proxy, like https://id.example.com. KyIdentity refuses to start with an http address other than http://localhost:6695, and every connected app signs in through this address. Never change it after apps are connected."
+    },
+    {
+      "name": "KYIDENTITY_DATA_DIR",
+      "key": "KYIDENTITY_DATA_DIR",
+      "value": "/data",
+      "mask": false,
+      "description": "Where KyIdentity keeps its data inside the container. Leave it as /data."
+    },
+    {
+      "name": "BOOTSTRAP_ADMIN_USER",
+      "key": "BOOTSTRAP_ADMIN_USER",
+      "value": "admin",
+      "mask": false,
+      "description": "The user name of the first administrator, made on first start."
+    },
+    {
+      "name": "BOOTSTRAP_ADMIN_PASS",
+      "key": "BOOTSTRAP_ADMIN_PASS",
+      "value": "",
+      "mask": true,
+      "description": "The first administrator's password. Leave it empty to have one made for you: it is saved in first-run-password.txt in the data folder (/mnt/cache/appdata/kyidentity/data). You choose a new password at the first sign-in either way."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

@@ -1,0 +1,196 @@
+name: kyidentity
+
+services:
+  kyidentity:
+    image: ghcr.io/busnes-app/kyidentity-server:0.6.0
+    container_name: kyidentity
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+      - KYIDENTITY_ISSUER_URL=https://id.example.com
+      - KYIDENTITY_DATA_DIR=/data
+      - BOOTSTRAP_ADMIN_USER=admin
+      - BOOTSTRAP_ADMIN_PASS=
+    ports:
+      - target: 5867
+        published: "6695"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:5867/readyz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyidentity/icon.png
+    x-casaos:
+      id: com.icestore.kyidentity
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: KYIDENTITY_ISSUER_URL
+          description:
+            en_US: >-
+              Required. The https address of KyIdentity through your reverse
+              proxy, like https://id.example.com. KyIdentity refuses to start
+              with an http address other than http://localhost:6695, and every
+              connected app signs in through this address. Never change it
+              after apps are connected.
+        - container: KYIDENTITY_DATA_DIR
+          description:
+            en_US: >-
+              Where KyIdentity keeps its data inside the container. Leave it
+              as /data.
+        - container: BOOTSTRAP_ADMIN_USER
+          description:
+            en_US: >-
+              The user name of the first administrator, made on first start.
+        - container: BOOTSTRAP_ADMIN_PASS
+          description:
+            en_US: >-
+              The first administrator's password. Leave it empty to have one
+              made for you: it is saved in first-run-password.txt in the data
+              folder (/DATA/AppData/kyidentity/data). You choose a new password
+              at the first sign-in either way.
+      ports:
+        - container: "5867"
+          description:
+            en_US: KyIdentity web app and OpenID Connect provider, published on host as 6695
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The user database, the token signing key, the secret and
+              encryption keys (made on first start) and first-run-password.txt.
+              Back up the whole folder: without the keys, MFA secrets can't be
+              read and connected apps must be paired again.
+
+x-casaos:
+  id: com.icestore.kyidentity
+  architectures:
+    - amd64
+  main: kyidentity
+  author: HSinghHira
+  category: Networking
+  developer: Busnes-app
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyidentity/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyidentity/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyidentity/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kyidentity/screenshot-2.jpg
+  title:
+    en_US: KyIdentity
+  tagline:
+    en_US: Sign-in, users and MFA for the Ky Suite (Busnes) and any OpenID Connect app.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kyidentity/](https://icestore.hsinghhira.me/app/kyidentity/) for full details
+
+
+      KyIdentity is the identity provider of the Busnes Ky Suite: one place
+      for people, groups, app access and MFA. KyNotes, KyDrive, KyCalendar,
+      KyPost and the other Ky apps sign in through it, and so can any app
+      that speaks OpenID Connect. It also works on its own.
+
+
+      **Features**
+
+
+      - User directory with groups, delegated admins and account end dates
+
+      - OpenID Connect and OAuth 2.0 provider (PKCE, JWKS, RS256)
+
+      - MFA: authenticator apps (TOTP), passkeys, recovery codes and push
+        approvals with the KyAuth phone app
+
+      - App launcher, audit log, alerts and SCIM provisioning
+
+      - Encrypted backups to KyRecovery
+
+
+      **How to use?**
+
+
+      1. Put KyIdentity behind your reverse proxy with an https domain and
+         set KYIDENTITY_ISSUER_URL to it before you install.
+
+
+      2. Find the first password in first-run-password.txt in the data
+         folder.
+
+
+      3. Open your https address and sign in as admin.
+
+
+      4. Choose a new password, set up MFA and add your users.
+
+
+      5. Connect the other Ky apps under App connections.
+  tips:
+    before_install:
+      en_US: >-
+        1. KyIdentity only works on an https address. Set up a reverse proxy
+           first (like Nginx Proxy Manager or a Cloudflare tunnel) with your
+           own domain, like https://id.example.com, pointed at
+           http://[ZIMAOS-IP-ADDRESS]:6695.
+
+
+        2. Open the app configuration and set KYIDENTITY_ISSUER_URL to that
+           https address. You must do this, or sign-in won't work. Without a
+           domain you can only try it on the box itself, at
+           http://localhost:6695 (set that as the address).
+
+
+        3. Leave BOOTSTRAP_ADMIN_PASS empty to get a made-up password, or
+           type your own.
+
+
+        4. More settings, like your proxy's address and session length, are
+           listed on the KyIdentity page at
+           https://icestore.hsinghhira.me/app/kyidentity/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        5. Start the installation. It is ready in a few seconds.
+
+
+        6. Open the Files app and go to AppData, kyidentity, data. Open
+           first-run-password.txt to see the user name and password.
+
+
+        7. Open your https address and sign in. Choose a new password when
+           asked. The file is deleted after your first sign-in.
+  index: /
+  port_map: "6695"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.6.0"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/busnes-app/kyidentity-server 0.6.0
+      - Port 6695; the data folder is /DATA/AppData/kyidentity/data. Runs as root so it can write to that folder.
+      - The secret, encryption and signing keys are made by KyIdentity on first start and kept in the data folder.
+  repo: "https://github.com/Busnes-app/KyIdentity-server"
+  support: "https://github.com/Busnes-app/KyIdentity-server/issues"
+  docs: "https://github.com/Busnes-app/KyIdentity-server/blob/master/INSTALL.md"
