@@ -1,0 +1,171 @@
+name: asobeast
+
+services:
+  asobeast:
+    image: ghcr.io/hsinghhira/asobeast:latest
+    container_name: asobeast
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://localhost:6700
+    ports:
+      - target: 8080
+        published: "6700"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.25"
+          memory: 384M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/asobeast/icon.png
+    x-casaos:
+      id: com.icestore.asobeast
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              The address you open AsoBeast at, like http://192.168.1.20:6700
+              or https://aso.example.com. AsoBeast works from any address;
+              this one is used for links in emails and alerts. With https,
+              the sign-in cookie is marked secure.
+      ports:
+        - container: "8080"
+          description:
+            en_US: AsoBeast web app and API, published on host as 6700
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (postgres/), the job queues (redis/) and the
+              secret keys (state/). Back up the whole folder: without
+              state/secrets.env, connected store credentials can't be read.
+
+x-casaos:
+  id: com.icestore.asobeast
+  architectures:
+    - amd64
+    - arm64
+  main: asobeast
+  author: HSinghHira
+  category: Developer
+  developer: AsoBeast
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/asobeast/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/asobeast/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/asobeast/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/asobeast/screenshot-2.jpg
+  title:
+    en_US: AsoBeast
+  tagline:
+    en_US: App Store and Google Play keyword rank tracker and ASO tool.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/asobeast/](https://icestore.hsinghhira.me/app/asobeast/) for full details
+
+
+      AsoBeast is an open source App Store Optimization (ASO) tool and keyword
+      rank tracker for the Apple App Store and Google Play. It tracks your
+      keyword rankings daily, watches competitors, reviews and listing
+      changes, and turns the history into a list of ASO work to do. Your
+      keyword list never leaves your server. PostgreSQL and Redis are inside
+      this one container.
+
+
+      **Features**
+
+
+      - Import an App Store or Google Play listing and track keywords in any
+        storefront, ranked to depth 200 every day
+
+      - Popularity and difficulty scores that show their evidence
+
+      - Competitor discovery, keyword gaps, top charts and review mining
+
+      - Action Center: a ranked queue of ASO work with the evidence for each
+
+      - Alerts by webhook or email, an API and an MCP server for AI agents
+
+
+      **How to use?**
+
+
+      1. Open AsoBeast from the Zima OS dashboard.
+
+
+      2. Create the owner account. Sign-up closes after that.
+
+
+      3. Paste an App Store or Google Play link to import your app.
+
+
+      4. Add keywords and markets; rankings start right away.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://localhost:6700. Change
+           localhost to your ZimaOS IP, like http://192.168.1.20:6700, so
+           links in emails work. AsoBeast opens from any address either way.
+
+
+        3. More settings, like email alerts, OpenAI help and data retention,
+           are listed on the AsoBeast page at
+           https://icestore.hsinghhira.me/app/asobeast/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        4. Start the installation.
+
+
+        5. Wait about two minutes. The first start sets up the database.
+
+
+        6. Open http://[ZIMAOS-IP-ADDRESS]:6700 and create the owner
+           account. The app's logs show the address in the box marked
+           CREDENTIALS.
+
+
+        7. Use Chrome or Firefox over plain http. Safari only keeps you
+           signed in over https.
+  index: /
+  port_map: "6700"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.16.0"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore release: upstream's published stack in one container, on port 6700 with one data folder.
+      - AUTH_SECRET, the store-credential encryption key and the database password are made on first start.
+      - With an http PUBLIC_URL the sign-in cookie is sent without the secure flag, so it works on your home network.
+      - asobeast-api 1.16.0
+      - asobeast-web 1.16.0
+      - PostgreSQL 18 and Redis inside
+  repo: "https://github.com/AsoBeast/asobeast"
+  support: "https://github.com/AsoBeast/asobeast/issues"
+  docs: "https://docs.asobeast.com"
