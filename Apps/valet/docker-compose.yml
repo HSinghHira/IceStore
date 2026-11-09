@@ -1,0 +1,168 @@
+name: valet
+
+services:
+  valet:
+    image: ghcr.io/askvalet/valet:0.3.0
+    container_name: valet
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 7575
+        published: "6701"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:7575/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 48M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/valet/icon.png
+    x-casaos:
+      id: com.icestore.valet
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "7575"
+          description:
+            en_US: Valet homepage, published on host as 6701
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              config.yaml, the one file that sets up the page: your services,
+              cards, sign-in and the assistant. Valet writes a starter on first
+              start; edits show up live.
+        - container: /app/data
+          description:
+            en_US: >-
+              Wallpaper, icon cache, uploads, history, accounts (users.json)
+              and plugins.
+
+x-casaos:
+  id: com.icestore.valet
+  architectures:
+    - amd64
+    - arm64
+  main: valet
+  author: HSinghHira
+  category: Home
+  developer: askvalet
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/valet/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/valet/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/valet/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/valet/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/valet/screenshot-3.jpg
+  title:
+    en_US: Valet
+  tagline:
+    en_US: An AI homepage for your homelab that you can talk to.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/valet/](https://icestore.hsinghhira.me/app/valet/) for full details
+
+
+      Valet is a homepage for your homelab that can also do things. It shows
+      what's happening across your services, live, and lets you act on it
+      right there. Ask it questions in plain words, with a local or hosted AI
+      model, or switch the AI off. One YAML file sets up everything, with 185
+      integrations.
+
+
+      **Features**
+
+
+      - Live cards for your services: status, downloads, what's playing,
+        cameras, the weather and more
+
+      - Ask the assistant anything; every change it makes waits for your
+        approval
+
+      - Wall display mode at /wall for a tablet or a spare screen
+
+      - 185 integrations (Home Assistant, Plex, the *arr apps, Immich,
+        Pi-hole...) and your own
+
+      - Your API keys stay on the server; no account, no telemetry
+
+
+      **How to use?**
+
+
+      1. Open Valet from the Zima OS dashboard. A getting-started card walks
+         you through the first steps.
+
+
+      2. Edit config.yaml in /DATA/AppData/valet/config to add your services.
+
+
+      3. Put each service's API key in the app settings as a variable, and
+         use it in config.yaml as ${NAME}.
+
+
+      4. To use the buttons, turn on sign-in (auth mode local) and restart.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open Valet from your dashboard. It starts read-only: it shows
+           everything but can't change anything until you turn on sign-in.
+
+
+        3. Your settings live in config.yaml. Open the Files app and go to
+           AppData, valet, config. Edits show up on the page as soon as you
+           save.
+
+
+        4. For buttons and the assistant's actions, add "auth: { mode:
+           local, secureCookie: false }" to config.yaml and restart the app.
+           Then copy the one-time setup code from the app's logs and make
+           your account.
+
+
+        5. API keys for your services go in the app settings as variables
+           (like SONARR_KEY), and in config.yaml as ${SONARR_KEY}. The list
+           is on https://icestore.hsinghhira.me/app/valet/ (Variables tab).
+  index: /
+  port_map: "6701"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.3.0"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/askvalet/valet 0.3.0
+      - Port 6701; config in /DATA/AppData/valet/config and data in /DATA/AppData/valet/data. Runs as root so it can write to those folders.
+  repo: "https://github.com/askvalet/valet"
+  support: "https://github.com/askvalet/valet/issues"
+  docs: "https://askvalet.dev"
