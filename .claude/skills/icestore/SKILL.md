@@ -201,6 +201,32 @@ folder, the compose `name:`, the main service name, the image name
 - **Upstream pins images by digest only** (Fluxer's release compose): find the
   version tag with the same digest (registry API, `update_upstream.digest`)
   and pin that tag, so the bumper can follow it.
+- **More patterns (Nov 2026 batch; copy the named app):**
+  - *No published image*: build from the release tarball in a wrapper-kind
+    image (one `FROM`, `ADD .../archive/refs/tags/<tag>.tar.gz`, supervisord
+    for several processes, a DB from apt). Select, Kith, Kestello, Root
+    Cellar. `x-casaos.version` = the release tag; the checker's "not the tag
+    of any FROM" warning is expected there.
+  - *Upstream image has no shell* (distroless, chiseled): add
+    `COPY --from=busybox:<x.y.z>-musl /bin/busybox /bin/busybox` and
+    `RUN ["/bin/busybox","--install","-s",...]` (byagent, Trackhop); a COPY
+    is not a second FROM, so the wrapper check still passes.
+  - *App forces the Secure cookie flag*: when PUBLIC_URL is http, aio-init
+    puts `proxy_cookie_flags ~ nosecure;` in the nginx location (AsoBeast).
+  - *First admin*: put the setup token / bootstrap secret / a signup key in
+    the CREDENTIALS banner (Fluxer, Gami.Fied, Inkling inserts a hashed
+    signup key once its tables exist, Kith runs `setup db` with a made
+    password). Apps that write the first password to a file: tell people the
+    Files app path (KyIdentity, KyRecovery).
+  - *Bind-mount ownership*: images running as a fixed non-root user can't
+    write the root-owned folder ZimaOS makes; use `user: "0:0"` unless the
+    image's entrypoint chowns it (KyRecovery does).
+  - PHP 8.5 images have opcache built in: never `docker-php-ext-install opcache`.
+  - SVG-only icons: render with headless Edge on Windows
+    (`msedge --headless=new --default-background-color=00000000
+    --window-size=512,512 --screenshot=icon.png page.html`).
+  - The tips checker reads "…:6710. " or "…1.20. " as a step number: don't
+    end a sentence with a port or an IP in `tips.before_install`.
 - **One source for every OS.** Write the app only in `Apps/` (and `docker/<app>/`
   for builds). The MOS generator relies on `x-casaos.main` and `port_map` naming
   the web port, data under `/DATA/AppData/$AppID`, `$TZ`/`$PUID`/`$PGID`, and
