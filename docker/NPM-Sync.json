@@ -1,0 +1,103 @@
+{
+  "name": "NPM-Sync",
+  "repo": "ghcr.io/toyonix/npm-sync:latest",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/toyonix/npm-sync/pkgs/container/npm-sync",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=128m --cpus=0.50 --memory-reservation=16m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/npm-sync/icon.png",
+  "project": "https://github.com/ToYoNiX/nginx-proxy-manager-sync#readme",
+  "support": "https://github.com/ToYoNiX/nginx-proxy-manager-sync/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/npm-sync/",
+  "description": "Keeps several Nginx Proxy Manager instances in sync, like adguardhome-sync.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6720",
+      "container": "8080",
+      "description": "npm-sync web page and API, published on host as 6720"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "MASTER_URL",
+      "key": "MASTER_URL",
+      "value": "http://CHANGEME-MASTER:81",
+      "mask": false,
+      "description": "Required. The admin address of the Nginx Proxy Manager that is the source, like http://192.168.1.20:81 (replace CHANGEME-MASTER with its IP)."
+    },
+    {
+      "name": "MASTER_USERNAME",
+      "key": "MASTER_USERNAME",
+      "value": "CHANGEME@example.com",
+      "mask": false,
+      "description": "Required. The email of an NPM user on the master, without two-factor sign-in. A user just for npm-sync is best."
+    },
+    {
+      "name": "MASTER_PASSWORD",
+      "key": "MASTER_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "Required. That user's password."
+    },
+    {
+      "name": "BACKUP1_URL",
+      "key": "BACKUP1_URL",
+      "value": "http://CHANGEME-BACKUP:81",
+      "mask": false,
+      "description": "Required. The admin address of the NPM that receives the copy, like http://192.168.1.30:81. Add BACKUP2_URL and so on for more."
+    },
+    {
+      "name": "BACKUP1_USERNAME",
+      "key": "BACKUP1_USERNAME",
+      "value": "CHANGEME@example.com",
+      "mask": false,
+      "description": "Required. The email of the npm-sync user on that NPM."
+    },
+    {
+      "name": "BACKUP1_PASSWORD",
+      "key": "BACKUP1_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "Required. That user's password."
+    },
+    {
+      "name": "WEB_USERNAME",
+      "key": "WEB_USERNAME",
+      "value": "admin",
+      "mask": false,
+      "description": "The user name for npm-sync's own web page."
+    },
+    {
+      "name": "WEB_PASSWORD",
+      "key": "WEB_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "A password for npm-sync's web page. Set one: without it anyone on your network can start syncs there."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

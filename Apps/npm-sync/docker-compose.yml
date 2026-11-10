@@ -1,0 +1,166 @@
+name: npm-sync
+
+services:
+  npm-sync:
+    image: ghcr.io/toyonix/npm-sync:latest
+    container_name: npm-sync
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - MASTER_URL=http://CHANGEME-MASTER:81
+      - MASTER_USERNAME=CHANGEME@example.com
+      - MASTER_PASSWORD=
+      - BACKUP1_URL=http://CHANGEME-BACKUP:81
+      - BACKUP1_USERNAME=CHANGEME@example.com
+      - BACKUP1_PASSWORD=
+      - WEB_USERNAME=admin
+      - WEB_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6720"
+        protocol: tcp
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+        reservations:
+          cpus: "0.00"
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/npm-sync/icon.png
+    x-casaos:
+      id: com.icestore.npm-sync
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. Use the same one as your Nginx Proxy Manager
+              instances: certificate renewals are compared in local time.
+        - container: MASTER_URL
+          description:
+            en_US: >-
+              Required. The admin address of the Nginx Proxy Manager that is
+              the source, like http://192.168.1.20:81 (replace CHANGEME-MASTER
+              with its IP).
+        - container: MASTER_USERNAME
+          description:
+            en_US: >-
+              Required. The email of an NPM user on the master, without
+              two-factor sign-in. A user just for npm-sync is best.
+        - container: MASTER_PASSWORD
+          description:
+            en_US: >-
+              Required. That user's password.
+        - container: BACKUP1_URL
+          description:
+            en_US: >-
+              Required. The admin address of the NPM that receives the copy,
+              like http://192.168.1.30:81. Add BACKUP2_URL and so on for more.
+        - container: BACKUP1_USERNAME
+          description:
+            en_US: >-
+              Required. The email of the npm-sync user on that NPM.
+        - container: BACKUP1_PASSWORD
+          description:
+            en_US: >-
+              Required. That user's password.
+        - container: WEB_USERNAME
+          description:
+            en_US: >-
+              The user name for npm-sync's own web page.
+        - container: WEB_PASSWORD
+          description:
+            en_US: >-
+              A password for npm-sync's web page. Set one: without it anyone on
+              your network can start syncs there.
+      ports:
+        - container: "8080"
+          description:
+            en_US: npm-sync web page and API, published on host as 6720
+
+x-casaos:
+  id: com.icestore.npm-sync
+  architectures:
+    - amd64
+    - arm64
+  main: npm-sync
+  author: HSinghHira
+  category: Networking
+  developer: ToYoNiX
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/npm-sync/icon.png
+  title:
+    en_US: NPM Sync
+  tagline:
+    en_US: Keeps several Nginx Proxy Manager instances in sync, like adguardhome-sync.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/npm-sync/](https://icestore.hsinghhira.me/app/npm-sync/) for full details
+
+
+      npm-sync copies everything from one Nginx Proxy Manager (the master) to
+      one or more others: proxy hosts, redirections, 404 hosts, streams,
+      access lists and certificates, including Let's Encrypt renewals. It is
+      a one-way sync on a schedule, with a web page to watch and start it.
+
+
+      **Features**
+
+
+      - Proxy hosts, redirection hosts, 404 hosts and streams created,
+        updated and deleted to match the master
+
+      - Let's Encrypt and custom certificates copied and refreshed on renewal
+
+      - Access lists, with the passwords you give it
+
+      - Schedule, dry run, a cap on deletes and domains to leave alone
+
+      - Web page and API with each object's last result
+
+
+      **How to use?**
+
+
+      1. Make a user without two-factor sign-in on every NPM.
+
+
+      2. Set the master and backup addresses and logins before you install.
+
+
+      3. Open npm-sync from the Zima OS dashboard and press Sync now.
+  tips:
+    before_install:
+      en_US: >-
+        1. On every Nginx Proxy Manager, make a user for npm-sync without
+           two-factor sign-in. Run all of them on the same NPM version.
+
+
+        2. Open the app configuration and fill in MASTER_URL, MASTER_USERNAME
+           and MASTER_PASSWORD (the NPM to copy from) and the BACKUP1_ ones
+           (the NPM to copy to). npm-sync won't start without them.
+
+
+        3. Set WEB_PASSWORD so only you can use npm-sync's page.
+
+
+        4. To try it safely first, add DRY_RUN with the value true: it then
+           only shows what it would change.
+
+
+        5. Start the installation and open npm-sync from your dashboard.
+  index: /
+  port_map: "6720"
+  scheme: http
+  is_uncontrolled: false
+  version: "latest"
+  update_at: "2026-11-10"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/toyonix/npm-sync (upstream only publishes latest), set up by environment variables.
+      - Port 6720; no data folder.
+  repo: "https://github.com/ToYoNiX/nginx-proxy-manager-sync"
+  support: "https://github.com/ToYoNiX/nginx-proxy-manager-sync/issues"
+  docs: "https://github.com/ToYoNiX/nginx-proxy-manager-sync#readme"
