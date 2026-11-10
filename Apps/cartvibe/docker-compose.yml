@@ -1,0 +1,157 @@
+name: cartvibe
+
+services:
+  cartvibe:
+    image: ghcr.io/hsinghhira/cartvibe:latest
+    container_name: cartvibe
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6717"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/sqlite
+        target: /app/cartvibe-api/sqlite
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/cartvibe-api/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/logs
+        target: /app/cartvibe-api/logs
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1536M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cartvibe/icon.png
+    x-casaos:
+      id: com.icestore.cartvibe
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: CartVibe web app and API, published on host as 6717
+      volumes:
+        - container: /app/cartvibe-api/sqlite
+          description:
+            en_US: >-
+              The database, Valkey's queue and this install's SECRET_KEY and
+              ENCRYPTION_KEY (.icestore/). Back it up: without ENCRYPTION_KEY,
+              saved AI and sign-in keys can't be read.
+        - container: /app/cartvibe-api/data
+          description:
+            en_US: Receipt photos.
+        - container: /app/cartvibe-api/logs
+          description:
+            en_US: CartVibe's logs.
+
+x-casaos:
+  id: com.icestore.cartvibe
+  architectures:
+    - amd64
+  main: cartvibe
+  author: HSinghHira
+  category: Finance
+  developer: wouekk
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cartvibe/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cartvibe/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cartvibe/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cartvibe/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cartvibe/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cartvibe/screenshot-4.jpg
+  title:
+    en_US: CartVibe
+  tagline:
+    en_US: Household receipts, shared shopping lists and spending insights.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/cartvibe/](https://icestore.hsinghhira.me/app/cartvibe/) for full details
+
+
+      CartVibe keeps your household's shopping in one place: snap a receipt
+      and it is read for you, plan shared shopping lists, and see where the
+      money goes. Valkey (the job queue) is inside this one container, and
+      both keys are made for you on first start.
+
+
+      **Features**
+
+
+      - Receipts read from a photo (OCR, or AI with your own key), with
+        products and prices
+
+      - Shared shopping lists that update live for the whole family
+
+      - Dashboard: spending by category, month and tag, budgets and goals
+
+      - Barcode scanner with Nutri-Score and nutrition from Open Food Facts
+
+      - Family accounts, five languages, installs like an app on phones
+
+
+      **How to use?**
+
+
+      1. Open CartVibe from the Zima OS dashboard and create your account.
+
+
+      2. Add a receipt from a photo, or start a shopping list.
+
+
+      3. On your phone, open the same address and add it to the Home Screen.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing to set first. Start the installation.
+
+
+        2. Wait about half a minute, then open CartVibe from your dashboard
+           and create your account.
+
+
+        3. To read receipts with AI, add your AI provider's key in
+           CartVibe's settings. Keys are stored encrypted with a key made
+           for this install.
+
+
+        4. Back up the app's folder (AppData, cartvibe). It holds the
+           database, the receipt photos and the keys.
+  index: /
+  port_map: "6717"
+  scheme: http
+  is_uncontrolled: false
+  version: "sha-591dc65"
+  update_at: "2026-11-10"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/wouekk/cartvibe sha-591dc65, with Valkey inside (upstream runs it as a second container) and a start script that makes this install's SECRET_KEY and ENCRYPTION_KEY.
+      - Port 6717; data in /DATA/AppData/cartvibe (sqlite, data, logs). amd64 only, as upstream publishes.
+  repo: "https://github.com/wouekk/cartvibe"
+  support: "https://github.com/wouekk/cartvibe/issues"
+  docs: "https://github.com/wouekk/cartvibe#readme"
