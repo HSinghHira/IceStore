@@ -1,0 +1,159 @@
+name: sniptide
+
+services:
+  sniptide:
+    image: ghcr.io/hsinghhira/sniptide:latest
+    container_name: sniptide
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6716
+    ports:
+      - target: 8080
+        published: "6716"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.10"
+          memory: 192M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sniptide/icon.png
+    x-casaos:
+      id: com.icestore.sniptide
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6716, or use your https domain. Sign-in only
+              works on this address, and share links use it.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Sniptide web app, API and MCP endpoint, published on host as 6716
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (postgres/) with every paste, and the secret keys
+              (state/). Back up the whole folder: without state/secrets.env,
+              stored environment secrets can't be read.
+
+x-casaos:
+  id: com.icestore.sniptide
+  architectures:
+    - amd64
+    - arm64
+  main: sniptide
+  author: HSinghHira
+  category: Developer
+  developer: Dino-Kupinic
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sniptide/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sniptide/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sniptide/screenshot-1.jpg
+  title:
+    en_US: Sniptide
+  tagline:
+    en_US: Pastebin for code, configs and secrets, with an MCP server for your AI agents.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/sniptide/](https://icestore.hsinghhira.me/app/sniptide/) for full details
+
+
+      Sniptide is a self-hostable pastebin for code snippets, configs and
+      secrets. Share multi-file pastes with passwords, expiry or
+      burn-after-read links, keep reusable snippets in collections, sync .env
+      files, and connect coding agents through the CLI or the MCP server.
+      PostgreSQL is inside this one container.
+
+
+      **Features**
+
+
+      - Multi-file pastes with syntax highlighting and revisions you can
+        compare
+
+      - Passwords, expiry and burn-after-read links
+
+      - Collections of reusable snippets and .env file sync
+
+      - A CLI and an MCP server for coding agents
+
+      - GitHub and Google sign-in, email, Slack and Discord webhooks
+
+
+      **How to use?**
+
+
+      1. Set PUBLIC_URL to your ZimaOS IP before you install.
+
+
+      2. Open Sniptide and sign up to make your account.
+
+
+      3. Close sign-up with ALLOW_SIGN_UP=false in the app settings.
+
+
+      4. Create a paste, or connect your coding agent to the MCP server.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Find PUBLIC_URL. It starts as http://[ZIMAOS-IP-ADDRESS]:6716 and
+           needs your ZimaOS IP in place of [ZIMAOS-IP-ADDRESS], like
+           http://192.168.1.20:6716 for the IP 192.168.1.20 (use yours). You
+           must do this, or sign-in won't work.
+
+
+        3. Start the installation.
+
+
+        4. Wait about a minute. The first start sets up the database.
+
+
+        5. Open your PUBLIC_URL and sign up to make your account.
+
+
+        6. Then add ALLOW_SIGN_UP with the value false in the app settings,
+           so nobody else can sign up. More settings are listed on the
+           Sniptide page at https://icestore.hsinghhira.me/app/sniptide/
+           (Variables tab).
+  index: /
+  port_map: "6716"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.78.1"
+  update_at: "2026-11-09"
+  release_notes:
+    en_US: |-
+      - First IceStore release: Sniptide in one container with PostgreSQL 17, on port 6716 with one data folder; nginx takes the place of upstream's optional Caddy proxy.
+      - BETTER_AUTH_SECRET, the environment-secrets key and the database password are made on first start.
+      - ghcr.io/dino-kupinic/sniptide 0.78.1
+  repo: "https://github.com/Dino-Kupinic/sniptide"
+  support: "https://github.com/Dino-Kupinic/sniptide/issues"
+  docs: "https://docs.sniptide.com"
