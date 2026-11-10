@@ -43,7 +43,9 @@ done
 
 cred_reset
 cred_add URL "http://<your ZimaOS IP>:6717"
-cred_note "Open the URL and create your account."
+cred_add USER admin
+cred_add PASSWORD "admin (until you change it)"
+cred_note "Change it right away: Management, Users, the key icon on your row."
 /usr/local/lib/icestore/credentials.sh http://127.0.0.1:80/ &
 
 exec /app/entrypoint.sh "$@"

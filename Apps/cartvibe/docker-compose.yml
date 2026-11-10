@@ -118,7 +118,9 @@ x-casaos:
       **How to use?**
 
 
-      1. Open CartVibe from the Zima OS dashboard and create your account.
+      1. Open CartVibe from the Zima OS dashboard and sign in with user name
+         admin and password admin. Change that password right away under
+         Management, Users, the key icon.
 
 
       2. Add a receipt from a photo, or start a shopping list.
@@ -131,16 +133,23 @@ x-casaos:
         1. Nothing to set first. Start the installation.
 
 
-        2. Wait about half a minute, then open CartVibe from your dashboard
-           and create your account.
+        2. Wait about half a minute, then open CartVibe from your dashboard.
+           There is no sign-up page.
 
 
-        3. To read receipts with AI, add your AI provider's key in
+        3. Sign in with user name admin and password admin.
+
+
+        4. Change that password right away: open Management, then Users,
+           and press the key icon on your row. Add family members there too.
+
+
+        5. To read receipts with AI, add your AI provider's key in
            CartVibe's settings. Keys are stored encrypted with a key made
            for this install.
 
 
-        4. Back up the app's folder (AppData, cartvibe). It holds the
+        6. Back up the app's folder (AppData, cartvibe). It holds the
            database, the receipt photos and the keys.
   index: /
   port_map: "6717"
@@ -152,6 +161,7 @@ x-casaos:
     en_US: |-
       - First IceStore version: ghcr.io/wouekk/cartvibe sha-591dc65, with Valkey inside (upstream runs it as a second container) and a start script that makes this install's SECRET_KEY and ENCRYPTION_KEY.
       - Port 6717; data in /DATA/AppData/cartvibe (sqlite, data, logs). amd64 only, as upstream publishes.
+      - The first sign-in is admin / admin (made by CartVibe itself; there is no sign-up page). The tips and the CREDENTIALS box in the logs now say so; change the password under Management, Users.
   repo: "https://github.com/wouekk/cartvibe"
   support: "https://github.com/wouekk/cartvibe/issues"
   docs: "https://github.com/wouekk/cartvibe#readme"

@@ -19,4 +19,4 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       app: asobeast
-      AIO_VERSION: "1.0.0"
+      AIO_VERSION: "1.0.1"

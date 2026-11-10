@@ -145,17 +145,41 @@ fi
 chown redis:redis "$DATA/redis"
 pg_setup /usr/lib/postgresql/18/bin
 
+# Upstream's postgres image makes "asobeast" its superuser (POSTGRES_USER),
+# and the api's migrations rely on that: one creates the asobeast_app role
+# the row-level security switches to. The migrations make the tables.
+ROLE_FIX=$STATE/.pg-role-superuser
 if pg_is_new; then
   log "first start: creating the database"
   pg_initdb
-  # Upstream's postgres image makes "asobeast" the owner of its database;
-  # the api's Prisma migrations make the tables.
   pg_start_local
   pg_psql -v pw="$PG_PASSWORD" <<'SQL'
-CREATE ROLE asobeast LOGIN PASSWORD :'pw';
+CREATE ROLE asobeast LOGIN SUPERUSER PASSWORD :'pw';
 CREATE DATABASE asobeast OWNER asobeast;
 SQL
   pg_stop_local
+  touch "$ROLE_FIX"
+elif [ ! -f "$ROLE_FIX" ]; then
+  # Installs from before this fix: asobeast was a plain user, so the
+  # migration 20260807110500_add_application_role failed and Prisma refused
+  # to go on (P3009). Give the role upstream's rights and mark that failed
+  # attempt rolled back (what `prisma migrate resolve --rolled-back` does),
+  # so the api applies it again on this start.
+  log "upgrading the asobeast database user to upstream's rights and retrying the failed migration"
+  pg_start_local
+  pg_psql <<'SQL'
+ALTER ROLE asobeast SUPERUSER;
+SQL
+  pg_psql -d asobeast <<'SQL'
+DO $$ BEGIN
+  IF to_regclass('public._prisma_migrations') IS NOT NULL THEN
+    UPDATE public._prisma_migrations SET rolled_back_at = now()
+     WHERE finished_at IS NULL AND rolled_back_at IS NULL;
+  END IF;
+END $$;
+SQL
+  pg_stop_local
+  touch "$ROLE_FIX"
 fi
 
 exec /usr/bin/supervisord -n -c /etc/supervisor/aio.conf

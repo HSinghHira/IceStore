@@ -6,6 +6,18 @@ services:
   - { name: TV Showcase, path: /, icon: monitor }
 screenshots: [TV showcase]
 variables:
+  - name: PUID
+    group: Files
+    default: "1000"
+    description: >-
+      The user that owns the files Torsher writes. Leave it out to use
+      1000, the usual ZimaOS user. Never set it to an empty value.
+  - name: PGID
+    group: Files
+    default: "1000"
+    description: >-
+      The group that owns the files Torsher writes. Leave it out to use
+      1000.
   - name: TMDB_ACCESS_TOKEN
     group: Catalog
     default: ""

@@ -9,8 +9,6 @@ services:
     network_mode: bridge
     environment:
       - TZ=$TZ
-      - PUID=$PUID
-      - PGID=$PGID
       - ENGINE_PEER_PORT=6198
     ports:
       - target: 8080
@@ -52,16 +50,6 @@ services:
             en_US: >-
               Your time zone. It is filled in from your ZimaOS time zone.
               Leave it unless you need another.
-        - container: PUID
-          description:
-            en_US: >-
-              The user that owns the files Torsher writes. It is filled in by
-              ZimaOS.
-        - container: PGID
-          description:
-            en_US: >-
-              The group that owns the files Torsher writes. It is filled in
-              by ZimaOS.
         - container: ENGINE_PEER_PORT
           description:
             en_US: >-
@@ -186,12 +174,13 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "1.5.2"
-  update_at: "2026-11-08"
+  update_at: "2026-11-10"
   release_notes:
     en_US: |-
       - First IceStore version: ghcr.io/torsher-app/torsher 1.5.2
       - Web on 6197, torrent peers on 6198 (TCP and UDP, same number inside and outside)
       - /DATA/Media is available read-only at /media/zimaos for your existing library
+      - Fixed: Torsher did not start when ZimaOS passed an empty PUID/PGID ("setpriv: failed to parse reuid"). They are left out now, so the files belong to user 1000:1000; add PUID and PGID in the app settings to choose another owner.
   repo: "https://github.com/torsher-app/torsher"
   support: "https://github.com/torsher-app/torsher/issues"
   docs: "https://torsher.app/docs/"

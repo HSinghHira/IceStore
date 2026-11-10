@@ -157,7 +157,7 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "1.16.0"
-  update_at: "2026-11-09"
+  update_at: "2026-11-10"
   release_notes:
     en_US: |-
       - First IceStore release: upstream's published stack in one container, on port 6700 with one data folder.
@@ -166,6 +166,7 @@ x-casaos:
       - asobeast-api 1.16.0
       - asobeast-web 1.16.0
       - PostgreSQL 18 and Redis inside
+      - Fixed: the API stopped at the database migration add_application_role ("permission denied to create role"). The database user now has the same rights as in upstream's setup; an install that already hit this repairs itself on the next start.
   repo: "https://github.com/AsoBeast/asobeast"
   support: "https://github.com/AsoBeast/asobeast/issues"
   docs: "https://docs.asobeast.com"
