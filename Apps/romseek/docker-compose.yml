@@ -12,9 +12,9 @@ services:
       - PROWLARR_URL=http://CHANGEME-IP:9696
       - PROWLARR_KEY=
       - QBIT_URL=http://CHANGEME-IP:8080
-      - QBIT_SAVE_PATH=/DATA/Downloads/roms
+      - QBIT_SAVE_PATH=/data/Downloads/roms
       - ROMM_URL=http://CHANGEME-IP:8080
-      - ROMM_LIBRARY=/DATA/AppData/romm/library/roms
+      - ROMM_LIBRARY=/data/AppData/romm/library/roms
     ports:
       - target: 8000
         published: "6721"
@@ -27,7 +27,7 @@ services:
           create_host_path: true
       - type: bind
         source: /DATA
-        target: /DATA
+        target: /data
     deploy:
       resources:
         limits:
@@ -65,9 +65,9 @@ services:
         - container: QBIT_SAVE_PATH
           description:
             en_US: >-
-              Where qBittorrent saves RomSeek's downloads. It must be the same
-              path for qBittorrent and RomSeek, so use a folder under /DATA and
-              give qBittorrent /DATA at the same path.
+              Where qBittorrent saves RomSeek's downloads, as both see it.
+              Your ZimaOS /DATA is /data here: add the volume /DATA at /data to
+              qBittorrent too, so both use the same path.
         - container: ROMM_URL
           description:
             en_US: >-
@@ -75,8 +75,8 @@ services:
         - container: ROMM_LIBRARY
           description:
             en_US: >-
-              RomM's roms folder, under /DATA, like
-              /DATA/AppData/romm/library/roms. Finished games are moved here.
+              RomM's roms folder as RomSeek sees it (/DATA is /data here), like
+              /data/AppData/romm/library/roms. Finished games are moved here.
       ports:
         - container: "8000"
           description:
@@ -85,11 +85,11 @@ services:
         - container: /state
           description:
             en_US: RomSeek's state (history, settings, the game list cache).
-        - container: /DATA
+        - container: /data
           description:
             en_US: >-
-              Your ZimaOS storage at the same path, so qBittorrent's download
-              paths and RomM's library line up.
+              Your ZimaOS storage (/DATA), at /data as upstream mounts it, so
+              qBittorrent's download paths and RomM's library line up.
 
 x-casaos:
   id: com.icestore.romseek
@@ -153,8 +153,8 @@ x-casaos:
            API key into PROWLARR_KEY.
 
 
-        3. Point QBIT_SAVE_PATH and ROMM_LIBRARY at folders under /DATA, and
-           make sure qBittorrent sees /DATA at the same path.
+        3. Inside RomSeek your /DATA is /data. Give qBittorrent the same
+           volume (/DATA at /data) so download paths match.
 
 
         4. RomSeek has no login. Keep it on your home network, or behind a
@@ -171,7 +171,7 @@ x-casaos:
   release_notes:
     en_US: |-
       - First IceStore version: RomSeek from commit ea4f909 (upstream has no releases or image), on python:3.12-alpine as upstream runs it.
-      - Port 6721; state in /DATA/AppData/romseek/state and /DATA mounted at the same path for downloads and the RomM library.
+      - Port 6721; state in /DATA/AppData/romseek/state and /DATA mounted at /data (as upstream mounts it) for downloads and the RomM library.
   repo: "https://github.com/Evident-Dev/romseek"
   support: "https://github.com/Evident-Dev/romseek/issues"
   docs: "https://github.com/Evident-Dev/romseek/blob/main/docs/setup.md"

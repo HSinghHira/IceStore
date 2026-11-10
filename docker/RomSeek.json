@@ -33,9 +33,9 @@
     {
       "name": "Data",
       "host": "/DATA",
-      "container": "/DATA",
+      "container": "/data",
       "mode": "rw",
-      "description": "Your MOS storage at the same path, so qBittorrent's download paths and RomM's library line up."
+      "description": "Your MOS storage (/DATA), at /data as upstream mounts it, so qBittorrent's download paths and RomM's library line up."
     }
   ],
   "ports": [
@@ -79,9 +79,9 @@
     {
       "name": "QBIT_SAVE_PATH",
       "key": "QBIT_SAVE_PATH",
-      "value": "/mnt/cache/downloads/roms",
+      "value": "/data/Downloads/roms",
       "mask": false,
-      "description": "Where qBittorrent saves RomSeek's downloads. It must be the same path for qBittorrent and RomSeek, so use a folder under /DATA and give qBittorrent /DATA at the same path."
+      "description": "Where qBittorrent saves RomSeek's downloads, as both see it. Your MOS /DATA is /data here: add the volume /DATA at /data to qBittorrent too, so both use the same path."
     },
     {
       "name": "ROMM_URL",
@@ -93,9 +93,9 @@
     {
       "name": "ROMM_LIBRARY",
       "key": "ROMM_LIBRARY",
-      "value": "/DATA/AppData/romm/library/roms",
+      "value": "/data/AppData/romm/library/roms",
       "mask": false,
-      "description": "RomM's roms folder, under /DATA, like /mnt/cache/appdata/romm/library/roms. Finished games are moved here."
+      "description": "RomM's roms folder as RomSeek sees it (/DATA is /data here), like /data/AppData/romm/library/roms. Finished games are moved here."
     }
   ],
   "devices": [],

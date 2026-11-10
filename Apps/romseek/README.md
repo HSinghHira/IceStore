@@ -76,4 +76,4 @@ RomSeek is a game download manager for RomM. It does for games what Sonarr and R
 
 You need RomM, Prowlarr and qBittorrent running first. Replace `CHANGEME-IP` with your ZimaOS IP in `PROWLARR_URL`, `QBIT_URL` and `ROMM_URL`, and paste Prowlarr's API key into `PROWLARR_KEY`; RomSeek won't start without it. RomSeek has no qBittorrent login, so in qBittorrent turn on **Bypass authentication for clients in whitelisted IP subnets** and add your Docker network.
 
-`/DATA` is mounted at the same path, so point `QBIT_SAVE_PATH` and `ROMM_LIBRARY` at folders under `/DATA` and make sure qBittorrent sees them at the same paths. **RomSeek has no login of its own**: keep it on your home network or behind a reverse proxy with a login, and never open its port to the internet.
+Your `/DATA` is mounted at `/data` inside (as upstream mounts it), so `QBIT_SAVE_PATH` and `ROMM_LIBRARY` start with `/data`; give qBittorrent the same volume (`/DATA` at `/data`) so both see downloads at the same path. **RomSeek has no login of its own**: keep it on your home network or behind a reverse proxy with a login, and never open its port to the internet.
