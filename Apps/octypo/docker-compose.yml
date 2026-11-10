@@ -1,0 +1,165 @@
+name: octypo
+
+services:
+  octypo:
+    image: ghcr.io/hsinghhira/octypo:latest
+    container_name: octypo
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - ANTHROPIC_API_KEY=
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 3000
+        published: "6719"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1536M
+        reservations:
+          cpus: "0.10"
+          memory: 192M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/octypo/icon.png
+    x-casaos:
+      id: com.icestore.octypo
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: ANTHROPIC_API_KEY
+          description:
+            en_US: >-
+              A model key, needed to write articles. Use this one, or add
+              OPENAI_API_KEY, GEMINI_API_KEY or GROQ_API_KEY instead (Variables
+              tab).
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The admin panel password. Leave it empty to have one made; it is
+              shown in the app's logs, in the box marked CREDENTIALS.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Octypo admin panel (/admin) and REST API, published on host as 6719
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (postgres/), the engine's encrypted secrets file
+              (octypo/) and the passwords made on first start (state/). Back
+              up the whole folder.
+
+x-casaos:
+  id: com.icestore.octypo
+  architectures:
+    - amd64
+    - arm64
+  main: octypo
+  author: HSinghHira
+  category: AI
+  developer: KBRglobal
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/octypo/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/octypo/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/octypo/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/octypo/screenshot-2.jpg
+  title:
+    en_US: Octypo
+  tagline:
+    en_US: Turns feeds and your documents into source-checked articles, in any language.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/octypo/](https://icestore.hsinghhira.me/app/octypo/) for full details
+
+
+      Octypo is a self-hosted engine that turns RSS feeds and your own
+      documents into articles checked against their sources, in any
+      language. It picks what is worth writing about, writes it, checks it,
+      and holds anything that fails for a person to review. PostgreSQL is
+      inside this one container.
+
+
+      **Features**
+
+
+      - Articles written natively in any of 185 languages
+
+      - Anthropic, OpenAI, Gemini, Groq, OpenRouter and more, with fallback
+
+      - Quality gates: scoring, number checks against sources, duplicate
+        detection
+
+      - Drafts by default and a daily spend limit
+
+      - Admin panel, REST API and an Astro blog to publish to
+
+
+      **How to use?**
+
+
+      1. Add a model key (like ANTHROPIC_API_KEY) before you install.
+
+
+      2. Open http://[ZIMAOS-IP-ADDRESS]:6719/admin and sign in with the
+         password from the app's logs.
+
+
+      3. Add an RSS feed under Feeds, or upload documents to the Library.
+
+
+      4. Review the drafts and publish.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install.
+
+
+        2. Put a model key in ANTHROPIC_API_KEY, or add OPENAI_API_KEY,
+           GEMINI_API_KEY or GROQ_API_KEY. Without one, no articles are
+           written.
+
+
+        3. Start the installation. It is ready in about a minute.
+
+
+        4. Look in the app's logs for the box marked CREDENTIALS. It has the
+           admin password (unless you set ADMIN_PASSWORD yourself).
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6719/admin and sign in.
+
+
+        6. The topic, schedules, spend limit and publishing options are
+           listed on the Octypo page at
+           https://icestore.hsinghhira.me/app/octypo/ (Variables tab).
+  index: /admin
+  port_map: "6719"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.0.0"
+  update_at: "2026-11-10"
+  release_notes:
+    en_US: |-
+      - First IceStore version: Octypo 1.0.0 from npm (upstream's quick start) with PostgreSQL 16 in one container; upstream publishes no image.
+      - Port 6719. The admin password, the database password and the secrets-file password are made on first start.
+  repo: "https://github.com/KBRglobal/octypo-engine-oss"
+  support: "https://github.com/KBRglobal/octypo-engine-oss/issues"
+  docs: "https://github.com/KBRglobal/octypo-engine-oss#readme"
