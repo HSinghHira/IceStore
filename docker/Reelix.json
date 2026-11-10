@@ -1,0 +1,76 @@
+{
+  "name": "Reelix",
+  "repo": "ghcr.io/demonzoned/reelix:0.8.7",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/demonzoned/reelix/pkgs/container/reelix",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=1024m --cpus=2.00 --memory-reservation=64m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:7700]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/reelix/icon.png",
+  "project": "https://github.com/demonzoned/Reelix/tree/master/docs",
+  "support": "https://github.com/demonzoned/Reelix/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/reelix/",
+  "description": "One app for movies, TV, books, audiobooks and music: does the jobs of Radarr, Sonarr and friends.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/reelix/config",
+      "container": "/config",
+      "mode": "rw",
+      "description": "The database, settings and backups."
+    },
+    {
+      "name": "Data",
+      "host": "/DATA",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Your MOS storage (/DATA), one mount for downloads and media so hardlinks work. Your media is under /data inside, like /data/Media/Movies."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6726",
+      "container": "7700",
+      "description": "Reelix web app and API, published on host as 6726"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
