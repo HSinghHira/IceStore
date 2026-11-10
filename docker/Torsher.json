@@ -70,20 +70,6 @@
       "description": "Your time zone, like Europe/London or America/New_York."
     },
     {
-      "name": "PUID",
-      "key": "PUID",
-      "value": "500",
-      "mask": false,
-      "description": "The user id that owns the app's files. 500 is the MOS default."
-    },
-    {
-      "name": "PGID",
-      "key": "PGID",
-      "value": "500",
-      "mask": false,
-      "description": "The group id that owns the app's files. 500 is the MOS default."
-    },
-    {
       "name": "ENGINE_PEER_PORT",
       "key": "ENGINE_PEER_PORT",
       "value": "6198",
