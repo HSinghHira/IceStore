@@ -1,0 +1,104 @@
+{
+  "name": "RomSeek",
+  "repo": "ghcr.io/hsinghhira/romseek:latest",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/hsinghhira/romseek/pkgs/container/romseek",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=256m --cpus=1.00 --memory-reservation=32m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/romseek/icon.png",
+  "project": "https://github.com/Evident-Dev/romseek/blob/main/docs/setup.md",
+  "support": "https://github.com/Evident-Dev/romseek/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/romseek/",
+  "description": "Sonarr-style game search and library for RomM, using Prowlarr and qBittorrent.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "State",
+      "host": "/mnt/cache/appdata/romseek/state",
+      "container": "/state",
+      "mode": "rw",
+      "description": "RomSeek's state (history, settings, the game list cache)."
+    },
+    {
+      "name": "Data",
+      "host": "/DATA",
+      "container": "/DATA",
+      "mode": "rw",
+      "description": "Your MOS storage at the same path, so qBittorrent's download paths and RomM's library line up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6721",
+      "container": "8000",
+      "description": "RomSeek web app, published on host as 6721"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PROWLARR_URL",
+      "key": "PROWLARR_URL",
+      "value": "http://CHANGEME-IP:9696",
+      "mask": false,
+      "description": "Required. Your Prowlarr's address, like http://192.168.1.20:9696 (replace CHANGEME-IP with your server IP)."
+    },
+    {
+      "name": "PROWLARR_KEY",
+      "key": "PROWLARR_KEY",
+      "value": "",
+      "mask": false,
+      "description": "Required. Prowlarr's API key (Settings, General, API Key)."
+    },
+    {
+      "name": "QBIT_URL",
+      "key": "QBIT_URL",
+      "value": "http://CHANGEME-IP:8080",
+      "mask": false,
+      "description": "Required. qBittorrent's web UI address, like http://192.168.1.20:8080. RomSeek has no qBittorrent login: in qBittorrent, Options, WebUI, turn on \"Bypass authentication for clients in whitelisted IP subnets\" and add your Docker network (like 172.16.0.0/12)."
+    },
+    {
+      "name": "QBIT_SAVE_PATH",
+      "key": "QBIT_SAVE_PATH",
+      "value": "/mnt/cache/downloads/roms",
+      "mask": false,
+      "description": "Where qBittorrent saves RomSeek's downloads. It must be the same path for qBittorrent and RomSeek, so use a folder under /DATA and give qBittorrent /DATA at the same path."
+    },
+    {
+      "name": "ROMM_URL",
+      "key": "ROMM_URL",
+      "value": "http://CHANGEME-IP:8080",
+      "mask": false,
+      "description": "Required. Your RomM's address, like http://192.168.1.20:8080."
+    },
+    {
+      "name": "ROMM_LIBRARY",
+      "key": "ROMM_LIBRARY",
+      "value": "/DATA/AppData/romm/library/roms",
+      "mask": false,
+      "description": "RomM's roms folder, under /DATA, like /mnt/cache/appdata/romm/library/roms. Finished games are moved here."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
