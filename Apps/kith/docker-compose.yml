@@ -140,11 +140,12 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "v0.4.5"
-  update_at: "2026-11-09"
+  update_at: "2026-11-10"
   release_notes:
     en_US: |-
       - First IceStore release: Kith v0.4.5, built from upstream's source (upstream publishes no image), with MariaDB 11.8 and the scheduled jobs (place coordinates, version check, weekly email) in one container.
       - Port 6707 and one data folder. The database password and the first admin password are made on first start.
+      - Fixed: the site never started ("exec: as_kith: not found"); the web server now starts after the first-start setup.
   repo: "https://github.com/dreed47/kith"
   support: "https://github.com/dreed47/kith/issues"
   docs: "https://github.com/dreed47/kith#readme"

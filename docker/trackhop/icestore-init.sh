@@ -34,6 +34,6 @@ cred_add URL "${SONGPORT_URL:-http://127.0.0.1:8080}"
 cred_add USER "${SONGPORT_USER:-any name}"
 cred_add PASSWORD "$SONGPORT_PASSWORD"
 cred_note "Open SONGPORT_URL exactly as written; music service sign-ins come back to it."
-/usr/local/lib/icestore/credentials.sh http://127.0.0.1:8080/ &
+/usr/local/lib/icestore/credentials.sh http://127.0.0.1:8080/health &
 
 exec /opt/songport/bin/songport-server "$@"

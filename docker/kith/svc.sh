@@ -31,7 +31,7 @@ case $svc in
       echo "first start: creating the tables and the admin account"
       as_kith flask --app app setup db --admin "$KITH_ADMIN_USER" --password "$KITH_ADMIN_PASSWORD"
     fi
-    exec as_kith gunicorn --workers "${KITH_WORKERS:-3}" --bind 0.0.0.0:8000 --access-logfile - 'app:create_app()'
+    exec setpriv --reuid=kith --regid=kith --init-groups gunicorn --workers "${KITH_WORKERS:-3}" --bind 0.0.0.0:8000 --access-logfile - 'app:create_app()'
     ;;
   jobs)
     # Upstream's scheduled jobs (deploy/jobs.sh timers), checked once a

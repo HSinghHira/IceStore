@@ -14,7 +14,6 @@ wait_for() {
 }
 pg_up() { /usr/lib/postgresql/16/bin/pg_isready -q -h 127.0.0.1 -p 5432; }
 api_up() { curl -fsS -o /dev/null -m 5 http://127.0.0.1:8000/api/health; }
-as_select() { setpriv --reuid=select --regid=select --init-groups "$@"; }
 
 case $svc in
   postgres)
@@ -25,18 +24,18 @@ case $svc in
   api)
     # Upstream's api: runs the database migrations, then serves on 8000.
     wait_for pg_up
-    exec as_select select-api serve --host 127.0.0.1 --port 8000 --migrate
+    exec setpriv --reuid=select --regid=select --init-groups select-api serve --host 127.0.0.1 --port 8000 --migrate
     ;;
   worker)
     # Reads mailboxes, sends approved e-mails, fires routines and runs agents.
     wait_for api_up
-    exec as_select select-api worker
+    exec setpriv --reuid=select --regid=select --init-groups select-api worker
     ;;
   web)
     # The web app; it proxies /api/* to the api.
     wait_for api_up
     cd /web
-    exec as_select env PORT=3000 HOSTNAME=0.0.0.0 SELECT_API_URL=http://127.0.0.1:8000 node server.js
+    exec setpriv --reuid=select --regid=select --init-groups env PORT=3000 HOSTNAME=0.0.0.0 SELECT_API_URL=http://127.0.0.1:8000 node server.js
     ;;
   *) echo "unknown service $svc"; exit 1 ;;
 esac

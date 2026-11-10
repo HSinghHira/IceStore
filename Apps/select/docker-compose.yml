@@ -157,11 +157,12 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "v1.0.0"
-  update_at: "2026-11-09"
+  update_at: "2026-11-10"
   release_notes:
     en_US: |-
       - First IceStore release: Select v1.0.0, built from upstream's source (upstream publishes no image), with the API, the worker, the web app and PostgreSQL 16 in one container.
       - Port 6702 and one data folder. The database password is made on first start; Select makes its own encryption key there too.
+      - Fixed: the API never started (a start-script error), so the web app and the worker gave up waiting for it.
   repo: "https://github.com/Kirby54/Select"
   support: "https://github.com/Kirby54/Select/issues"
   docs: "https://github.com/Kirby54/Select/blob/main/docs/getting-started.md"

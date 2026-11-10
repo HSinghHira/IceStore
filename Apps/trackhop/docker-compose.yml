@@ -21,7 +21,7 @@ services:
         bind:
           create_host_path: true
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -120,8 +120,8 @@ x-casaos:
          you install.
 
 
-      2. Open Trackhop and sign in with any name and the password from the
-         app's logs.
+      2. Open Trackhop. Your browser asks for a user name and password: type
+         any name and the password from the CREDENTIALS box in the app's logs.
 
 
       3. Connect your music services, then create a sync.
@@ -147,8 +147,10 @@ x-casaos:
         4. Start the installation. It is ready in about half a minute.
 
 
-        5. Look in the app's logs for the box marked CREDENTIALS. It has the
-           password. Sign in with any user name and that password.
+        5. When Trackhop opens, your browser asks for a user name and a
+           password. Type any user name. The password is in the app's logs,
+           in the box marked CREDENTIALS. To pick your own password instead,
+           add SONGPORT_PASSWORD in the app settings.
 
 
         6. Service keys and more settings are listed on the Trackhop page at
@@ -158,11 +160,12 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "1.8.1"
-  update_at: "2026-11-09"
+  update_at: "2026-11-10"
   release_notes:
     en_US: |-
       - First IceStore version: ghcr.io/xlollx/trackhop 1.8.1, plus a start script that makes this install's SONGPORT_PASSWORD on first start and keeps it in the data folder.
       - Port 6715; the data folder is /DATA/AppData/trackhop/data.
+      - Fixed: the healthcheck and the CREDENTIALS box now use /health, which needs no password, so the app turns healthy and the box with the password shows in the logs within a minute.
   repo: "https://github.com/xlollx/Trackhop"
   support: "https://github.com/xlollx/Trackhop/issues"
   docs: "https://trackhop.org/guide/docker"

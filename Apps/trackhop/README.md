@@ -88,7 +88,7 @@ Trackhop keeps playlists identical across Spotify, Apple Music, YouTube Music, A
 ## How to use
 
 1. Set `SONGPORT_URL` to your ZimaOS IP (or your https address) before you install.
-2. Open Trackhop and sign in with any name and the password from the app's logs.
+2. Open Trackhop. Your browser asks for a user name and password: type any name and the password from the CREDENTIALS box in the app's logs.
 3. Connect your music services, then create a sync.
 
 ## Before you install
@@ -97,4 +97,4 @@ Trackhop keeps playlists identical across Spotify, Apple Music, YouTube Music, A
 
 Spotify, YouTube Music and Deezer only allow https sign-ins: put Trackhop behind a reverse proxy with your own domain and set `SONGPORT_URL` to it, like `https://music.example.com`, then register that callback with each service. Navidrome, Jellyfin and Plex work without https.
 
-This install's password is made on first start and shown in the app's logs, in the box marked CREDENTIALS; sign in with any user name and that password. Service keys and more settings are in the Variables tab.
+This install's password is made on first start and shown in the app's logs, in the box marked CREDENTIALS; when the browser asks, type any user name and that password. To choose your own password, add `SONGPORT_PASSWORD` in the app settings. Service keys and more settings are in the Variables tab.
