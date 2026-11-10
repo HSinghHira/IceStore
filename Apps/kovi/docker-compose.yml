@@ -1,0 +1,131 @@
+name: kovi
+
+services:
+  kovi:
+    image: ghcr.io/hsinghhira/kovi:latest
+    container_name: kovi
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 3000
+        published: "6725"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 48M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kovi/icon.png
+    x-casaos:
+      id: com.icestore.kovi
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for reading-time charts. It is filled in from
+              your ZimaOS time zone.
+      ports:
+        - container: "3000"
+          description:
+            en_US: kovi web app and KOReader plugin endpoints, published on host as 6725
+      volumes:
+        - container: /app/data
+          description:
+            en_US: The database, uploads and cached book covers.
+
+x-casaos:
+  id: com.icestore.kovi
+  architectures:
+    - amd64
+    - arm64
+  main: kovi
+  author: HSinghHira
+  category: Media
+  developer: mdaleo404
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kovi/icon.png
+  title:
+    en_US: kovi
+  tagline:
+    en_US: Reading dashboard for your KOReader statistics.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kovi/](https://icestore.hsinghhira.me/app/kovi/) for full details
+
+
+      kovi turns your KOReader history into a reading dashboard: your library,
+      progress, reading time by day and hour, highlights and covers. Import
+      KOReader's statistics file, or let the kovi plugin on your e-reader send
+      it on its own.
+
+
+      **Features**
+
+
+      - Library with covers, progress and time spent per book
+
+      - Reading-time heatmaps and graphs
+
+      - Highlights and notes from your books
+
+      - A KOReader plugin that syncs with a one-time pairing code
+
+      - Exports and backups
+
+
+      **How to use?**
+
+
+      1. Open kovi from the Zima OS dashboard.
+
+
+      2. Upload statistics.sqlite3 from your KOReader, or install the kovi
+         plugin on the e-reader and pair it.
+
+
+      3. Browse your books, reading time and highlights.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing to set. Start the installation.
+
+
+        2. kovi has no sign-in: anyone who can reach it can read your library.
+           Keep it on your home network, and never open its port to the
+           internet.
+
+
+        3. Open kovi and upload KOReader's statistics.sqlite3, or download the
+           KOReader plugin from kovi and pair your e-reader with the code it
+           shows.
+  index: /
+  port_map: "6725"
+  scheme: http
+  is_uncontrolled: false
+  version: "2026.10.09"
+  update_at: "2026-11-10"
+  release_notes:
+    en_US: |-
+      - First IceStore version: kovi 2026.10.09, built from upstream's release with its own Dockerfile (Node 22 and Calibre for covers); upstream publishes no image.
+      - Port 6725; the data folder is /DATA/AppData/kovi/data.
+  repo: "https://git.sysmd.uk/mdaleo404/kovi"
+  support: "https://git.sysmd.uk/mdaleo404/kovi/issues"
+  docs: "https://git.sysmd.uk/mdaleo404/kovi"
