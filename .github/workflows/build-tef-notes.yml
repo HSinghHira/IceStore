@@ -1,0 +1,22 @@
+name: Build tef-notes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/tef-notes/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-tef-notes.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: tef-notes
+      AIO_VERSION: "1.0.0"
