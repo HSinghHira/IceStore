@@ -1,0 +1,171 @@
+name: opensignup
+
+services:
+  opensignup:
+    image: ghcr.io/hsinghhira/opensignup:latest
+    container_name: opensignup
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6727
+    ports:
+      - target: 8080
+        published: "6727"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/public/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1536M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opensignup/icon.png
+    x-casaos:
+      id: com.icestore.opensignup
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6727. Sign-in links, share links and the
+              links in emails use this address. Behind HTTPS with your own
+              domain, set it to that address, like https://signup.example.com.
+      ports:
+        - container: "8080"
+          description:
+            en_US: OpenSignup and its mail viewer (/mail), published on host as 6727
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database (postgres/), the mail viewer's emails (mail/) and
+              the secrets made on first start (state/). Back up the whole
+              folder.
+
+x-casaos:
+  id: com.icestore.opensignup
+  architectures:
+    - amd64
+    - arm64
+  main: opensignup
+  author: HSinghHira
+  category: Productivity
+  developer: richshaw
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opensignup/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opensignup/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opensignup/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opensignup/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opensignup/screenshot-3.png
+  title:
+    en_US: OpenSignup
+  tagline:
+    en_US: Sign-up sheets for snack rotations, volunteer shifts and carpools.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/opensignup/](https://icestore.hsinghhira.me/app/opensignup/) for full details
+
+
+      OpenSignup is an ad-free, open-source sign-up sheet for school parents,
+      coaches and community groups: snack rotations, volunteer shifts,
+      potlucks and carpools. Participants sign up from a link, with no
+      account. Built here from upstream's source, with PostgreSQL, the
+      reminder email worker and a mail viewer inside one container.
+
+
+      **Features**
+
+
+      - Signups with slots, groups, dates, times and a limit of people per slot
+
+      - Participants sign up, change or cancel from a link, no account needed
+
+      - Reminder emails, and an email when a slot moves to a new time
+
+      - Share panel with a ready message, email link and QR code
+
+      - Responses tab with CSV export, and taking someone off a slot
+
+      - Workspaces with owners, editors and viewers
+
+      - Optional AI drafts (Magic Compose) and an MCP connector for AI assistants
+
+
+      **How to use?**
+
+
+      1. Set PUBLIC_URL to your ZimaOS IP in the app settings.
+
+
+      2. Open OpenSignup and sign in with your email address.
+
+
+      3. Open the sign-in link from the mail viewer at
+         http://[ZIMAOS-IP-ADDRESS]:6727/mail/ (login in the app's logs).
+
+
+      4. Make a signup, publish it and share its link.
+  tips:
+    before_install:
+      en_US: >-
+        1. You must do this, or sign-in won't work: change PUBLIC_URL. Replace
+           [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6727 and keep the port.
+
+
+        2. Start the installation. Wait about two minutes. The first start
+           creates the database.
+
+
+        3. Look in the app's logs for the box marked CREDENTIALS. It has the
+           mail viewer login. It is printed again on every start.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6727 and sign in with your email
+           address.
+
+
+        5. Open the mail viewer at http://[ZIMAOS-IP-ADDRESS]:6727/mail/ and
+           click the sign-in link in the email.
+
+
+        6. To send real emails (sign-in links, reminders), add SMTP_HOST and
+           the other email settings. They are listed on the OpenSignup page at
+           https://icestore.hsinghhira.me/app/opensignup/ (Variables tab), with
+           the site name and legal page settings. You can add them now or
+           later in the app settings.
+  index: /
+  port_map: "6727"
+  scheme: http
+  is_uncontrolled: false
+  version: "6629400"
+  update_at: "2026-11-12"
+  release_notes:
+    en_US: |-
+      - First IceStore release: OpenSignup from commit 6629400 (upstream has no releases or image), built from upstream's source with PostgreSQL 16, the email worker and Mailpit in one container.
+      - Port 6727 and one data folder. The database password, the session secret and the mail viewer login are made on first start.
+      - Organizers sign in by emailed link: until you set SMTP_HOST, the emails land in the mail viewer at /mail.
+      - The site name, support email and legal page settings are app settings here, not build settings.
+  repo: "https://github.com/richshaw/OpenSignup"
+  support: "https://github.com/richshaw/OpenSignup/issues"
+  docs: "https://github.com/richshaw/OpenSignup#readme"
