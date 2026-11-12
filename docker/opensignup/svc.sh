@@ -5,6 +5,7 @@ svc=${1:?usage: opensignup-svc <name>}
 exec > >(sed -u "s/^/[$svc] /") 2>&1
 
 PGBIN=/usr/libexec/postgresql16
+AS_SIGNUP=(setpriv --reuid=signup --regid=signup --init-groups)
 as_signup() { setpriv --reuid=signup --regid=signup --init-groups "$@"; }
 
 # wait_for <what> <test command...>: up to 15 minutes, then supervisord restarts us
@@ -27,7 +28,7 @@ case $svc in
     export MP_SMTP_AUTH_ACCEPT_ANY=1 MP_SMTP_AUTH_ALLOW_INSECURE=1 \
       MP_SMTP_BIND_ADDR=127.0.0.1:1025 MP_UI_BIND_ADDR=127.0.0.1:8025 \
       MP_WEBROOT=/mail/ MP_DATABASE=/data/mail/mailpit.db
-    exec as_signup /usr/local/bin/mailpit
+    exec "${AS_SIGNUP[@]}" /usr/local/bin/mailpit
     ;;
   web)
     # Upstream's "migrate" service, then its "web" service.
@@ -36,13 +37,13 @@ case $svc in
     echo "running database migrations"
     as_signup node_modules/.bin/tsx src/db/migrate.ts
     export HOSTNAME=127.0.0.1 PORT=3000
-    exec as_signup node server.js
+    exec "${AS_SIGNUP[@]}" node server.js
     ;;
   worker)
     # Upstream's "worker" service (pnpm worker), once the migrations ran.
     wait_for "the web server" web_up
     cd /app
-    exec as_signup node_modules/.bin/tsx --tsconfig tsconfig.worker.json src/jobs/worker.ts
+    exec "${AS_SIGNUP[@]}" node_modules/.bin/tsx --tsconfig tsconfig.worker.json src/jobs/worker.ts
     ;;
   gateway)
     wait_for "the web server" web_up

@@ -26,7 +26,7 @@ FROM node:22.22.3-alpine3.22
 ARG OPENSIGNUP_REF
 
 RUN set -eux; \
-    apk add --no-cache bash curl openssl tzdata setpriv postgresql16 postgresql16-client nginx supervisor; \
+    apk add --no-cache bash sed curl openssl tzdata setpriv postgresql16 postgresql16-client nginx supervisor; \
     addgroup -S -g 1001 signup; adduser -S -u 1001 -G signup -h /app signup
 
 # The mail viewer: one static binary from the mailpit image.
