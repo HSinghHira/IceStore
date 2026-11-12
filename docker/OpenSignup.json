@@ -1,6 +1,6 @@
 {
   "name": "OpenSignup",
-  "repo": "ghcr.io/hsinghhira/opensignup:latest",
+  "repo": "ghcr.io/hsinghhira/opensignup:1.0.1",
   "category": [
     "Productivity"
   ],
