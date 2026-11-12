@@ -221,6 +221,15 @@ folder, the compose `name:`, the main service name, the image name
   - *Bind-mount ownership*: images running as a fixed non-root user can't
     write the root-owned folder ZimaOS makes; use `user: "0:0"` unless the
     image's entrypoint chowns it (KyRecovery does).
+  - *Alpine base*: BusyBox has no `sed -u` (run-svc log prefixes) and
+    `exec` can't run a shell function (`exec as_x ...` exits 127): `apk add
+    sed setpriv` and `exec setpriv ...` directly (OpenSignup).
+  - *A fixed image after a broken first release*: ZimaOS keeps the old
+    `:latest` after uninstall and reinstalls from it. Pin the compose image
+    to the AIO_VERSION (`ghcr.io/hsinghhira/<app>:1.0.1`); the weekly
+    bumper moves that pin with AIO_VERSION (OpenSignup).
+  - *NEXT_PUBLIC_* baked at build*: build with placeholder words, fill them
+    in on start from a pristine copy of `.next` (OpenSignup's fill-public.mjs).
   - PHP 8.5 images have opcache built in: never `docker-php-ext-install opcache`.
   - SVG-only icons: render with headless Edge on Windows
     (`msedge --headless=new --default-background-color=00000000

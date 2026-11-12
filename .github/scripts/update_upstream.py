@@ -210,6 +210,17 @@ def update_compose(text, changes, today):
     return text, note
 
 
+def pin_image(compose_text, app, workflow_text):
+    """An app whose compose file pins its own image to a version
+    (ghcr.io/hsinghhira/<app>:1.2.3 instead of :latest, so ZimaOS downloads the
+    new image even when it still has an older one) follows AIO_VERSION."""
+    m = re.search(r'AIO_VERSION:\s*"(\d+\.\d+\.\d+)"', workflow_text)
+    if not m:
+        return compose_text
+    return re.sub(rf"(image:\s*ghcr\.io/hsinghhira/{re.escape(app)}:)\d+\.\d+\.\d+(?![\w.])",
+                  rf"\g<1>{m.group(1)}", compose_text)
+
+
 # -------------------------------------------------------------------- main ---
 
 def main():
@@ -230,11 +241,13 @@ def main():
         workflow = repo / ".github/workflows" / f"build-{app}.yml"
         compose = repo / "Apps" / app / "docker-compose.yml"
         new_compose, note = update_compose(compose.read_text(encoding="utf-8"), changes, today)
+        new_workflow = bump_aio_version(workflow.read_text(encoding="utf-8"))
+        new_compose = pin_image(new_compose, app, new_workflow)
         changed.append(app)
         notes.append(f"{app}: {note.removeprefix('Updated ')}")
         if args.write:
             dockerfile.write_text(new_dockerfile, encoding="utf-8")
-            workflow.write_text(bump_aio_version(workflow.read_text(encoding="utf-8")), encoding="utf-8")
+            workflow.write_text(new_workflow, encoding="utf-8")
             compose.write_text(new_compose, encoding="utf-8")
 
     summary = "; ".join(notes) if notes else "no upstream updates"

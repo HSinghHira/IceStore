@@ -2,7 +2,7 @@ name: opensignup
 
 services:
   opensignup:
-    image: ghcr.io/hsinghhira/opensignup:latest
+    image: ghcr.io/hsinghhira/opensignup:1.0.1
     container_name: opensignup
     restart: unless-stopped
     stop_grace_period: 60s
@@ -167,6 +167,7 @@ x-casaos:
       - Organizers sign in by emailed link: until you set SMTP_HOST, the emails land in the mail viewer at /mail.
       - The site name, support email and legal page settings are app settings here, not build settings.
       - Fixed: no service started ("sed: unrecognized option: u") and the mail viewer exited with status 127.
+      - The store now names the exact image version (1.0.1), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.
   repo: "https://github.com/richshaw/OpenSignup"
   support: "https://github.com/richshaw/OpenSignup/issues"
   docs: "https://github.com/richshaw/OpenSignup#readme"
