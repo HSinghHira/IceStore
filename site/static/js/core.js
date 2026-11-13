@@ -1,4 +1,4 @@
-/* IceStore core: cursor background, copy buttons, small-screen notice and the page router.
+/* IceStore core: cursor background, cookies, copy buttons, small-screen notice and the page router.
    Every page is a real HTML file (good for SEO and no-JS). The router only makes moving between
    them smoother: it fetches the next page, swaps #app, updates <head> and the URL. */
 (()=>{
@@ -19,6 +19,23 @@
     };
     addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY;if(!run){run=true;requestAnimationFrame(tick)}},{passive:true});
   }
+
+  /* ---- cookies: small first-party preferences only (sort order, server address, notice seen) ---- */
+  ICE.cookie=(k,v)=>{
+    try{
+      if(v===undefined){const c=document.cookie.split('; ').find(x=>x.startsWith(k+'='));return c?decodeURIComponent(c.slice(k.length+1)):''}
+      document.cookie=`${k}=${encodeURIComponent(v)};path=/;max-age=31536000;SameSite=Lax`;
+    }catch(_){return ''}
+  };
+
+  /* ---- one-time cookie notice ---- */
+  addEventListener('DOMContentLoaded',()=>{
+    if(ICE.cookie('ice-ck'))return;
+    const n=document.createElement('div');n.className='ck';n.setAttribute('role','region');n.setAttribute('aria-label','Cookie notice');
+    n.innerHTML=`${ICE.icon('cookie')}<p>IceStore uses a few cookies to remember your sort order and server address. No tracking</p><button class="btn" type="button">Got it</button>`;
+    document.body.append(n);
+    $('button',n).onclick=()=>{ICE.cookie('ice-ck','1');n.remove()};
+  });
 
   /* ---- copy buttons: data-copy="text" or data-copy-from="#selector" ---- */
   document.addEventListener('click',async e=>{
@@ -53,7 +70,7 @@
     let seen;try{seen=sessionStorage.getItem('ice-desk')}catch(_){}
     if(innerWidth>480||seen)return;
     const m=document.createElement('div');m.className='mob';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','mob-t');
-    m.innerHTML=`<div>${ICE.icon('monitor')}<h2 id="mob-t">Best viewed on desktop</h2><p>This site works best on a larger screen. For the full experience, open it on a desktop or laptop.</p><button class="btn p" type="button">View Anyway</button></div>`;
+    m.innerHTML=`<div>${ICE.icon('monitor')}<h2 id="mob-t">Best viewed on desktop</h2><p>This site works best on a larger screen, like a desktop or laptop.</p><button class="btn p" type="button">View anyway</button></div>`;
     document.body.append(m);document.body.style.overflow='hidden';
     const b=$('button',m);b.focus();
     b.onclick=()=>{m.remove();document.body.style.overflow='';try{sessionStorage.setItem('ice-desk','1')}catch(_){}};

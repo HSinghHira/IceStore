@@ -1,6 +1,5 @@
 <main id="main" tabindex="-1" data-page="home">
   <header class="hero">
-    <div class="pill"><b>{{app_count}}</b>community apps, ready to install</div>
     <h1 class="ice-title">
       <span class="ice-word" data-text="{{site_name}}">{{site_name}}</span><svg class="icicles" viewBox="0 0 600 76"
         preserveAspectRatio="none" aria-hidden="true">
@@ -21,13 +20,16 @@
         style="left: 99%; top: -10%; animation-delay: 2.2s"></i><i class="spark"
         style="left: 60%; top: 118%; animation-delay: 1.3s"></i>
     </h1>
-    <p class="lead">{{tagline}}</p>
+    <p class="lead"><b>{{app_count}} self-hosted apps, one link to add them</b>A free, open source community app store for ZimaOS, CasaOS, ReCasaOS, Homeio and MOS</p>
     <div class="cta">
       <a class="btn p" href="#stores">{{icon:plus}}Add the store</a>
       <a class="btn" href="#apps">{{icon:grid}}Browse apps</a>
-      <a class="btn" href="/app-badge/">{{icon:tag}}App Badges</a>
-      <a class="btn" href="/roadmap/">{{icon:calendar}}Roadmap</a>
     </div>
+    <nav class="cta cta2" aria-label="More">
+      <a class="btn g" href="roadmap/">{{icon:calendar}}Roadmap</a>
+      <a class="btn g" href="app-badge/">{{icon:tag}}App badges</a>
+      <a class="btn g" href="{{request_url}}" rel="noopener">{{icon:plus-circle}}Request an app</a>
+    </nav>
   </header>
   {{{marquee}}}
 
@@ -49,7 +51,7 @@
             <img src="{{zimaos_logo}}" alt="" width="48" height="48" loading="lazy" />
             <div>
               <h3>ZimaOS</h3>
-              <p>Reads the store listing directly.</p>
+              <p>Reads the store listing directly</p>
             </div>
           </header>
           <div class="url">
@@ -63,8 +65,7 @@
               <span>Open <b>App Store</b> in the ZimaOS dashboard.</span>
             </li>
             <li>
-              <span>Click the <b>⚙️ Community store</b> icon,
-                then&nbsp;<b>➕ icon</b>.</span>
+              <span>Click the <b>Community store</b> icon, then the <b>+</b> icon.</span>
             </li>
             <li><span>Paste the store URL above.</span></li>
             <li>
@@ -72,7 +73,7 @@
             </li>
           </ol>
           <div class="fn">
-            {{icon:info}}<span>Not showing up? Refresh or restart the App Store service.</span>
+            {{icon:info}}<span>Not showing up? Refresh or restart the App Store service</span>
           </div>
         </article>
         <div class="term">
@@ -99,7 +100,7 @@
             <img src="{{casaos_logo}}" alt="" width="48" height="48" loading="lazy" />
             <div>
               <h3>CasaOS</h3>
-              <p>Uses a zip archive of the store.</p>
+              <p>Uses a zip archive of the store</p>
             </div>
           </header>
           <div class="url">
@@ -121,7 +122,7 @@
             </li>
           </ol>
           <div class="fn">
-            {{icon:info}}<span>The link stays the same when new apps are added.</span>
+            {{icon:info}}<span>The link stays the same when new apps are added</span>
           </div>
         </article>
         <div class="tstack">
@@ -147,7 +148,7 @@
             <img src="{{recasaos_logo}}" alt="" width="48" height="48" loading="lazy" />
             <div>
               <h3>ReCasaOS</h3>
-              <p>Uses the same zip as CasaOS.</p>
+              <p>Uses the same zip as CasaOS</p>
             </div>
           </header>
           <div class="url">
@@ -169,7 +170,7 @@
             </li>
           </ol>
           <div class="fn">
-            {{icon:info}}<span>The link stays the same when new apps are added.</span>
+            {{icon:info}}<span>The link stays the same when new apps are added</span>
           </div>
         </article>
         <div class="term">
@@ -194,7 +195,7 @@
             <img src="{{homeio_logo}}" alt="" width="48" height="48" loading="lazy" />
             <div>
               <h3>Homeio</h3>
-              <p>Uses the same zip as CasaOS.</p>
+              <p>Uses the same zip as CasaOS</p>
             </div>
           </header>
           <div class="url">
@@ -218,7 +219,7 @@
             </li>
           </ol>
           <div class="fn">
-            {{icon:info}}<span>The link stays the same when new apps are added.</span>
+            {{icon:info}}<span>The link stays the same when new apps are added</span>
           </div>
         </article>
         <div class="tip">
@@ -246,7 +247,7 @@
             <img src="{{mos_logo}}" alt="" width="48" height="48" loading="lazy" />
             <div>
               <h3>MOS</h3>
-              <p>Adds {{site_name}} as a MOS Hub repository.</p>
+              <p>Adds {{site_name}} as a MOS Hub repository</p>
             </div>
           </header>
           <div class="url">
@@ -260,7 +261,7 @@
               <span>Open <b>Settings</b>, then <b>System Configuration</b>.</span>
             </li>
             <li>
-              <span>Open <b>MOS Hub Settings</b> and paste the URL above in the <b>MOS Hub</b> section.</span>
+              <span>Open <b>MOS Hub Settings</b> & paste URL in <b>MOS Hub</b> section.</span>
             </li>
             <li>
               <span>Click <b>Refresh</b>.</span>
@@ -270,7 +271,7 @@
             </li>
           </ol>
           <div class="fn">
-            {{icon:info}}<span>The link stays the same when new apps are added.</span>
+            {{icon:info}}<span>The link stays the same when new apps are added</span>
           </div>
         </article>
         <div class="tstack">
@@ -308,7 +309,7 @@ curl -s -X POST http://localhost/api/v1/mos/hub/repositories \
     <div class="srch">
       <div>
         <h2 id="apps-h">All apps</h2>
-        <p class="sub" id="count">{{app_count}} apps and counting.</p>
+        <p class="sub" id="count">{{app_count}} apps</p>
       </div>
       <div class="tools">
         <div class="sf">
@@ -340,7 +341,7 @@ curl -s -X POST http://localhost/api/v1/mos/hub/repositories \
         <p class="sub">Ask for it, report a bug, or browse the code.</p>
       </div>
       <div class="cta">
-        <a class="btn p" href="{{request_url}}">{{icon:plus-circle}}Request an App</a><a class="btn"
+        <a class="btn p" href="{{request_url}}">{{icon:plus-circle}}Request an app</a><a class="btn"
           href="{{repo}}/issues">{{icon:issues}}Issues</a><a class="btn" href="{{repo}}">{{icon:github}}GitHub</a>
       </div>
     </div>

@@ -18,7 +18,7 @@
       /* "Request it" opens the request form with the search filled in */
       const req=ICE.$('#none-req',main);
       if(req){const u=new URL(req.href);u.searchParams.set('app',q.value.trim());u.searchParams.set('title',`[App request] ${q.value.trim()}`);req.href=u}
-      count.textContent=v||cat?`${n} of ${total} apps`:`${total} apps and counting.`;
+      count.textContent=v||cat?`${n} of ${total} apps`:`${total} apps`;
     };
     chips.forEach(b=>b.onclick=()=>{
       cat=b.dataset.cat;
@@ -37,15 +37,16 @@
       const btn=ICE.$('.so-b',so),menu=ICE.$('.so-m',so),val=ICE.$('#sort-v',so),opts=ICE.$$('[role=option]',so);
       let cur=0;
       const focus=i=>{cur=(i+opts.length)%opts.length;opts.forEach((o,j)=>o.classList.toggle('on',j===cur));menu.setAttribute('aria-activedescendant',opts[cur].id)};
-      opts.forEach((o,i)=>{o.id='sort-o'+i;o.onmousemove=()=>focus(i);o.onclick=()=>pick(i)});
+      opts.forEach((o,i)=>{o.id='sort-o'+i;o.onmousemove=()=>focus(i);o.onclick=()=>pick(i,true)});
       const open=on=>{
         menu.hidden=!on;btn.setAttribute('aria-expanded',on);so.classList.toggle('open',on);
         if(on){focus(opts.findIndex(o=>o.getAttribute('aria-selected')==='true'));menu.focus()}
       };
-      const pick=i=>{
+      const pick=(i,user)=>{
         const o=opts[i],k=o.dataset.v;
         opts.forEach(x=>x.setAttribute('aria-selected',x===o));
-        val.textContent=o.textContent;open(false);btn.focus();
+        val.textContent=o.textContent;
+        if(user){open(false);btn.focus();ICE.cookie('ice-sort',k)}  /* remember the choice for next visit */
         const list=k==='name'?az:k==='name-desc'?az.slice().reverse()
           :az.slice().sort((a,b)=>(+b.dataset[k]||0)-(+a.dataset[k]||0));
         grid.append(...list);
@@ -57,10 +58,13 @@
         const k=ev.key;
         if(k==='ArrowDown'||k==='ArrowUp'){ev.preventDefault();focus(cur+(k==='ArrowDown'?1:-1))}
         else if(k==='Home'||k==='End'){ev.preventDefault();focus(k==='Home'?0:opts.length-1)}
-        else if(k==='Enter'||k===' '){ev.preventDefault();pick(cur)}
+        else if(k==='Enter'||k===' '){ev.preventDefault();pick(cur,true)}
         else if(k==='Escape'){ev.preventDefault();open(false);btn.focus()}
         else if(k==='Tab')open(false);
       };
+      /* start with the sort order saved in the ice-sort cookie */
+      const saved=opts.findIndex(o=>o.dataset.v===ICE.cookie('ice-sort'));
+      if(saved>0)pick(saved,false);
       /* close when focus or a click leaves the dropdown */
       so.addEventListener('focusout',ev=>{if(!so.contains(ev.relatedTarget))open(false)});
     }

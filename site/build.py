@@ -74,13 +74,12 @@ DEFAULTS = {
     "author": "Harman Singh Hira",
     "author_url": "https://github.com/HSinghHira",
 }
-OSES = [  # id, name, logo
-    ("zimaos", "ZimaOS", "https://www.zimaspace.com/apple-touch-icon.png"),
-    ("casaos", "CasaOS", "https://casaos.zimaspace.com/favicon/apple-touch-icon.png"),
-    ("recasaos", "ReCasaOS", "https://raw.githubusercontent.com/ReCasaOS/.github/main/assets/recasaos-avatar.png"),
-    ("homeio", "Homeio", "https://homeio.app/icon.webp"),
-    # MOS ships a transparent black mark; this copy (site/static/img/os/) sits on white so it shows
-    # on the dark theme. A path without https:// is a file the site serves itself.
+OSES = [  # id, name, logo (a path under site/static/, served by the site itself)
+    ("zimaos", "ZimaOS", "img/os/zimaos.png"),
+    ("casaos", "CasaOS", "img/os/casaos.png"),
+    ("recasaos", "ReCasaOS", "img/os/recasaos.png"),
+    ("homeio", "Homeio", "img/os/homeio.webp"),
+    # MOS ships a transparent black mark; this copy sits on white so it shows on the dark theme
     ("mos", "MOS", "img/os/mos.png"),
 ]
 # How each OS finds an app once the store is added (app page install cards)
@@ -131,9 +130,10 @@ ICONS = {
 }
 
 
-def os_logo(logo, cfg):
-    """OSES logos are full URLs, or a path under site/static/ that the site serves itself."""
-    return logo if logo.startswith(("http://", "https://")) else cfg["base_url"] + logo
+def os_logo(logo, root=""):
+    """OSES logos are full URLs, or a path under site/static/ that the site serves itself,
+    linked relative to the page (root is "" on the home page, "../../" on an app page)."""
+    return logo if logo.startswith(("http://", "https://")) else root + logo
 
 
 def warn(msg):
@@ -437,8 +437,26 @@ def fill(tpl, values):
     return re.sub(r"\{\{\{([\w:-]+)\}\}\}|\{\{([\w:-]+)\}\}", sub, tpl)
 
 
+def new_tab(html, base_url):
+    """Open every external link (http/https, not this site) in a new tab, with rel="noopener".
+    Links that already set a target are left as they are."""
+    def sub(m):
+        attrs = m.group(1)
+        href = re.search(r'\shref="(https?://[^"]*)"', attrs)
+        if not href or href.group(1).startswith(base_url) or re.search(r"\starget=", attrs):
+            return m.group(0)
+        rel = re.search(r'\srel="([^"]*)"', attrs)
+        if rel:
+            if "noopener" not in rel.group(1).split():
+                attrs = attrs.replace(rel.group(0), f' rel="{rel.group(1)} noopener"')
+        else:
+            attrs += ' rel="noopener"'
+        return f'<a{attrs} target="_blank">'
+    return re.sub(r"<a(\s[^>]*)>", sub, html)
+
+
 def page(layout, content, head):
-    return fill(layout, {**head, "content": content})
+    return new_tab(fill(layout, {**head, "content": content}), head.get("base_url", ""))
 
 
 def marquee(apps):
@@ -502,11 +520,11 @@ def home_page(apps, cfg, tpl, layout):
         for c in order)
     tabs = "".join(
         f'<button class="tab" role="tab" type="button" id="{i}" data-hash="{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}">'
-        f'<img src="{os_logo(logo, cfg)}" alt="" width="24" height="24" loading="lazy">{n}</button>'
+        f'<img src="{os_logo(logo)}" alt="" width="24" height="24" loading="lazy">{n}</button>'
         for j, (i, n, logo) in enumerate(OSES))
     values = {
         **cfg, "app_count": len(apps), "marquee": marquee(apps), "cards": cards, "cats": cats, "os_tabs": tabs,
-        **{f"{i}_logo": os_logo(logo, cfg) for i, _, logo in OSES},
+        **{f"{i}_logo": os_logo(logo) for i, _, logo in OSES},
         **{f"{i}_url_wbr": wbr(cfg[f"{i}_url"]) for i, _, _ in OSES},
     }
     ld = {"@context": "https://schema.org", "@graph": [
@@ -771,7 +789,7 @@ def app_page(a, apps, cfg, tpl, layout):
         for i, _, _, body in tabs)
 
     install = "".join(
-        f'<a href="../../#{i}"><h3><img src="{os_logo(logo, cfg)}" alt="" width="32" height="32" loading="lazy">{n}</h3>'
+        f'<a href="../../#{i}"><h3><img src="{os_logo(logo, "../../")}" alt="" width="32" height="32" loading="lazy">{n}</h3>'
         f'<p>{e(OS_FIND.get(i, "Add the store link, then find {app} in the App Store and install it.").format(app=name))}</p></a>'
         for i, n, logo in OSES)
 
@@ -954,7 +972,7 @@ def roadmap_page(apps, cfg, layout):
         img = ph(a["name"], a["icon_cdn"], "../" + a["icon_url"] if a["icon_url"] else "")
         p = f'<p>{e(a["desc"])}</p>' if a["desc"] else ""
         return (f'<a class="card done" href="../app/{a["slug"]}/">{img}'
-                f'<div class="ct"><span class="k">Live</span><h3>{e(a["name"])}</h3>{p}</div></a>')
+                f'<div class="ct"><span class="k">In the store</span><h3>{e(a["name"])}</h3>{p}</div></a>')
 
     tiles = "".join(tile(r) for r in planned) + "".join(live(a) for a in apps)
     count = f'{len(planned)} apps on the way to {e(cfg["site_name"])}, {len(apps)} already live'
