@@ -356,6 +356,8 @@ td:first-child code,td:nth-child(2) code{word-break:normal;overflow-wrap:anywher
 .mob h2{margin:0;font-size:24px}
 .mob p{color:var(--tx2)}
 
+.heart {transform-origin: 50%;animation: 1.4s ease-in-out infinite bump;display: inline-block;}
+
 /* cookie notice: shown once, until it is dismissed */
 .ck{position:fixed;left:24px;bottom:24px;z-index:350;display:flex;align-items:center;gap:16px;max-width:min(480px,calc(100vw - 32px));padding:12px 12px 12px 16px;border:1px solid var(--line2);border-radius:14px;background:var(--card);box-shadow:0 16px 40px rgba(0,0,0,.5);font-size:14px;line-height:20px;color:var(--tx2);animation:ck-in .32s var(--ease)}
 .ck .i{color:var(--mut)}
