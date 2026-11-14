@@ -135,7 +135,9 @@
                 {{icon:copy}}
               </button>
             </header>
-            <pre><span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <code id="cmd-casa-commands">sudo casaos-cli app-management register app-store {{casaos_url}} && sudo casaos-cli app-management list app-stores && sudo systemctl restart casaos-app-management</code>
+            <pre><span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <code id="cmd-casa-commands">curl -i -sS -X POST \
+  -H &quot;Authorization: $TOKEN&quot; \
+  &quot;http://localhost/v2/app_management/web/sync/appstore?url={{casaos_url}}&quot;</code>
 <span class="pr"><span class="u">user@casaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre>
           </div>
         </div>
@@ -181,9 +183,9 @@
               {{icon:copy}}
             </button>
           </header>
-          <pre><span class="pr"><span class="u">user@recasaos</span>:<span class="d">~</span>$</span> <code id="cmd-recasa">curl -s -X POST \
+          <pre><span class="pr"><span class="u">user@recasaos</span>:<span class="d">~</span>$</span> <code id="cmd-recasa">curl -i -sS -X POST \
   -H &quot;Authorization: $TOKEN&quot; \
-  &quot;http://localhost/v2/app_management/appstore?url={{recasaos_url}}&quot;</code>
+  &quot;http://localhost/v2/app_management/web/sync/appstore?url={{recasaos_url}}&quot;</code>
 <span class="pr"><span class="u">user@recasaos</span>:<span class="d">~</span>$</span> <span class="cur" aria-hidden="true"></span></pre>
         </div>
       </div>
