@@ -1,0 +1,22 @@
+name: Build dashy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/dashy/**"
+      - ".github/workflows/build-dashy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: dashy
+      AIO_VERSION: "1.0.0"
+      kind: wrapper

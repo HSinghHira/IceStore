@@ -1,0 +1,150 @@
+name: dashy
+
+services:
+  dashy:
+    image: ghcr.io/hsinghhira/dashy:latest
+    container_name: dashy
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6732"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/user-data
+        target: /app/user-data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "services/healthcheck.js"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dashy/icon.png
+    x-casaos:
+      id: com.icestore.dashy
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Dashy web page, published on host as 6732
+      volumes:
+        - container: /app/user-data
+          description:
+            en_US: >-
+              Your dashboard: conf.yml (sections, items, theme, users) and its
+              backups. A sample conf.yml is put here on first start. Back this
+              folder up.
+
+x-casaos:
+  id: com.icestore.dashy
+  architectures:
+    - amd64
+    - arm64
+  main: dashy
+  author: HSinghHira
+  category: Others
+  developer: Lissy93
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dashy/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dashy/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dashy/screenshot-1.png
+  title:
+    en_US: Dashy
+  tagline:
+    en_US: A dashboard for your homelab, with status checks, widgets and themes.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/dashy/](https://icestore.hsinghhira.me/app/dashy/) for full details
+
+
+      Dashy is a start page for your homelab. Put all your apps and links in
+      one place, grouped into sections, with icons, status checks that show
+      what is up or down, and widgets for weather, system stats and more.
+      You change it all in the page itself or in one YAML file.
+
+
+      **Features**
+
+
+      - Sections of apps and links with icons (thousands built in)
+
+      - Status checks that show which apps are up
+
+      - Over 50 widgets: weather, clocks, system info, RSS and more
+
+      - Many themes, a colour editor and several layouts
+
+      - Edit everything in the page, with a visual editor
+
+      - Optional login with users and guest access, or OIDC
+
+      - Search, keyboard shortcuts and multiple pages
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6732 in your browser. You see a
+         sample dashboard.
+
+
+      2. Click Config (the wrench), then Edit Config, to change sections and
+         items.
+
+
+      3. Save to disk, and the page reloads with your changes.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing needs to be set first.
+
+
+        2. Start the installation. It is ready in about half a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6732 in your browser, like
+           http://192.168.1.20:6732 on your laptop.
+
+
+        4. There is no login until you add users in the config. Keep the
+           port on your home network.
+
+
+        5. More settings, like a simple login and the REST API, are listed on
+           the Dashy page at https://icestore.hsinghhira.me/app/dashy/
+           (Variables tab). You can add them now or later in the app
+           settings.
+  index: /
+  port_map: "6732"
+  scheme: http
+  is_uncontrolled: false
+  version: "4.9.18"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version, built on lissy93/dashy 4.9.18
+      - A sample conf.yml is put in the empty config folder on first start, and the folder is made writable so the editor can save
+      - Web page on port 6732
+  repo: "https://github.com/Lissy93/dashy"
+  support: "https://github.com/Lissy93/dashy/issues"
+  docs: "https://dashy.to/docs"
