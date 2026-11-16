@@ -1,0 +1,168 @@
+name: metube
+
+services:
+  metube:
+    image: ghcr.io/alexta69/metube:2026.11.14
+    container_name: metube
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - STATE_DIR=/state
+    ports:
+      - target: 8081
+        published: "6731"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/Downloads/metube
+        target: /downloads
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/state
+        target: /state
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8081/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metube/icon.png
+    x-casaos:
+      id: com.icestore.metube
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUID
+          description:
+            en_US: The user MeTube saves files as. ZimaOS fills this in.
+        - container: PGID
+          description:
+            en_US: The group MeTube saves files as. ZimaOS fills this in.
+        - container: STATE_DIR
+          description:
+            en_US: >-
+              Where MeTube keeps its queue, history and subscriptions. Leave
+              it as /state, the app folder below.
+      ports:
+        - container: "8081"
+          description:
+            en_US: MeTube web page, published on host as 6731
+      volumes:
+        - container: /downloads
+          description:
+            en_US: >-
+              Your downloaded videos and audio. Open them in the Files app
+              under Downloads, metube.
+        - container: /state
+          description:
+            en_US: >-
+              MeTube's queue, history, subscriptions and uploaded cookies.
+
+x-casaos:
+  id: com.icestore.metube
+  architectures:
+    - amd64
+    - arm64
+  main: metube
+  author: HSinghHira
+  category: Media
+  developer: alexta69
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metube/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metube/screenshot-1.gif
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metube/screenshot-1.gif
+  title:
+    en_US: MeTube
+  tagline:
+    en_US: Download videos from YouTube and hundreds of other sites.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/metube/](https://icestore.hsinghhira.me/app/metube/) for full details
+
+
+      MeTube is a web page for yt-dlp. Paste a link from YouTube or one of
+      hundreds of other sites, and it downloads the video, the audio, or a
+      whole playlist or channel to your ZimaOS box.
+
+
+      **Features**
+
+
+      - Videos, audio only, subtitles and thumbnails
+
+      - Single videos, whole playlists or entire channels
+
+      - Subscriptions that download new uploads by themselves
+
+      - Pick the quality, format and folder for each download
+
+      - Several downloads at once, with a queue
+
+      - Browser extensions and bookmarklets to send links from any page
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6731 in your browser.
+
+
+      2. Paste a video, playlist or channel link and press Download.
+
+
+      3. Find the files in the Files app, under Downloads, metube.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing needs to be set first.
+
+
+        2. Start the installation. It is ready in a few seconds.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6731 in your browser, like
+           http://192.168.1.20:6731 on your laptop.
+
+
+        4. Downloads go to Downloads, metube in the Files app.
+
+
+        5. There is no login. Keep the port on your home network.
+
+
+        6. More settings, like file names, folders and yt-dlp options, are
+           listed on the MeTube page at
+           https://icestore.hsinghhira.me/app/metube/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6731"
+  scheme: http
+  is_uncontrolled: false
+  version: "2026.11.14"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/alexta69/metube 2026.11.14
+      - Web page on port 6731; downloads in /DATA/Downloads/metube, queue and history in the app folder
+  repo: "https://github.com/alexta69/metube"
+  support: "https://github.com/alexta69/metube/issues"
+  docs: "https://github.com/alexta69/metube/wiki"
