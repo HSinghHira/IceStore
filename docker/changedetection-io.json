@@ -1,0 +1,62 @@
+{
+  "name": "changedetection-io",
+  "repo": "ghcr.io/dgtlmoon/changedetection.io:0.70.3",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://github.com/dgtlmoon/changedetection.io/pkgs/container/changedetection.io",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=1024m --cpus=1.00 --memory-reservation=64m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:5000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/changedetection/icon.png",
+  "project": "https://changedetection.io",
+  "support": "https://github.com/dgtlmoon/changedetection.io/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/changedetection/",
+  "description": "Watch web pages for changes, price drops and restocks, and get alerts.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Datastore",
+      "host": "/mnt/cache/appdata/changedetection/datastore",
+      "container": "/datastore",
+      "mode": "rw",
+      "description": "Your watches, their history, snapshots and settings. Back this folder up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6734",
+      "container": "5000",
+      "description": "changedetection.io web page and API, published on host as 6734"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "BASE_URL",
+      "key": "BASE_URL",
+      "value": "http://YOUR-SERVER-IP:6734",
+      "mask": false,
+      "description": "The address put in notification links. Replace YOUR-SERVER-IP with your server IP, like http://192.168.1.20:6734. The app works without it; only the links in alerts need it."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

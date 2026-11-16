@@ -1,0 +1,170 @@
+name: sftpgo
+
+services:
+  sftpgo:
+    image: drakkan/sftpgo:v2.7.6
+    container_name: sftpgo
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6739"
+        protocol: tcp
+      - target: 2022
+        published: "6740"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /var/lib/sftpgo
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/files
+        target: /srv/sftpgo
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sftpgo/icon.png
+    x-casaos:
+      id: com.icestore.sftpgo
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Web admin (/web/admin) and web client for users (/web/client),
+              published on host as 6739
+        - container: "2022"
+          description:
+            en_US: SFTP for your users, published on host as 6740
+      volumes:
+        - container: /var/lib/sftpgo
+          description:
+            en_US: >-
+              SFTPGo's database (users, admins, settings) and its SSH host
+              keys. Back this folder up.
+        - container: /srv/sftpgo
+          description:
+            en_US: >-
+              The default home folders of new users (data) and backups.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS files, so you can set a user's home folder to an
+              existing one, like /DATA/Media.
+
+x-casaos:
+  id: com.icestore.sftpgo
+  architectures:
+    - amd64
+    - arm64
+  main: sftpgo
+  author: HSinghHira
+  category: Others
+  developer: drakkan
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sftpgo/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sftpgo/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sftpgo/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sftpgo/screenshot-1.png
+  title:
+    en_US: SFTPGo
+  tagline:
+    en_US: An SFTP, FTP and WebDAV file server with users and a web admin.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/sftpgo/](https://icestore.hsinghhira.me/app/sftpgo/) for full details
+
+
+      SFTPGo is a file server you manage from the browser. Make users, give
+      each a home folder on your ZimaOS box or in the cloud, and let them
+      connect with any SFTP app, or upload and share files in the web
+      client.
+
+
+      **Features**
+
+
+      - SFTP, and optional FTP/S and WebDAV
+
+      - Users and groups with their own folders, quotas and limits
+
+      - Folders on your disks, or on S3, Google Cloud, Azure or another SFTP
+        server
+
+      - A web client for users, with share links
+
+      - Two-factor login, an IP block list and protection against password
+        guessing
+
+      - Event rules: run actions or send emails when files change
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6739/web/admin right away and make
+         the admin account.
+
+
+      2. Go to Users and add a user with a password. Set their home folder,
+         like /DATA/Media, or leave it for a new folder.
+
+
+      3. Connect with an SFTP app (FileZilla, WinSCP) to your ZimaOS IP on
+         port 6740, or open http://[ZIMAOS-IP-ADDRESS]:6739/web/client
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing needs to be set first.
+
+
+        2. Start the installation. It is ready in a few seconds.
+
+
+        3. Right away, open http://[ZIMAOS-IP-ADDRESS]:6739/web/admin and
+           make the admin account. The first person to open it does this.
+
+
+        4. SFTP apps connect to your ZimaOS IP on port 6740.
+
+
+        5. More settings, like email and password-guessing protection, are
+           listed on the SFTPGo page at
+           https://icestore.hsinghhira.me/app/sftpgo/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /web/admin
+  port_map: "6739"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.7.6"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: drakkan/sftpgo v2.7.6
+      - Web admin on port 6739 and SFTP on port 6740; your /DATA folder can be used for user homes
+      - Runs as root so it can write to folders that ZimaOS owns
+  repo: "https://github.com/drakkan/sftpgo"
+  support: "https://github.com/drakkan/sftpgo/issues"
+  docs: "https://docs.sftpgo.com"

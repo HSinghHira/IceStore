@@ -1,0 +1,172 @@
+name: libretranslate
+
+services:
+  libretranslate:
+    image: libretranslate/libretranslate:v1.9.6
+    container_name: libretranslate
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+      - LT_LOAD_ONLY=en,es,fr,de
+      - LT_UPDATE_MODELS=true
+    ports:
+      - target: 5000
+        published: "6737"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/models
+        target: /home/libretranslate/.local
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/db
+        target: /app/db
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "./venv/bin/python", "scripts/healthcheck.py"]
+      interval: 30s
+      timeout: 60s
+      retries: 4
+      start_period: 900s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/libretranslate/icon.png
+    x-casaos:
+      id: com.icestore.libretranslate
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: LT_LOAD_ONLY
+          description:
+            en_US: >-
+              The languages to download and load, as two-letter codes,
+              comma separated, like en,es,fr,de,it,ja. Fewer languages means
+              a faster start and less memory. Leave it blank for all of them
+              (about 10 GB and a lot of memory).
+        - container: LT_UPDATE_MODELS
+          description:
+            en_US: >-
+              true downloads newer language models when they come out, on
+              start. Set to false to keep the ones you have.
+      ports:
+        - container: "5000"
+          description:
+            en_US: LibreTranslate web page and API, published on host as 6737
+      volumes:
+        - container: /home/libretranslate/.local
+          description:
+            en_US: >-
+              The downloaded language models, so they are not downloaded
+              again after an update.
+        - container: /app/db
+          description:
+            en_US: The API keys database, when API keys are turned on.
+
+x-casaos:
+  id: com.icestore.libretranslate
+  architectures:
+    - amd64
+    - arm64
+  main: libretranslate
+  author: HSinghHira
+  category: AI
+  developer: LibreTranslate
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/libretranslate/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/libretranslate/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/libretranslate/screenshot-1.png
+  title:
+    en_US: LibreTranslate
+  tagline:
+    en_US: Machine translation you host yourself, with a web page and an API.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/libretranslate/](https://icestore.hsinghhira.me/app/libretranslate/) for full details
+
+
+      LibreTranslate translates text and documents on your own server, with
+      no cloud service and no account. Use the web page, or point other
+      apps at its API: many apps support it, like Immich, Paperless,
+      Mealie, browser extensions and Home Assistant.
+
+
+      **Features**
+
+
+      - Over 40 languages, all running offline on your box
+
+      - Translate text or whole files (Word, PowerPoint, PDF, text)
+
+      - Detects the source language by itself
+
+      - A simple REST API, with optional API keys and limits
+
+      - Works on the CPU; no graphics card needed
+
+
+      **How to use?**
+
+
+      1. Wait for the first start to finish downloading the languages.
+
+
+      2. Open http://[ZIMAOS-IP-ADDRESS]:6737 in your browser.
+
+
+      3. Pick the languages, type or paste your text, or upload a file.
+
+
+      4. In other apps, use http://[ZIMAOS-IP-ADDRESS]:6737 as the
+         LibreTranslate address.
+  tips:
+    before_install:
+      en_US: >-
+        1. Pick your languages in LT_LOAD_ONLY, like en,es,fr,de,it. Fewer
+           languages start faster and use less memory.
+
+
+        2. Start the installation. The first start downloads the language
+           models and can take 5 to 15 minutes. Watch the log.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6737 in your browser, like
+           http://192.168.1.20:6737 on your laptop.
+
+
+        4. There is no login. Keep the port on your home network, or turn on
+           API keys.
+
+
+        5. More settings, like limits and API keys, are listed on the
+           LibreTranslate page at
+           https://icestore.hsinghhira.me/app/libretranslate/ (Variables
+           tab). You can add them now or later in the app settings.
+  index: /
+  port_map: "6737"
+  scheme: http
+  is_uncontrolled: false
+  version: "v1.9.6"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: libretranslate/libretranslate v1.9.6
+      - Web page and API on port 6737; English, Spanish, French and German by default
+      - Runs as root so it can write to the app folder that ZimaOS makes
+  repo: "https://github.com/LibreTranslate/LibreTranslate"
+  support: "https://github.com/LibreTranslate/LibreTranslate/issues"
+  docs: "https://docs.libretranslate.com"

@@ -1,0 +1,149 @@
+name: readeck
+
+services:
+  readeck:
+    image: codeberg.org/readeck/readeck:0.23.5
+    container_name: readeck
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - READECK_SERVER_PORT=8000
+    ports:
+      - target: 8000
+        published: "6741"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /readeck
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/readeck/icon.png
+    x-casaos:
+      id: com.icestore.readeck
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: READECK_SERVER_PORT
+          description:
+            en_US: >-
+              The port Readeck listens on inside the container. Leave it as
+              8000.
+      ports:
+        - container: "8000"
+          description:
+            en_US: Readeck web page and API, published on host as 6741
+      volumes:
+        - container: /readeck
+          description:
+            en_US: >-
+              Readeck's settings (config.toml, with its secret key), database
+              and saved pages. Back this folder up.
+
+x-casaos:
+  id: com.icestore.readeck
+  architectures:
+    - amd64
+    - arm64
+  main: readeck
+  author: HSinghHira
+  category: Productivity
+  developer: Readeck
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/readeck/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/readeck/screenshot-1.webp
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/readeck/screenshot-1.webp
+  title:
+    en_US: Readeck
+  tagline:
+    en_US: Save web pages, articles and videos to read later, with highlights.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/readeck/](https://icestore.hsinghhira.me/app/readeck/) for full details
+
+
+      Readeck saves the web pages you want to keep. It stores a clean copy
+      of each article, with its pictures, so you can read it later, even
+      after the original is gone. Highlight what matters, add labels and
+      collections, and export to an e-book.
+
+
+      **Features**
+
+
+      - A clean, readable copy of every article, kept forever
+
+      - Pictures and videos saved with the page
+
+      - Highlights, labels, favourites and collections
+
+      - Full-text search
+
+      - Export to EPUB for your e-reader, and an OPDS feed
+
+      - Browser extensions and mobile apps
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6741 and make your account. The
+         first account is the admin.
+
+
+      2. Paste a web address into Save link.
+
+
+      3. Install the Readeck browser extension to save pages in one click.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing needs to be set first.
+
+
+        2. Start the installation. It is ready in a few seconds.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6741 in your browser, like
+           http://192.168.1.20:6741 on your laptop.
+
+
+        4. Make your account right away. The first account is the admin.
+
+
+        5. More settings, like email, are listed on the Readeck page at
+           https://icestore.hsinghhira.me/app/readeck/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6741"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.23.5"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: codeberg.org/readeck/readeck 0.23.5
+      - Web page on port 6741
+  repo: "https://codeberg.org/readeck/readeck"
+  support: "https://codeberg.org/readeck/readeck/issues"
+  docs: "https://readeck.org/en/docs/"

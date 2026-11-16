@@ -1,0 +1,152 @@
+name: wallos
+
+services:
+  wallos:
+    image: bellamy/wallos:5.11.1
+    container_name: wallos
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6735"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/db
+        target: /var/www/html/db
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/logos
+        target: /var/www/html/images/uploads/logos
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/health.php"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wallos/icon.png
+    x-casaos:
+      id: com.icestore.wallos
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, used for payment dates and reminders. It is
+              filled in from your ZimaOS time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: Wallos web page, published on host as 6735
+      volumes:
+        - container: /var/www/html/db
+          description:
+            en_US: >-
+              The Wallos database: your users, subscriptions and settings.
+              Back this folder up.
+        - container: /var/www/html/images/uploads/logos
+          description:
+            en_US: The logos you add to subscriptions.
+
+x-casaos:
+  id: com.icestore.wallos
+  architectures:
+    - amd64
+    - arm64
+  main: wallos
+  author: HSinghHira
+  category: Finance
+  developer: ellite
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wallos/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wallos/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wallos/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wallos/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wallos/screenshot-1.png
+  title:
+    en_US: Wallos
+  tagline:
+    en_US: Track your subscriptions and what they cost each month.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/wallos/](https://icestore.hsinghhira.me/app/wallos/) for full details
+
+
+      Wallos keeps all your subscriptions in one list: streaming, software,
+      phone plans, memberships. It shows what you spend each month and
+      year, reminds you before each payment, and turns prices into your own
+      currency.
+
+
+      **Features**
+
+
+      - Subscriptions with price, cycle, next payment, category and logo
+
+      - Monthly and yearly totals, a calendar and statistics
+
+      - Many currencies, with live exchange rates
+
+      - Reminders by email, Discord, Telegram, ntfy, Gotify and more
+
+      - Several household members and payment methods
+
+      - Optional sign-in with OIDC, and a mobile-friendly page
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6735 in your browser.
+
+
+      2. Make your account. The first account is the admin.
+
+
+      3. Add your subscriptions with the + button.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing needs to be set first.
+
+
+        2. Start the installation. It is ready in a few seconds.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6735 in your browser, like
+           http://192.168.1.20:6735 on your phone or laptop.
+
+
+        4. Make your account right away. The first account is the admin.
+
+
+        5. Sign-in with OIDC is listed on the Wallos page at
+           https://icestore.hsinghhira.me/app/wallos/ (Variables tab). You
+           can add it now or later in the app settings.
+  index: /
+  port_map: "6735"
+  scheme: http
+  is_uncontrolled: false
+  version: "5.11.1"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: bellamy/wallos 5.11.1
+      - Web page on port 6735
+  repo: "https://github.com/ellite/Wallos"
+  support: "https://github.com/ellite/Wallos/issues"
+  docs: "https://github.com/ellite/Wallos#readme"

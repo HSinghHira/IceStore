@@ -1,0 +1,178 @@
+name: stirling-pdf
+
+services:
+  stirling-pdf:
+    image: stirlingtools/stirling-pdf:3.3.0
+    container_name: stirling-pdf
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - SECURITY_ENABLELOGIN=false
+    ports:
+      - target: 8080
+        published: "6736"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/configs
+        target: /configs
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/tessdata
+        target: /usr/share/tessdata
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/logs
+        target: /logs
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/api/v1/info/status"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.00"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/stirling-pdf/icon.png
+    x-casaos:
+      id: com.icestore.stirling-pdf
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUID
+          description:
+            en_US: The user Stirling-PDF runs as. ZimaOS fills this in.
+        - container: PGID
+          description:
+            en_US: The group Stirling-PDF runs as. ZimaOS fills this in.
+        - container: SECURITY_ENABLELOGIN
+          description:
+            en_US: >-
+              Set to true to need a login. The first login is admin with the
+              password stirling, and you must pick a new password right away.
+              Leave it false for no login on your home network.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Stirling-PDF web page and API, published on host as 6736
+      volumes:
+        - container: /configs
+          description:
+            en_US: >-
+              Settings (settings.yml) and, with login on, the user database.
+              Back this folder up.
+        - container: /usr/share/tessdata
+          description:
+            en_US: OCR language files. Add more languages here.
+        - container: /logs
+          description:
+            en_US: Stirling-PDF's log files.
+
+x-casaos:
+  id: com.icestore.stirling-pdf
+  architectures:
+    - amd64
+    - arm64
+  main: stirling-pdf
+  author: HSinghHira
+  category: Productivity
+  developer: Stirling-Tools
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/stirling-pdf/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/stirling-pdf/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/stirling-pdf/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/stirling-pdf/screenshot-1.png
+  title:
+    en_US: Stirling-PDF
+  tagline:
+    en_US: Edit, merge, split, convert, sign and OCR PDF files in your browser.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/stirling-pdf/](https://icestore.hsinghhira.me/app/stirling-pdf/) for full details
+
+
+      Stirling-PDF is a PDF toolbox you run yourself. Merge, split, rotate,
+      compress, convert, sign, redact and OCR your PDFs in the browser, and
+      the files never leave your server.
+
+
+      **Features**
+
+
+      - Over 50 tools: merge, split, reorder, rotate, compress, watermark
+
+      - Convert to and from PDF: Office files, images, HTML, Markdown
+
+      - OCR for scanned pages, in many languages
+
+      - Sign, add passwords, redact and change permissions
+
+      - Edit text in a PDF and compare two files
+
+      - Chain tools into pipelines, and a REST API for scripts
+
+      - Optional login with users, teams and OIDC
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6736 in your browser.
+
+
+      2. Press Add Files and pick your PDFs.
+
+
+      3. Pick a tool on the right, then download the result.
+  tips:
+    before_install:
+      en_US: >-
+        1. Leave SECURITY_ENABLELOGIN as false for no login, or set it to
+           true to need one.
+
+
+        2. Start the installation. The first start takes a minute or two.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6736 in your browser, like
+           http://192.168.1.20:6736 on your laptop.
+
+
+        4. With login on, sign in as admin with the password stirling, then
+           pick a new password.
+
+
+        5. More settings, like the language and the file size limit, are
+           listed on the Stirling-PDF page at
+           https://icestore.hsinghhira.me/app/stirling-pdf/ (Variables tab).
+           You can add them now or later in the app settings.
+  index: /
+  port_map: "6736"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.3.0"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: stirlingtools/stirling-pdf 3.3.0
+      - Web page on port 6736, login off by default
+  repo: "https://github.com/Stirling-Tools/Stirling-PDF"
+  support: "https://github.com/Stirling-Tools/Stirling-PDF/issues"
+  docs: "https://docs.stirlingpdf.com"

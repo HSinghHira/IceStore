@@ -1,0 +1,158 @@
+name: changedetection
+
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io:0.70.3
+    container_name: changedetection
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - BASE_URL=http://[ZIMAOS-IP-ADDRESS]:6734
+    ports:
+      - target: 5000
+        published: "6734"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/datastore
+        target: /datastore
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/', timeout=5)"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/changedetection/icon.png
+    x-casaos:
+      id: com.icestore.changedetection
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, used for check schedules. It is filled in from
+              your ZimaOS time zone.
+        - container: BASE_URL
+          description:
+            en_US: >-
+              The address put in notification links. Replace
+              [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6734. The app works without it; only the
+              links in alerts need it.
+      ports:
+        - container: "5000"
+          description:
+            en_US: changedetection.io web page and API, published on host as 6734
+      volumes:
+        - container: /datastore
+          description:
+            en_US: >-
+              Your watches, their history, snapshots and settings. Back this
+              folder up.
+
+x-casaos:
+  id: com.icestore.changedetection
+  architectures:
+    - amd64
+    - arm64
+  main: changedetection
+  author: HSinghHira
+  category: Others
+  developer: dgtlmoon
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/changedetection/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/changedetection/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/changedetection/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/changedetection/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/changedetection/screenshot-1.png
+  title:
+    en_US: changedetection.io
+  tagline:
+    en_US: Watch web pages for changes, price drops and restocks, and get alerts.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/changedetection/](https://icestore.hsinghhira.me/app/changedetection/) for full details
+
+
+      changedetection.io checks web pages on a schedule and tells you when
+      something changes: a new job post, a price drop, an item back in
+      stock, an update to a document. You pick which part of the page to
+      watch, and get alerts by email, Discord, Telegram, ntfy, Gotify and
+      many more.
+
+
+      **Features**
+
+
+      - Watch whole pages or just one part, with CSS, XPath or JSON filters
+
+      - Price and restock tracking for shops
+
+      - See exactly what changed, side by side
+
+      - Alerts to over 80 services through Apprise
+
+      - Check schedules per watch, tags and groups
+
+      - Optional password, API and browser extension
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6734 in your browser.
+
+
+      2. Paste a web address and press Watch.
+
+
+      3. Open Settings, Notifications to add where alerts should go.
+
+
+      4. Set a password under Settings, General if others can reach the
+         page.
+  tips:
+    before_install:
+      en_US: >-
+        1. If you want working links in alerts, change [ZIMAOS-IP-ADDRESS] in
+           BASE_URL to your ZimaOS IP, like http://192.168.1.20:6734
+
+
+        2. Start the installation. It is ready in about half a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6734 in your browser.
+
+
+        4. There is no password at first. Set one in Settings, General.
+
+
+        5. More settings, like proxies and check workers, are listed on the
+           changedetection.io page at
+           https://icestore.hsinghhira.me/app/changedetection/ (Variables
+           tab). You can add them now or later in the app settings.
+  index: /
+  port_map: "6734"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.70.3"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/dgtlmoon/changedetection.io 0.70.3
+      - Web page on port 6734; pages are fetched without a browser (add a Playwright browser in PLAYWRIGHT_DRIVER_URL for JavaScript pages)
+  repo: "https://github.com/dgtlmoon/changedetection.io"
+  support: "https://github.com/dgtlmoon/changedetection.io/issues"
+  docs: "https://github.com/dgtlmoon/changedetection.io/wiki"

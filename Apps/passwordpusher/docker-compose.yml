@@ -1,0 +1,144 @@
+name: passwordpusher
+
+services:
+  passwordpusher:
+    image: ghcr.io/hsinghhira/passwordpusher:latest
+    container_name: passwordpusher
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 5100
+        published: "6747"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/storage
+        target: /opt/PasswordPusher/storage
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5100/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/passwordpusher/icon.png
+    x-casaos:
+      id: com.icestore.passwordpusher
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "5100"
+          description:
+            en_US: Password Pusher web page and API, published on host as 6747
+      volumes:
+        - container: /opt/PasswordPusher/storage
+          description:
+            en_US: >-
+              The database, uploaded files and this install's secret key
+              (.secret_key_base). Back this folder up.
+
+x-casaos:
+  id: com.icestore.passwordpusher
+  architectures:
+    - amd64
+  main: passwordpusher
+  author: HSinghHira
+  category: Others
+  developer: pglombardo
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/passwordpusher/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/passwordpusher/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/passwordpusher/screenshot-1.png
+  title:
+    en_US: Password Pusher
+  tagline:
+    en_US: Share passwords and secrets through links that expire.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/passwordpusher/](https://icestore.hsinghhira.me/app/passwordpusher/) for full details
+
+
+      Password Pusher shares passwords, notes, files and links the safe way.
+      Paste a secret, and you get a link that stops working after a few
+      views or days, so the secret doesn't sit in an email or chat forever.
+
+
+      **Features**
+
+
+      - Links that expire after a number of days or views
+
+      - Text, files, URLs and QR codes
+
+      - Optional unlock phrase the reader must type
+
+      - Encrypted in the database, deleted when it expires
+
+      - Accounts with an audit log of who opened what
+
+      - A JSON API and command-line tool
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6747 in your browser.
+
+
+      2. Paste a password or note, pick how long it lasts, and press Push
+         It.
+
+
+      3. Send the link. It stops working after the views or days you chose.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing needs to be set first.
+
+
+        2. Start the installation. The first start sets up the database and
+           takes about a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6747 in your browser, like
+           http://192.168.1.20:6747 on your laptop.
+
+
+        4. Sign up to get an account with an audit log, or push without one.
+
+
+        5. More settings, like email and default expiry times, are listed on
+           the Password Pusher page at
+           https://icestore.hsinghhira.me/app/passwordpusher/ (Variables
+           tab). You can add them now or later in the app settings.
+  index: /
+  port_map: "6747"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.17.2"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version, built on pglombardo/pwpush 2.17.2
+      - Each install makes its own SECRET_KEY_BASE on first start, so sessions and pushes survive restarts
+      - Web page on port 6747
+  repo: "https://github.com/pglombardo/PasswordPusher"
+  support: "https://github.com/pglombardo/PasswordPusher/issues"
+  docs: "https://docs.pwpush.com"

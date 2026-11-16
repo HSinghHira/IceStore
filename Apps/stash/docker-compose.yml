@@ -1,0 +1,195 @@
+name: stash
+
+services:
+  stash:
+    image: stashapp/stash:v0.32.0
+    container_name: stash
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+    ports:
+      - target: 9999
+        published: "6746"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /root/.stash
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/metadata
+        target: /metadata
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/cache
+        target: /cache
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/blobs
+        target: /blobs
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/generated
+        target: /generated
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9999/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/stash/icon.png
+    x-casaos:
+      id: com.icestore.stash
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: STASH_STASH
+          description:
+            en_US: The library folder inside the container. Leave it as /data/.
+        - container: STASH_GENERATED
+          description:
+            en_US: Where previews and sprites go. Leave it as /generated/.
+        - container: STASH_METADATA
+          description:
+            en_US: Where exports and backups go. Leave it as /metadata/.
+        - container: STASH_CACHE
+          description:
+            en_US: Where temporary files go. Leave it as /cache/.
+      ports:
+        - container: "9999"
+          description:
+            en_US: Stash web page and API, published on host as 6746
+      volumes:
+        - container: /root/.stash
+          description:
+            en_US: >-
+              Stash's settings (config.yml), database and plugins. Back this
+              folder up.
+        - container: /data
+          description:
+            en_US: >-
+              Your video and picture library. It starts as /DATA/Media;
+              change it to the folder you keep your collection in.
+        - container: /metadata
+          description:
+            en_US: Exports and database backups.
+        - container: /cache
+          description:
+            en_US: Temporary files.
+        - container: /blobs
+          description:
+            en_US: Cover images and other pictures Stash stores.
+        - container: /generated
+          description:
+            en_US: >-
+              Previews, sprites and thumbnails Stash makes. Can grow large;
+              Stash can make them again.
+
+x-casaos:
+  id: com.icestore.stash
+  architectures:
+    - amd64
+    - arm64
+  main: stash
+  author: HSinghHira
+  category: Media
+  developer: stashapp
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/stash/icon.png
+  title:
+    en_US: Stash
+  tagline:
+    en_US: Organise your adult video collection, with tags, scenes and scrapers.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/stash/](https://icestore.hsinghhira.me/app/stash/) for full details
+
+
+      Stash organises a collection of adult videos and pictures. It scans
+      your folders, makes previews, and fills in titles, performers, studios
+      and tags from online databases, so you can browse and search the
+      collection like a streaming site. For adults only.
+
+
+      **Features**
+
+
+      - Scans your folders for videos, pictures and galleries
+
+      - Previews, sprites and thumbnails, made on your server
+
+      - Fills in details from StashDB and scrapers
+
+      - Tags, performers, studios, markers and ratings
+
+      - Plays in the browser, with a DLNA server
+
+      - Plugins and a GraphQL API
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6746 and follow the setup.
+
+
+      2. Add /data as a library folder, then run a Scan.
+
+
+      3. Under Settings, Security, set a user name and password.
+  tips:
+    before_install:
+      en_US: >-
+        1. Point the /data folder at the place you keep the collection. It
+           starts as /DATA/Media.
+
+
+        2. Start the installation. It is ready in a few seconds.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6746 and follow the setup. Add
+           /data as a library folder.
+
+
+        4. There is no login at first. Set one under Settings, Security.
+  index: /
+  port_map: "6746"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.32.0"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: stashapp/stash v0.32.0
+      - Web page on port 6746; library at /DATA/Media
+  repo: "https://github.com/stashapp/stash"
+  support: "https://github.com/stashapp/stash/issues"
+  docs: "https://docs.stashapp.cc"

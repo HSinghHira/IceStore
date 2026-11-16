@@ -1,0 +1,69 @@
+{
+  "name": "FileBrowser-Quantum",
+  "repo": "ghcr.io/hsinghhira/filebrowser-quantum:latest",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://github.com/hsinghhira/filebrowser-quantum/pkgs/container/filebrowser-quantum",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=1024m --cpus=2.00 --memory-reservation=64m --health-cmd=\"curl -fsS http://127.0.0.1:80/health\" --health-interval=30s --health-timeout=5s --health-start-period=60s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:80]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/filebrowser-quantum/icon.png",
+  "project": "https://filebrowserquantum.com",
+  "support": "https://github.com/gtsteffaniak/filebrowser/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/filebrowser-quantum/",
+  "description": "A fast web file manager with search, previews and share links.",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/filebrowser-quantum/data",
+      "container": "/home/filebrowser/data",
+      "mode": "rw",
+      "description": "FileBrowser's settings (config.yaml), user database, cache and the first admin password (password.txt). Back this folder up."
+    },
+    {
+      "name": "Srv",
+      "host": "/DATA",
+      "container": "/srv",
+      "mode": "rw",
+      "description": "The files FileBrowser shows: all of your MOS /DATA folder. Change this to a smaller folder to share less."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6738",
+      "container": "80",
+      "description": "FileBrowser Quantum web page and WebDAV, published on host as 6738"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "FILEBROWSER_ADMIN_PASSWORD",
+      "key": "FILEBROWSER_ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The admin's password. Leave it blank and the app makes a random one on first start; find it in the app's logs, in the box marked CREDENTIALS. Only used when the admin is made; change it later in FileBrowser."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
