@@ -171,6 +171,15 @@ the files exist (the only allowed `#` lines).
     `PUBLIC_URL=http://localhost:<61xx>`, as AppFlowy does, and the tips say
     to change `localhost` for working email links.
   Never `CHANGEME_IP` or `[SERVER-IP]`: one placeholder, `[ZIMAOS-IP-ADDRESS]`.
+- **Placeholders IceDash understands.** IceDash's setup popup reads the
+  values, not a spec, so only these names work. It fills in
+  `[ZIMAOS-IP-ADDRESS]`, `CHANGEME_LAN_IP` and `CHANGEME_RP_ID` (the server's
+  address), `CHANGEME_ORIGIN` (the app's address) and `CHANGEME_PASSWORD` (a new
+  secret). It asks the person for `CHANGEME`, `CHANGE_ME`,
+  `CHANGEME_PUBLIC_IP`, `CHANGEME_IFACE` and `CHANGEME_OIDC_*`. Any other
+  `CHANGEME_*` or `[...IP...]` name is a checker error. The numbered
+  `**How to use?**` steps in the description become IceDash's first-launch
+  popup, so the checker warns when they're missing.
 - Shell variables (`$HOME`, `$USER`, ...) are never install-time values.
 - Data path is always `/DATA/AppData/$AppID/...`.
 

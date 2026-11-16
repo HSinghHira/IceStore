@@ -40,6 +40,15 @@ OLD_NAMES = re.compile(r"ZimaAppStore|hiraappstore", re.I)
 # Written in an address that the person must change before the app works
 # (COMPOSE.md 7): http://[ZIMAOS-IP-ADDRESS]:61xx.
 IP_PLACEHOLDER = "[ZIMAOS-IP-ADDRESS]"
+IP_MARKS = (IP_PLACEHOLDER, "[SERVER-IP]")
+# The placeholders IceDash knows (internal/compose/setup.go): it fills in the
+# server's address, the app's origin and passwords, and asks for the rest.
+# Any other name gets past its setup popup, so keep to these (COMPOSE.md 7).
+KNOWN_CHANGEME = re.compile(r"CHANGE_?ME(?:_(?:LAN_IP|PUBLIC_IP|PASSWORD|ORIGIN|RP_ID|IFACE|OIDC_[A-Z0-9_]+))?")
+ANY_CHANGEME = re.compile(r"CHANGE_?ME[A-Z0-9_]*")
+ANY_IP_MARK = re.compile(r"\[[A-Z0-9-]*IP[A-Z0-9-]*\]")
+# IceDash's first-launch popup reads these steps (internal/apps/apps.go, Steps).
+HOW_TO_USE = re.compile(r"(?i)\*\*\s*how to use\??\s*\*\*")
 PLACEHOLDER = re.compile(r"(?<![A-Za-z0-9])__[A-Z][A-Z0-9_]*__(?![A-Za-z0-9])")
 
 errors, warns = [], []
@@ -212,7 +221,7 @@ def check_compose(root, slug, app_dir):
     if "TZ" in env and env["TZ"] != "$TZ":
         err("TZ must be $TZ")
     for k, v in env.items():
-        if url_port(v) and ports and url_port(v) != ports[0][0] and ("localhost" in v or IP_PLACEHOLDER in v):
+        if url_port(v) and ports and url_port(v) != ports[0][0] and ("localhost" in v or any(m in v for m in IP_MARKS)):
             err(f"{k}={v} uses port {url_port(v)}, but the app is published on {ports[0][0]}")
         if SECRET.search(k) and v and not v.startswith("$"):
             warn(f"{k} has a fixed value in the compose file, so every install gets the same one; make it "
@@ -248,12 +257,31 @@ def check_compose(root, slug, app_dir):
 
     tips = text((meta.get("tips") or {}).get("before_install"))
     for k, v in env.items():
-        if IP_PLACEHOLDER not in str(v):
+        mark = next((m for m in IP_MARKS if m in str(v)), None)
+        if not mark:
             continue
-        if IP_PLACEHOLDER not in tips:
-            err(f"{k} starts as {v}, but tips.before_install never tells people to replace {IP_PLACEHOLDER}")
-        if IP_PLACEHOLDER not in notes.get(k, ""):
-            warn(f"{k}'s x-casaos.envs description should say to replace {IP_PLACEHOLDER} with the ZimaOS IP")
+        if mark not in tips:
+            err(f"{k} starts as {v}, but tips.before_install never tells people to replace {mark}")
+        if mark not in notes.get(k, ""):
+            warn(f"{k}'s x-casaos.envs description should say to replace {mark} with the ZimaOS IP")
+
+    # every service's values, since IceDash's setup popup shows them all
+    for name, svc in services.items():
+        for k, v in env_pairs((svc or {}).get("environment")).items():
+            odd = [m for m in ANY_CHANGEME.findall(v) if not KNOWN_CHANGEME.fullmatch(m)]
+            odd += [m for m in ANY_IP_MARK.findall(v) if m not in IP_MARKS]
+            if odd:
+                err(f"service '{name}': {k}={v} uses {', '.join(sorted(set(odd)))}, which IceDash can't fill in "
+                    f"or ask for; use {IP_PLACEHOLDER}, CHANGEME or a CHANGEME_* name from COMPOSE.md 7")
+            if "[SERVER-IP]" in v:
+                warn(f"service '{name}': {k} uses [SERVER-IP]; new apps use {IP_PLACEHOLDER} (COMPOSE.md 7). "
+                     f"IceDash fills in both, but the image's start script may look for the old one")
+
+    desc = text(meta.get("description"))
+    m = HOW_TO_USE.search(desc)
+    if not m or not re.search(r"(?m)^\s*1\.\s+\S", desc[m.end():]):
+        warn("x-casaos.description has no '**How to use?**' list of numbered steps, "
+             "so IceDash's first-launch popup will show none")
     for n in range(2, 40):
         if re.search(rf"(?<!\n){n}\. ", tips) and not re.search(rf"\n\s*{n}\. ", tips):
             err(f"tips.before_install step {n} runs into the previous one (leave a blank line between steps)")
