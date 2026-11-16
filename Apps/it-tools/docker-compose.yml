@@ -1,0 +1,127 @@
+name: it-tools
+
+services:
+  it-tools:
+    image: corentinth/it-tools:2024.10.22-7ca5933
+    container_name: it-tools
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6728"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+        reservations:
+          cpus: "0.00"
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/it-tools/icon.png
+    x-casaos:
+      id: com.icestore.it-tools
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "80"
+          description:
+            en_US: IT-Tools web page, published on host as 6728
+
+x-casaos:
+  id: com.icestore.it-tools
+  architectures:
+    - amd64
+    - arm64
+  main: it-tools
+  author: HSinghHira
+  category: Developer
+  developer: CorentinTh
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/it-tools/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/it-tools/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/it-tools/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/it-tools/screenshot-1.png
+  title:
+    en_US: IT-Tools
+  tagline:
+    en_US: Handy tools for developers, in your browser.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/it-tools/](https://icestore.hsinghhira.me/app/it-tools/) for full details
+
+
+      IT-Tools is a collection of small tools developers reach for every
+      day: token and UUID generators, hashing, JSON and YAML formatters,
+      date and number converters, regex testers, QR codes and many more.
+      Everything runs in your browser, so nothing you paste leaves your
+      computer.
+
+
+      **Features**
+
+
+      - Over 80 tools in one place, with search (Ctrl+K)
+
+      - Crypto: tokens, hashes, bcrypt, UUIDs, ULIDs, RSA keys
+
+      - Converters: JSON, YAML, TOML, XML, Base64, dates, colours, numbers
+
+      - Web: URL parser, JWT decoder, HTTP status codes, user-agent parser
+
+      - Favourite the tools you use most
+
+      - No account, no data stored on the server
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6728 in your browser.
+
+
+      2. Search for a tool, or pick one from the list on the left.
+
+
+      3. Click the heart on a tool to keep it at the top of the home page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Nothing needs to be set first.
+
+
+        2. Start the installation. It is ready in a few seconds.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6728 in your browser, like
+           http://192.168.1.20:6728 on your phone or laptop.
+
+
+        4. There is no login. Keep the port on your home network.
+  index: /
+  port_map: "6728"
+  scheme: http
+  is_uncontrolled: false
+  version: "2024.10.22-7ca5933"
+  update_at: "2026-11-16"
+  release_notes:
+    en_US: |-
+      - First IceStore version: corentinth/it-tools 2024.10.22-7ca5933
+      - Web page on port 6728
+  repo: "https://github.com/CorentinTh/it-tools"
+  support: "https://github.com/CorentinTh/it-tools/issues"
+  docs: "https://github.com/CorentinTh/it-tools#readme"

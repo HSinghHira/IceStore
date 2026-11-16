@@ -1,5 +1,5 @@
 ---
-name: advanced-zimaos-app-creator
+name: icestore
 description: Use when adding or updating an app in IceStore (the HSinghHira/IceStore GitHub repo), the community app store for ZimaOS, CasaOS, ReCasaOS, Homeio and MOS (MOS Hub templates generated from the same Apps/ folder), especially an all-in-one app that bundles several upstream images (database, auth, API, web, workers) into one container built by GitHub Actions. Produces the Apps/ folder (docker-compose.yml with x-casaos, README.md with site front matter), the docker/ build folder (Dockerfile, aio-init.sh, run-svc.sh, supervisord.conf, nginx.conf.tpl, on the shared docker/_common helpers with a CREDENTIALS banner) and the build workflow, claims a 61xx port, runs the checker and previews the generated MOS template. Trigger on requests like add an app to IceStore, make an all-in-one or single-container version of an app, port an app to the AppFlowy pattern, bump an app in IceStore, or any edit under Apps/, docker/, platforms/ or build-*.yml in that repo, including making an app work on MOS.
 ---
 
