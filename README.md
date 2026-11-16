@@ -1,4 +1,4 @@
-# IceStore - Zima OS / Casa OS / ReCasa OS / Homeio Third Party Community App Store
+# IceStore - Zima OS / Casa OS / ReCasa OS / Homeio / MOS Third Party Community App Store
 
 A community app store for [ZimaOS](https://www.zimaspace.com/ZimaOS), [CasaOS](https://casaos.io/), [ReCasaOS](https://github.com/ReCasaOS/CasaOS),  [Homeio](https://homeio.app/) and [MOS](https://mos-official.net/), maintained by [HSinghHira](https://github.com/HSinghHira).
 
