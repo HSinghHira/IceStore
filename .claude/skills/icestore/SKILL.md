@@ -230,6 +230,10 @@ folder, the compose `name:`, the main service name, the image name
     bumper moves that pin with AIO_VERSION (OpenSignup).
   - *NEXT_PUBLIC_* baked at build*: build with placeholder words, fill them
     in on start from a pristine copy of `.next` (OpenSignup's fill-public.mjs).
+  - *Upstream image is amd64 only*: add `platforms: linux/amd64` to the
+    app's `build-<app>.yml` (build-image.yml builds amd64+arm64 by
+    default and fails with "no match for platform in manifest") and list
+    only `amd64` in x-casaos `architectures` (Disk Monitor, Password Pusher).
   - PHP 8.5 images have opcache built in: never `docker-php-ext-install opcache`.
   - SVG-only icons: render with headless Edge on Windows
     (`msedge --headless=new --default-background-color=00000000
