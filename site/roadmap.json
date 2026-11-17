@@ -154,5 +154,7 @@
   {"name": "Uptime Kuma MCP", "category": "AI", "desc": "MCP server that lets AI assistants read and manage Uptime Kuma monitors.", "url": "https://github.com/DavidFuchs/mcp-uptime-kuma", "icon": "uptimekumamcp.png"},
   {"name": "wger", "category": "Home", "desc": "Workout, nutrition and body weight tracker.", "url": "https://github.com/wger-project/wger", "icon": "wger.png"},
   {"name": "WordPress", "category": "Productivity", "desc": "Website and blog platform.", "url": "https://github.com/WordPress/WordPress", "icon": "wordpress.png"},
-  {"name": "YaCy", "category": "Utilities", "desc": "Peer-to-peer search engine you run yourself.", "url": "https://github.com/yacy/yacy_search_server", "icon": "yacy.png"}
+  {"name": "YaCy", "category": "Utilities", "desc": "Peer-to-peer search engine you run yourself.", "url": "https://github.com/yacy/yacy_search_server", "icon": "yacy.png"},
+  {"name": "Printventory", "category": "Utilities", "desc": "Organizes your 3D printing STL and 3MF files with thumbnails, tags and duplicate checks.", "url": "https://github.com/TechJeeper/Printventory", "icon": "printventory.png"},
+  {"name": "HomeBox", "category": "Home", "desc": "Home inventory to track your belongings, warranties, receipts and where things are stored.", "url": "https://github.com/sysadminsmedia/homebox", "icon": "homebox.svg"}
 ]
