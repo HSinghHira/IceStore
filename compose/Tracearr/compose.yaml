@@ -1,0 +1,60 @@
+# Generated from Apps/tracearr/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/tracearr.yml.
+name: tracearr
+services:
+  tracearr:
+    image: ghcr.io/connorgallopo/tracearr:supervised-3.2.1
+    container_name: tracearr
+    restart: unless-stopped
+    stop_grace_period: 90s
+    network_mode: bridge
+    shm_size: 512mb
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    environment:
+    - TZ=$TZ
+    ports:
+    - target: 3000
+      published: '6757'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}/postgres
+      target: /data/postgres
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${APPDATA}/redis
+      target: /data/redis
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${APPDATA}/tracearr
+      target: /data/tracearr
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${APPDATA}/backup
+      target: /data/backup
+      bind:
+        create_host_path: true
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://127.0.0.1:3000/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.00'
+          memory: 3072M
+        reservations:
+          cpus: '0.25'
+          memory: 512M

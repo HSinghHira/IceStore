@@ -1,0 +1,170 @@
+name: ghost
+
+services:
+  ghost:
+    image: ghcr.io/hsinghhira/ghost:latest
+    container_name: ghost
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6752
+    ports:
+      - target: 8080
+        published: "6752"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/ghost/api/admin/site/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ghost/icon.png
+    x-casaos:
+      id: com.icestore.ghost
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6752. Ghost puts this address in every link
+              and email. For a public blog, use your domain, like
+              https://blog.example.com.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Ghost site, admin (/ghost) and mail viewer (/mail), published on host as 6752
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The MySQL database (posts, members, settings), content/ with
+              your images, themes and files, and state/secrets.env, this
+              install's own passwords made on first start. Back it up.
+
+x-casaos:
+  id: com.icestore.ghost
+  architectures:
+    - amd64
+    - arm64
+  main: ghost
+  author: HSinghHira
+  category: Social
+  developer: Ghost Foundation
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ghost/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ghost/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ghost/screenshot-1.png
+  title:
+    en_US: Ghost
+  tagline:
+    en_US: Publishing platform for blogs and newsletters with paid members
+  description:
+    en_US: >-
+      Ghost is a publishing platform for blogs, magazines and newsletters.
+      Write in a clean editor, send posts by email, and let readers sign up
+      or pay for a membership. MySQL and a mail viewer are built in, so it is
+      one container.
+
+
+      **Features**
+
+
+      - A fast, distraction-free editor with cards for images, video,
+        embeds and code
+
+      - Newsletters: every post can go out by email to your members
+
+      - Free and paid memberships with Stripe, plus tiers and offers
+
+      - Beautiful themes, custom pages, tags and authors
+
+      - Built-in SEO, sitemaps and social cards
+
+      - Staff users with roles, and an Admin and Content API
+
+
+      **How to use?**
+
+
+      1. Set PUBLIC_URL to http://[ZIMAOS-IP-ADDRESS]:6752 with your ZimaOS
+         IP (or your domain) before you install.
+
+      2. Open http://[ZIMAOS-IP-ADDRESS]:6752/ghost/ and make the owner
+         account.
+
+      3. Write your first post and press Publish.
+
+      4. Ghost emails a code when you sign in from a new device. Find it in
+         the mail viewer at /mail until you set an email server.
+
+      5. Set your email server in the app settings before you send
+         newsletters to real readers.
+
+
+      Left out: Caddy (https), ActivityPub (the social web) and Tinybird
+      web analytics.
+  tips:
+    before_install:
+      en_US: >-
+        1. You must do this first, or the admin won't open. Find PUBLIC_URL
+           in the settings. It says http://[ZIMAOS-IP-ADDRESS]:6752 now.
+
+
+        2. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP. For example
+           http://192.168.1.20:6752 is right. For a public blog, use your
+           domain, like https://blog.example.com.
+
+
+        3. More settings, like your email server, are listed on the Ghost
+           page at https://icestore.hsinghhira.me/app/ghost/ (Variables
+           tab). You can add them now or later in the app settings.
+
+
+        4. Start the installation. The first start takes about 3 minutes.
+
+
+        5. Open your address and add /ghost/ at the end. Make the owner
+           account.
+
+
+        6. Sign-in codes and other emails go to the mail viewer at
+           http://[ZIMAOS-IP-ADDRESS]:6752/mail/ until you set an email
+           server. Its login is in the app's logs, in the box marked
+           CREDENTIALS.
+  index: /
+  port_map: "6752"
+  scheme: http
+  is_uncontrolled: false
+  version: "6.78.0"
+  update_at: "2026-11-20"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6752
+      - All in one container: ghost 6.78.0, mysql 8.4.13, axllent/mailpit v1.34.0 and an nginx gateway
+      - Each install makes its own MySQL passwords on first start
+      - Caddy, ActivityPub and Tinybird analytics from upstream's compose are left out
+  repo: "https://github.com/TryGhost/Ghost"
+  support: "https://github.com/TryGhost/Ghost/issues"
+  docs: "https://docs.ghost.org/install/docker"

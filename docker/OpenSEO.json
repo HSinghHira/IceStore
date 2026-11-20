@@ -1,0 +1,83 @@
+{
+  "name": "OpenSEO",
+  "repo": "ghcr.io/every-app/open-seo:v0.1.31",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://github.com/every-app/open-seo/pkgs/container/open-seo",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=3072m --cpus=2.00 --memory-reservation=512m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3001]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-seo/icon.png",
+  "project": "https://openseo.so",
+  "support": "https://github.com/every-app/open-seo/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/open-seo/",
+  "description": "SEO research for keywords, backlinks and rankings, with your own DataForSEO key",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": ".Wrangler",
+      "host": "/mnt/cache/appdata/open-seo/data",
+      "container": "/app/.wrangler",
+      "mode": "rw",
+      "description": "The database with your projects, keywords, rank history, audits and reports. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6756",
+      "container": "3001",
+      "description": "OpenSEO web app and MCP server, published on host as 6756"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "DATAFORSEO_API_KEY",
+      "key": "DATAFORSEO_API_KEY",
+      "value": "CHANGEME",
+      "mask": true,
+      "description": "Required. Your DataForSEO key: your DataForSEO login and API password written as login:password, then base64-encoded. No DataForSEO account? Leave CHANGEME and set TREG_API_TOKEN in the app settings instead."
+    },
+    {
+      "name": "AUTH_MODE",
+      "key": "AUTH_MODE",
+      "value": "local_noauth",
+      "mask": false,
+      "description": "local_noauth: no sign-in, everyone who can open the page is the admin. This is upstream's Docker mode. Leave it."
+    },
+    {
+      "name": "CLOUDFLARE_INCLUDE_PROCESS_ENV",
+      "key": "CLOUDFLARE_INCLUDE_PROCESS_ENV",
+      "value": "true",
+      "mask": false,
+      "description": "Lets the app read these settings. Leave it."
+    },
+    {
+      "name": "VITE_SHOW_DEVTOOLS",
+      "key": "VITE_SHOW_DEVTOOLS",
+      "value": "false",
+      "mask": false,
+      "description": "Hides the developer tools panel. Leave it."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

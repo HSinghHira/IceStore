@@ -1,0 +1,161 @@
+name: umami
+
+services:
+  umami:
+    image: ghcr.io/hsinghhira/umami:latest
+    container_name: umami
+    restart: unless-stopped
+    stop_grace_period: 90s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6750"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.50"
+          memory: 1536M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/umami/icon.png
+    x-casaos:
+      id: com.icestore.umami
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password for the admin account. Leave it empty and one is
+              made for you: it is shown in the app's logs, in the box marked
+              CREDENTIALS. Only used while admin still has Umami's built-in
+              password; once you change it in Umami, yours is kept.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Umami dashboard, tracker script and collect API, published on host as 6750
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The PostgreSQL database with your websites and visits, and
+              state/secrets.env, this install's own keys made on first
+              start. Back it up.
+
+x-casaos:
+  id: com.icestore.umami
+  architectures:
+    - amd64
+    - arm64
+  main: umami
+  author: HSinghHira
+  category: Others
+  developer: Umami Software
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/umami/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/umami/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/umami/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/umami/screenshot-2.png
+  title:
+    en_US: Umami
+  tagline:
+    en_US: Privacy-friendly website analytics, a Google Analytics alternative
+  description:
+    en_US: >-
+      Umami shows you who visits your websites, where they come from and
+      what they do, without cookies and without tracking people across the
+      web. PostgreSQL is built in, so it is one container.
+
+
+      **Features**
+
+
+      - Visitors, page views, bounce rate and visit time on one simple
+        dashboard
+
+      - Where people come from: referrers, countries, browsers and devices
+
+      - Custom events, funnels, user journeys and retention reports
+
+      - No cookies and no personal data, so most sites need no cookie
+        banner
+
+      - As many websites, users and teams as you like, plus share links
+
+      - A small tracker script (about 2 KB) and a full API
+
+
+      **How to use?**
+
+
+      1. Open Umami from the ZimaOS dashboard.
+
+      2. Sign in as admin with the password from the app's logs (the box
+         marked CREDENTIALS).
+
+      3. Go to Settings, Websites and add your website.
+
+      4. Copy its tracking code and paste it into the head of your site.
+
+      5. Open your site once, then watch the visit show up on the
+         dashboard.
+  tips:
+    before_install:
+      en_US: >-
+        1. You can leave ADMIN_PASSWORD empty. A password is made for you.
+
+
+        2. More settings, like hiding the update check or renaming the
+           tracker script, are listed on the Umami page at
+           https://icestore.hsinghhira.me/app/umami/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        3. Start the installation. The first start takes about 2 minutes.
+
+
+        4. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           admin password.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6750 and sign in as admin.
+
+
+        6. Your websites must reach this address to send visits. For sites
+           on the internet, put a domain with https in front of it.
+  index: /
+  port_map: "6750"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.5.0"
+  update_at: "2026-11-20"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6750
+      - All in one container: ghcr.io/umami-software/umami 3.5.0, PostgreSQL 15 and an nginx gateway
+      - Each install makes its own APP_SECRET, TWO_FACTOR_ENCRYPTION_KEY and database password on first start
+      - The built-in admin/umami login is replaced with this install's own password on first start
+  repo: "https://github.com/umami-software/umami"
+  support: "https://github.com/umami-software/umami/issues"
+  docs: "https://umami.is/docs"

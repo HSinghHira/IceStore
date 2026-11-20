@@ -1,0 +1,158 @@
+name: youtarr
+
+services:
+  youtarr:
+    image: ghcr.io/hsinghhira/youtarr:latest
+    container_name: youtarr
+    restart: unless-stopped
+    stop_grace_period: 60s
+    privileged: true
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6755"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media/YouTube
+        target: /videos
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/youtarr/icon.png
+    x-casaos:
+      id: com.icestore.youtarr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. Scheduled downloads and nightly clean-up run
+              by it. It is filled in from your ZimaOS time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Youtarr web UI and API, published on host as 6755
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The MariaDB database (channels, videos, jobs), Youtarr's
+              config, job files and thumbnails, and state/secrets.env. Back
+              it up.
+        - container: /videos
+          description:
+            en_US: >-
+              Where downloaded videos go, one folder per channel. Add
+              /DATA/Media/YouTube to Plex, Jellyfin, Emby or Kodi.
+
+x-casaos:
+  id: com.icestore.youtarr
+  architectures:
+    - amd64
+    - arm64
+  main: youtarr
+  author: HSinghHira
+  category: Media
+  developer: DialmasterOrg
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/youtarr/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/youtarr/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/youtarr/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/youtarr/screenshot-2.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/youtarr/screenshot-3.jpg
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/youtarr/screenshot-4.jpg
+  title:
+    en_US: Youtarr
+  tagline:
+    en_US: Downloads and organizes YouTube channels on a schedule for your media server
+  description:
+    en_US: >-
+      Youtarr downloads videos from the YouTube channels you pick, on a
+      schedule, and files them so Plex, Jellyfin, Emby or Kodi show them like
+      TV shows. MariaDB is built in, so it is one container.
+
+
+      **Features**
+
+
+      - Subscribe to channels and get new videos on a schedule
+
+      - Download single videos or playlists by pasting a link
+
+      - Pick the quality, and skip Shorts or live streams
+
+      - Saves thumbnails and info files your media server reads
+
+      - Refreshes your Plex library when new videos land
+
+      - Clean-up rules and notifications
+
+
+      **How to use?**
+
+
+      1. Open Youtarr from the ZimaOS dashboard.
+
+      2. Sign in as admin with the password from the app's logs (the box
+         marked CREDENTIALS).
+
+      3. Go to Channels and add a channel link.
+
+      4. Videos land in /DATA/Media/YouTube. Add that folder to your media
+         server as a TV or Other Videos library.
+  tips:
+    before_install:
+      en_US: >-
+        1. Videos go to /DATA/Media/YouTube. Change it if you want them
+           somewhere else.
+
+
+        2. More settings, like your own admin password and the YouTube
+           cookies file, are listed on the Youtarr page at
+           https://icestore.hsinghhira.me/app/youtarr/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        3. Start the installation. The first start takes about 2 minutes.
+
+
+        4. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           admin name and password.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6755 and sign in.
+  index: /
+  port_map: "6755"
+  scheme: http
+  is_uncontrolled: false
+  version: "v1.93.0"
+  update_at: "2026-11-20"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6755
+      - All in one container: dialmaster/youtarr v1.93.0, MariaDB and an nginx gateway
+      - Each install makes its own database and admin passwords on first start
+      - Videos are saved to /DATA/Media/YouTube
+  repo: "https://github.com/DialmasterOrg/Youtarr"
+  support: "https://github.com/DialmasterOrg/Youtarr/issues"
+  docs: "https://github.com/DialmasterOrg/Youtarr/tree/main/docs"

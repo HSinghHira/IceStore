@@ -1,0 +1,174 @@
+name: open-seo
+
+services:
+  open-seo:
+    image: ghcr.io/every-app/open-seo:v0.1.31
+    container_name: open-seo
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DATAFORSEO_API_KEY=CHANGEME
+      - AUTH_MODE=local_noauth
+      - CLOUDFLARE_INCLUDE_PROCESS_ENV=true
+      - VITE_SHOW_DEVTOOLS=false
+    ports:
+      - target: 3001
+        published: "6756"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/.wrangler
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.10"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-seo/icon.png
+    x-casaos:
+      id: com.icestore.open-seo
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: DATAFORSEO_API_KEY
+          description:
+            en_US: >-
+              Required. Your DataForSEO key: your DataForSEO login and API
+              password written as login:password, then base64-encoded. No
+              DataForSEO account? Leave CHANGEME and set TREG_API_TOKEN in the
+              app settings instead.
+        - container: AUTH_MODE
+          description:
+            en_US: >-
+              local_noauth: no sign-in, everyone who can open the page is the
+              admin. This is upstream's Docker mode. Leave it.
+        - container: CLOUDFLARE_INCLUDE_PROCESS_ENV
+          description:
+            en_US: Lets the app read these settings. Leave it.
+        - container: VITE_SHOW_DEVTOOLS
+          description:
+            en_US: Hides the developer tools panel. Leave it.
+      ports:
+        - container: "3001"
+          description:
+            en_US: OpenSEO web app and MCP server, published on host as 6756
+      volumes:
+        - container: /app/.wrangler
+          description:
+            en_US: >-
+              The database with your projects, keywords, rank history,
+              audits and reports. Back it up.
+
+x-casaos:
+  id: com.icestore.open-seo
+  architectures:
+    - amd64
+    - arm64
+  main: open-seo
+  author: HSinghHira
+  category: Others
+  developer: Every App
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-seo/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-seo/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-seo/screenshot-1.png
+  title:
+    en_US: OpenSEO
+  tagline:
+    en_US: SEO research for keywords, backlinks and rankings, with your own DataForSEO key
+  description:
+    en_US: >-
+      OpenSEO is an open-source alternative to Semrush and Ahrefs. Research
+      keywords, check backlinks, track rankings and audit your site, paying
+      DataForSEO only for what you use instead of a monthly plan.
+
+
+      **Features**
+
+
+      - Keyword research with volume, difficulty and ideas
+
+      - Backlink and domain overview for any site
+
+      - Rank tracking with history, daily, weekly or monthly
+
+      - Site audits of up to 10,000 pages
+
+      - AI Visibility: how AI answers mention your brand
+
+      - SAM, an AI helper (with an OpenRouter key), and an MCP server
+
+
+      **How to use?**
+
+
+      1. Set DATAFORSEO_API_KEY before you install.
+
+      2. Open OpenSEO from the ZimaOS dashboard. There is no sign-in.
+
+      3. Make a project for your website.
+
+      4. Search keywords, add them to a rank tracker, or start a site audit.
+
+
+      There is no sign-in in this Docker mode: anyone who can open the page
+      can use your DataForSEO credit. Keep it on your home network, or put a
+      reverse proxy with its own login in front of it.
+  tips:
+    before_install:
+      en_US: >-
+        1. Get a DataForSEO account and API password at dataforseo.com.
+
+
+        2. Make your key. Write login:password and base64-encode it, for
+           example on base64encode.org.
+
+
+        3. Put the key in DATAFORSEO_API_KEY instead of CHANGEME.
+
+
+        4. There is no sign-in. Anyone who can open the page can spend your
+           DataForSEO credit. Keep it on your home network.
+
+
+        5. More settings, like an OpenRouter key for the AI helper and Google
+           Search Console, are listed on the OpenSEO page at
+           https://icestore.hsinghhira.me/app/open-seo/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        6. Start the installation. The first start builds the app and takes
+           about 3 minutes.
+
+
+        7. Open http://[ZIMAOS-IP-ADDRESS]:6756 to use it.
+  index: /
+  port_map: "6756"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.1.31"
+  update_at: "2026-11-20"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6756
+      - Uses ghcr.io/every-app/open-seo v0.1.31, upstream's single-container Docker image, without sign-in (AUTH_MODE=local_noauth)
+      - Upstream's newer standalone setup is left out: it needs five containers and https for sign-in
+  repo: "https://github.com/every-app/open-seo"
+  support: "https://github.com/every-app/open-seo/issues"
+  docs: "https://openseo.so/docs"

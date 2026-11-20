@@ -1,0 +1,175 @@
+name: odysseus
+
+services:
+  odysseus:
+    image: ghcr.io/hsinghhira/odysseus:latest
+    container_name: odysseus
+    restart: unless-stopped
+    stop_grace_period: 60s
+    privileged: true
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - ODYSSEUS_ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6753"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 4096M
+        reservations:
+          cpus: "0.25"
+          memory: 768M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odysseus/icon.png
+    x-casaos:
+      id: com.icestore.odysseus
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the app's files. It is filled in by ZimaOS.
+              Leave it.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the app's files. It is filled in by ZimaOS.
+              Leave it.
+        - container: ODYSSEUS_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The admin's password, at least 8 characters. Leave it empty and
+              one is made for you: it is shown in the app's logs, in the box
+              marked CREDENTIALS. Only used to make the admin on first start.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Odysseus web UI and API, published on host as 6753
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              odysseus/ (chats, documents, settings, model downloads),
+              chromadb/ (memory vectors), searxng/ (search settings) and
+              state/secrets.env. Back it up.
+
+x-casaos:
+  id: com.icestore.odysseus
+  architectures:
+    - amd64
+    - arm64
+  main: odysseus
+  author: HSinghHira
+  category: AI
+  developer: Odysseus
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odysseus/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odysseus/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/odysseus/screenshot-1.jpg
+  title:
+    en_US: Odysseus
+  tagline:
+    en_US: Self-hosted AI workspace with chat, agents and deep research
+  description:
+    en_US: >-
+      Odysseus is a self-hosted AI workspace. Chat with local or online
+      models, let agents use tools, run deep web research, and keep your
+      documents, email, notes and calendar in one place. ChromaDB memory and
+      SearXNG private web search are built in, so it is one container.
+
+
+      **Features**
+
+
+      - Chat and agents with local models (Ollama, LM Studio, vLLM) or API
+        models (OpenAI and compatible)
+
+      - Deep Research: multi-step web research with source reading and a
+        written report
+
+      - Compare models side by side, blind
+
+      - Documents editor with AI edits and suggestions
+
+      - Email inbox (IMAP/SMTP), notes, tasks and a calendar with CalDAV
+        sync
+
+      - Memory, file uploads, MCP tools, skills and two-factor sign-in
+
+
+      **How to use?**
+
+
+      1. Open Odysseus from the ZimaOS dashboard.
+
+      2. Sign in as admin with the password from the app's logs (the box
+         marked CREDENTIALS).
+
+      3. Go to Settings and add a model provider: your Ollama address, like
+         http://192.168.1.20:11434, or an OpenAI API key.
+
+      4. Start a chat, or open Research and ask a question.
+
+
+      This app has no AI model inside. Use Ollama or another model server,
+      or an online API. Left out: ntfy and the GPU overlays.
+  tips:
+    before_install:
+      en_US: >-
+        1. You can leave ODYSSEUS_ADMIN_PASSWORD empty. A password is made
+           for you.
+
+
+        2. You need a model. Install Ollama, or have an OpenAI API key ready.
+
+
+        3. More settings, like OLLAMA_BASE_URL and search API keys, are
+           listed on the Odysseus page at
+           https://icestore.hsinghhira.me/app/odysseus/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        4. Start the installation. The first start takes about 3 minutes.
+
+
+        5. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           admin password.
+
+
+        6. Open http://[ZIMAOS-IP-ADDRESS]:6753 and sign in as admin.
+  index: /
+  port_map: "6753"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.0.3"
+  update_at: "2026-11-20"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6753
+      - All in one container: ghcr.io/odysseus-dev/odysseus 1.0.3, chromadb/chroma 1.5.9, searxng/searxng 2026.10.24-ef0ec03da and an nginx gateway
+      - The admin password is made on first start and shown in the CREDENTIALS box in the logs
+      - ntfy and the GPU and host-Docker overlays are left out
+  repo: "https://github.com/odysseus-dev/odysseus"
+  support: "https://github.com/odysseus-dev/odysseus/issues"
+  docs: "https://github.com/odysseus-dev/odysseus/blob/dev/website/setup.md"

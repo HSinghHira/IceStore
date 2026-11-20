@@ -1,0 +1,196 @@
+name: holyarrs
+
+services:
+  holyarrs:
+    image: holyarrs/holyarrs:1.2.0
+    container_name: holyarrs
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 6262
+        published: "6754"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media/Movies
+        target: /movies
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media/TV Shows
+        target: /tv
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media/Music
+        target: /music
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Downloads
+        target: /downloads
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "/holyarrs", "-healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/holyarrs/icon.png
+    x-casaos:
+      id: com.icestore.holyarrs
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for the calendar, schedules and logs. It is
+              filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user HolyArrs runs as. It must be able to write to your
+              media and download folders. It is filled in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group HolyArrs runs as. It is filled in by ZimaOS.
+      ports:
+        - container: "6262"
+          description:
+            en_US: HolyArrs web app, published on host as 6754
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Databases, settings, the master key, backups and logs. Back it
+              up. Keep it on a local disk, never a network share.
+        - container: /movies
+          description:
+            en_US: Your movie library, from /DATA/Media/Movies.
+        - container: /tv
+          description:
+            en_US: Your shows library, from /DATA/Media/TV Shows.
+        - container: /music
+          description:
+            en_US: Your music library, from /DATA/Media/Music.
+        - container: /downloads
+          description:
+            en_US: >-
+              Your downloader's download folder, from /DATA/Downloads.
+              Point your downloader at the same folder.
+
+x-casaos:
+  id: com.icestore.holyarrs
+  architectures:
+    - amd64
+    - arm64
+  main: holyarrs
+  author: HSinghHira
+  category: Media
+  developer: HolyArrs
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/holyarrs/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/holyarrs/screenshot-1.webp
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/holyarrs/screenshot-1.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/holyarrs/screenshot-2.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/holyarrs/screenshot-3.webp
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/holyarrs/screenshot-4.webp
+  title:
+    en_US: HolyArrs
+  tagline:
+    en_US: One app to find, download and organize your shows, movies and music
+  description:
+    en_US: >-
+      HolyArrs is one self-hosted app for your shows, movies and music. It
+      does the jobs of Sonarr, Radarr, Lidarr, Bazarr, Prowlarr and Seerr in
+      one small program: browse like a streaming app, ask for a title, and it
+      finds it, downloads it and files it in your library.
+
+
+      **Features**
+
+
+      - Explore page with posters, trailers and scores, like a streaming
+        app
+
+      - Requests: family and friends ask, you approve, it shows up
+
+      - Searches your indexers (Sources), picks the best release with your
+        rules and sends it to your downloader
+
+      - Renames and files downloads into your library and keeps subtitles
+
+      - Calendar, Health page and a red dot for anything that needs you
+
+      - Tells Plex, Jellyfin or Emby when something new lands; OIDC
+        sign-in
+
+
+      **How to use?**
+
+
+      1. Open HolyArrs from the ZimaOS dashboard right after you install
+         it.
+
+      2. Make the owner account. There is no default password.
+
+      3. Follow the short setup: library folders (/movies, /tv, /music), a
+         downloader and a Source.
+
+      4. Search for a show or movie and press Request.
+  tips:
+    before_install:
+      en_US: >-
+        1. Your libraries come from /DATA/Media/Movies, /DATA/Media/TV Shows
+           and /DATA/Media/Music. Change them if yours are somewhere else.
+
+
+        2. Your downloads come from /DATA/Downloads. Point your downloader
+           (like qBittorrent) at the same folder.
+
+
+        3. More settings, like OIDC sign-in and the downloader's save path,
+           are listed on the HolyArrs page at
+           https://icestore.hsinghhira.me/app/holyarrs/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        4. Start the installation. It is ready in a few seconds.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6754 right away and make the
+           owner account. Whoever opens it first becomes the owner.
+  index: /
+  port_map: "6754"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.2.0"
+  update_at: "2026-11-20"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6754
+      - Uses holyarrs/holyarrs 1.2.0 as upstream ships it
+      - Libraries from /DATA/Media (Movies, TV Shows, Music) and downloads from /DATA/Downloads
+  repo: "https://github.com/HolyArrs/HolyArrs"
+  support: "https://github.com/HolyArrs/HolyArrs/issues"
+  docs: "https://docs.holyarrs.com/"

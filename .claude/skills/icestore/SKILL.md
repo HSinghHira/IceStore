@@ -235,6 +235,24 @@ folder, the compose `name:`, the main service name, the image name
     default and fails with "no match for platform in manifest") and list
     only `amd64` in x-casaos `architectures` (Disk Monitor, Password Pusher).
   - PHP 8.5 images have opcache built in: never `docker-php-ext-install opcache`.
+  - *s6-overlay image that needs Redis*: wrapper adds `redis-server` with apt
+    and an s6 longrun (`svc-redis`, depends on `init-folders`; touch
+    `init-wait-for-redis/dependencies.d/svc-redis`) (Paperless-ngx).
+  - *MySQL 8 needed* (Ghost): run the official `mysql:8.4.x` image as a chroot
+    service with its own entrypoint (MYSQL_* env, `/var/lib/mysql` bind) under
+    `# auto-update: keep-major`; MariaDB from apt is fine where upstream uses
+    MariaDB (Youtarr: `mariadb-install-db` + temp server in aio-init).
+  - *Upstream ships a known default login* (Umami admin/umami): a one-shot
+    built-in job hashes the per-install password with pgcrypto `crypt()` and
+    updates the row only while it still has the default hash (Umami).
+  - *Chroot service hard-codes 8080*: sed its config template in
+    `chroot_extra` on every start (Penpot frontend 8080 → 9001); nginx
+    `proxy_pass` on variables uses a DNS resolver that ignores /etc/hosts, so
+    give such services 127.0.0.1 addresses, not hostnames.
+  - *Upstream already ships an all-in-one image that makes its own secrets*
+    (Tracearr `supervised-x.y.z`): use it as a simple app.
+  - The dry run runs unprivileged in CI: never `mkdir` a path outside `$DATA`
+    (like `/videos`) in aio-init before the `AIO_DRY_RUN` exit.
   - SVG-only icons: render with headless Edge on Windows
     (`msedge --headless=new --default-background-color=00000000
     --window-size=512,512 --screenshot=icon.png page.html`).

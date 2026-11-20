@@ -1,0 +1,12 @@
+#!/command/with-contenv /usr/bin/bash
+# shellcheck shell=bash
+# Redis for Paperless's task queue, on 127.0.0.1 only. Data is kept in the
+# data folder so queued tasks survive a restart.
+data_dir="${PAPERLESS_DATA_DIR:-/usr/src/paperless/data}/redis"
+mkdir -p "$data_dir"
+chown paperless:paperless "$data_dir"
+cd "$data_dir" || exit 1
+exec s6-setuidgid paperless redis-server \
+  --bind 127.0.0.1 --port 6379 --protected-mode yes \
+  --dir "$data_dir" --save 60 1 --appendonly no \
+  --daemonize no --logfile ""

@@ -1,0 +1,17 @@
+{
+  "name": "Tracearr",
+  "category": [
+    "Media"
+  ],
+  "web_ui_url": "http://[IP]:6757/",
+  "website": "https://tracearr.com",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/icon.png",
+  "project": "https://tracearr.com",
+  "support": "https://github.com/connorgallopo/tracearr/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/tracearr/",
+  "description": "Watch Plex, Jellyfin and Emby streams, play stats and account sharing",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

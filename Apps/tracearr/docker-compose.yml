@@ -1,0 +1,169 @@
+name: tracearr
+
+services:
+  tracearr:
+    image: ghcr.io/connorgallopo/tracearr:supervised-3.2.1
+    container_name: tracearr
+    restart: unless-stopped
+    stop_grace_period: 90s
+    network_mode: bridge
+    shm_size: 512mb
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 3000
+        published: "6757"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/postgres
+        target: /data/postgres
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/redis
+        target: /data/redis
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/tracearr
+        target: /data/tracearr
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/backup
+        target: /data/backup
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/icon.png
+    x-casaos:
+      id: com.icestore.tracearr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for stats and history. It is filled in from
+              your ZimaOS time zone.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Tracearr web app and API, published on host as 6757
+      volumes:
+        - container: /data/postgres
+          description:
+            en_US: The PostgreSQL (TimescaleDB) database with all play history.
+        - container: /data/redis
+          description:
+            en_US: Redis, for live sessions and the job queue.
+        - container: /data/tracearr
+          description:
+            en_US: >-
+              Tracearr's files and the secrets it makes on first start
+              (.jwt_secret, .cookie_secret). Back it up.
+        - container: /data/backup
+          description:
+            en_US: Database backups made from Tracearr's settings.
+
+x-casaos:
+  id: com.icestore.tracearr
+  architectures:
+    - amd64
+    - arm64
+  main: tracearr
+  author: HSinghHira
+  category: Media
+  developer: Connor Gallopo
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/icon.png
+  title:
+    en_US: Tracearr
+  tagline:
+    en_US: Watch Plex, Jellyfin and Emby streams, play stats and account sharing
+  description:
+    en_US: >-
+      Tracearr watches your Plex, Jellyfin and Emby servers in real time. See
+      who is streaming what, look back at play history and stats, and catch
+      accounts that are shared with people outside your home. This is
+      upstream's all-in-one image, with PostgreSQL and Redis inside.
+
+
+      **Features**
+
+
+      - Live view of every stream, with quality and transcode details
+
+      - Play history and stats per user, title, device and day
+
+      - Account-sharing detection: impossible travel, too many streams,
+        new devices and locations
+
+      - Rules that notify you or stop a stream
+
+      - Several servers of different kinds in one dashboard
+
+      - Notifications to Discord, ntfy and more, plus a mobile app
+
+
+      **How to use?**
+
+
+      1. Open Tracearr from the ZimaOS dashboard right after you install
+         it.
+
+      2. Make the owner account.
+
+      3. Add your Plex, Jellyfin or Emby server with its address and token.
+
+      4. Watch the dashboard fill up as people play things.
+  tips:
+    before_install:
+      en_US: >-
+        1. Tracearr needs at least 3 GB of memory.
+
+
+        2. More settings, like reverse proxy trust and the poll interval, are
+           listed on the Tracearr page at
+           https://icestore.hsinghhira.me/app/tracearr/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        3. Start the installation. The first start takes about 2 minutes.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6757 right away and make the
+           owner account.
+
+
+        5. Add your Plex, Jellyfin or Emby server in the setup.
+  index: /
+  port_map: "6757"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.2.1"
+  update_at: "2026-11-20"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6757
+      - Uses ghcr.io/connorgallopo/tracearr supervised-3.2.1, upstream's all-in-one image with PostgreSQL 15 (TimescaleDB) and Redis inside
+      - Tracearr makes its own secrets on first start and keeps them in the data folder
+  repo: "https://github.com/connorgallopo/tracearr"
+  support: "https://github.com/connorgallopo/tracearr/issues"
+  docs: "https://docs.tracearr.com"
