@@ -156,5 +156,14 @@
   {"name": "WordPress", "category": "Productivity", "desc": "Website and blog platform.", "url": "https://github.com/WordPress/WordPress", "icon": "wordpress.png"},
   {"name": "YaCy", "category": "Utilities", "desc": "Peer-to-peer search engine you run yourself.", "url": "https://github.com/yacy/yacy_search_server", "icon": "yacy.png"},
   {"name": "Printventory", "category": "Utilities", "desc": "Organizes your 3D printing STL and 3MF files with thumbnails, tags and duplicate checks.", "url": "https://github.com/TechJeeper/Printventory", "icon": "printventory.png"},
-  {"name": "HomeBox", "category": "Home", "desc": "Home inventory to track your belongings, warranties, receipts and where things are stored.", "url": "https://github.com/sysadminsmedia/homebox", "icon": "homebox.svg"}
+  {"name": "HomeBox", "category": "Home", "desc": "Home inventory to track your belongings, warranties, receipts and where things are stored.", "url": "https://github.com/sysadminsmedia/homebox", "icon": "homebox.svg"},
+  {"name": "FCaptcha", "category": "Networking", "desc": "Invisible CAPTCHA server that blocks bots and AI browser agents, a drop-in for Turnstile and reCAPTCHA.", "url": "https://github.com/WebDecoy/FCaptcha", "icon": "fcaptcha.png"},
+  {"name": "Traceway", "category": "Developer", "desc": "Error tracking, logs, traces and session replay for your apps in one place.", "url": "https://github.com/tracewayapp/traceway", "icon": "traceway.png"},
+  {"name": "HolyArrs", "category": "Media", "desc": "One app to find, download and organize your shows, movies and music.", "url": "https://github.com/HolyArrs/HolyArrs", "icon": "holyarrs.png"},
+  {"name": "Oxynote", "category": "Documents", "desc": "Technical wiki that links your docs to the systems they describe.", "url": "https://github.com/oxynote/oxynote", "icon": "oxynote.png"},
+  {"name": "Ech0", "category": "Social", "desc": "Lightweight personal publishing platform for sharing short posts and ideas.", "url": "https://github.com/lin-snow/Ech0", "icon": "ech0.png"},
+  {"name": "Youtarr", "category": "Video", "desc": "Downloads and organizes YouTube channels on a schedule for Plex, Jellyfin, Emby and Kodi.", "url": "https://github.com/DialmasterOrg/Youtarr", "icon": "youtarr.png"},
+  {"name": "Kept", "category": "Productivity", "desc": "Google Keep-style notes with text, checklists, drawings and images, synced to your server.", "url": "https://github.com/ericerkz/kept", "icon": "kept.png"},
+  {"name": "Tracearr", "category": "Media", "desc": "Monitors Plex, Jellyfin and Emby streams, playback stats and account sharing.", "url": "https://github.com/connorgallopo/tracearr", "icon": "tracearr.png"},
+  {"name": "OpenSEO", "category": "Analytics", "desc": "SEO research tool for keywords, backlinks and rankings, using your own DataForSEO key.", "url": "https://github.com/every-app/open-seo", "icon": "openseo.png"}
 ]
