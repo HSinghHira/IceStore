@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+# Waits for MariaDB (svc-mariadb) to take connections as the bookstack user,
+# so BookStack's own init (which only waits 30 seconds) can run its
+# migrations. The first start makes the database first, so it can be slow.
+for _ in $(seq 1 180); do
+    if mariadb -h 127.0.0.1 -P 3306 -u "${DB_USERNAME}" -p"${DB_PASSWORD}" \
+        -e 'SELECT 1' "${DB_DATABASE}" >/dev/null 2>&1; then
+        echo "[icestore] MariaDB is ready"
+        exit 0
+    fi
+    sleep 1
+done
+echo "[icestore] MariaDB did not start within 3 minutes; see the lines above"
+exit 1

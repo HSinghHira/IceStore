@@ -1,0 +1,38 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+# MariaDB for BookStack, on 127.0.0.1:3306 only. The data lives in
+# /config/mysql and runs as abc, the user that owns /config (BookStack's own
+# init chowns all of /config to abc on every start).
+#
+# --no-defaults: Alpine's my.cnf turns networking off (skip-networking).
+# --init-file runs on every start: it makes the database and the bookstack
+# user, and sets that user's password to the one in /config/.db_password.
+set -e
+DATADIR=/config/mysql
+mkdir -p "$DATADIR" /run/mysqld
+lsiown -R abc:abc "$DATADIR" /run/mysqld
+
+if [[ ! -d "$DATADIR/mysql" ]]; then
+    echo "[icestore] first start: making the MariaDB database in /config/mysql"
+    mariadb-install-db --no-defaults --user=abc --datadir="$DATADIR" \
+        --auth-root-authentication-method=socket --skip-test-db >/dev/null
+fi
+
+umask 077
+cat > /run/mysqld/icestore-init.sql <<EOF
+CREATE DATABASE IF NOT EXISTS \`${DB_DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS '${DB_USERNAME}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';
+ALTER USER '${DB_USERNAME}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';
+GRANT ALL PRIVILEGES ON \`${DB_DATABASE}\`.* TO '${DB_USERNAME}'@'127.0.0.1';
+FLUSH PRIVILEGES;
+EOF
+chown abc:abc /run/mysqld/icestore-init.sql
+
+exec mariadbd --no-defaults --user=abc \
+    --datadir="$DATADIR" \
+    --socket=/run/mysqld/mysqld.sock \
+    --bind-address=127.0.0.1 --port=3306 \
+    --skip-name-resolve \
+    --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci \
+    --innodb-buffer-pool-size=64M \
+    --init-file=/run/mysqld/icestore-init.sql

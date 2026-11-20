@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+# Runs after BookStack's migrations. BookStack's first admin is
+# admin@admin.com with the password "password"; while that account still has
+# that password, give it this install's own (ADMIN_PASSWORD, or the one made
+# in /config/.admin_password). Once anyone changes it, this does nothing.
+php /usr/local/lib/icestore/bookstack-admin.php || \
+    echo "[icestore] could not check the first admin's password; see the line above"
+exit 0
