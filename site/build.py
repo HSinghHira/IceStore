@@ -31,6 +31,8 @@ Site files:
   app-badge/                 badge picker page (built here); the badge SVGs come from
                              .github/scripts/app_badges.py, run after this script
   roadmap.json               apps planned for the store, shown on roadmap/ (icons in static/img/roadmap/)
+  legacy-added.json          {Apps folder: UTC time} when apps moved over from HSinghHira/ZimaAppStore
+                             were first added there; older than this repo's history, so it wins
   static/                    copied as-is: css/, js/, favicon/, img/
 
 Templates use {{name}} (escaped), {{{name}}} (raw HTML) and {{icon:name}} (inline SVG icon).
@@ -277,7 +279,47 @@ def git_dates():
         touched, bumped = log(), log(r"-G^\s*image:")
     except OSError:
         return {}
-    return {f: (min(ts), max(bumped.get(f) or [min(ts)])) for f, ts in touched.items()}
+    dates = {f: (min(ts), max(bumped.get(f) or [min(ts)])) for f, ts in touched.items()}
+    # apps that came over from the old ZimaAppStore repo keep the date they were first added there
+    for f, iso in legacy_added().items():
+        if f in dates:
+            dates[f] = (min(dates[f][0], iso), dates[f][1])
+    return dates
+
+
+def legacy_added():
+    """{folder: Unix time} from legacy-added.json (first commit of Apps/<folder> in ZimaAppStore)."""
+    p = HERE / "legacy-added.json"
+    if not p.exists():
+        return {}
+    return {f: int(datetime.datetime.strptime(v, "%Y-%m-%dT%H:%M:%SZ")
+                   .replace(tzinfo=datetime.timezone.utc).timestamp())
+            for f, v in json.loads(p.read_text(encoding="utf-8")).items()}
+
+
+def roadmap_dates():
+    """{url: Unix time} when each roadmap.json entry's url first appeared in a commit (empty without git)."""
+    try:
+        r = subprocess.run(["git", "-C", str(ROOT), "log", "--reverse", "--format=@%ct", "-p", "--unified=0",
+                            "--", "site/roadmap.json"], capture_output=True, text=True, encoding="utf-8")
+    except OSError:
+        return {}
+    if r.returncode:
+        return {}
+    seen, t = {}, 0
+    for line in r.stdout.splitlines():  # oldest first
+        if line.startswith("@") and line[1:].isdigit():
+            t = int(line[1:])
+        elif line.startswith("+") and not line.startswith("+++"):
+            for u in re.findall(r'"url":\s*"([^"]+)"', line):
+                seen.setdefault(u, t)
+    return seen
+
+
+def day_label(ts):
+    """'20 Aug 2026' and its ISO date, for a Unix time."""
+    d = datetime.datetime.fromtimestamp(ts, datetime.timezone.utc)
+    return f"{d.day} {d:%b %Y}", d.strftime("%Y-%m-%d")
 
 
 def load_app(folder):
@@ -960,11 +1002,19 @@ def roadmap_page(apps, cfg, layout):
         return by_slug.get(r.get("slug", "")) or by_repo.get(github_repo(r["url"]).lower())
 
     planned = [r for r in items if not added(r)]
+    since = roadmap_dates()
+
+    def when(prefix, ts):
+        # " · Added 20 Aug 2026" after the tile's label, or nothing without a date
+        if not ts:
+            return ""
+        label, iso = day_label(ts)
+        return f' · {prefix} <time datetime="{iso}">{label}</time>'
 
     def tile(r):
         img = ph(r["name"], "../img/roadmap/" + r["icon"] if r.get("icon") else "")
         return (f'<a class="card" href="{e(r["url"])}" rel="noopener" target="_blank">{img}'
-                f'<div class="ct"><span class="k">{e(r.get("category", ""))}</span>'
+                f'<div class="ct"><span class="k">{e(r.get("category", ""))}{when("Planned", since.get(r["url"]))}</span>'
                 f'<h3>{e(r["name"])}</h3><p>{e(r.get("desc", ""))}</p></div></a>')
 
     def live(a):
@@ -972,7 +1022,7 @@ def roadmap_page(apps, cfg, layout):
         img = ph(a["name"], a["icon_cdn"], "../" + a["icon_url"] if a["icon_url"] else "")
         p = f'<p>{e(a["desc"])}</p>' if a["desc"] else ""
         return (f'<a class="card done" href="../app/{a["slug"]}/">{img}'
-                f'<div class="ct"><span class="k">In the store</span><h3>{e(a["name"])}</h3>{p}</div></a>')
+                f'<div class="ct"><span class="k">In the store{when("Added", a["added"])}</span><h3>{e(a["name"])}</h3>{p}</div></a>')
 
     tiles = "".join(tile(r) for r in planned) + "".join(live(a) for a in apps)
     count = f'{len(planned)} apps on the way to {e(cfg["site_name"])}, {len(apps)} already live'
