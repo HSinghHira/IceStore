@@ -1,0 +1,174 @@
+name: hedgedoc
+
+services:
+  hedgedoc:
+    image: ghcr.io/hsinghhira/hedgedoc:latest
+    container_name: hedgedoc
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - CMD_ALLOW_EMAIL_REGISTER=true
+      - CMD_ALLOW_ANONYMOUS=true
+    ports:
+      - target: 3000
+        published: "6759"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/uploads
+        target: /hedgedoc/public/uploads
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "/hedgedoc/healthcheck.mjs"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/hedgedoc/icon.png
+    x-casaos:
+      id: com.icestore.hedgedoc
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: CMD_ALLOW_EMAIL_REGISTER
+          description:
+            en_US: >-
+              true lets anyone make an account with an email and password on
+              the sign-in page. Set it to false after you and your people
+              have made accounts.
+        - container: CMD_ALLOW_ANONYMOUS
+          description:
+            en_US: >-
+              true lets people who aren't signed in make and edit notes. Set
+              it to false so only signed-in people can.
+      ports:
+        - container: "3000"
+          description:
+            en_US: HedgeDoc web UI, published on host as 6759
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database with every note and account, and
+              .session_secret, this install's own key made on first start.
+              Back it up.
+        - container: /hedgedoc/public/uploads
+          description:
+            en_US: >-
+              Images people paste or upload into notes. Back it up.
+
+x-casaos:
+  id: com.icestore.hedgedoc
+  architectures:
+    - amd64
+    - arm64
+  main: hedgedoc
+  author: HSinghHira
+  category: Productivity
+  developer: HedgeDoc
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/hedgedoc/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/hedgedoc/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/hedgedoc/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/hedgedoc/screenshot-2.png
+  title:
+    en_US: HedgeDoc
+  tagline:
+    en_US: Write Markdown notes, slides and diagrams together in real time
+  description:
+    en_US: >-
+      HedgeDoc is a Markdown editor in your browser that several people can
+      type in at the same time. Use it for meeting notes, plans, slides and
+      diagrams. The SQLite database is built in, so it is one container with
+      nothing else to set up.
+
+
+      **Features**
+
+
+      - Everyone sees each other's typing live, with the preview next to it
+
+      - Markdown with tables, checklists, math, code and emoji
+
+      - Diagrams with Mermaid, PlantUML, Graphviz and more
+
+      - Turn a note into slides with one click
+
+      - Share a note to read, to edit, or keep it private
+
+      - Note history, so you can go back to an older version
+
+
+      **How to use?**
+
+
+      1. Open HedgeDoc from the ZimaOS dashboard.
+
+      2. Click Sign In, then Register, and make your account with an email
+         and password.
+
+      3. Click New note and start typing Markdown on the left.
+
+      4. Click Share to copy a link for others, and set who may edit under
+         the note's permission menu.
+
+      5. When everyone has an account, set CMD_ALLOW_EMAIL_REGISTER to false
+         in the app settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. You can leave everything as it is.
+
+
+        2. Set CMD_ALLOW_ANONYMOUS to false if only signed-in people should
+           make notes.
+
+
+        3. More settings, like sign-in with GitHub or OAuth2 and a domain,
+           are listed on the HedgeDoc page at
+           https://icestore.hsinghhira.me/app/hedgedoc/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        4. Start the installation. It is ready in about a minute.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6759 and click Sign In, then
+           Register, to make your account.
+
+
+        6. After that, set CMD_ALLOW_EMAIL_REGISTER to false so strangers
+           can't sign up.
+  index: /
+  port_map: "6759"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.12.0"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6759
+      - Built on quay.io/hedgedoc/hedgedoc 1.12.0, with SQLite as the database
+      - Each install makes its own CMD_SESSION_SECRET on first start, so people stay signed in across restarts
+  repo: "https://github.com/hedgedoc/hedgedoc"
+  support: "https://github.com/hedgedoc/hedgedoc/issues"
+  docs: "https://docs.hedgedoc.org/"
