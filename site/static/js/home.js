@@ -62,9 +62,10 @@
         else if(k==='Escape'){ev.preventDefault();open(false);btn.focus()}
         else if(k==='Tab')open(false);
       };
-      /* start with the sort order saved in the ice-sort cookie */
+      /* start with the sort order saved in the ice-sort cookie, else Most stars */
       const saved=opts.findIndex(o=>o.dataset.v===ICE.cookie('ice-sort'));
-      if(saved>0)pick(saved,false);
+      const start=saved>=0?saved:opts.findIndex(o=>o.dataset.v==='stars');
+      if(start>=0)pick(start,false);
       /* close when focus or a click leaves the dropdown */
       so.addEventListener('focusout',ev=>{if(!so.contains(ev.relatedTarget))open(false)});
     }
