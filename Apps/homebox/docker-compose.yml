@@ -1,0 +1,153 @@
+name: homebox
+
+services:
+  homebox:
+    image: ghcr.io/hsinghhira/homebox:latest
+    container_name: homebox
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - HBOX_OPTIONS_ALLOW_REGISTRATION=true
+      - HBOX_WEB_MAX_UPLOAD_SIZE=10
+    ports:
+      - target: 7745
+        published: "6781"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:7745/api/v1/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.05"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homebox/icon.png
+    x-casaos:
+      id: com.icestore.homebox
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: HBOX_OPTIONS_ALLOW_REGISTRATION
+          description:
+            en_US: >-
+              Lets people make an account on the sign-in page. Set it to
+              false after you and your household have registered; you can
+              still invite people from your home's settings.
+        - container: HBOX_WEB_MAX_UPLOAD_SIZE
+          description:
+            en_US: >-
+              The biggest file you can attach (photos, receipts, manuals),
+              in MB.
+      ports:
+        - container: "7745"
+          description:
+            en_US: HomeBox web UI and API, published on host as 6781
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database with your items, the photos and files you
+              attach, and this install's own key (secrets.env). Back it up.
+
+x-casaos:
+  id: com.icestore.homebox
+  architectures:
+    - amd64
+    - arm64
+  main: homebox
+  author: HSinghHira
+  category: Home
+  developer: Sysadmins Media
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homebox/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homebox/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homebox/screenshot-1.png
+  title:
+    en_US: HomeBox
+  tagline:
+    en_US: Home inventory for the things you own, where they are and what they cost
+  description:
+    en_US: >-
+      HomeBox keeps a list of everything in your home: what it is, where it
+      is, what you paid and when its warranty ends. Sort things by room and
+      shelf, print QR labels, and find anything with a quick search. It uses
+      a built-in SQLite database, so it is one container with nothing else
+      to set up.
+
+
+      **Features**
+
+
+      - Items with photos, receipts, manuals and custom fields
+
+      - Locations inside locations, like room, cupboard, shelf
+
+      - Labels, and QR codes you can print and scan
+
+      - Purchase prices, warranties and maintenance logs
+
+      - Search, CSV import and export, and reports
+
+      - Shared with your household, with single sign-on (OIDC)
+
+
+      **How to use?**
+
+
+      1. Open HomeBox from the ZimaOS dashboard.
+
+      2. Click Register and make your account.
+
+      3. Add your rooms and places under Locations.
+
+      4. Click Create to add an item, with a photo and its receipt.
+
+      5. Invite your household from your home's settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. More settings, like email and single sign-on, are listed on the
+           HomeBox page at https://icestore.hsinghhira.me/app/homebox/
+           (Variables tab). You can add them now or later in the app
+           settings.
+
+
+        2. Start the installation. It is ready in under a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6781 and click Register.
+
+
+        4. When everyone has registered, set HBOX_OPTIONS_ALLOW_REGISTRATION
+           to false.
+  index: /
+  port_map: "6781"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.27.1"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6781
+      - Built on ghcr.io/sysadminsmedia/homebox 0.27.1, with SQLite as the database
+      - Each install makes its own HBOX_AUTH_API_KEY_PEPPER on first start
+  repo: "https://github.com/sysadminsmedia/homebox"
+  support: "https://github.com/sysadminsmedia/homebox/issues"
+  docs: "https://homebox.software/en/"
