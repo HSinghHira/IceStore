@@ -1,0 +1,139 @@
+name: homarr
+
+services:
+  homarr:
+    image: ghcr.io/hsinghhira/homarr:latest
+    container_name: homarr
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 7575
+        published: "6774"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/appdata
+        target: /appdata
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:7575/api/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.05"
+          memory: 192M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homarr/icon.png
+    x-casaos:
+      id: com.icestore.homarr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              used for clocks and calendars.
+      ports:
+        - container: "7575"
+          description:
+            en_US: Homarr dashboard, published on host as 6774
+      volumes:
+        - container: /appdata
+          description:
+            en_US: >-
+              Everything Homarr keeps: the SQLite database with your boards
+              and integrations (db), its cache (redis), trusted
+              certificates and this install's own key (secrets.env). Back
+              it up.
+
+x-casaos:
+  id: com.icestore.homarr
+  architectures:
+    - amd64
+    - arm64
+  main: homarr
+  author: HSinghHira
+  category: Home
+  developer: Homarr Labs
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homarr/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homarr/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homarr/screenshot-1.png
+  title:
+    en_US: Homarr
+  tagline:
+    en_US: Dashboard for your home server with widgets for all your apps
+  description:
+    en_US: >-
+      Homarr is a start page for your home server. Put all your apps on a
+      board you arrange by drag and drop, and add widgets that show what
+      they are doing: downloads, media, calendars, weather and system load.
+      It connects to more than 50 apps.
+
+
+      **Features**
+
+
+      - Boards you build by drag and drop, no config files
+
+      - Widgets for downloads, media servers, calendars, weather and more
+
+      - Integrations with Sonarr, Radarr, Jellyfin, Plex, Pi-hole, Home
+        Assistant and many others
+
+      - Search across your apps from one box
+
+      - Users, groups and permissions, with OIDC and LDAP sign-in
+
+      - Thousands of built-in app icons
+
+
+      **How to use?**
+
+
+      1. Open Homarr from the ZimaOS dashboard.
+
+      2. Follow the onboarding: make the admin account and pick your
+         settings.
+
+      3. Make a board and click Edit to add apps and widgets.
+
+      4. Add integrations in Management, then use them in widgets.
+  tips:
+    before_install:
+      en_US: >-
+        1. More settings, like single sign-on with OIDC or LDAP, are listed
+           on the Homarr page at https://icestore.hsinghhira.me/app/homarr/
+           (Variables tab). You can add them now or later in the app
+           settings.
+
+
+        2. Start the installation. It is ready in about a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6774 and follow the onboarding
+           to make the admin account.
+  index: /
+  port_map: "6774"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.14.0"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6774
+      - Built on ghcr.io/homarr-labs/homarr v2.14.0, with its built-in SQLite and Redis
+      - Each install makes its own SECRET_ENCRYPTION_KEY on first start
+  repo: "https://github.com/homarr-labs/homarr"
+  support: "https://github.com/homarr-labs/homarr/issues"
+  docs: "https://homarr.dev/docs/getting-started/"
