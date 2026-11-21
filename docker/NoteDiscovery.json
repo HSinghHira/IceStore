@@ -1,0 +1,62 @@
+{
+  "name": "NoteDiscovery",
+  "repo": "ghcr.io/hsinghhira/notediscovery:latest",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/hsinghhira/notediscovery/pkgs/container/notediscovery",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=512m --cpus=1.00 --memory-reservation=64m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/notediscovery/icon.png",
+  "project": "https://www.notediscovery.com/",
+  "support": "https://github.com/gamosoft/NoteDiscovery/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/notediscovery/",
+  "description": "Light Markdown notes in plain files, with links, a graph and search",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/notediscovery/data",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "Your notes, as plain Markdown files in folders, and the login password and key (.icestore). Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6788",
+      "container": "8000",
+      "description": "NoteDiscovery web app and API, published on host as 6788"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "AUTHENTICATION_PASSWORD",
+      "key": "AUTHENTICATION_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The password to open your notes. Leave it empty and one is made for you: it is shown in the app's logs, in the box marked CREDENTIALS."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

@@ -1,0 +1,142 @@
+name: notediscovery
+
+services:
+  notediscovery:
+    image: ghcr.io/hsinghhira/notediscovery:latest
+    container_name: notediscovery
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - AUTHENTICATION_PASSWORD=
+    ports:
+      - target: 8000
+        published: "6788"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.05"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/notediscovery/icon.png
+    x-casaos:
+      id: com.icestore.notediscovery
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: AUTHENTICATION_PASSWORD
+          description:
+            en_US: >-
+              The password to open your notes. Leave it empty and one is made
+              for you: it is shown in the app's logs, in the box marked
+              CREDENTIALS.
+      ports:
+        - container: "8000"
+          description:
+            en_US: NoteDiscovery web app and API, published on host as 6788
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Your notes, as plain Markdown files in folders, and the login
+              password and key (.icestore). Back it up.
+
+x-casaos:
+  id: com.icestore.notediscovery
+  architectures:
+    - amd64
+    - arm64
+  main: notediscovery
+  author: HSinghHira
+  category: Productivity
+  developer: gamosoft
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/notediscovery/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/notediscovery/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/notediscovery/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/notediscovery/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/notediscovery/screenshot-3.png
+  title:
+    en_US: NoteDiscovery
+  tagline:
+    en_US: Light Markdown notes in plain files, with links, a graph and search
+  description:
+    en_US: >-
+      NoteDiscovery is a fast note app for your own server. Notes are plain
+      Markdown files in folders, so nothing is locked in. Link notes
+      together, see them on a graph, search everything at once, and share a
+      single note by link.
+
+
+      **Features**
+
+
+      - Markdown notes with live preview, math and diagrams
+
+      - Links between notes, backlinks and a graph view
+
+      - Instant search across all your notes
+
+      - Folders, tags, templates and drawings
+
+      - Share a note by link, and many themes
+
+      - Plain files you can back up or open in any editor
+
+
+      **How to use?**
+
+
+      1. Open NoteDiscovery from the ZimaOS dashboard.
+
+      2. Sign in with the password from the app's logs (the box marked
+         CREDENTIALS).
+
+      3. Click New Note and start writing.
+
+      4. Type [[ to link to another note, and open the graph to see how
+         they connect.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in under a minute.
+
+
+        2. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           password.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6788 and sign in.
+  index: /
+  port_map: "6788"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.35.0"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6788
+      - Built on ghcr.io/gamosoft/notediscovery 0.35.0
+      - The login is on, with a password and session key made for each install (upstream ships it off, with the password admin); the password is in the CREDENTIALS box in the logs
+  repo: "https://github.com/gamosoft/NoteDiscovery"
+  support: "https://github.com/gamosoft/NoteDiscovery/issues"
+  docs: "https://github.com/gamosoft/NoteDiscovery/tree/main/documentation"
