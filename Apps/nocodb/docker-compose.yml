@@ -1,0 +1,151 @@
+name: nocodb
+
+services:
+  nocodb:
+    image: nocodb/nocodb:2026.10.2
+    container_name: nocodb
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - NC_DISABLE_TELE=true
+    ports:
+      - target: 8080
+        published: "6765"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /usr/app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nocodb/icon.png
+    x-casaos:
+      id: com.icestore.nocodb
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: NC_DISABLE_TELE
+          description:
+            en_US: >-
+              true stops NocoDB from sending anonymous usage numbers to its
+              makers. Set it to false to send them.
+      ports:
+        - container: "8080"
+          description:
+            en_US: NocoDB web UI and API, published on host as 6765
+      volumes:
+        - container: /usr/app/data
+          description:
+            en_US: >-
+              The SQLite database with your tables, users and settings
+              (including the sign-in key NocoDB makes on first start), and
+              uploaded files. Back it up.
+
+x-casaos:
+  id: com.icestore.nocodb
+  architectures:
+    - amd64
+    - arm64
+  main: nocodb
+  author: HSinghHira
+  category: Productivity
+  developer: NocoDB
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nocodb/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nocodb/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nocodb/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nocodb/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nocodb/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nocodb/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nocodb/screenshot-5.png
+  title:
+    en_US: NocoDB
+  tagline:
+    en_US: Turn a database into a spreadsheet you can share, an Airtable alternative
+  description:
+    en_US: >-
+      NocoDB looks like a spreadsheet but works like a database. Make tables
+      for contacts, orders or anything else, link them together, and look at
+      them as a grid, a kanban board, a gallery, a form or a calendar. It
+      keeps its data in a built-in SQLite file, so there is nothing else to
+      set up.
+
+
+      **Features**
+
+
+      - Grid, kanban, gallery, form and calendar views
+
+      - Links between tables, lookups, formulas and roll-ups
+
+      - Filters, sorting, grouping and shared views with a link
+
+      - Forms anyone can fill in to add rows
+
+      - Users and roles per base, with comments and history
+
+      - REST API and webhooks, or connect your own PostgreSQL or MySQL
+
+
+      **How to use?**
+
+
+      1. Open NocoDB from the ZimaOS dashboard.
+
+      2. Sign up with your email and a password. The first account becomes
+         the super admin.
+
+      3. Click New Base, then add a table and your columns.
+
+      4. Add a Kanban, Gallery or Form view from the left side.
+
+      5. Click Share to invite people or share a view with a link.
+  tips:
+    before_install:
+      en_US: >-
+        1. You can leave everything as it is.
+
+
+        2. Start the installation. It is ready in about a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6765 right away and sign up. The
+           first account becomes the super admin.
+
+
+        4. More settings, like email and the public address, are listed on
+           the NocoDB page at https://icestore.hsinghhira.me/app/nocodb/
+           (Variables tab). You can add them later in the app settings.
+  index: /
+  port_map: "6765"
+  scheme: http
+  is_uncontrolled: false
+  version: "2026.10.2"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6765
+      - Upstream image nocodb/nocodb 2026.10.2 with its built-in SQLite database
+      - Usage numbers are not sent (NC_DISABLE_TELE=true)
+  repo: "https://github.com/nocodb/nocodb"
+  support: "https://github.com/nocodb/nocodb/issues"
+  docs: "https://nocodb.com/docs/self-hosting"
