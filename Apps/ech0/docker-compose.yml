@@ -1,0 +1,134 @@
+name: ech0
+
+services:
+  ech0:
+    image: ghcr.io/hsinghhira/ech0:latest
+    container_name: ech0
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 6277
+        published: "6782"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:6277/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.05"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ech0/icon.png
+    x-casaos:
+      id: com.icestore.ech0
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+      ports:
+        - container: "6277"
+          description:
+            en_US: Ech0 timeline, admin panel and API, published on host as 6782
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Everything Ech0 keeps: the SQLite database, your uploaded
+              images, audio and video (files), backups, logs and this
+              install's own key (secrets.env). Back it up.
+
+x-casaos:
+  id: com.icestore.ech0
+  architectures:
+    - amd64
+    - arm64
+  main: ech0
+  author: HSinghHira
+  category: Social
+  developer: lin-snow
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ech0/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ech0/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ech0/screenshot-1.png
+  title:
+    en_US: Ech0
+  tagline:
+    en_US: Your own microblog timeline for short posts, links and media
+  description:
+    en_US: >-
+      Ech0 is a small personal microblog. Post short thoughts, links,
+      pictures and videos to your own timeline, and let others follow it by
+      RSS, comment and react. It is light enough for a Raspberry Pi, and
+      your posts stay on your server.
+
+
+      **Features**
+
+
+      - Short posts in Markdown, with tags and search
+
+      - Images, audio and video, and cards for links and GitHub projects
+
+      - Comments, emoji reactions and an RSS feed
+
+      - Several accounts, passkeys and single sign-on (OAuth2, OIDC)
+
+      - Backups, exports and S3 storage
+
+      - An API, webhooks, an MCP server and an AI helper for your posts
+
+
+      **How to use?**
+
+
+      1. Open Ech0 from the ZimaOS dashboard.
+
+      2. Click Register and make your account. The first account is the
+         owner.
+
+      3. Write your first post on the timeline.
+
+      4. Open the admin panel to set your site name, comments and storage.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in under a minute.
+
+
+        2. Open http://[ZIMAOS-IP-ADDRESS]:6782 and click Register. The
+           first account you make is the owner.
+
+
+        3. Most settings, like comments, S3 storage and sign-in providers,
+           are in Ech0's admin panel.
+  index: /
+  port_map: "6782"
+  scheme: http
+  is_uncontrolled: false
+  version: "v5.9.10"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6782
+      - Built on sn0wl1n/ech0 v5.9.10, with SQLite as the database
+      - Each install makes its own JWT_SECRET on first start, so sign-ins last across restarts
+  repo: "https://github.com/lin-snow/Ech0"
+  support: "https://github.com/lin-snow/Ech0/issues"
+  docs: "https://www.ech0.app/"
