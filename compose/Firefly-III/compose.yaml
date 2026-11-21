@@ -1,0 +1,50 @@
+# Generated from Apps/firefly-iii/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/firefly-iii.yml.
+name: firefly-iii
+services:
+  firefly-iii:
+    image: ghcr.io/hsinghhira/firefly-iii:latest
+    container_name: firefly-iii
+    restart: unless-stopped
+    stop_grace_period: 30s
+    stop_signal: SIGINT
+    network_mode: bridge
+    environment:
+    - TZ=$TZ
+    - SITE_OWNER=mail@example.com
+    - DEFAULT_LANGUAGE=en_US
+    ports:
+    - target: 8080
+      published: '6771'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ${APPDATA}/database
+      target: /var/www/html/storage/database
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ${APPDATA}/upload
+      target: /var/www/html/storage/upload
+      bind:
+        create_host_path: true
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - -o
+      - /dev/null
+      - http://127.0.0.1:8080/health
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 1024M
+        reservations:
+          cpus: '0.05'
+          memory: 128M

@@ -1,0 +1,167 @@
+name: firefly-iii
+
+services:
+  firefly-iii:
+    image: ghcr.io/hsinghhira/firefly-iii:latest
+    container_name: firefly-iii
+    restart: unless-stopped
+    stop_grace_period: 30s
+    stop_signal: SIGINT
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - SITE_OWNER=mail@example.com
+      - DEFAULT_LANGUAGE=en_US
+    ports:
+      - target: 8080
+        published: "6771"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/database
+        target: /var/www/html/storage/database
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/upload
+        target: /var/www/html/storage/upload
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.05"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/firefly-iii/icon.png
+    x-casaos:
+      id: com.icestore.firefly-iii
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              used for dates and the daily jobs.
+        - container: SITE_OWNER
+          description:
+            en_US: >-
+              Your email. Firefly III shows it on error pages and sends
+              errors to it when email is set up.
+        - container: DEFAULT_LANGUAGE
+          description:
+            en_US: >-
+              The language for new users, like en_US, en_GB, de_DE, fr_FR,
+              nl_NL or es_ES. Each user can change it later.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Firefly III web UI and API, published on host as 6771
+      volumes:
+        - container: /var/www/html/storage/database
+          description:
+            en_US: >-
+              The SQLite database with all your accounts and transactions,
+              and this install's own keys (secrets.env). Back it up.
+        - container: /var/www/html/storage/upload
+          description:
+            en_US: >-
+              Files you attach to transactions, like receipts.
+
+x-casaos:
+  id: com.icestore.firefly-iii
+  architectures:
+    - amd64
+    - arm64
+  main: firefly-iii
+  author: HSinghHira
+  category: Finance
+  developer: James Cole
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/firefly-iii/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/firefly-iii/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/firefly-iii/screenshot-1.png
+  title:
+    en_US: Firefly III
+  tagline:
+    en_US: Personal finance manager for budgets, accounts and transactions
+  description:
+    en_US: >-
+      Firefly III helps you keep track of your money. Add your bank
+      accounts, credit cards and cash, record what you spend and earn, and
+      see where your money goes. Budgets, bills and piggy banks help you
+      plan ahead. It uses a built-in SQLite database, so it is one container
+      with nothing else to set up.
+
+
+      **Features**
+
+
+      - Accounts, transactions, transfers and split transactions
+
+      - Budgets, categories, tags and bills
+
+      - Piggy banks to save for something
+
+      - Rules that sort new transactions for you
+
+      - Recurring transactions, run every day by the built-in job
+
+      - Reports and charts, in many currencies
+
+      - Import from your bank with the Data Importer, and a full API
+
+
+      **How to use?**
+
+
+      1. Open Firefly III from the ZimaOS dashboard.
+
+      2. Click Register and make your account. The first account is the
+         admin.
+
+      3. Follow the first steps: add your main bank account and its
+         balance.
+
+      4. Add transactions, or import them from your bank.
+
+      5. Make budgets and look at the reports.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set DEFAULT_LANGUAGE to your language if it is not en_US.
+
+
+        2. More settings, like email and the address used in email links,
+           are listed on the Firefly III page at
+           https://icestore.hsinghhira.me/app/firefly-iii/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        3. Start the installation. It is ready in about a minute.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6771 and click Register. The
+           first account you make is the admin.
+  index: /
+  port_map: "6771"
+  scheme: http
+  is_uncontrolled: false
+  version: "version-6.7.9"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6771
+      - Built on fireflyiii/core version-6.7.9, with SQLite as the database
+      - Each install makes its own APP_KEY and cron token on first start, and the daily jobs run inside the container
+  repo: "https://github.com/firefly-iii/firefly-iii"
+  support: "https://github.com/firefly-iii/firefly-iii/issues"
+  docs: "https://docs.firefly-iii.org/"

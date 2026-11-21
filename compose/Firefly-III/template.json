@@ -1,0 +1,17 @@
+{
+  "name": "Firefly III",
+  "category": [
+    "Productivity"
+  ],
+  "web_ui_url": "http://[IP]:6771/",
+  "website": "https://www.firefly-iii.org/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/firefly-iii/icon.png",
+  "project": "https://www.firefly-iii.org/",
+  "support": "https://github.com/firefly-iii/firefly-iii/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/firefly-iii/",
+  "description": "Personal finance manager for budgets, accounts and transactions",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}
