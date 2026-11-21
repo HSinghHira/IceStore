@@ -10,7 +10,7 @@ services:
       - TZ=$TZ
     ports:
       - target: 3000
-        published: "6765"
+        published: "6790"
         protocol: tcp
     volumes:
       - type: bind
@@ -37,7 +37,7 @@ services:
       ports:
         - container: "3000"
           description:
-            en_US: FCaptcha widget, demo, and API on host port 6765.
+            en_US: FCaptcha widget, demo, and API on host port 6790.
       volumes:
         - container: /fcaptcha-data
           description:
@@ -85,7 +85,7 @@ x-casaos:
         Open the app from your dashboard to try the demo. For public use,
         configure HTTPS and follow the FCaptcha hardening guide.
   index: /demo/
-  port_map: "6765"
+  port_map: "6790"
   scheme: http
   is_uncontrolled: false
   version: "1.51.1"

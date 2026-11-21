@@ -37,7 +37,7 @@ FCaptcha provides a JavaScript widget that collects browser signals and a server
 
 ## Try the demo
 
-Open FCaptcha from your dashboard, or visit `http://[ZIMAOS-IP-ADDRESS]:6765/demo/`. The same service serves `/fcaptcha.js` and `/health`.
+Open FCaptcha from your dashboard, or visit `http://[ZIMAOS-IP-ADDRESS]:6790/demo/`. The same service serves `/fcaptcha.js` and `/health`.
 
 ## Connect an application
 
