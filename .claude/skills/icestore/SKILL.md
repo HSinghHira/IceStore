@@ -78,14 +78,12 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
 5. **Write `Apps/<app>/docker-compose.yml`** per `references/COMPOSE.md`.
 6. **Write `Apps/<app>/README.md`** per `references/APP_README.md`, and list the
    images the user must add (`icon.png`, `screenshot-1.png`, ...).
-6a. **Update the root `README.md`** (always, for a new app, a renamed app or a
-   new icon): from the repo root run
-   `python .github/scripts/readme_svgs.py` (needs `pyyaml markdown pillow
-   fonttools`). It rewrites the block between the `README-SVGS` markers (app
-   count, the "All N apps" list) and redraws `readme/*.svg`. Never edit that
-   block by hand. Check `git diff README.md` shows the new app in the list and
-   the new count (`references/REPO.md`). A "no ports found" warning is normal
-   for host-network apps.
+6a. **Root `README.md` and `readme/*.svg`: leave them alone.** Do not run
+   `.github/scripts/readme_svgs.py` and do not commit `README.md` or `readme/`
+   with an app. `update-readme-svgs.yml` redraws them on `main` after the push
+   or merge and commits "Update README pictures" itself
+   (`references/REPO.md`). Never read the SVGs either: they are hundreds of KB
+   of glyph paths.
 6b. **Roadmap.** `site/roadmap.json` lists planned apps for the site's
    `/roadmap/` page; the page also lists every app in `Apps/` on its own,
    faded and labelled "Live", so never add live apps there. When a planned app

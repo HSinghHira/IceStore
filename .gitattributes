@@ -15,3 +15,6 @@ justfile text eol=lf
 *.jpeg binary
 *.gif binary
 *.webp binary
+
+# Drawn by .github/scripts/readme_svgs.py in CI: collapsed in PR diffs, left out of language stats.
+readme/*.svg linguist-generated=true -diff

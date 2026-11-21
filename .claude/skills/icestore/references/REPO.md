@@ -34,17 +34,17 @@ by `.github/scripts/readme_svgs.py`: the app count, the "All N apps: ..." list
 (each app's title, alphabetical) and the pictures in `readme/` (hero, icon
 marquee, store tabs, app cards, help panel). Never edit that block by hand.
 
-When you add an app, rename one or change its icon, run it from the repo root
-and commit `README.md` and `readme/` with the app:
+You don't run it. `update-readme-svgs.yml` runs it on every push to `main` that
+touches `Apps/**` (so also when a PR is merged), weekly and on demand, and
+commits "Update README pictures" itself. App commits and PRs never include
+`README.md` or `readme/`. To preview locally only (don't commit the output):
 
 ```bash
 pip install -r site/requirements.txt pillow fonttools
 python .github/scripts/readme_svgs.py
 ```
 
-`update-readme-svgs.yml` also runs it on every push that touches `Apps/**` (and
-weekly) and commits the result, but run it yourself so the README is right in
-the same commit. "no ports found" warnings are normal for host-network apps.
+"no ports found" warnings are normal for host-network apps.
 
 There is no port ledger file: `scripts/ports.py` reads the ports from the
 compose files.
