@@ -1,0 +1,168 @@
+name: joplin-server
+
+services:
+  joplin-server:
+    image: ghcr.io/hsinghhira/joplin-server:latest
+    container_name: joplin-server
+    restart: unless-stopped
+    stop_grace_period: 90s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - APP_BASE_URL=http://[ZIMAOS-IP-ADDRESS]:6764
+      - DEFAULT_ADMIN_PASSWORD=
+    ports:
+      - target: 22300
+        published: "6764"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:22300/api/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1536M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/joplin-server/icon.png
+    x-casaos:
+      id: com.icestore.joplin-server
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: APP_BASE_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6764. Joplin Server sends browsers and the
+              Joplin apps to this address. For a domain use
+              https://notes.example.com.
+        - container: DEFAULT_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The password for the first admin, admin@localhost. Leave it
+              empty and one is made for you: it is shown in the app's logs,
+              in the box marked CREDENTIALS. Only used on the very first
+              start; change it later in Joplin Server itself.
+      ports:
+        - container: "22300"
+          description:
+            en_US: Joplin Server web UI and sync API, published on host as 6764
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The PostgreSQL database with every synced note, notebook and
+              attachment, and secrets.env with this install's own database
+              password. Back it up.
+
+x-casaos:
+  id: com.icestore.joplin-server
+  architectures:
+    - amd64
+    - arm64
+  main: joplin-server
+  author: HSinghHira
+  category: Productivity
+  developer: Joplin
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/joplin-server/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/joplin-server/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/joplin-server/screenshot-1.png
+  title:
+    en_US: Joplin Server
+  tagline:
+    en_US: Sync server for Joplin notes, with sharing and collaboration
+  description:
+    en_US: >-
+      Joplin Server keeps your Joplin notes in sync across your computer and
+      phone, on your own server. It also lets you share notebooks with
+      others and publish notes as web pages. PostgreSQL is built in, so it
+      is one container with nothing else to set up.
+
+
+      **Features**
+
+
+      - Fast sync for the Joplin desktop, phone and terminal apps
+
+      - Share notebooks with other users to work on them together
+
+      - Publish a note as a web page with a link
+
+      - Several users, each with their own notes
+
+      - End-to-end encryption still works on top
+
+
+      **How to use?**
+
+
+      1. Set APP_BASE_URL to your ZimaOS address before you install.
+
+      2. Open Joplin Server and sign in as admin@localhost with the
+         password from the app's logs (the box marked CREDENTIALS).
+
+      3. In your profile, change the email and password.
+
+      4. In the Joplin app, open Settings, Synchronisation, pick Joplin
+         Server and enter http://[ZIMAOS-IP-ADDRESS]:6764 with your email
+         and password.
+
+      5. Click Synchronise. Do the same on your phone.
+  tips:
+    before_install:
+      en_US: >-
+        1. You must set APP_BASE_URL first, or sign-in won't work. It starts
+           as http://[ZIMAOS-IP-ADDRESS]:6764 and you replace
+           [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6764 for example.
+
+
+        2. More settings, like email and sign-up, are listed on the Joplin
+           Server page at https://icestore.hsinghhira.me/app/joplin-server/
+           (Variables tab). You can add them now or later in the app
+           settings.
+
+
+        3. Start the installation. The first start takes about 3 minutes.
+
+
+        4. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           admin email and password.
+
+
+        5. Open the address you put in APP_BASE_URL and sign in.
+
+
+        6. In the Joplin app, pick Joplin Server under Synchronisation and
+           use the same address.
+  index: /
+  port_map: "6764"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.7.6"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6764
+      - Built on joplin/server 3.7.6, with PostgreSQL 16 added inside the same container
+      - Each install makes its own database password and first admin password on first start; the login is in the CREDENTIALS box in the logs
+      - The handwriting recognition service (transcribe) is not included
+  repo: "https://github.com/laurent22/joplin"
+  support: "https://github.com/laurent22/joplin/issues"
+  docs: "https://joplinapp.org/help/apps/sync/joplin_server"
