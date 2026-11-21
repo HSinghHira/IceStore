@@ -1,0 +1,148 @@
+name: tandoor
+
+services:
+  tandoor:
+    image: ghcr.io/hsinghhira/tandoor:latest
+    container_name: tandoor
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - ENABLE_SIGNUP=0
+    ports:
+      - target: 80
+        published: "6770"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:80/accounts/login/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1536M
+        reservations:
+          cpus: "0.05"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tandoor/icon.png
+    x-casaos:
+      id: com.icestore.tandoor
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              used for meal plans.
+        - container: ENABLE_SIGNUP
+          description:
+            en_US: >-
+              Set to 1 so anyone who can open Tandoor can make an account.
+              Leave it 0 and invite people from your space settings instead.
+      ports:
+        - container: "80"
+          description:
+            en_US: Tandoor Recipes web UI and API, published on host as 6770
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything Tandoor keeps: the PostgreSQL database (postgres),
+              your recipe images and files (mediafiles) and this install's
+              own keys (secrets.env). Back it up.
+
+x-casaos:
+  id: com.icestore.tandoor
+  architectures:
+    - amd64
+    - arm64
+  main: tandoor
+  author: HSinghHira
+  category: Home
+  developer: TandoorRecipes
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tandoor/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tandoor/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tandoor/screenshot-1.png
+  title:
+    en_US: Tandoor Recipes
+  tagline:
+    en_US: Recipes, meal plans and shopping lists for you and your household
+  description:
+    en_US: >-
+      Tandoor Recipes keeps all your recipes in one place. Import them from
+      almost any website, plan your meals for the week and get a shopping
+      list made for you. Share it with your household. The PostgreSQL
+      database is built in, so it is one container with nothing else to set
+      up.
+
+
+      **Features**
+
+
+      - Import recipes from websites, other apps and files
+
+      - Meal planner with a calendar
+
+      - Shopping lists made from your meal plan, shared live
+
+      - Search by name, ingredient, keyword and food
+
+      - Scales recipes and works out nutrition
+
+      - Cookbooks, ratings and cooking logs
+
+      - Spaces for your household, with invites and permissions
+
+
+      **How to use?**
+
+
+      1. Open Tandoor Recipes from the ZimaOS dashboard.
+
+      2. Make the admin account on the first page.
+
+      3. Click Import to add a recipe from a website, or Create to write
+         your own.
+
+      4. Plan your week in Meal Plan, then open the Shopping list.
+
+      5. Invite your household from your space settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. More settings, like email, sign-in with other accounts and AI
+           recipe import, are listed on the Tandoor Recipes page at
+           https://icestore.hsinghhira.me/app/tandoor/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        2. Start the installation. The first start takes a few minutes
+           while it sets up the database.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6770 and make the admin account.
+  index: /
+  port_map: "6770"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.7.6"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6770
+      - Built on vabene1111/recipes 2.7.6, with PostgreSQL 17 inside the same container
+      - Each install makes its own SECRET_KEY and database password on first start; Tandoor asks for the admin account on its first page
+  repo: "https://github.com/TandoorRecipes/recipes"
+  support: "https://github.com/TandoorRecipes/recipes/issues"
+  docs: "https://docs.tandoor.dev/"
