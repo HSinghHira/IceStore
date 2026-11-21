@@ -1,0 +1,155 @@
+name: warracker
+
+services:
+  warracker:
+    image: ghcr.io/hsinghhira/warracker:latest
+    container_name: warracker
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - MAX_UPLOAD_MB=32
+      - NGINX_MAX_BODY_SIZE_VALUE=32M
+    ports:
+      - target: 80
+        published: "6769"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:80/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.05"
+          memory: 192M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/warracker/icon.png
+    x-casaos:
+      id: com.icestore.warracker
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              used for reminder times.
+        - container: MAX_UPLOAD_MB
+          description:
+            en_US: >-
+              The biggest file you can attach (receipts, manuals, photos), in
+              MB.
+        - container: NGINX_MAX_BODY_SIZE_VALUE
+          description:
+            en_US: >-
+              The same limit for the built-in web server. Keep it the same as
+              MAX_UPLOAD_MB, with an M at the end, like 32M.
+      ports:
+        - container: "80"
+          description:
+            en_US: Warracker web UI and API, published on host as 6769
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything Warracker keeps: the PostgreSQL database (postgres),
+              your uploaded receipts and files (uploads) and this install's
+              own keys (secrets.env, uploads/.secret_key). Back it up.
+
+x-casaos:
+  id: com.icestore.warracker
+  architectures:
+    - amd64
+    - arm64
+  main: warracker
+  author: HSinghHira
+  category: Home
+  developer: sassanix
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/warracker/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/warracker/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/warracker/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/warracker/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/warracker/screenshot-3.png
+  title:
+    en_US: Warracker
+  tagline:
+    en_US: Keeps track of product warranties, receipts and expiry dates
+  description:
+    en_US: >-
+      Warracker keeps every warranty in one place: what you bought, when,
+      the receipt and manual, and when the warranty runs out. It reminds you
+      before a warranty ends. The PostgreSQL database is built in, so it is
+      one container with nothing else to set up.
+
+
+      **Features**
+
+
+      - Warranties with purchase date, length, price, serial numbers and notes
+
+      - Receipts, invoices, manuals and photos attached to each item
+
+      - Reminders by email or Apprise (Discord, Telegram, ntfy and more)
+
+      - Dashboard of what is active, ending soon and expired
+
+      - Tags, search, CSV import and export
+
+      - Several users, with an admin, and single sign-on (OIDC)
+
+      - Paperless-ngx link for your documents
+
+
+      **How to use?**
+
+
+      1. Open Warracker from the ZimaOS dashboard.
+
+      2. Click Register and make your account. The first account is the
+         admin.
+
+      3. Click Add Warranty and fill in the product, the dates and the
+         receipt.
+
+      4. Turn on reminders in Settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. More settings, like email, Apprise reminders and the address
+           used in email links (FRONTEND_URL), are listed on the Warracker
+           page at
+           https://icestore.hsinghhira.me/app/warracker/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        2. Start the installation. It is ready in about a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6769 and click Register. The
+           first account you make is the admin.
+  index: /
+  port_map: "6769"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.0.6"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6769
+      - Built on ghcr.io/sassanix/warracker/main 1.0.6, with PostgreSQL 17 inside the same container
+      - Each install makes its own database password on first start; Warracker makes its own secret key, and the first account you register is the admin
+  repo: "https://github.com/sassanix/Warracker"
+  support: "https://github.com/sassanix/Warracker/issues"
+  docs: "https://github.com/sassanix/Warracker#readme"
