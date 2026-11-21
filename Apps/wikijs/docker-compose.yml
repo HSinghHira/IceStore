@@ -1,0 +1,177 @@
+name: wikijs
+
+services:
+  wikijs:
+    image: ghcr.io/hsinghhira/wikijs:latest
+    container_name: wikijs
+    restart: unless-stopped
+    stop_grace_period: 90s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASS=
+    ports:
+      - target: 3000
+        published: "6760"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/content
+        target: /wiki/data/content
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/repo
+        target: /wiki/data/repo
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3000/_live"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.25"
+          memory: 384M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wikijs/icon.png
+    x-casaos:
+      id: com.icestore.wikijs
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email you sign in with as the first admin. Only used on the
+              very first start.
+        - container: ADMIN_PASS
+          description:
+            en_US: >-
+              The first admin's password. Leave it empty and one is made for
+              you: it is shown in the app's logs, in the box marked
+              CREDENTIALS. Only used on the very first start; change it later
+              in Wiki.js itself.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Wiki.js web UI, published on host as 6760
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The PostgreSQL database with every page, file and user, and
+              secrets.env with this install's own database password. Back it
+              up.
+        - container: /wiki/data/content
+          description:
+            en_US: >-
+              Pages saved by the Local Disk storage target, when you turn it
+              on.
+        - container: /wiki/data/repo
+          description:
+            en_US: >-
+              The local copy of the Git repository, when you turn on Git
+              sync.
+
+x-casaos:
+  id: com.icestore.wikijs
+  architectures:
+    - amd64
+    - arm64
+  main: wikijs
+  author: HSinghHira
+  category: Productivity
+  developer: Requarks
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wikijs/icon.png
+  title:
+    en_US: Wiki.js
+  tagline:
+    en_US: Wiki with a visual and Markdown editor, search and Git sync
+  description:
+    en_US: >-
+      Wiki.js is a fast, modern wiki for your team or your home. Write pages
+      in a visual editor or in Markdown, find them with search, and keep a
+      copy in Git. PostgreSQL is built in, so it is one container with
+      nothing else to set up.
+
+
+      **Features**
+
+
+      - Visual editor, Markdown editor and diagrams in one wiki
+
+      - Full-text search, tags and a page tree
+
+      - Page history, comments and live editing together
+
+      - Users, groups and rights per page or folder, with passkeys and
+        two-factor sign-in
+
+      - Sign in with OIDC, Google, GitHub, LDAP and more
+
+      - Sync pages to a Git repository or a folder on disk
+
+
+      **How to use?**
+
+
+      1. Open Wiki.js from the ZimaOS dashboard.
+
+      2. Sign in as admin@example.com with the password from the app's logs
+         (the box marked CREDENTIALS).
+
+      3. Change your email and password in your profile.
+
+      4. Make your first page: pick a path, an editor and start writing.
+
+      5. In Administration, add users and groups, and turn on sign-in
+         providers or Git sync.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set ADMIN_EMAIL to your email if you like. It is only used on the
+           first start.
+
+
+        2. Start the installation. The first start takes about 3 minutes.
+
+
+        3. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           admin email and password.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6760 and sign in.
+
+
+        5. More settings, like the log level, are listed on the Wiki.js page
+           at https://icestore.hsinghhira.me/app/wikijs/ (Variables tab).
+           Almost everything else is set in Wiki.js under Administration.
+  index: /
+  port_map: "6760"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.5.0"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6760
+      - Built on ghcr.io/requarks/wiki 3.5.0, with PostgreSQL 18 added inside the same container
+      - Each install makes its own database password and first admin password on first start; the login is in the CREDENTIALS box in the logs
+  repo: "https://github.com/requarks/wiki"
+  support: "https://github.com/requarks/wiki/issues"
+  docs: "https://docs.js.wiki/"
