@@ -10,7 +10,8 @@
 
 FROM vikunja/vikunja:2.8.0
 
-USER root
+# Numeric: the scratch image has no /etc/passwd to look "root" up in.
+USER 0:0
 COPY --from=busybox:1.38.0-musl /bin/busybox /bin/busybox
 RUN ["/bin/busybox", "mkdir", "-p", "/usr/local/bin", "/usr/local/lib/icestore", "/bin", "/usr/bin"]
 RUN ["/bin/busybox", "--install", "-s", "/usr/local/bin"]
