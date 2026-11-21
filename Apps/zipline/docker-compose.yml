@@ -1,0 +1,135 @@
+name: zipline
+
+services:
+  zipline:
+    image: ghcr.io/hsinghhira/zipline:latest
+    container_name: zipline
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 3000
+        published: "6775"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/api/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.05"
+          memory: 192M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/icon.png
+    x-casaos:
+      id: com.icestore.zipline
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Zipline web UI, file links and API, published on host as 6775
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything Zipline keeps: your uploaded files (uploads), the
+              PostgreSQL database (postgres) and this install's own keys
+              (secrets.env). Back it up.
+
+x-casaos:
+  id: com.icestore.zipline
+  architectures:
+    - amd64
+    - arm64
+  main: zipline
+  author: HSinghHira
+  category: Others
+  developer: diced
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/icon.png
+  title:
+    en_US: Zipline
+  tagline:
+    en_US: File and screenshot sharing server with short links
+  description:
+    en_US: >-
+      Zipline is your own place to upload files and screenshots and share
+      them with a short link. Upload from the web page, or straight from
+      ShareX, Flameshot and other screenshot tools. It also shortens links.
+      The PostgreSQL database is built in, so it is one container with
+      nothing else to set up.
+
+
+      **Features**
+
+
+      - Upload files, images, videos and text, and share a link
+
+      - Ready-made setups for ShareX, Flameshot and other tools
+
+      - Short links for any URL
+
+      - Folders, tags, expiry dates, view limits and passwords on files
+
+      - Image thumbnails and compression
+
+      - Several users, invites, quotas and two-step sign-in
+
+      - Sign-in with Discord, GitHub, Google or OIDC
+
+
+      **How to use?**
+
+
+      1. Open Zipline from the ZimaOS dashboard.
+
+      2. Make the admin account on the first page.
+
+      3. Click Upload and drop a file, then copy its link.
+
+      4. To upload from ShareX or Flameshot, open your settings and
+         download a ready-made setup.
+  tips:
+    before_install:
+      en_US: >-
+        1. More settings, like S3 storage instead of the data folder, are
+           listed on the Zipline page at
+           https://icestore.hsinghhira.me/app/zipline/ (Variables tab). Most
+           other settings are in Zipline itself, under Server Settings.
+
+
+        2. Start the installation. It is ready in about a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6775 and make the admin account.
+  index: /
+  port_map: "6775"
+  scheme: http
+  is_uncontrolled: false
+  version: "4.8.4"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6775
+      - Built on ghcr.io/diced/zipline 4.8.4, with PostgreSQL 17 inside the same container
+      - Each install makes its own CORE_SECRET and database password on first start; Zipline asks for the admin account on its first page
+  repo: "https://github.com/diced/zipline"
+  support: "https://github.com/diced/zipline/issues"
+  docs: "https://zipline.diced.sh/docs/get-started"
