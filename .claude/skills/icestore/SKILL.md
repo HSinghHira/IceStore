@@ -210,7 +210,18 @@ folder, the compose `name:`, the main service name, the image name
   - *Upstream image has no shell* (distroless, chiseled): add
     `COPY --from=busybox:<x.y.z>-musl /bin/busybox /bin/busybox` and
     `RUN ["/bin/busybox","--install","-s",...]` (byagent, Trackhop); a COPY
-    is not a second FROM, so the wrapper check still passes.
+    is not a second FROM, so the wrapper check still passes. A `FROM
+    scratch` image has no /etc/passwd: write `USER 0:0`, not `USER root`
+    ("unable to find user root") (Vikunja).
+  - *Image sets its own data-path ENV* (Vikunja `VIKUNJA_DATABASE_PATH=/db/...`):
+    a `${VAR:-default}` in the start script never fires; override it with
+    `ENV` in the wrapper Dockerfile.
+  - *Postgres in a wrapper*: apt/apk PostgreSQL with a pinned major (PGDG
+    on Debian bases) plus supervisord and a small svc.sh, using lib.sh's
+    `pg_*` helpers in the start script (Wiki.js, PLANKA). MariaDB in an
+    s6 (linuxserver) image: an s6 longrun with `--init-file`, a wait
+    oneshot before the app's init, `--no-defaults` (Alpine's my.cnf has
+    skip-networking) (BookStack).
   - *App forces the Secure cookie flag*: when PUBLIC_URL is http, aio-init
     puts `proxy_cookie_flags ~ nosecure;` in the nginx location (AsoBeast).
   - *First admin*: put the setup token / bootstrap secret / a signup key in

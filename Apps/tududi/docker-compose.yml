@@ -1,0 +1,188 @@
+name: tududi
+
+services:
+  tududi:
+    image: ghcr.io/hsinghhira/tududi:latest
+    container_name: tududi
+    restart: unless-stopped
+    stop_grace_period: 90s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - TUDUDI_USER_EMAIL=admin@example.com
+      - TUDUDI_USER_PASSWORD=
+    ports:
+      - target: 3002
+        published: "6763"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/uploads
+        target: /app/uploads
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/backups
+        target: /app/backups
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3002/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tududi/icon.png
+    x-casaos:
+      id: com.icestore.tududi
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the files tududi writes. It is filled in by
+              ZimaOS. Leave it.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the files tududi writes. It is filled in by
+              ZimaOS. Leave it.
+        - container: TUDUDI_USER_EMAIL
+          description:
+            en_US: >-
+              The email of the first account. Only used while tududi has no
+              users yet.
+        - container: TUDUDI_USER_PASSWORD
+          description:
+            en_US: >-
+              The first account's password. Leave it empty and one is made
+              for you: it is shown in the app's logs, in the box marked
+              CREDENTIALS. Change it later in tududi itself.
+      ports:
+        - container: "3002"
+          description:
+            en_US: tududi web UI, API and CalDAV, published on host as 6763
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The PostgreSQL database with every task, note and user, and
+              secrets.env with this install's own session secret and
+              database password. Back it up.
+        - container: /app/uploads
+          description:
+            en_US: >-
+              Attachments, avatars and project images. Back it up.
+        - container: /app/backups
+          description:
+            en_US: >-
+              Backups you make in tududi's settings.
+
+x-casaos:
+  id: com.icestore.tududi
+  architectures:
+    - amd64
+    - arm64
+  main: tududi
+  author: HSinghHira
+  category: Productivity
+  developer: Chris Veleris
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tududi/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tududi/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tududi/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tududi/screenshot-2.png
+  title:
+    en_US: tududi
+  tagline:
+    en_US: Tasks, projects and notes organised by areas, with a Telegram bot
+  description:
+    en_US: >-
+      tududi keeps your tasks, projects and notes in one place. Group
+      projects into areas of your life, see what is due today, and add tasks
+      from your phone. PostgreSQL is built in, so it is one container with
+      nothing else to set up.
+
+
+      **Features**
+
+
+      - Tasks with due dates, priorities, repeats and subtasks
+
+      - Projects with tasks and notes, grouped into areas
+
+      - Today view and a daily overview of what is due
+
+      - Add tasks from Telegram, and sync with CalDAV apps
+
+      - Installable on your phone, works offline
+
+      - Sign in with OIDC (Pocket ID, Authentik), in 26 languages
+
+
+      **How to use?**
+
+
+      1. Open tududi from the ZimaOS dashboard.
+
+      2. Sign in with the email and the password from the app's logs (the
+         box marked CREDENTIALS).
+
+      3. Change your password under Profile.
+
+      4. Make an area, a project, and add your first tasks.
+
+      5. Check the Today view each morning.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set TUDUDI_USER_EMAIL to your email if you like.
+
+
+        2. More settings, like email, sign-in with OIDC and AI, are listed
+           on the tududi page at https://icestore.hsinghhira.me/app/tududi/
+           (Variables tab). You can add them now or later in the app
+           settings.
+
+
+        3. Start the installation. The first start takes about 2 minutes.
+
+
+        4. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           email and password.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6763 and sign in.
+  index: /
+  port_map: "6763"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.1.1"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6763
+      - Built on chrisvel/tududi 2.1.1, with PostgreSQL 16 added inside the same container
+      - Each install makes its own session secret, database password and first account password on first start; the login is in the CREDENTIALS box in the logs
+  repo: "https://github.com/chrisvel/tududi"
+  support: "https://github.com/chrisvel/tududi/issues"
+  docs: "https://github.com/chrisvel/tududi/tree/main/docs"
