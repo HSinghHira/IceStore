@@ -1,0 +1,164 @@
+name: vikunja
+
+services:
+  vikunja:
+    image: ghcr.io/hsinghhira/vikunja:latest
+    container_name: vikunja
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - VIKUNJA_SERVICE_ENABLEREGISTRATION=true
+      - VIKUNJA_SERVICE_PUBLICURL=
+    ports:
+      - target: 3456
+        published: "6761"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3456/api/v1/info"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.05"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vikunja/icon.png
+    x-casaos:
+      id: com.icestore.vikunja
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              used for due dates and reminders.
+        - container: VIKUNJA_SERVICE_ENABLEREGISTRATION
+          description:
+            en_US: >-
+              true lets anyone make an account on the sign-in page. Set it to
+              false after you and your people have made accounts.
+        - container: VIKUNJA_SERVICE_PUBLICURL
+          description:
+            en_US: >-
+              The address people open Vikunja at, like
+              http://[ZIMAOS-IP-ADDRESS]:6761 or https://tasks.example.com.
+              Leave it empty to use Vikunja in the browser; set it for links
+              in emails, CalDAV and sign-in with OpenID.
+      ports:
+        - container: "3456"
+          description:
+            en_US: Vikunja web UI, API and CalDAV, published on host as 6761
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database (vikunja.db), task attachments (files) and
+              .service_secret, this install's own key made on first start.
+              Back it up.
+
+x-casaos:
+  id: com.icestore.vikunja
+  architectures:
+    - amd64
+    - arm64
+  main: vikunja
+  author: HSinghHira
+  category: Productivity
+  developer: Vikunja
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vikunja/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vikunja/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vikunja/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vikunja/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vikunja/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vikunja/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/vikunja/screenshot-5.png
+  title:
+    en_US: Vikunja
+  tagline:
+    en_US: To-do app with lists, kanban, Gantt and shared projects
+  description:
+    en_US: >-
+      Vikunja is a to-do app for you, your family or your team. Put tasks in
+      projects and look at them as a list, a kanban board, a table or a Gantt
+      chart. The database is built in, so it is one container with nothing
+      else to set up.
+
+
+      **Features**
+
+
+      - List, kanban, table and Gantt views of every project
+
+      - Due dates, reminders, repeating tasks, labels and priorities
+
+      - Quick add with words like "tomorrow" or "*shopping"
+
+      - Share projects with people, teams or a public link
+
+      - Attachments, comments and task relations
+
+      - CalDAV sync with your phone's calendar and reminders, and a REST API
+
+
+      **How to use?**
+
+
+      1. Open Vikunja from the ZimaOS dashboard.
+
+      2. Click Create account and make your account.
+
+      3. Make a project and add your first tasks.
+
+      4. Switch between List, Kanban, Table and Gantt at the top.
+
+      5. When everyone has an account, set
+         VIKUNJA_SERVICE_ENABLEREGISTRATION to false in the app settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. You can leave everything as it is.
+
+
+        2. More settings, like email reminders and the upload size, are
+           listed on the Vikunja page at
+           https://icestore.hsinghhira.me/app/vikunja/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        3. Start the installation. It is ready in under a minute.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6761 and click Create account.
+
+
+        5. After everyone has an account, set
+           VIKUNJA_SERVICE_ENABLEREGISTRATION to false so strangers can't
+           sign up.
+  index: /
+  port_map: "6761"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.8.0"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6761
+      - Built on vikunja/vikunja 2.8.0, with the SQLite database and attachments in one data folder
+      - Each install makes its own VIKUNJA_SERVICE_SECRET on first start, so people stay signed in across restarts
+  repo: "https://github.com/go-vikunja/vikunja"
+  support: "https://github.com/go-vikunja/vikunja/issues"
+  docs: "https://vikunja.io/docs/"
