@@ -1,0 +1,136 @@
+name: nexterm
+
+services:
+  nexterm:
+    image: ghcr.io/hsinghhira/nexterm:latest
+    container_name: nexterm
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 6989
+        published: "6777"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:6989/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.05"
+          memory: 192M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nexterm/icon.png
+    x-casaos:
+      id: com.icestore.nexterm
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+      ports:
+        - container: "6989"
+          description:
+            en_US: Nexterm web UI, published on host as 6777
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Everything Nexterm keeps: the database with your servers and
+              saved logins (encrypted), session recordings, logs and this
+              install's own key (secrets.env). Back it up, and keep the key
+              with it: without it the saved logins can't be read.
+
+x-casaos:
+  id: com.icestore.nexterm
+  architectures:
+    - amd64
+    - arm64
+  main: nexterm
+  author: HSinghHira
+  category: Developer
+  developer: Mathias Wagner
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nexterm/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nexterm/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nexterm/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nexterm/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nexterm/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nexterm/screenshot-4.png
+  title:
+    en_US: Nexterm
+  tagline:
+    en_US: SSH, VNC and RDP to all your servers from the browser
+  description:
+    en_US: >-
+      Nexterm opens your servers and computers in a browser tab: SSH
+      terminals, remote desktops over VNC and RDP, and file transfers over
+      SFTP. Keep all your servers, logins and keys in one place, encrypted
+      with this install's own key.
+
+
+      **Features**
+
+
+      - SSH terminals, VNC and RDP desktops in the browser
+
+      - SFTP file browser with upload and download
+
+      - Servers sorted in folders, with saved logins and SSH keys
+
+      - Snippets you can run on many servers at once
+
+      - Server monitoring and session recordings
+
+      - Users, two-step sign-in and single sign-on (OIDC, LDAP)
+
+
+      **How to use?**
+
+
+      1. Open Nexterm from the ZimaOS dashboard.
+
+      2. Make the admin account on the first page.
+
+      3. Click Add Server and fill in the address and how to sign in.
+
+      4. Click the server to open a terminal, desktop or file browser.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Open http://[ZIMAOS-IP-ADDRESS]:6777 and make the admin account.
+
+
+        3. Back up the data folder with its secrets.env. Your saved logins
+           are encrypted with the key in it.
+  index: /
+  port_map: "6777"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.2.2-BETA"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6777
+      - Built on nexterm/server 1.2.2-BETA
+      - Each install makes its own ENCRYPTION_KEY on first start; Nexterm asks for the admin account on its first page
+  repo: "https://github.com/gnmyt/Nexterm"
+  support: "https://github.com/gnmyt/Nexterm/issues"
+  docs: "https://docs.nexterm.dev/"
