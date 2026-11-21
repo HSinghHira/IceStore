@@ -234,6 +234,27 @@ folder, the compose `name:`, the main service name, the image name
   - Real installs caught all four of the above after green CI builds: a
     passing image build proves little, so read upstream's init/migration
     needs (extensions, host checks) before shipping.
+  - Six more real-install bugs (Nov 2026, all fixed in 1.0.1; check each
+    one in a new wrapper):
+    - *openssl*: lib.sh's `ensure_secret` calls openssl; on an image
+      without it, an empty value is saved silently. Install openssl
+      (`apk add openssl`; Nexterm) or confirm upstream already ships it
+      (Homarr does). Changing lib.sh rebuilds all ~110 images, so fix it
+      per app.
+    - *setpriv and php-fpm*: Docker hands stdout/stderr to the image's
+      user (root). Without `chown www-data /proc/self/fd/1 /proc/self/fd/2`
+      before `setpriv`, php-fpm fails "failed to open error_log
+      (/proc/self/fd/2)" (Firefly III).
+    - *Django apps*: read upstream's `ALLOWED_HOSTS` default; Tandoor's is
+      empty, so it answers 400 to everything. Set `*` in the start script.
+      Read the app's own `createsuperuser` flags too; Healthchecks' takes
+      only `--email` and `--password`.
+    - *Folders the app checks for*: make every configured folder in the
+      start script (slskd's `/downloads/incomplete`).
+    - *Cookies*: every app on one ZimaOS shares one host, and browsers
+      share cookies across ports. A Next.js app that trusts `NEXT_LOCALE`
+      breaks when another app sets it. Rename the cookie in `.next` with a
+      grep-guarded sed in the Dockerfile (Spliit).
   - *App forces the Secure cookie flag*: when PUBLIC_URL is http, aio-init
     puts `proxy_cookie_flags ~ nosecure;` in the nginx location (AsoBeast).
   - *First admin*: put the setup token / bootstrap secret / a signup key in
