@@ -1,0 +1,175 @@
+name: speedtest-tracker
+
+services:
+  speedtest-tracker:
+    image: ghcr.io/hsinghhira/speedtest-tracker:latest
+    container_name: speedtest-tracker
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - SPEEDTEST_SCHEDULE=0 */6 * * *
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 80
+        published: "6768"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:80/api/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.05"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/speedtest-tracker/icon.png
+    x-casaos:
+      id: com.icestore.speedtest-tracker
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              used for the schedule and the charts.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the files Speedtest Tracker writes. It is
+              filled in by ZimaOS. Leave it.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the files Speedtest Tracker writes. It is
+              filled in by ZimaOS. Leave it.
+        - container: SPEEDTEST_SCHEDULE
+          description:
+            en_US: >-
+              When to run a test, in cron format. 0 */6 * * * is every 6
+              hours; 0 * * * * is every hour. Leave it empty to only test
+              when you click.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email you sign in with. Only used when the first user is
+              made.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The first user's password. Leave it empty and one is made for
+              you: it is shown in the app's logs, in the box marked
+              CREDENTIALS. Only used when the first user is made.
+      ports:
+        - container: "80"
+          description:
+            en_US: Speedtest Tracker web UI and API, published on host as 6768
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              The SQLite database with every test result, and .app_key, this
+              install's own key made on first start. Back it up.
+
+x-casaos:
+  id: com.icestore.speedtest-tracker
+  architectures:
+    - amd64
+    - arm64
+  main: speedtest-tracker
+  author: HSinghHira
+  category: Networking
+  developer: Alex Justesen
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/speedtest-tracker/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/speedtest-tracker/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/speedtest-tracker/screenshot-1.png
+  title:
+    en_US: Speedtest Tracker
+  tagline:
+    en_US: Runs internet speed tests on a schedule and charts the results
+  description:
+    en_US: >-
+      Speedtest Tracker checks your internet speed on a schedule with
+      Ookla's Speedtest and keeps every result, so you can see if you get
+      the speed you pay for. The database is built in, so it is one
+      container with nothing else to set up.
+
+
+      **Features**
+
+
+      - Download, upload, ping and jitter tests on a schedule
+
+      - Charts and history of every result
+
+      - Alerts by email, Discord, Telegram, ntfy and more when speed drops
+
+      - Pick the test servers, or let it choose
+
+      - Public dashboard you can share, and an API
+
+
+      **How to use?**
+
+
+      1. Open Speedtest Tracker from the ZimaOS dashboard.
+
+      2. Sign in with the email and the password from the app's logs (the
+         box marked CREDENTIALS).
+
+      3. Change your password in your profile.
+
+      4. Click Speedtest to run your first test.
+
+      5. Watch the dashboard fill up with the scheduled tests.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set SPEEDTEST_SCHEDULE to how often you want a test. The default
+           is every 6 hours.
+
+
+        2. More settings, like the servers to test against and how long to
+           keep results, are listed on the Speedtest Tracker page at
+           https://icestore.hsinghhira.me/app/speedtest-tracker/ (Variables
+           tab). You can add them now or later in the app settings.
+
+
+        3. Start the installation. It is ready in about a minute.
+
+
+        4. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           email and password.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6768 and sign in.
+  index: /
+  port_map: "6768"
+  scheme: http
+  is_uncontrolled: false
+  version: "v1.15.1-ls183"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6768
+      - Built on lscr.io/linuxserver/speedtest-tracker v1.15.1-ls183, with SQLite as the database
+      - Each install makes its own APP_KEY and first user password on first start; the login is in the CREDENTIALS box in the logs
+  repo: "https://github.com/alexjustesen/speedtest-tracker"
+  support: "https://github.com/alexjustesen/speedtest-tracker/issues"
+  docs: "https://docs.speedtest-tracker.dev/"

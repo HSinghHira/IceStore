@@ -1,0 +1,90 @@
+{
+  "name": "Speedtest-Tracker",
+  "repo": "ghcr.io/hsinghhira/speedtest-tracker:latest",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/hsinghhira/speedtest-tracker/pkgs/container/speedtest-tracker",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=40 --memory=512m --cpus=1.00 --memory-reservation=128m --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:80/api/healthcheck\" --health-interval=30s --health-timeout=10s --health-start-period=120s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:80]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/speedtest-tracker/icon.png",
+  "project": "https://docs.speedtest-tracker.dev/",
+  "support": "https://github.com/alexjustesen/speedtest-tracker/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/speedtest-tracker/",
+  "description": "Runs internet speed tests on a schedule and charts the results",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/speedtest-tracker/config",
+      "container": "/config",
+      "mode": "rw",
+      "description": "The SQLite database with every test result, and .app_key, this install's own key made on first start. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6768",
+      "container": "80",
+      "description": "Speedtest Tracker web UI and API, published on host as 6768"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "SPEEDTEST_SCHEDULE",
+      "key": "SPEEDTEST_SCHEDULE",
+      "value": "0 */6 * * *",
+      "mask": false,
+      "description": "When to run a test, in cron format. 0 */6 * * * is every 6 hours; 0 * * * * is every hour. Leave it empty to only test when you click."
+    },
+    {
+      "name": "ADMIN_EMAIL",
+      "key": "ADMIN_EMAIL",
+      "value": "admin@example.com",
+      "mask": false,
+      "description": "The email you sign in with. Only used when the first user is made."
+    },
+    {
+      "name": "ADMIN_PASSWORD",
+      "key": "ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The first user's password. Leave it empty and one is made for you: it is shown in the app's logs, in the box marked CREDENTIALS. Only used when the first user is made."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
