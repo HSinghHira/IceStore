@@ -13,7 +13,7 @@
 FROM ghcr.io/plankanban/planka:2.3.1
 
 USER root
-RUN apk add --no-cache postgresql16 postgresql16-client supervisor setpriv openssl tzdata
+RUN apk add --no-cache postgresql16 postgresql16-contrib postgresql16-client supervisor setpriv openssl tzdata
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 COPY svc.sh /usr/local/bin/planka-svc

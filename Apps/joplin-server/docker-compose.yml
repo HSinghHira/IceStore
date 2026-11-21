@@ -2,7 +2,7 @@ name: joplin-server
 
 services:
   joplin-server:
-    image: ghcr.io/hsinghhira/joplin-server:latest
+    image: ghcr.io/hsinghhira/joplin-server:1.0.1
     container_name: joplin-server
     restart: unless-stopped
     stop_grace_period: 90s
@@ -159,6 +159,7 @@ x-casaos:
   update_at: "2026-11-21"
   release_notes:
     en_US: |-
+      - Fixed "getaddrinfo ENOTFOUND host.docker.internal": Joplin now reaches its built-in database over the local socket (image 1.0.1)
       - First IceStore release, on port 6764
       - Built on joplin/server 3.7.6, with PostgreSQL 16 added inside the same container
       - Each install makes its own database password and first admin password on first start; the login is in the CREDENTIALS box in the logs

@@ -1,6 +1,6 @@
 {
   "name": "Vikunja",
-  "repo": "ghcr.io/hsinghhira/vikunja:latest",
+  "repo": "ghcr.io/hsinghhira/vikunja:1.0.1",
   "category": [
     "Productivity"
   ],

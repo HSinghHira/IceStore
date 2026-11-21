@@ -2,7 +2,7 @@ name: vikunja
 
 services:
   vikunja:
-    image: ghcr.io/hsinghhira/vikunja:latest
+    image: ghcr.io/hsinghhira/vikunja:1.0.1
     container_name: vikunja
     restart: unless-stopped
     stop_grace_period: 30s
@@ -156,6 +156,7 @@ x-casaos:
   update_at: "2026-11-21"
   release_notes:
     en_US: |-
+      - Fixed "service.publicurl is required when cors.enable is true": CORS stays off until VIKUNJA_SERVICE_PUBLICURL is set (the web UI doesn't need it) (image 1.0.1)
       - First IceStore release, on port 6761
       - Built on vikunja/vikunja 2.8.0, with the SQLite database and attachments in one data folder
       - Each install makes its own VIKUNJA_SERVICE_SECRET on first start, so people stay signed in across restarts

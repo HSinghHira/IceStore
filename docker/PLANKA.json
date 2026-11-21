@@ -1,6 +1,6 @@
 {
   "name": "PLANKA",
-  "repo": "ghcr.io/hsinghhira/planka:latest",
+  "repo": "ghcr.io/hsinghhira/planka:1.0.1",
   "category": [
     "Productivity"
   ],

@@ -31,6 +31,6 @@ done
 cred_reset
 cred_add URL "$(cred_url "$BASEROW_PUBLIC_URL")"
 cred_note "No account yet: click Sign up. The first account becomes the instance admin."
-/usr/local/lib/icestore/credentials.sh http://127.0.0.1:80/api/_health/ &
+/usr/local/lib/icestore/credentials.sh http://127.0.0.1:8000/api/_health/ &
 
 exec /baserow.sh "$@"

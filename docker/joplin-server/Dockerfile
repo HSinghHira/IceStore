@@ -37,7 +37,7 @@ COPY supervisord.conf /etc/supervisor/icestore.conf
 COPY --from=common lib.sh credentials.sh /usr/local/lib/icestore/
 RUN chmod +x /usr/local/bin/icestore-init /usr/local/bin/joplin-svc /usr/local/lib/icestore/credentials.sh
 
-ENV APP_PORT=22300 DB_CLIENT=pg POSTGRES_HOST=127.0.0.1 POSTGRES_PORT=5432 \
+ENV APP_PORT=22300 DB_CLIENT=pg POSTGRES_HOST=/run/postgresql POSTGRES_PORT=5432 \
     POSTGRES_USER=joplin POSTGRES_DATABASE=joplin
 
 LABEL org.opencontainers.image.title="joplin-server" \

@@ -43,6 +43,13 @@ done
 [ -n "${VIKUNJA_DATABASE_PATH:-}" ] || VIKUNJA_DATABASE_PATH=$DATA/vikunja.db
 [ -n "${VIKUNJA_FILES_BASEPATH:-}" ] || VIKUNJA_FILES_BASEPATH=$DATA/files
 export VIKUNJA_SERVICE_TIMEZONE VIKUNJA_DATABASE_PATH VIKUNJA_FILES_BASEPATH
+# Vikunja refuses to start with CORS on and no public URL. The web UI is
+# served from the same address as the API, so it needs no CORS: keep it off
+# until a public URL is set (or VIKUNJA_CORS_ENABLE is set by hand).
+if [ -z "${VIKUNJA_SERVICE_PUBLICURL:-}" ] && [ -z "${VIKUNJA_CORS_ENABLE:-}" ]; then
+  VIKUNJA_CORS_ENABLE=false
+  export VIKUNJA_CORS_ENABLE
+fi
 
 cred_reset
 cred_add URL "http://<your ZimaOS IP>:6761"

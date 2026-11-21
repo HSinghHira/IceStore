@@ -221,7 +221,19 @@ folder, the compose `name:`, the main service name, the image name
     `pg_*` helpers in the start script (Wiki.js, PLANKA). MariaDB in an
     s6 (linuxserver) image: an s6 longrun with `--init-file`, a wait
     oneshot before the app's init, `--no-defaults` (Alpine's my.cnf has
-    skip-networking) (BookStack).
+    skip-networking) (BookStack). On Alpine always add
+    `postgresqlNN-contrib` (PLANKA's migration needs pg_trgm).
+  - *Apps that rewrite localhost*: Joplin swaps a `POSTGRES_HOST` of
+    127.0.0.1/localhost for `host.docker.internal` when RUNNING_IN_DOCKER;
+    use the socket dir (`/run/postgresql`) as the host instead.
+  - *CORS that needs a public URL*: Vikunja won't start with CORS on and no
+    `service.publicurl`; same-origin UIs need no CORS, so default it off.
+  - *Probe the backend, not the proxy*: Baserow's Caddy treats
+    `127.0.0.1` as a custom site domain ("Site not found"); point
+    credentials.sh at the backend port (8000).
+  - Real installs caught all four of the above after green CI builds: a
+    passing image build proves little, so read upstream's init/migration
+    needs (extensions, host checks) before shipping.
   - *App forces the Secure cookie flag*: when PUBLIC_URL is http, aio-init
     puts `proxy_cookie_flags ~ nosecure;` in the nginx location (AsoBeast).
   - *First admin*: put the setup token / bootstrap secret / a signup key in

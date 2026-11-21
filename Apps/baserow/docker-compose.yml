@@ -2,7 +2,7 @@ name: baserow
 
 services:
   baserow:
-    image: ghcr.io/hsinghhira/baserow:latest
+    image: ghcr.io/hsinghhira/baserow:1.0.1
     container_name: baserow
     restart: unless-stopped
     stop_grace_period: 90s
@@ -146,6 +146,7 @@ x-casaos:
   update_at: "2026-11-21"
   release_notes:
     en_US: |-
+      - The CREDENTIALS box now checks the backend directly, so the log no longer repeats "Site not found" while Baserow starts (image 1.0.1)
       - First IceStore release, on port 6766
       - Built on baserow/baserow 2.4.3, Baserow's own all-in-one image, which makes its secret keys on first start
       - A BASEROW_PUBLIC_URL left as [ZIMAOS-IP-ADDRESS] falls back to localhost and the log says what to set

@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "repo": "ghcr.io/hsinghhira/tududi:latest",
+  "repo": "ghcr.io/hsinghhira/tududi:1.0.1",
   "category": [
     "Productivity"
   ],

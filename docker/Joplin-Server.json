@@ -1,6 +1,6 @@
 {
   "name": "Joplin-Server",
-  "repo": "ghcr.io/hsinghhira/joplin-server:latest",
+  "repo": "ghcr.io/hsinghhira/joplin-server:1.0.1",
   "category": [
     "Productivity"
   ],

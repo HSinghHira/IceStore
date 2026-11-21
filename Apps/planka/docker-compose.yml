@@ -2,7 +2,7 @@ name: planka
 
 services:
   planka:
-    image: ghcr.io/hsinghhira/planka:latest
+    image: ghcr.io/hsinghhira/planka:1.0.1
     container_name: planka
     restart: unless-stopped
     stop_grace_period: 90s
@@ -172,6 +172,7 @@ x-casaos:
   update_at: "2026-11-21"
   release_notes:
     en_US: |-
+      - Fixed the first start failing with "extension pg_trgm is not available": the PostgreSQL extensions package is now included (image 1.0.1)
       - First IceStore release, on port 6762
       - Built on ghcr.io/plankanban/planka 2.3.1, with PostgreSQL 16 added inside the same container
       - Each install makes its own SECRET_KEY, database password and admin password on first start; the login is in the CREDENTIALS box in the logs

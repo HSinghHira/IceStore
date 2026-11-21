@@ -1,6 +1,6 @@
 {
   "name": "Baserow",
-  "repo": "ghcr.io/hsinghhira/baserow:latest",
+  "repo": "ghcr.io/hsinghhira/baserow:1.0.1",
   "category": [
     "Productivity"
   ],
