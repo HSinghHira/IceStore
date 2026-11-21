@@ -281,6 +281,23 @@ folder, the compose `name:`, the main service name, the image name
     --window-size=512,512 --screenshot=icon.png page.html`).
   - The tips checker reads "…:6710. " or "…1.20. " as a step number: don't
     end a sentence with a port or an IP in `tips.before_install`.
+  - *Upstream entrypoint migrates before its own supervisord starts*
+    (Warracker): start PostgreSQL with `pg_ctl` in the start script, run
+    upstream's entrypoint with a handoff script as its command; the handoff
+    stops that PostgreSQL and execs supervisord with an added
+    `[program:postgres]` (`[include]` appended to upstream's conf).
+  - *App code lives in the volume* (LinkStack `/htdocs`): `cp -a` the folder
+    aside in the Dockerfile and copy it in when the bind folder is empty.
+  - *Upstream default login* that the app reads from env on first run
+    (Certimate `CERTIMATE_ADMIN_*`, Semaphore `SEMAPHORE_ADMIN_*`, slskd
+    `SLSKD_PASSWORD`, NoteDiscovery's login off / `admin`): the wrapper fills
+    in a per-install password and prints it in the CREDENTIALS box.
+  - *Same image run as web + worker + Redis* (Gramps Web): one wrapper with
+    apt redis-server and supervisord, every data path pointed into `/data`.
+  - Simple apps (DokuWiki, Suwayomi, SnappyMail) have no build; their
+    check is the `Build and publish app store` run and the app page.
+  - Skip a duplicate of an app already in the store (File Browser vs File
+    Browser Quantum).
 - **One source for every OS.** Write the app only in `Apps/` (and `docker/<app>/`
   for builds). The MOS generator relies on `x-casaos.main` and `port_map` naming
   the web port, data under `/DATA/AppData/$AppID`, `$TZ`/`$PUID`/`$PGID`, and
