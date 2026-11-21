@@ -1,0 +1,21 @@
+name: Build fcaptcha
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/fcaptcha/**"
+      - ".github/workflows/build-fcaptcha.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: fcaptcha
+      AIO_VERSION: "1.0.0"
+      kind: wrapper

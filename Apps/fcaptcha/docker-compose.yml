@@ -1,0 +1,98 @@
+name: fcaptcha
+
+services:
+  fcaptcha:
+    image: ghcr.io/hsinghhira/fcaptcha:1.0.0
+    container_name: fcaptcha
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 3000
+        published: "6765"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /fcaptcha-data
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fcaptcha/icon.png
+    x-casaos:
+      id: com.icestore.fcaptcha
+      envs:
+        - container: TZ
+          description:
+            en_US: Your time zone. The dashboard fills this in for you.
+      ports:
+        - container: "3000"
+          description:
+            en_US: FCaptcha widget, demo, and API on host port 6765.
+      volumes:
+        - container: /fcaptcha-data
+          description:
+            en_US: Private signing and verification keys. Back up this directory securely.
+
+x-casaos:
+  id: com.icestore.fcaptcha
+  architectures:
+    - amd64
+    - arm64
+  main: fcaptcha
+  author: HSinghHira
+  category: Developer
+  developer: WebDecoy
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fcaptcha/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fcaptcha/screenshot-1.jpg
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fcaptcha/screenshot-1.jpg
+  title:
+    en_US: FCaptcha
+  tagline:
+    en_US: Self-hosted CAPTCHA for web apps
+  description:
+    en_US: >-
+      FCaptcha provides a JavaScript widget that collects browser signals and
+      a server endpoint that verifies tokens for app actions such as form
+      submissions. Open the app from your dashboard to try the interactive demo.
+
+
+      **How to use?**
+
+
+      1. Open FCaptcha from your dashboard to try the demo.
+
+
+      2. Use the quickstart to add the widget and verify tokens from your app.
+
+
+      Each installation makes a separate signing and verification key and saves
+      them in its data directory. See the integration guide before exposing
+      FCaptcha publicly.
+  tips:
+    before_install:
+      en_US: >-
+        Open the app from your dashboard to try the demo. For public use,
+        configure HTTPS and follow the FCaptcha hardening guide.
+  index: /demo/
+  port_map: "6765"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.51.1"
+  update_at: "2026-11-20"
+  release_notes:
+    en_US: |-
+      - Initial IceStore package using ghcr.io/webdecoy/fcaptcha 1.51.1.
+  repo: https://github.com/WebDecoy/FCaptcha
+  support: https://github.com/WebDecoy/FCaptcha/issues
+  docs: https://docs.webdecoy.com/fcaptcha/quickstart/
