@@ -1,0 +1,55 @@
+{
+  "name": "FCaptcha",
+  "repo": "ghcr.io/hsinghhira/fcaptcha:1.0.0",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/hsinghhira/fcaptcha/pkgs/container/fcaptcha",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --memory=512m --cpus=1.00 --memory-reservation=128m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3000]/demo/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fcaptcha/icon.png",
+  "project": "https://webdecoy.com/product/fcaptcha-demo/",
+  "support": "https://github.com/WebDecoy/FCaptcha/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/fcaptcha/",
+  "description": "Self-hosted CAPTCHA for web apps",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Fcaptcha Data",
+      "host": "/mnt/cache/appdata/fcaptcha/data",
+      "container": "/fcaptcha-data",
+      "mode": "rw",
+      "description": "Private signing and verification keys. Back up this directory securely."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6790",
+      "container": "3000",
+      "description": "FCaptcha widget, demo, and API on host port 6790."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
