@@ -157,7 +157,6 @@
   {"name": "YaCy", "category": "Utilities", "desc": "Peer-to-peer search engine you run yourself.", "url": "https://github.com/yacy/yacy_search_server", "icon": "yacy.png"},
   {"name": "Printventory", "category": "Utilities", "desc": "Organizes your 3D printing STL and 3MF files with thumbnails, tags and duplicate checks.", "url": "https://github.com/TechJeeper/Printventory", "icon": "printventory.png"},
   {"name": "HomeBox", "category": "Home", "desc": "Home inventory to track your belongings, warranties, receipts and where things are stored.", "url": "https://github.com/sysadminsmedia/homebox", "icon": "homebox.svg"},
-  {"name": "FCaptcha", "category": "Networking", "desc": "Invisible CAPTCHA server that blocks bots and AI browser agents, a drop-in for Turnstile and reCAPTCHA.", "url": "https://github.com/WebDecoy/FCaptcha", "icon": "fcaptcha.png"},
   {"name": "Traceway", "category": "Developer", "desc": "Error tracking, logs, traces and session replay for your apps in one place.", "url": "https://github.com/tracewayapp/traceway", "icon": "traceway.png"},
   {"name": "HolyArrs", "category": "Media", "desc": "One app to find, download and organize your shows, movies and music.", "url": "https://github.com/HolyArrs/HolyArrs", "icon": "holyarrs.png"},
   {"name": "Oxynote", "category": "Documents", "desc": "Technical wiki that links your docs to the systems they describe.", "url": "https://github.com/oxynote/oxynote", "icon": "oxynote.png"},
