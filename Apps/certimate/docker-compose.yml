@@ -1,0 +1,150 @@
+name: certimate
+
+services:
+  certimate:
+    image: ghcr.io/hsinghhira/certimate:latest
+    container_name: certimate
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - CERTIMATE_ADMIN_USERNAME=admin@example.com
+      - CERTIMATE_ADMIN_PASSWORD=
+    ports:
+      - target: 8090
+        published: "6784"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/pb_data
+        target: /app/pb_data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8090/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.05"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/certimate/icon.png
+    x-casaos:
+      id: com.icestore.certimate
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              used for the renewal schedule.
+        - container: CERTIMATE_ADMIN_USERNAME
+          description:
+            en_US: >-
+              The email you sign in with. Only used when the first admin is
+              made.
+        - container: CERTIMATE_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The first admin's password. Leave it empty and one is made for
+              you: it is shown in the app's logs, in the box marked
+              CREDENTIALS. Only used when the first admin is made.
+      ports:
+        - container: "8090"
+          description:
+            en_US: Certimate web UI and API, published on host as 6784
+      volumes:
+        - container: /app/pb_data
+          description:
+            en_US: >-
+              Certimate's database with your certificates, workflows and
+              provider keys, and the first admin password (.admin_password).
+              Back it up.
+
+x-casaos:
+  id: com.icestore.certimate
+  architectures:
+    - amd64
+    - arm64
+  main: certimate
+  author: HSinghHira
+  category: Networking
+  developer: Certimate
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/certimate/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/certimate/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/certimate/screenshot-1.png
+  title:
+    en_US: Certimate
+  tagline:
+    en_US: Gets SSL certificates and puts them where they are needed, on its own
+  description:
+    en_US: >-
+      Certimate gets SSL certificates for your domains from Let's Encrypt and
+      other free authorities, renews them before they run out, and deploys
+      them to your servers, CDNs and cloud services. Build each step as a
+      workflow and let it run on a schedule.
+
+
+      **Features**
+
+
+      - Single, multi-domain and wildcard certificates, and IP certificates
+
+      - DNS-01 and HTTP-01 checks, with 70+ DNS providers
+
+      - Deploys to 160+ places: servers over SSH, Kubernetes, CDNs, WAFs,
+        load balancers and clouds
+
+      - Let's Encrypt, ZeroSSL, Google Trust Services and more
+
+      - PEM, PFX and JKS formats, RSA or ECC keys
+
+      - Alerts by email, Discord, Slack, Telegram and more
+
+
+      **How to use?**
+
+
+      1. Open Certimate from the ZimaOS dashboard.
+
+      2. Sign in with the email and the password from the app's logs (the
+         box marked CREDENTIALS).
+
+      3. Add your DNS provider and where to deploy under Credentials.
+
+      4. Make a workflow: request a certificate, then deploy it.
+
+      5. Turn the workflow on. Certimate renews it from then on.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in under a minute.
+
+
+        2. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           email and password.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6784 and sign in.
+  index: /
+  port_map: "6784"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.4.38"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6784
+      - Built on certimate/certimate v0.4.38
+      - Each install makes its own first admin password instead of the default 1234567890; the login is in the CREDENTIALS box in the logs
+  repo: "https://github.com/certimate-go/certimate"
+  support: "https://github.com/certimate-go/certimate/issues"
+  docs: "https://docs.certimate.me/en-US/"
