@@ -1,0 +1,150 @@
+name: suwayomi
+
+services:
+  suwayomi:
+    image: ghcr.io/suwayomi/suwayomi-server:v2.4.2490
+    container_name: suwayomi
+    user: "0:0"
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - AUTH_MODE=none
+    ports:
+      - target: 4567
+        published: "6785"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/Media/Manga
+        target: /home/suwayomi/.local/share/Tachidesk/downloads
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /home/suwayomi/.local/share/Tachidesk
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:4567/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.05"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/suwayomi/icon.png
+    x-casaos:
+      id: com.icestore.suwayomi
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone and
+              used for the update and backup times.
+        - container: AUTH_MODE
+          description:
+            en_US: >-
+              none lets anyone on your network in. For a login, set it to
+              ui_login and add AUTH_USERNAME and AUTH_PASSWORD (see the
+              Variables tab).
+      ports:
+        - container: "4567"
+          description:
+            en_US: Suwayomi web reader and API, published on host as 6785
+      volumes:
+        - container: /home/suwayomi/.local/share/Tachidesk/downloads
+          description:
+            en_US: >-
+              Downloaded chapters, in /DATA/Media/Manga.
+        - container: /home/suwayomi/.local/share/Tachidesk
+          description:
+            en_US: >-
+              Suwayomi's library database, extensions, settings, backups and
+              logs. Back it up.
+
+x-casaos:
+  id: com.icestore.suwayomi
+  architectures:
+    - amd64
+    - arm64
+  main: suwayomi
+  author: HSinghHira
+  category: Media
+  developer: Suwayomi
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/suwayomi/icon.png
+  title:
+    en_US: Suwayomi
+  tagline:
+    en_US: Manga reader server with extensions, downloads and a web reader
+  description:
+    en_US: >-
+      Suwayomi is a manga reader that runs on your server, like Tachiyomi
+      and Mihon. Add sources with extensions, follow series in your
+      library, download chapters and read them in your browser or in apps
+      that connect to it. New chapters are checked for on a schedule.
+
+
+      **Features**
+
+
+      - Extensions for many manga sources, like Tachiyomi and Mihon
+
+      - Library with categories, read progress and history
+
+      - Chapter downloads, as images or CBZ files
+
+      - Web reader for phone and desktop
+
+      - Tracking with AniList, MyAnimeList and others
+
+      - Automatic library updates and backups
+
+
+      **How to use?**
+
+
+      1. Open Suwayomi from the ZimaOS dashboard.
+
+      2. Go to Extensions and install the sources you want.
+
+      3. Search a source in Browse and add a series to your library.
+
+      4. Open a chapter to read it, or download it.
+  tips:
+    before_install:
+      en_US: >-
+        1. Downloads go to /DATA/Media/Manga.
+
+
+        2. There is no login by default. To add one, set AUTH_MODE to
+           ui_login and add AUTH_USERNAME and AUTH_PASSWORD in the app
+           settings.
+
+
+        3. Start the installation. The first start takes a few minutes.
+
+
+        4. Open http://[ZIMAOS-IP-ADDRESS]:6785.
+  index: /
+  port_map: "6785"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.4.2490"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6785
+      - The official ghcr.io/suwayomi/suwayomi-server image, v2.4.2490, run as root so it can write the ZimaOS folders
+      - Downloads go to /DATA/Media/Manga
+  repo: "https://github.com/Suwayomi/Suwayomi-Server"
+  support: "https://github.com/Suwayomi/Suwayomi-Server/issues"
+  docs: "https://github.com/Suwayomi/Suwayomi-Server-docker#readme"
