@@ -1,0 +1,139 @@
+name: spliit
+
+services:
+  spliit:
+    image: ghcr.io/hsinghhira/spliit:latest
+    container_name: spliit
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DEFAULT_CURRENCY_CODE=USD
+    ports:
+      - target: 3000
+        published: "6787"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.05"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/spliit/icon.png
+    x-casaos:
+      id: com.icestore.spliit
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: DEFAULT_CURRENCY_CODE
+          description:
+            en_US: >-
+              The currency picked for new groups, like USD, EUR, GBP, INR or
+              NZD. Each group can use its own.
+      ports:
+        - container: "3000"
+          description:
+            en_US: Spliit web app, published on host as 6787
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The PostgreSQL database with your groups and expenses
+              (postgres) and this install's own keys (secrets.env). Back it
+              up.
+
+x-casaos:
+  id: com.icestore.spliit
+  architectures:
+    - amd64
+    - arm64
+  main: spliit
+  author: HSinghHira
+  category: Finance
+  developer: Sebastien Castiel
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/spliit/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/spliit/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/spliit/screenshot-1.png
+  title:
+    en_US: Spliit
+  tagline:
+    en_US: Share expenses with friends and family, a Splitwise alternative
+  description:
+    en_US: >-
+      Spliit keeps track of shared costs: trips, rent, dinners and
+      groceries. Add who paid what, and it works out who owes whom and the
+      fewest payments to settle up. There are no accounts: share a group's
+      link and everyone in it can add expenses. The PostgreSQL database is
+      built in, so it is one container with nothing else to set up.
+
+
+      **Features**
+
+
+      - Groups with any number of people, shared by a link
+
+      - Split evenly, by shares, by percent or by amount
+
+      - Balances and the simplest way to pay each other back
+
+      - Categories, notes, recurring expenses and statistics
+
+      - Many currencies and languages
+
+      - Export to CSV and JSON, and an installable web app
+
+
+      **How to use?**
+
+
+      1. Open Spliit from the ZimaOS dashboard.
+
+      2. Click Create a group, name it and add the people in it.
+
+      3. Share the group's link with them.
+
+      4. Add expenses as they happen, then open Balances to settle up.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set DEFAULT_CURRENCY_CODE to your currency, like EUR or INR.
+
+
+        2. Start the installation. It is ready in about a minute.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6787 and make a group. There are
+           no accounts: anyone with a group's link can open it.
+  index: /
+  port_map: "6787"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.30.0"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6787
+      - Built on ghcr.io/spliit-app/spliit 1.30.0, with PostgreSQL 17 inside the same container
+      - Each install makes its own database password on first start
+  repo: "https://github.com/spliit-app/spliit"
+  support: "https://github.com/spliit-app/spliit/issues"
+  docs: "https://github.com/spliit-app/spliit#readme"
