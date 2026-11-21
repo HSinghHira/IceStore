@@ -2,7 +2,7 @@ name: spliit
 
 services:
   spliit:
-    image: ghcr.io/hsinghhira/spliit:latest
+    image: ghcr.io/hsinghhira/spliit:1.0.1
     container_name: spliit
     restart: unless-stopped
     stop_grace_period: 60s
@@ -134,6 +134,8 @@ x-casaos:
       - First IceStore release, on port 6787
       - Built on ghcr.io/spliit-app/spliit 1.30.0, with PostgreSQL 17 inside the same container
       - Each install makes its own database password on first start
+      - Fixed: every page failed with "Cannot find module ../../messages/en.json" when another app on the same address had set a NEXT_LOCALE cookie; Spliit now uses a cookie of its own.
+      - The store now names the exact image version (1.0.1), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.
   repo: "https://github.com/spliit-app/spliit"
   support: "https://github.com/spliit-app/spliit/issues"
   docs: "https://github.com/spliit-app/spliit#readme"

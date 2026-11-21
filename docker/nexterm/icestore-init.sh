@@ -17,6 +17,8 @@ LOG_TAG=icestore
 mkdir -p /app/data
 umask 077
 touch "$SECRETS"
+# 1.0.0 had no openssl and saved an empty key; drop it so a real one is made.
+sed -i '/^ENCRYPTION_KEY=$/d' "$SECRETS"
 ensure_secret ENCRYPTION_KEY 32
 [ -n "${ENCRYPTION_KEY:-}" ] || ENCRYPTION_KEY=$(secret ENCRYPTION_KEY)
 if ! printf '%s' "$ENCRYPTION_KEY" | grep -Eq '^[0-9a-fA-F]{64}$'; then

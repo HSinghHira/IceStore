@@ -16,6 +16,16 @@ FROM ghcr.io/spliit-app/spliit:1.30.0
 USER root
 RUN apk add --no-cache postgresql17 postgresql17-contrib supervisor setpriv openssl bash
 
+# Spliit reads its language from a NEXT_LOCALE cookie and loads
+# messages/<value>.json without checking it. Browsers share cookies between
+# every port of one address, so another app on the same ZimaOS (any
+# next-intl app) that sets NEXT_LOCALE=en crashes every Spliit page with
+# "Cannot find module '../../messages/en.json'". Give Spliit a cookie of its
+# own; grep fails the build if the name ever changes upstream.
+RUN files=$(grep -rl NEXT_LOCALE /usr/app/.next) \
+ && sed -i 's/NEXT_LOCALE/SPLIIT_LOCALE/g' $files \
+ && ! grep -rq NEXT_LOCALE /usr/app/.next
+
 COPY icestore-init.sh /usr/local/bin/icestore-init
 COPY svc.sh /usr/local/bin/spliit-svc
 COPY supervisord.conf /etc/supervisor/icestore.conf

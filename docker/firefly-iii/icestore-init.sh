@@ -70,4 +70,8 @@ cred_add URL "http://<your ZimaOS IP>:6771"
 cred_note "No account yet: click Register. The first account you make is the admin."
 /usr/local/lib/icestore/credentials.sh http://127.0.0.1:8080/health &
 
+# Docker gives stdout/stderr to the image's user (root here); php-fpm
+# reopens /proc/self/fd/2 as www-data and is refused, so hand them over.
+chown www-data:www-data /proc/self/fd/1 /proc/self/fd/2 2>/dev/null || true
+
 exec setpriv --reuid=www-data --regid=www-data --init-groups docker-php-serversideup-entrypoint "$@"

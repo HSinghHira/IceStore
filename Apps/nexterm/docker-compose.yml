@@ -2,7 +2,7 @@ name: nexterm
 
 services:
   nexterm:
-    image: ghcr.io/hsinghhira/nexterm:latest
+    image: ghcr.io/hsinghhira/nexterm:1.0.1
     container_name: nexterm
     restart: unless-stopped
     stop_grace_period: 30s
@@ -131,6 +131,8 @@ x-casaos:
       - First IceStore release, on port 6777
       - Built on nexterm/server 1.2.2-BETA
       - Each install makes its own ENCRYPTION_KEY on first start; Nexterm asks for the admin account on its first page
+      - Fixed: Nexterm stopped at start with "ENCRYPTION_KEY not found" (the image had no openssl, so the made key was empty).
+      - The store now names the exact image version (1.0.1), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.
   repo: "https://github.com/gnmyt/Nexterm"
   support: "https://github.com/gnmyt/Nexterm/issues"
   docs: "https://docs.nexterm.dev/"

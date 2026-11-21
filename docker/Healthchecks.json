@@ -1,6 +1,6 @@
 {
   "name": "Healthchecks",
-  "repo": "ghcr.io/hsinghhira/healthchecks:latest",
+  "repo": "ghcr.io/hsinghhira/healthchecks:1.0.1",
   "category": [
     "Network"
   ],

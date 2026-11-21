@@ -2,7 +2,7 @@ name: healthchecks
 
 services:
   healthchecks:
-    image: ghcr.io/hsinghhira/healthchecks:latest
+    image: ghcr.io/hsinghhira/healthchecks:1.0.1
     container_name: healthchecks
     restart: unless-stopped
     stop_grace_period: 30s
@@ -177,6 +177,8 @@ x-casaos:
       - First IceStore release, on port 6773
       - Built on healthchecks/healthchecks v5.0.3, with SQLite as the database
       - Each install makes its own SECRET_KEY and admin password on first start; the login is in the CREDENTIALS box in the logs
+      - Fixed: the admin account was not made on first start ("unrecognized arguments: --no-input --username admin").
+      - The store now names the exact image version (1.0.1), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.
   repo: "https://github.com/healthchecks/healthchecks"
   support: "https://github.com/healthchecks/healthchecks/issues"
   docs: "https://healthchecks.io/docs/self_hosted_configuration/"

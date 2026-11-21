@@ -1,6 +1,6 @@
 {
   "name": "Nexterm",
-  "repo": "ghcr.io/hsinghhira/nexterm:latest",
+  "repo": "ghcr.io/hsinghhira/nexterm:1.0.1",
   "category": [
     "Utilities"
   ],

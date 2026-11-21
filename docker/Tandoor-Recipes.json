@@ -1,6 +1,6 @@
 {
   "name": "Tandoor-Recipes",
-  "repo": "ghcr.io/hsinghhira/tandoor:latest",
+  "repo": "ghcr.io/hsinghhira/tandoor:1.0.1",
   "category": [
     "Home Automation"
   ],

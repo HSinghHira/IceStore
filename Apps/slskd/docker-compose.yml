@@ -2,7 +2,7 @@ name: slskd
 
 services:
   slskd:
-    image: ghcr.io/hsinghhira/slskd:latest
+    image: ghcr.io/hsinghhira/slskd:1.0.1
     container_name: slskd
     restart: unless-stopped
     stop_grace_period: 30s
@@ -197,6 +197,8 @@ x-casaos:
       - First IceStore release, on port 6779 (web UI) and 6780 (Soulseek)
       - Built on slskd/slskd 0.26.2
       - Each install makes its own web UI password and JWT key on first start, instead of the default slskd / slskd; the login is in the CREDENTIALS box in the logs
+      - Fixed: slskd stopped at start because /downloads/incomplete did not exist; the download folders are now made for you.
+      - The store now names the exact image version (1.0.1), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.
   repo: "https://github.com/slskd/slskd"
   support: "https://github.com/slskd/slskd/issues"
   docs: "https://github.com/slskd/slskd/blob/master/docs/config.md"

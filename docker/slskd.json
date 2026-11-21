@@ -1,6 +1,6 @@
 {
   "name": "slskd",
-  "repo": "ghcr.io/hsinghhira/slskd:latest",
+  "repo": "ghcr.io/hsinghhira/slskd:1.0.1",
   "category": [
     "Media"
   ],

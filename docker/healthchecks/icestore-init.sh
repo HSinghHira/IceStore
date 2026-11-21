@@ -77,8 +77,8 @@ sys.exit(0 if User.objects.filter(is_superuser=True).exists() else 3)
   :
 else
   log "first start: making the admin account $ADMIN_EMAIL"
-  DJANGO_SUPERUSER_PASSWORD=$ADMIN_PASSWORD as_hc ./manage.py createsuperuser --no-input \
-    --username admin --email "$ADMIN_EMAIL"
+  # Healthchecks' own createsuperuser: the email is the login (no username).
+  as_hc ./manage.py createsuperuser --email "$ADMIN_EMAIL" --password "$ADMIN_PASSWORD" </dev/null
 fi
 unset ADMIN_PASSWORD
 

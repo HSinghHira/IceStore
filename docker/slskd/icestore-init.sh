@@ -49,6 +49,14 @@ done
 [ -n "${SLSKD_SHARED_DIR:-}" ] || SLSKD_SHARED_DIR=/music
 [ -n "${SLSKD_REMOTE_CONFIGURATION:-}" ] || SLSKD_REMOTE_CONFIGURATION=true
 export SLSKD_DOWNLOADS_DIR SLSKD_INCOMPLETE_DIR SLSKD_SHARED_DIR SLSKD_REMOTE_CONFIGURATION
+# slskd won't start when these don't exist; ZimaOS makes only the top
+# folder, as root, and slskd runs as PUID:PGID.
+for d in "$SLSKD_DOWNLOADS_DIR" "$SLSKD_INCOMPLETE_DIR"; do
+  if [ ! -d "$d" ]; then
+    mkdir -p "$d"
+    chown "${PUID:-1000}:${PGID:-1000}" "$d" 2>/dev/null || true
+  fi
+done
 
 if [ -z "${SLSKD_SLSK_USERNAME:-}" ]; then
   log "SLSKD_SLSK_USERNAME is empty: slskd starts, but it can't join the Soulseek network until you set SLSKD_SLSK_USERNAME and SLSKD_SLSK_PASSWORD in the app settings (or in the web UI's Options)."

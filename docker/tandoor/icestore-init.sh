@@ -41,6 +41,10 @@ umask 022
 for v in $(compgen -e); do
   [ -n "${!v}" ] || unset "$v" 2>/dev/null || true
 done
+# Upstream's default is an empty list, so Django turns every address away
+# (400 Bad Request); answer to any name unless set in the app settings.
+[ -n "${ALLOWED_HOSTS:-}" ] || ALLOWED_HOSTS='*'
+export ALLOWED_HOSTS
 
 # ---- PostgreSQL ----
 pg_setup /usr/libexec/postgresql17 "$DATA/postgres"

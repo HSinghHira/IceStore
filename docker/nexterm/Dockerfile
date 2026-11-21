@@ -10,6 +10,8 @@
 
 FROM nexterm/server:1.2.2-BETA
 
+# openssl makes the encryption key (the upstream image has none).
+RUN apk add --no-cache openssl
 COPY icestore-init.sh /usr/local/bin/icestore-init
 # Shared helpers and the CREDENTIALS banner (docker/_common; built with
 # --build-context common=docker/_common).
