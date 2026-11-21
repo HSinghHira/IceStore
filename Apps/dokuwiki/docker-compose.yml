@@ -1,0 +1,140 @@
+name: dokuwiki
+
+services:
+  dokuwiki:
+    image: dokuwiki/dokuwiki:2026-07-14c
+    container_name: dokuwiki
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PHP_TIMEZONE=$TZ
+      - PHP_UPLOADLIMIT=128M
+    ports:
+      - target: 8080
+        published: "6783"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/storage
+        target: /storage
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dokuwiki/icon.png
+    x-casaos:
+      id: com.icestore.dokuwiki
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: PHP_TIMEZONE
+          description:
+            en_US: >-
+              The time zone for dates on pages and in the history. It is
+              filled in from your ZimaOS time zone.
+        - container: PHP_UPLOADLIMIT
+          description:
+            en_US: >-
+              The biggest file you can upload to the media manager, like
+              128M.
+      ports:
+        - container: "8080"
+          description:
+            en_US: DokuWiki pages and admin, published on host as 6783
+      volumes:
+        - container: /storage
+          description:
+            en_US: >-
+              All your pages, uploads, settings, users and plugins, as plain
+              files. Back it up.
+
+x-casaos:
+  id: com.icestore.dokuwiki
+  architectures:
+    - amd64
+    - arm64
+  main: dokuwiki
+  author: HSinghHira
+  category: Productivity
+  developer: DokuWiki community
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dokuwiki/icon.png
+  title:
+    en_US: DokuWiki
+  tagline:
+    en_US: Simple wiki that keeps its pages as plain text files, no database needed
+  description:
+    en_US: >-
+      DokuWiki is an easy wiki for notes, manuals and team knowledge. Pages
+      are plain text files, so there is no database to look after, and
+      backups are just a folder copy. Hundreds of plugins and templates add
+      what you need.
+
+
+      **Features**
+
+
+      - Simple wiki markup, with a toolbar and page preview
+
+      - Full history of every page, with diffs and undo
+
+      - Users, groups and page permissions (ACL)
+
+      - Full-text search and namespaces for structure
+
+      - Media manager for images and files
+
+      - Hundreds of plugins and templates from the admin panel
+
+
+      **How to use?**
+
+
+      1. Open DokuWiki from the ZimaOS dashboard. You see the installer
+         first.
+
+      2. Name your wiki, make the admin account and pick who may read and
+         edit.
+
+      3. Click Save, then open your wiki.
+
+      4. Search for a page that does not exist yet and click Create.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in under a minute.
+
+
+        2. Right away, open http://[ZIMAOS-IP-ADDRESS]:6783 and fill in the
+           installer: it makes the admin account. Until you do, anyone on
+           your network who opens the wiki can do it.
+  index: /
+  port_map: "6783"
+  scheme: http
+  is_uncontrolled: false
+  version: "2026-07-14c"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6783
+      - The official dokuwiki/dokuwiki image, 2026-07-14c ("Librarian" release)
+      - The installer makes the admin account on first visit; pages are plain files in the storage folder
+  repo: "https://github.com/dokuwiki/dokuwiki"
+  support: "https://forum.dokuwiki.org/"
+  docs: "https://www.dokuwiki.org/manual"
