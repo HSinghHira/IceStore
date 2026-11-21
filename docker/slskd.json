@@ -1,0 +1,118 @@
+{
+  "name": "slskd",
+  "repo": "ghcr.io/hsinghhira/slskd:latest",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/hsinghhira/slskd/pkgs/container/slskd",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=1024m --cpus=2.00 --memory-reservation=128m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:5030]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slskd/icon.png",
+  "project": "https://slskd.org/",
+  "support": "https://github.com/slskd/slskd/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/slskd/",
+  "description": "Soulseek client in your browser for finding and sharing music",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "App",
+      "host": "/mnt/cache/appdata/slskd/app",
+      "container": "/app",
+      "mode": "rw",
+      "description": "slskd's options file (slskd.yml), its database, logs and this install's own keys (secrets.env, .web_password). Back it up."
+    },
+    {
+      "name": "AppData",
+      "host": "/mnt/cache/downloads/slskd",
+      "container": "/downloads",
+      "mode": "rw",
+      "description": "Finished and unfinished downloads, in /mnt/cache/downloads/slskd."
+    },
+    {
+      "name": "Music",
+      "host": "/mnt/cache/media/Music",
+      "container": "/music",
+      "mode": "ro",
+      "description": "The music you share, from /mnt/cache/media/Music (read-only)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6779",
+      "container": "5030",
+      "description": "slskd web UI and API, published on host as 6779"
+    },
+    {
+      "name": "Port 6780",
+      "protocol": "tcp",
+      "host": "6780",
+      "container": "6780",
+      "description": "Soulseek peer connections, published on host as 6780"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "SLSKD_SLSK_USERNAME",
+      "key": "SLSKD_SLSK_USERNAME",
+      "value": "",
+      "mask": false,
+      "description": "Your Soulseek user name. Pick any free name: the account is made the first time it signs in."
+    },
+    {
+      "name": "SLSKD_SLSK_PASSWORD",
+      "key": "SLSKD_SLSK_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "Your Soulseek password."
+    },
+    {
+      "name": "SLSKD_PASSWORD",
+      "key": "SLSKD_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The web UI password (user name slskd). Leave it empty and one is made for you: it is shown in the app's logs, in the box marked CREDENTIALS."
+    },
+    {
+      "name": "SLSKD_SLSK_LISTEN_PORT",
+      "key": "SLSKD_SLSK_LISTEN_PORT",
+      "value": "6780",
+      "mask": false,
+      "description": "The port other Soulseek users connect to. Keep it 6780, the same as the published port. Forward it on your router for the best results."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

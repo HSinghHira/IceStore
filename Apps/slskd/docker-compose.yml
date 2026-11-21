@@ -1,0 +1,202 @@
+name: slskd
+
+services:
+  slskd:
+    image: ghcr.io/hsinghhira/slskd:latest
+    container_name: slskd
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - SLSKD_SLSK_USERNAME=
+      - SLSKD_SLSK_PASSWORD=
+      - SLSKD_PASSWORD=
+      - SLSKD_SLSK_LISTEN_PORT=6780
+    ports:
+      - target: 5030
+        published: "6779"
+        protocol: tcp
+      - target: 6780
+        published: "6780"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/app
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Downloads/slskd
+        target: /downloads
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media/Music
+        target: /music
+        read_only: true
+        bind:
+          create_host_path: true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.05"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slskd/icon.png
+    x-casaos:
+      id: com.icestore.slskd
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the files slskd downloads. It is filled in
+              by ZimaOS. Leave it.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the files slskd downloads. It is filled in
+              by ZimaOS. Leave it.
+        - container: SLSKD_SLSK_USERNAME
+          description:
+            en_US: >-
+              Your Soulseek user name. Pick any free name: the account is
+              made the first time it signs in.
+        - container: SLSKD_SLSK_PASSWORD
+          description:
+            en_US: >-
+              Your Soulseek password.
+        - container: SLSKD_PASSWORD
+          description:
+            en_US: >-
+              The web UI password (user name slskd). Leave it empty and one
+              is made for you: it is shown in the app's logs, in the box
+              marked CREDENTIALS.
+        - container: SLSKD_SLSK_LISTEN_PORT
+          description:
+            en_US: >-
+              The port other Soulseek users connect to. Keep it 6780, the
+              same as the published port. Forward it on your router for the
+              best results.
+      ports:
+        - container: "5030"
+          description:
+            en_US: slskd web UI and API, published on host as 6779
+        - container: "6780"
+          description:
+            en_US: Soulseek peer connections, published on host as 6780
+      volumes:
+        - container: /app
+          description:
+            en_US: >-
+              slskd's options file (slskd.yml), its database, logs and this
+              install's own keys (secrets.env, .web_password). Back it up.
+        - container: /downloads
+          description:
+            en_US: >-
+              Finished and unfinished downloads, in /DATA/Downloads/slskd.
+        - container: /music
+          description:
+            en_US: >-
+              The music you share, from /DATA/Media/Music (read-only).
+
+x-casaos:
+  id: com.icestore.slskd
+  architectures:
+    - amd64
+    - arm64
+  main: slskd
+  author: HSinghHira
+  category: Media
+  developer: slskd
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slskd/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slskd/screenshot-3.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slskd/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slskd/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slskd/screenshot-3.png
+  title:
+    en_US: slskd
+  tagline:
+    en_US: Soulseek client in your browser for finding and sharing music
+  description:
+    en_US: >-
+      slskd connects your server to Soulseek, a peer-to-peer network for
+      sharing music. Search for albums and tracks, download them straight to
+      your server and share your own music back, all from a web page. It
+      runs all the time, so downloads keep going while your computer is off.
+
+
+      **Features**
+
+
+      - Search the Soulseek network and download whole folders
+
+      - Shares your music library with others, read-only
+
+      - Chat rooms and private messages
+
+      - Upload and download limits and speed caps
+
+      - An API, so apps like Lidarr helpers can use it
+
+
+      **How to use?**
+
+
+      1. Set your Soulseek user name and password before you install (any
+         free name works).
+
+      2. Open slskd from the ZimaOS dashboard.
+
+      3. Sign in with the login from the app's logs (the box marked
+         CREDENTIALS).
+
+      4. Type in Search and pick what to download.
+
+      5. Find your files in /DATA/Downloads/slskd.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set SLSKD_SLSK_USERNAME and SLSKD_SLSK_PASSWORD to your Soulseek
+           account. Any free name works: it is made the first time.
+
+
+        2. Put the music you want to share in /DATA/Media/Music.
+
+
+        3. Start the installation. It is ready in under a minute.
+
+
+        4. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           web UI login.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6779 and sign in.
+
+
+        6. For faster downloads, forward port 6780 on your router to your
+           ZimaOS IP.
+  index: /
+  port_map: "6779"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.26.2"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6779 (web UI) and 6780 (Soulseek)
+      - Built on slskd/slskd 0.26.2
+      - Each install makes its own web UI password and JWT key on first start, instead of the default slskd / slskd; the login is in the CREDENTIALS box in the logs
+  repo: "https://github.com/slskd/slskd"
+  support: "https://github.com/slskd/slskd/issues"
+  docs: "https://github.com/slskd/slskd/blob/master/docs/config.md"
