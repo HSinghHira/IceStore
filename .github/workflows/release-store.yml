@@ -25,7 +25,23 @@ jobs:
 
       - name: Read the public base URL
         id: cfg
-        run: echo "base=$(jq -r .base_url site/site.json)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "base=$(jq -r .base_url site/site.json)" >> "$GITHUB_OUTPUT"
+          echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+
+      # The build looks up each image's digest and size in its registry, one at a
+      # time, and that is most of its run time. Keep the answers between runs. A
+      # new cache starts every week, and prune_image_cache.py drops every moving
+      # tag (latest, main, ...) so those are always looked up fresh.
+      - name: Restore the image lookup cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/build_appstore
+          key: appstore-images-${{ steps.cfg.outputs.week }}-${{ github.run_id }}
+          restore-keys: appstore-images-${{ steps.cfg.outputs.week }}-
+
+      - name: Keep only fixed-version tags in the cache
+        run: python3 .github/scripts/prune_image_cache.py
 
       - name: Build app store bundle
         uses: IceWhaleTech/build-appstore-action@c9bb47fad5b32d7928a07978fad68801f52e910f # main, 2026-10-21
@@ -33,6 +49,8 @@ jobs:
           source: .
           output: dist
           base-url: ${{ steps.cfg.outputs.base }}
+          cache-file: .cache/build_appstore/image-size-cache.json
+          digest-cache-file: .cache/build_appstore/image-digest-cache.json
 
       - name: Add store.zip
         run: |
@@ -40,6 +58,7 @@ jobs:
             -x ".git/*" \
             -x ".github/*" \
             -x ".claude/*" \
+            -x ".cache/*" \
             -x ".history/*" \
             -x "dist/*" \
             -x "_site/*" \
