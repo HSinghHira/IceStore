@@ -1,0 +1,154 @@
+name: baserow
+
+services:
+  baserow:
+    image: ghcr.io/hsinghhira/baserow:latest
+    container_name: baserow
+    restart: unless-stopped
+    stop_grace_period: 90s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - BASEROW_PUBLIC_URL=http://[ZIMAOS-IP-ADDRESS]:6766
+    ports:
+      - target: 80
+        published: "6766"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /baserow/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "/bin/bash", "/baserow/backend/docker/docker-entrypoint.sh", "backend-healthcheck"]
+      interval: 60s
+      timeout: 20s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 3072M
+        reservations:
+          cpus: "0.25"
+          memory: 1024M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baserow/icon.png
+    x-casaos:
+      id: com.icestore.baserow
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: BASEROW_PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6766. Your browser talks to Baserow at this
+              address. For a domain use https://tables.example.com.
+      ports:
+        - container: "80"
+          description:
+            en_US: Baserow web UI and API, published on host as 6766
+      volumes:
+        - container: /baserow/data
+          description:
+            en_US: >-
+              Everything: the built-in PostgreSQL database, uploaded files,
+              and the secret keys Baserow makes on first start (.secret,
+              .jwt_signing_key, .pgpass). Back it up.
+
+x-casaos:
+  id: com.icestore.baserow
+  architectures:
+    - amd64
+    - arm64
+  main: baserow
+  author: HSinghHira
+  category: Productivity
+  developer: Baserow
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baserow/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baserow/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baserow/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baserow/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baserow/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baserow/screenshot-4.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baserow/screenshot-5.png
+  title:
+    en_US: Baserow
+  tagline:
+    en_US: No-code database and app builder, an Airtable alternative
+  description:
+    en_US: >-
+      Baserow lets you build databases as easily as a spreadsheet, then turn
+      them into forms, dashboards and small apps without writing code. This
+      is Baserow's own all-in-one image: PostgreSQL, Redis and the web server
+      are inside, so there is nothing else to set up.
+
+
+      **Features**
+
+
+      - Tables with grid, kanban, gallery, calendar, timeline and form views
+
+      - Links between tables, lookups, formulas and filters
+
+      - Application builder for small apps and portals on your data
+
+      - Dashboards and automations
+
+      - Real-time collaboration, comments and row history
+
+      - REST API, webhooks and imports from CSV, Excel and Airtable
+
+
+      **How to use?**
+
+
+      1. Set BASEROW_PUBLIC_URL to your ZimaOS address before you install.
+
+      2. Open Baserow from the ZimaOS dashboard.
+
+      3. Click Sign up and make your account. The first account becomes the
+         instance admin.
+
+      4. Make a workspace, then a database, and add your tables.
+
+      5. Invite people from the workspace menu.
+  tips:
+    before_install:
+      en_US: >-
+        1. You must set BASEROW_PUBLIC_URL first, or Baserow won't load. It
+           starts as http://[ZIMAOS-IP-ADDRESS]:6766 and you replace
+           [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6766 for example.
+
+
+        2. More settings, like email, are listed on the Baserow page at
+           https://icestore.hsinghhira.me/app/baserow/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        3. Start the installation. The first start takes about 5 minutes.
+
+
+        4. Open the address you put in BASEROW_PUBLIC_URL and click Sign up.
+           The first account becomes the admin.
+  index: /
+  port_map: "6766"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.4.3"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6766
+      - Built on baserow/baserow 2.4.3, Baserow's own all-in-one image, which makes its secret keys on first start
+      - A BASEROW_PUBLIC_URL left as [ZIMAOS-IP-ADDRESS] falls back to localhost and the log says what to set
+  repo: "https://github.com/baserow/baserow"
+  support: "https://github.com/baserow/baserow/issues"
+  docs: "https://baserow.io/docs/installation/install-with-docker"
