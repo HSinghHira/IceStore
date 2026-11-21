@@ -1,0 +1,144 @@
+name: gramps-web
+
+services:
+  gramps-web:
+    image: ghcr.io/hsinghhira/gramps-web:latest
+    container_name: gramps-web
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - GRAMPSWEB_TREE=Gramps Web
+    ports:
+      - target: 5000
+        published: "6789"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.05"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gramps-web/icon.png
+    x-casaos:
+      id: com.icestore.gramps-web
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: GRAMPSWEB_TREE
+          description:
+            en_US: >-
+              The name of your family tree. It is made empty on first start
+              if it does not exist yet.
+      ports:
+        - container: "5000"
+          description:
+            en_US: Gramps Web app and API, published on host as 6789
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything Gramps Web keeps: your family tree (grampsdb),
+              photos and documents (media), user accounts (users), the
+              search index, caches, the secret key and Redis. Back it up.
+
+x-casaos:
+  id: com.icestore.gramps-web
+  architectures:
+    - amd64
+    - arm64
+  main: gramps-web
+  author: HSinghHira
+  category: Home
+  developer: Gramps project
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gramps-web/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gramps-web/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gramps-web/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gramps-web/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gramps-web/screenshot-3.png
+  title:
+    en_US: Gramps Web
+  tagline:
+    en_US: Family tree and genealogy research you can share with your family
+  description:
+    en_US: >-
+      Gramps Web is a genealogy app for building your family tree together.
+      Add people, families, events, places and sources, attach photos and
+      documents, and look at your tree as charts and maps. It works with
+      Gramps on the desktop. The background worker and Redis are built in,
+      so it is one container with nothing else to set up.
+
+
+      **Features**
+
+
+      - People, families, events, places, sources and notes
+
+      - Photos and documents, with face tagging
+
+      - Family tree charts, fan charts, timelines and maps
+
+      - Import and export GEDCOM and Gramps files
+
+      - Users with roles, so family can view or edit
+
+      - Search, reports, DNA matches and an AI chat about your tree
+
+
+      **How to use?**
+
+
+      1. Open Gramps Web from the ZimaOS dashboard.
+
+      2. Make the owner account on the first page.
+
+      3. Import a GEDCOM or Gramps file under Import, or start adding
+         people.
+
+      4. Invite your family from Settings and give them a role.
+  tips:
+    before_install:
+      en_US: >-
+        1. More settings, like email for invites and password resets, are
+           listed on the Gramps Web page at
+           https://icestore.hsinghhira.me/app/gramps-web/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        2. Start the installation. The first start takes a few minutes.
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6789 and make the owner account.
+  index: /
+  port_map: "6789"
+  scheme: http
+  is_uncontrolled: false
+  version: "26.11.3"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6789
+      - Built on ghcr.io/gramps-project/grampsweb 26.11.3, with its Celery worker and Redis inside the same container
+      - Every data folder is under one data folder; Gramps Web makes its own secret key and asks for the owner account on its first page
+  repo: "https://github.com/gramps-project/gramps-web"
+  support: "https://github.com/gramps-project/gramps-web/issues"
+  docs: "https://www.grampsweb.org/"
