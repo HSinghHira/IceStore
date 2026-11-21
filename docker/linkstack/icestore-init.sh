@@ -22,5 +22,11 @@ for v in $(env | sed -n 's/^\([A-Za-z_][A-Za-z0-9_]*\)=$/\1/p'); do
   unset "$v" 2>/dev/null || true
 done
 
+# Docker gives stdout/stderr to the image's user (root here); Apache
+# reopens /dev/stderr as apache and is refused ("could not open error log
+# file /dev/stderr"), so hand them over. $$ is this script, which exec
+# turns into Apache.
+chown apache:apache "/proc/$$/fd/1" "/proc/$$/fd/2" || true
+
 log "Open http://<your ZimaOS IP>:6776 and follow the setup wizard to make the admin account."
 exec setpriv --reuid=apache --regid=apache --init-groups "$@"

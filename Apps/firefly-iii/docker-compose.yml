@@ -2,7 +2,7 @@ name: firefly-iii
 
 services:
   firefly-iii:
-    image: ghcr.io/hsinghhira/firefly-iii:1.0.1
+    image: ghcr.io/hsinghhira/firefly-iii:1.0.2
     container_name: firefly-iii
     restart: unless-stopped
     stop_grace_period: 30s
@@ -163,7 +163,8 @@ x-casaos:
       - Built on fireflyiii/core version-6.7.9, with SQLite as the database
       - Each install makes its own APP_KEY and cron token on first start, and the daily jobs run inside the container
       - Fixed: Firefly III stopped at start with "failed to open error_log (/proc/self/fd/2): Permission denied".
-      - The store now names the exact image version (1.0.1), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.
+      - 1.0.1 did not fix it; 1.0.2 does (the log pipes are now given to www-data correctly).
+      - The store names the exact image version (1.0.2), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.
   repo: "https://github.com/firefly-iii/firefly-iii"
   support: "https://github.com/firefly-iii/firefly-iii/issues"
   docs: "https://docs.firefly-iii.org/"

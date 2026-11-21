@@ -241,10 +241,14 @@ folder, the compose `name:`, the main service name, the image name
       (`apk add openssl`; Nexterm) or confirm upstream already ships it
       (Homarr does). Changing lib.sh rebuilds all ~110 images, so fix it
       per app.
-    - *setpriv and php-fpm*: Docker hands stdout/stderr to the image's
-      user (root). Without `chown www-data /proc/self/fd/1 /proc/self/fd/2`
-      before `setpriv`, php-fpm fails "failed to open error_log
-      (/proc/self/fd/2)" (Firefly III).
+    - *setpriv and programs that reopen /dev/stderr* (php-fpm, Apache):
+      Docker hands stdout/stderr to the image's user (root), so php-fpm
+      fails "failed to open error_log (/proc/self/fd/2)" (Firefly III) and
+      httpd fails "could not open error log file /dev/stderr" (LinkStack).
+      Before the `exec setpriv`, run
+      `chown <user> "/proc/$$/fd/1" "/proc/$$/fd/2"`. Use `$$`, never
+      `/proc/self` (inside chown that is chown itself), and don't add
+      `2>/dev/null` to it. 1.0.1 shipped with both mistakes.
     - *Django apps*: read upstream's `ALLOWED_HOSTS` default; Tandoor's is
       empty, so it answers 400 to everything. Set `*` in the start script.
       Read the app's own `createsuperuser` flags too; Healthchecks' takes

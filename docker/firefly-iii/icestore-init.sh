@@ -72,6 +72,8 @@ cred_note "No account yet: click Register. The first account you make is the adm
 
 # Docker gives stdout/stderr to the image's user (root here); php-fpm
 # reopens /proc/self/fd/2 as www-data and is refused, so hand them over.
-chown www-data:www-data /proc/self/fd/1 /proc/self/fd/2 2>/dev/null || true
+# $$ is this script, which exec turns into php-fpm (inside chown,
+# /proc/self is chown, whose stderr may be redirected).
+chown www-data:www-data "/proc/$$/fd/1" "/proc/$$/fd/2" || true
 
 exec setpriv --reuid=www-data --regid=www-data --init-groups docker-php-serversideup-entrypoint "$@"

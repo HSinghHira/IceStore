@@ -1,6 +1,6 @@
 {
   "name": "LinkStack",
-  "repo": "ghcr.io/hsinghhira/linkstack:latest",
+  "repo": "ghcr.io/hsinghhira/linkstack:1.0.1",
   "category": [
     "Network"
   ],

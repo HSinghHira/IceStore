@@ -2,7 +2,7 @@ name: linkstack
 
 services:
   linkstack:
-    image: ghcr.io/hsinghhira/linkstack:latest
+    image: ghcr.io/hsinghhira/linkstack:1.0.1
     container_name: linkstack
     restart: unless-stopped
     stop_grace_period: 30s
@@ -143,6 +143,8 @@ x-casaos:
       - First IceStore release, on port 6776
       - Built on linkstackorg/linkstack v4.8.8
       - The app is copied into the data folder on first start, as upstream's Docker volume does; the setup wizard makes the admin account
+      - Fixed: Apache stopped at start with "could not open error log file /dev/stderr".
+      - The store now names the exact image version (1.0.1), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.
   repo: "https://github.com/LinkStackOrg/LinkStack"
   support: "https://github.com/LinkStackOrg/LinkStack/issues"
   docs: "https://docs.linkstack.org/"
