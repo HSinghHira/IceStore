@@ -1,0 +1,182 @@
+name: healthchecks
+
+services:
+  healthchecks:
+    image: ghcr.io/hsinghhira/healthchecks:latest
+    container_name: healthchecks
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - SITE_ROOT=http://[ZIMAOS-IP-ADDRESS]:6773
+      - SITE_NAME=Healthchecks
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=
+      - REGISTRATION_OPEN=False
+    ports:
+      - target: 8000
+        published: "6773"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "/opt/healthchecks/fetchstatus.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.05"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/healthchecks/icon.png
+    x-casaos:
+      id: com.icestore.healthchecks
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: SITE_ROOT
+          description:
+            en_US: >-
+              The address you open Healthchecks at. Replace
+              [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6773. The ping URLs your cron jobs call
+              are made from it.
+        - container: SITE_NAME
+          description:
+            en_US: >-
+              The name shown at the top of the page and in alerts.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email you sign in with. Only used when the first account
+              is made.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The first account's password. Leave it empty and one is made
+              for you: it is shown in the app's logs, in the box marked
+              CREDENTIALS. Only used when the first account is made.
+        - container: REGISTRATION_OPEN
+          description:
+            en_US: >-
+              Set to True so anyone who can open Healthchecks can sign up
+              (sign-up needs email to be set up).
+      ports:
+        - container: "8000"
+          description:
+            en_US: Healthchecks web UI, ping URLs and API, published on host as 6773
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database with your checks and their history, and
+              this install's own keys (secrets.env, .admin_password). Back
+              it up.
+
+x-casaos:
+  id: com.icestore.healthchecks
+  architectures:
+    - amd64
+    - arm64
+  main: healthchecks
+  author: HSinghHira
+  category: Networking
+  developer: Healthchecks.io
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/healthchecks/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/healthchecks/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/healthchecks/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/healthchecks/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/healthchecks/screenshot-3.png
+  title:
+    en_US: Healthchecks
+  tagline:
+    en_US: Cron job monitor that alerts you when a scheduled task stops checking in
+  description:
+    en_US: >-
+      Healthchecks watches your scheduled jobs: backups, cron jobs, scripts.
+      Each job calls its own ping URL when it runs. When a ping does not
+      come in on time, Healthchecks tells you by email, ntfy, Telegram,
+      Discord, Slack and many more. It uses a built-in SQLite database, so
+      it is one container with nothing else to set up.
+
+
+      **Features**
+
+
+      - A ping URL for every job, with simple or cron schedules
+
+      - Grace time before an alert goes out
+
+      - Start, success and failure signals, and run times
+
+      - Alerts to more than 25 services, plus webhooks
+
+      - Projects, teams and read-only badges
+
+      - A full API and Prometheus metrics
+
+
+      **How to use?**
+
+
+      1. Open Healthchecks from the ZimaOS dashboard.
+
+      2. Sign in with the email and the password from the app's logs (the
+         box marked CREDENTIALS).
+
+      3. Click Add Check and set how often the job runs.
+
+      4. Copy its ping URL into your job, like curl at the end of a
+         script.
+
+      5. Add where alerts go in Integrations.
+  tips:
+    before_install:
+      en_US: >-
+        1. Set SITE_ROOT: replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP.
+           The ping URLs are made from it, so your other machines can reach
+           them.
+
+
+        2. More settings, like email and the alert services, are listed on
+           the Healthchecks page at
+           https://icestore.hsinghhira.me/app/healthchecks/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        3. Start the installation. It is ready in about a minute.
+
+
+        4. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           email and password.
+
+
+        5. Open http://[ZIMAOS-IP-ADDRESS]:6773 and sign in.
+  index: /
+  port_map: "6773"
+  scheme: http
+  is_uncontrolled: false
+  version: "v5.0.3"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6773
+      - Built on healthchecks/healthchecks v5.0.3, with SQLite as the database
+      - Each install makes its own SECRET_KEY and admin password on first start; the login is in the CREDENTIALS box in the logs
+  repo: "https://github.com/healthchecks/healthchecks"
+  support: "https://github.com/healthchecks/healthchecks/issues"
+  docs: "https://healthchecks.io/docs/self_hosted_configuration/"

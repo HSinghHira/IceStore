@@ -1,0 +1,23 @@
+name: Build healthchecks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/healthchecks/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-healthchecks.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: healthchecks
+      AIO_VERSION: "1.0.0"
+      kind: wrapper

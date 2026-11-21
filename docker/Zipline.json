@@ -1,0 +1,55 @@
+{
+  "name": "Zipline",
+  "repo": "ghcr.io/hsinghhira/zipline:latest",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://github.com/hsinghhira/zipline/pkgs/container/zipline",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=60 --memory=1024m --cpus=2.00 --memory-reservation=192m --health-cmd=\"wget -q --spider http://127.0.0.1:3000/api/healthcheck\" --health-interval=30s --health-timeout=10s --health-start-period=180s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/icon.png",
+  "project": "https://zipline.diced.sh/",
+  "support": "https://github.com/diced/zipline/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/zipline/",
+  "description": "File and screenshot sharing server with short links",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/zipline/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Everything Zipline keeps: your uploaded files (uploads), the PostgreSQL database (postgres) and this install's own keys (secrets.env). Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6775",
+      "container": "3000",
+      "description": "Zipline web UI, file links and API, published on host as 6775"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
