@@ -1,0 +1,149 @@
+name: snappymail
+
+services:
+  snappymail:
+    image: djmaze/snappymail:v3.0.1.2
+    container_name: snappymail
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - UPLOAD_MAX_SIZE=25M
+      - SECURE_COOKIES=false
+    ports:
+      - target: 8888
+        published: "6786"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /var/lib/snappymail
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8888/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/snappymail/icon.png
+    x-casaos:
+      id: com.icestore.snappymail
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: UPLOAD_MAX_SIZE
+          description:
+            en_US: >-
+              The biggest attachment you can send, like 25M.
+        - container: SECURE_COOKIES
+          description:
+            en_US: >-
+              Set to true once you only open SnappyMail over https (through a
+              reverse proxy). Over plain http it must stay false, or you
+              can't sign in.
+      ports:
+        - container: "8888"
+          description:
+            en_US: SnappyMail webmail and admin panel, published on host as 6786
+      volumes:
+        - container: /var/lib/snappymail
+          description:
+            en_US: >-
+              SnappyMail's settings, domains, contacts, plugins and the admin
+              password (_data_/_default_/admin_password.txt). Back it up.
+
+x-casaos:
+  id: com.icestore.snappymail
+  architectures:
+    - amd64
+    - arm64
+  main: snappymail
+  author: HSinghHira
+  category: Social
+  developer: the-djmaze
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/snappymail/icon.png
+  title:
+    en_US: SnappyMail
+  tagline:
+    en_US: Fast, light webmail for your existing email accounts
+  description:
+    en_US: >-
+      SnappyMail is webmail for the email accounts you already have. Point
+      it at any IMAP and SMTP server, like Gmail, Outlook, Fastmail or your
+      own, and read and send mail from a clean, fast web page. It keeps no
+      copy of your mail: it all stays on your mail server.
+
+
+      **Features**
+
+
+      - Works with any IMAP and SMTP mail server
+
+      - Several accounts and identities in one place
+
+      - Threads, search, filters (Sieve) and folders
+
+      - OpenPGP and S/MIME to sign and encrypt
+
+      - Contacts with CardDAV sync
+
+      - Plugins, themes and two-step sign-in
+
+
+      **How to use?**
+
+
+      1. Open the app's files in /DATA/AppData/snappymail/data and find
+         _data_/_default_/admin_password.txt for the admin password.
+
+      2. Open http://[ZIMAOS-IP-ADDRESS]:6786/?admin and sign in as admin
+         with that password.
+
+      3. Under Domains, add your mail provider's IMAP and SMTP servers.
+
+      4. Open http://[ZIMAOS-IP-ADDRESS]:6786 and sign in with your email
+         address and password.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in under a minute.
+
+
+        2. The admin password is made on first start. Find it in the Files
+           app, in /DATA/AppData/snappymail/data/_data_/_default_/admin_password.txt
+           (user name admin).
+
+
+        3. Open http://[ZIMAOS-IP-ADDRESS]:6786/?admin to add your mail
+           servers under Domains.
+
+
+        4. Then sign in at http://[ZIMAOS-IP-ADDRESS]:6786 with your email
+           address and its password.
+  index: /
+  port_map: "6786"
+  scheme: http
+  is_uncontrolled: false
+  version: "v3.0.1.2"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6786
+      - The official djmaze/snappymail image, v3.0.1.2
+      - Secure cookies are off so sign-in works over plain http; the admin password is made on first start in the data folder
+  repo: "https://github.com/the-djmaze/snappymail"
+  support: "https://github.com/the-djmaze/snappymail/issues"
+  docs: "https://github.com/the-djmaze/snappymail/wiki"
