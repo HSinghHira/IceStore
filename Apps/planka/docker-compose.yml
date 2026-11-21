@@ -1,0 +1,180 @@
+name: planka
+
+services:
+  planka:
+    image: ghcr.io/hsinghhira/planka:latest
+    container_name: planka
+    restart: unless-stopped
+    stop_grace_period: 90s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - BASE_URL=http://[ZIMAOS-IP-ADDRESS]:6762
+      - DEFAULT_ADMIN_EMAIL=admin@example.com
+      - DEFAULT_ADMIN_PASSWORD=
+    ports:
+      - target: 1337
+        published: "6762"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/uploads
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "/app/healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.10"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/planka/icon.png
+    x-casaos:
+      id: com.icestore.planka
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: BASE_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6762. PLANKA only works at this exact
+              address. For a domain use https://boards.example.com; for
+              both, put them side by side with a comma.
+        - container: DEFAULT_ADMIN_EMAIL
+          description:
+            en_US: >-
+              The admin's email. PLANKA keeps this account as the main admin
+              and you can't edit it in the app while this is set.
+        - container: DEFAULT_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The admin's password. Leave it empty and one is made for you:
+              it is shown in the app's logs, in the box marked CREDENTIALS.
+              Set it here to change it; PLANKA applies it on every start.
+      ports:
+        - container: "1337"
+          description:
+            en_US: PLANKA web UI and API, published on host as 6762
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The PostgreSQL database with every board, card and user, and
+              secrets.env with this install's own SECRET_KEY and database
+              password. Back it up.
+        - container: /app/data
+          description:
+            en_US: >-
+              Attachments, avatars and board backgrounds. Back it up.
+
+x-casaos:
+  id: com.icestore.planka
+  architectures:
+    - amd64
+    - arm64
+  main: planka
+  author: HSinghHira
+  category: Productivity
+  developer: PLANKA Software
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/planka/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/planka/screenshot-1.gif
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/planka/screenshot-1.gif
+  title:
+    en_US: PLANKA
+  tagline:
+    en_US: Kanban boards for teams, with real-time updates, like Trello
+  description:
+    en_US: >-
+      PLANKA is a kanban board app like Trello. Make projects and boards,
+      drag cards between lists, and see what others change right away.
+      PostgreSQL is built in, so it is one container with nothing else to set
+      up.
+
+
+      **Features**
+
+
+      - Projects, boards, lists and cards with drag and drop
+
+      - Live updates: everyone sees changes at once
+
+      - Due dates, labels, checklists, attachments and comments
+
+      - Card members, stopwatch and notifications
+
+      - Markdown in descriptions and comments
+
+      - Users with roles, in many languages
+
+
+      **How to use?**
+
+
+      1. Set BASE_URL to your ZimaOS address before you install.
+
+      2. Open PLANKA from the ZimaOS dashboard.
+
+      3. Sign in with the admin email and the password from the app's logs
+         (the box marked CREDENTIALS).
+
+      4. Make a project, then a board, then add lists and cards.
+
+      5. Under Administration, add the people who should work with you.
+  tips:
+    before_install:
+      en_US: >-
+        1. You must set BASE_URL first, or the boards won't load. It starts as
+           http://[ZIMAOS-IP-ADDRESS]:6762 and you replace
+           [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6762 for example.
+
+
+        2. Set DEFAULT_ADMIN_EMAIL to your email if you like.
+
+
+        3. More settings, like email and the upload size, are listed on the
+           PLANKA page at https://icestore.hsinghhira.me/app/planka/
+           (Variables tab). You can add them now or later in the app
+           settings.
+
+
+        4. Start the installation. The first start takes about 2 minutes.
+
+
+        5. Open the app's logs. Find the box marked CREDENTIALS. It has the
+           admin email and password.
+
+
+        6. Open the address you put in BASE_URL and sign in.
+  index: /
+  port_map: "6762"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.3.1"
+  update_at: "2026-11-21"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6762
+      - Built on ghcr.io/plankanban/planka 2.3.1, with PostgreSQL 16 added inside the same container
+      - Each install makes its own SECRET_KEY, database password and admin password on first start; the login is in the CREDENTIALS box in the logs
+  repo: "https://github.com/plankanban/planka"
+  support: "https://github.com/plankanban/planka/issues"
+  docs: "https://docs.planka.cloud/"

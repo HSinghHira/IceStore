@@ -1,0 +1,83 @@
+{
+  "name": "PLANKA",
+  "repo": "ghcr.io/hsinghhira/planka:latest",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/hsinghhira/planka/pkgs/container/planka",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=90 --memory=1024m --cpus=2.00 --memory-reservation=256m --health-cmd=\"node /app/healthcheck.js\" --health-interval=30s --health-timeout=10s --health-start-period=180s --health-retries=5",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:1337]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/planka/icon.png",
+  "project": "https://planka.app/",
+  "support": "https://github.com/plankanban/planka/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/planka/",
+  "description": "Kanban boards for teams, with real-time updates, like Trello",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/planka/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "The PostgreSQL database with every board, card and user, and secrets.env with this install's own SECRET_KEY and database password. Back it up."
+    },
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/planka/uploads",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "Attachments, avatars and board backgrounds. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6762",
+      "container": "1337",
+      "description": "PLANKA web UI and API, published on host as 6762"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "BASE_URL",
+      "key": "BASE_URL",
+      "value": "http://YOUR-SERVER-IP:6762",
+      "mask": false,
+      "description": "Required. Replace YOUR-SERVER-IP with your server IP, like http://192.168.1.20:6762. PLANKA only works at this exact address. For a domain use https://boards.example.com; for both, put them side by side with a comma."
+    },
+    {
+      "name": "DEFAULT_ADMIN_EMAIL",
+      "key": "DEFAULT_ADMIN_EMAIL",
+      "value": "admin@example.com",
+      "mask": false,
+      "description": "The admin's email. PLANKA keeps this account as the main admin and you can't edit it in the app while this is set."
+    },
+    {
+      "name": "DEFAULT_ADMIN_PASSWORD",
+      "key": "DEFAULT_ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The admin's password. Leave it empty and one is made for you: it is shown in the app's logs, in the box marked CREDENTIALS. Set it here to change it; PLANKA applies it on every start."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
