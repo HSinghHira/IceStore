@@ -1,0 +1,149 @@
+name: trilium
+
+services:
+  trilium:
+    image: triliumnext/trilium:v0.107.0
+    container_name: trilium
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - USER_UID=$PUID
+      - USER_GID=$PGID
+    ports:
+      - target: 8080
+        published: "6797"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /home/node/trilium-data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD-SHELL", "sh /usr/src/app/docker_healthcheck.sh"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1G
+        reservations:
+          cpus: "0.05"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trilium/icon.png
+    x-casaos:
+      id: com.icestore.trilium
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: USER_UID
+          description:
+            en_US: >-
+              The user Trilium keeps its files as. It is filled in by
+              ZimaOS.
+        - container: USER_GID
+          description:
+            en_US: >-
+              The group Trilium keeps its files as. It is filled in by
+              ZimaOS.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Trilium web app and sync server, published on host as 6797
+      volumes:
+        - container: /home/node/trilium-data
+          description:
+            en_US: >-
+              Your notes database (document.db), attachments, config.ini,
+              logs and Trilium's own daily backups. Back it up.
+
+x-casaos:
+  id: com.icestore.trilium
+  architectures:
+    - amd64
+    - arm64
+  main: trilium
+  author: HSinghHira
+  category: Productivity
+  developer: TriliumNext
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trilium/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trilium/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trilium/screenshot-1.png
+  title:
+    en_US: Trilium Notes
+  tagline:
+    en_US: A note tree for your whole knowledge base, from quick notes to wikis
+  description:
+    en_US: >-
+      Trilium Notes keeps all your notes in one deep tree. Write rich text,
+      code, diagrams and maps, link notes together, and find anything with
+      fast search. Use it in the browser, or sync it with the desktop app.
+
+
+      **Features**
+
+
+      - Notes in a tree of any depth; one note can sit in several places
+
+      - Rich text with tables, images and math, plus Markdown import and
+        export
+
+      - Code notes, Mermaid and canvas diagrams, mind maps and maps
+
+      - Note history, protected (encrypted) notes and daily backups
+
+      - Fast full-text search, tags and attributes
+
+      - Sync server for the Trilium desktop apps
+
+
+      **How to use?**
+
+
+      1. Open Trilium from the ZimaOS dashboard.
+
+      2. Pick "I'm a new user" and set your password.
+
+      3. Sign in. Right-click a note in the tree to add a note under it.
+
+      4. To use the desktop app, pick sync from server and enter this
+         server's address.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in under a minute.
+
+
+        2. Right away, open http://[ZIMAOS-IP-ADDRESS]:6797 and pick "I'm a
+           new user".
+
+
+        3. Set your password. Until you do, anyone on your network who opens
+           the page can.
+
+
+        4. More settings are listed on the Trilium Notes page at
+           https://icestore.hsinghhira.me/app/trilium/ (Variables tab). You
+           can add them now or later in the app settings.
+  index: /
+  port_map: "6797"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.107.0"
+  update_at: "2026-11-22"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6797
+      - The official triliumnext/trilium v0.107.0 image; you set the password on first visit
+  repo: "https://github.com/TriliumNext/Trilium"
+  support: "https://github.com/TriliumNext/Trilium/issues"
+  docs: "https://docs.triliumnotes.org/"
