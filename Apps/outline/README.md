@@ -1,4 +1,5 @@
 ---
+featured: true
 site: https://www.getoutline.com
 services:
   - { name: Web App, path: /, icon: globe }

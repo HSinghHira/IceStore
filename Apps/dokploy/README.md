@@ -1,4 +1,5 @@
 ---
+featured: true
 site: https://dokploy.com
 services:
   - { name: Dashboard, path: /, icon: globe }

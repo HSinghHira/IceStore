@@ -1,4 +1,5 @@
 ---
+featured: true
 site: https://it-tools.tech
 source: https://github.com/CorentinTh/it-tools
 screenshots: [All the tools, JSON prettify]

@@ -304,9 +304,11 @@ def check_readme(slug, app_dir):
         except yaml.YAMLError as ex:
             err(f"README.md front matter is not valid YAML: {ex}")
             return
-        unknown = set(fm) - {"name", "tagline", "category", "site", "source", "services", "screenshots", "variables"}
+        unknown = set(fm) - {"name", "tagline", "category", "site", "source", "services", "screenshots", "variables", "featured"}
         if unknown:
             warn(f"README.md front matter keys the site ignores: {sorted(unknown)}")
+        if "featured" in fm and not isinstance(fm["featured"], bool):
+            err("README.md front matter featured must be true or false")
         for s in fm.get("services") or []:
             ic = s.get("icon", "globe") if isinstance(s, dict) else (s[2] if len(s) > 2 else "globe")
             path = s.get("path", "/") if isinstance(s, dict) else (s[1] if len(s) > 1 else "/")

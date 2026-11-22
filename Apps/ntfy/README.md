@@ -1,4 +1,5 @@
 ---
+featured: true
 site: https://ntfy.sh/
 services:
   - { name: Web App, path: /, icon: globe }

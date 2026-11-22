@@ -1,4 +1,5 @@
 ---
+featured: true
 site: https://www.stirling.com
 source: https://github.com/Stirling-Tools/Stirling-PDF
 screenshots: [Tools, Light theme]

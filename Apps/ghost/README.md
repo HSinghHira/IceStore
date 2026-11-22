@@ -1,4 +1,5 @@
 ---
+featured: true
 site: https://ghost.org
 services:
   - { name: Site, path: /, icon: globe }

@@ -21,6 +21,7 @@ README front matter (all optional):
   services                   list of [name, path, icon] or {name, path, icon, port}, shown
                              under App details; port picks another published port (default: the first)
   screenshots                captions for the screenshots, in order, e.g. [home, editor]
+  featured                   true: shown in the Featured row (website and IceDash's IceStore)
 
 Site files:
 
@@ -415,6 +416,8 @@ def load_app(folder):
         "app_version": str(meta.get("version") or "").strip(), "update_at": str(meta.get("update_at") or "").strip(),
         "site": site, "src": repo or site, "svcs": svcs, "env": env, "more": more, "captions": captions,
         "compose": redact_text(raw).rstrip(), "intro": intro,
+        # the id in index.json (com.icestore.<compose name>) and the Featured flag
+        "store_id": "com.icestore." + str(data.get("name") or slug), "featured": fm.get("featured") is True,
     }
 
 
@@ -577,6 +580,41 @@ def home_page(apps, cfg, tpl, layout):
     head = {**cfg, "root": "", "url": base, "og_image": base + "img/og.png",
             "og_alt": f'{cfg["site_name"]} – {cfg["tagline"]}', "jsonld": js(ld)}
     return page(layout, fill(tpl, values), head)
+
+
+def enrich_index(out, apps):
+    """Adds stars, forks, added, updated and featured (and a missing thumbnail, from the app's
+    meta.json) to each app in out/index.json, the catalog
+    the build-appstore action wrote before this script. IceDash sorts and features apps with them;
+    other readers ignore the extra keys. Does nothing when there is no index.json (local builds)."""
+    p = out / "index.json"
+    if not p.exists():
+        return
+    idx = json.loads(p.read_text(encoding="utf-8"))
+    by_id = {a["store_id"]: a for a in apps}
+    missing = []
+    for entry in idx.get("apps") or []:
+        a = by_id.get(entry.get("id"))
+        if not a:
+            missing.append(entry.get("id"))
+            continue
+        for k in ("stars", "forks"):
+            if a.get(k) is not None:
+                entry[k] = a[k]
+        entry["added"], entry["updated"] = a["added"], a["updated"]
+        entry["featured"] = a["featured"]
+        # the action leaves thumbnail empty for some apps that do have screenshots: use the first
+        if not entry.get("thumbnail"):
+            mp = out / str(entry.get("meta_url") or "").lstrip("/")
+            try:
+                shots = json.loads(mp.read_text(encoding="utf-8")).get("screenshot_link") or []
+            except (OSError, ValueError):
+                shots = []
+            if shots:
+                entry["thumbnail"] = shots[0]
+    if missing:
+        warn(f"index.json: no Apps folder for {', '.join(map(str, missing))}")
+    p.write_text(json.dumps(idx, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def github_repo(url):
@@ -1115,6 +1153,7 @@ def main():
     if STATIC.exists():
         shutil.copytree(STATIC, out, dirs_exist_ok=True)
     (out / ".nojekyll").write_text("")
+    enrich_index(out, apps)
 
     for a in apps:
         dest = out / "app" / a["slug"]

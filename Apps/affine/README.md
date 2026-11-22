@@ -1,4 +1,5 @@
 ---
+featured: true
 site: https://affine.pro
 services:
   - { name: Web App, path: /, icon: globe }

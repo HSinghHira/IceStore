@@ -1,4 +1,5 @@
 ---
+featured: true
 site: https://goauthentik.io
 services:
   - { name: Sign-in and user dashboard, path: /, icon: globe }
