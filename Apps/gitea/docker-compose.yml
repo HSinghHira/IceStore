@@ -1,0 +1,170 @@
+name: gitea
+
+services:
+  gitea:
+    image: gitea/gitea:28.4.0
+    container_name: gitea
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - USER_UID=$PUID
+      - USER_GID=$PGID
+      - GITEA__server__SSH_PORT=6796
+    ports:
+      - target: 3000
+        published: "6795"
+        protocol: tcp
+      - target: 22
+        published: "6796"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3000/api/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1G
+        reservations:
+          cpus: "0.05"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gitea/icon.png
+    x-casaos:
+      id: com.icestore.gitea
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: USER_UID
+          description:
+            en_US: >-
+              The user Gitea keeps your repositories as. It is filled in by
+              ZimaOS.
+        - container: USER_GID
+          description:
+            en_US: >-
+              The group Gitea keeps your repositories as. It is filled in by
+              ZimaOS.
+        - container: GITEA__server__SSH_PORT
+          description:
+            en_US: >-
+              The SSH port shown in clone addresses. Keep it the same as the
+              host port for SSH (6796).
+      ports:
+        - container: "3000"
+          description:
+            en_US: Gitea web pages, API and git over HTTP, published on host as 6795
+        - container: "22"
+          description:
+            en_US: Git over SSH, published on host as 6796
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Your repositories, the database (SQLite by default), uploads,
+              LFS files and app.ini with Gitea's own secret keys. Back it
+              up.
+
+x-casaos:
+  id: com.icestore.gitea
+  architectures:
+    - amd64
+    - arm64
+  main: gitea
+  author: HSinghHira
+  category: Developer
+  developer: Gitea
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gitea/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gitea/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gitea/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gitea/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gitea/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gitea/screenshot-4.png
+  title:
+    en_US: Gitea
+  tagline:
+    en_US: Your own GitHub-style home for code, with issues, reviews and CI
+  description:
+    en_US: >-
+      Gitea is a light Git server for you or your team. Keep your code at
+      home with pull requests, issues, a wiki, package registries and
+      GitHub-style Actions, in one small app.
+
+
+      **Features**
+
+
+      - Git over HTTP and SSH, with LFS
+
+      - Pull requests with code review, issues, milestones and projects
+
+      - Gitea Actions, compatible with GitHub Actions workflows
+
+      - Package registry for Docker, npm, PyPI, Maven and more
+
+      - Mirror repositories from GitHub and other sites
+
+      - Organizations, teams, wikis and webhooks
+
+
+      **How to use?**
+
+
+      1. Open Gitea from the ZimaOS dashboard. You see the setup page
+         first.
+
+      2. Keep SQLite as the database. Check the Server Domain and Gitea
+         Base URL show your ZimaOS address.
+
+      3. Open Administrator Account Settings at the bottom, make the admin
+         and click Install Gitea.
+
+      4. Click + and New Repository, then push your code.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in under a minute.
+
+
+        2. Right away, open http://[ZIMAOS-IP-ADDRESS]:6795 and fill in the
+           setup page. Keep SQLite.
+
+
+        3. Set Server Domain to your ZimaOS IP and Gitea Base URL to
+           http://[ZIMAOS-IP-ADDRESS]:6795/ so clone links work.
+
+
+        4. Make the admin account at the bottom of the page, then click
+           Install Gitea. Until you do, anyone on your network can.
+
+
+        5. More settings, like sign-up and email, are listed on the Gitea
+           page at https://icestore.hsinghhira.me/app/gitea/ (Variables
+           tab). You can add them now or later in the app settings.
+  index: /
+  port_map: "6795"
+  scheme: http
+  is_uncontrolled: false
+  version: "28.4.0"
+  update_at: "2026-11-22"
+  release_notes:
+    en_US: |-
+      - First IceStore release; web on port 6795, git over SSH on 6796
+      - The official gitea/gitea 28.4.0 image; the setup page makes the admin and Gitea's own secret keys
+  repo: "https://github.com/go-gitea/gitea"
+  support: "https://github.com/go-gitea/gitea/issues"
+  docs: "https://docs.gitea.com/"
