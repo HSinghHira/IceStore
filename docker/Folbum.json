@@ -36,6 +36,13 @@
       "container": "/DATA",
       "mode": "ro",
       "description": "Your MOS storage, read-only at the same path. Only the optional Dashboard disk check reads it; Folbum never changes your photos."
+    },
+    {
+      "name": "Media",
+      "host": "/media",
+      "container": "/media",
+      "mode": "ro",
+      "description": "Your other MOS disks, read-only at the same path, like /media/HDD-Storage/Gallery. Only the optional Dashboard disk check reads it."
     }
   ],
   "ports": [
