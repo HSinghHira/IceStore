@@ -19,6 +19,5 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       app: windows
-      AIO_VERSION: "1.0.0"
       kind: wrapper
       platforms: linux/amd64

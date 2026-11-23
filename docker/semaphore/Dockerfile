@@ -7,7 +7,7 @@
 #   - gives /data to Semaphore's user (ZimaOS makes the folder as root) and
 #     prints the login in a CREDENTIALS box.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM semaphoreui/semaphore:v2.20.24
 

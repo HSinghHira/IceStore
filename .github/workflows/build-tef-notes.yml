@@ -19,4 +19,3 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       app: tef-notes
-      AIO_VERSION: "1.0.0"

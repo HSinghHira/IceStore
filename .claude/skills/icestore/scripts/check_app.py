@@ -383,8 +383,12 @@ def check_workflow(root, slug, data, aio, shared=False):
     w = wf.read_text(encoding="utf-8")
     if "workflow_dispatch" not in w:
         err(f"build-{slug}.yml needs 'workflow_dispatch:' (update-upstream.yml starts the build with it)")
-    if not re.search(r'(?m)^\s*AIO_VERSION:\s*"\d+\.\d+\.\d+"', w):
-        warn(f'build-{slug}.yml: AIO_VERSION is not in the form "x.y.z", so the weekly bumper cannot raise it')
+    if re.search(r'(?m)^\s*AIO_VERSION:', w):
+        err(f'build-{slug}.yml sets AIO_VERSION; move it to docker/{slug}/VERSION '
+            '(the bumper may not push workflow files, so it would never move)')
+    vf = Path(root, "docker", slug, "VERSION")
+    if not vf.exists() or not re.fullmatch(r"\s*\d+\.\d+\.\d+\s*", vf.read_text(encoding="utf-8")):
+        err(f'docker/{slug}/VERSION must hold the image version as x.y.z (e.g. 1.0.0)')
     if f'"docker/{slug}/**"' not in w:
         err(f'build-{slug}.yml must build on changes to "docker/{slug}/**"')
     if shared and '"docker/_common/**"' not in w:
@@ -420,19 +424,19 @@ def check_workflow(root, slug, data, aio, shared=False):
 
 
 def check_bumper_shapes(root, slug, data, tags):
-    """The weekly bumper (.github/scripts/update_upstream.py) edits these in place."""
+    """The daily bumper (.github/scripts/update_upstream.py) edits these in place."""
     for tag in tags:
         if tag != "latest" and not re.search(r"\d", tag):
-            warn(f"FROM tag '{tag}' has no numbers, so the weekly bumper never updates it")
+            warn(f"FROM tag '{tag}' has no numbers, so the daily bumper never updates it")
     version = str((data.get("x-casaos") or {}).get("version") or "")
     commit_short = len(version) >= 7 and any(
         re.fullmatch(r"[0-9a-f]{40}", t) and t.startswith(version) for t in tags)
     if tags and version not in tags and not commit_short:
         warn(f"x-casaos.version '{version}' is not the tag of any upstream FROM line, "
-             f"so the weekly bumper cannot keep it in step (use the main image's tag exactly)")
+             f"so the daily bumper cannot keep it in step (use the main image's tag exactly)")
     compose_text = Path(root, "Apps", slug, "docker-compose.yml").read_text(encoding="utf-8")
     if not re.search(r"(?m)^  release_notes:\n    en_US: \|-?\n", compose_text):
-        warn("release_notes is not written as 'en_US: |-' with bullets, so the weekly bumper cannot add notes")
+        warn("release_notes is not written as 'en_US: |-' with bullets, so the daily bumper cannot add notes")
 
 
 def check_wrapper(root, slug, data):
@@ -453,7 +457,7 @@ def check_wrapper(root, slug, data):
             sh_ok(f)
     # One FROM is the upstream app image. A wrapper may also carry other
     # upstream images it runs beside the app (Paperless-ngx Full: Gotenberg and
-    # Tika), each as `FROM <image>:<tag> AS img-<name>` so the weekly bumper
+    # Tika), each as `FROM <image>:<tag> AS img-<name>` so the daily bumper
     # moves them, plus stages built on those (`FROM img-<name> AS ...`).
     all_froms = re.findall(r"(?m)^FROM\s+(?:--platform=\S+\s+)?(\S+)(?:\s+AS\s+(\S+))?\s*$", dockerfile)
     froms = [img for img, alias in all_froms if not img.startswith("img-")]

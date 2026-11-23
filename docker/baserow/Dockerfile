@@ -5,7 +5,7 @@
 # that handles the [ZIMAOS-IP-ADDRESS] placeholder in BASEROW_PUBLIC_URL and
 # prints the address in a CREDENTIALS box. Upstream makes the secrets itself.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM baserow/baserow:2.4.3
 

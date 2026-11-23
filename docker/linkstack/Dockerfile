@@ -9,7 +9,7 @@
 # After the first start the app lives in the data folder, as with upstream's
 # volume: update it from LinkStack's own admin panel (Admin > Updates).
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM linkstackorg/linkstack:v4.8.8
 

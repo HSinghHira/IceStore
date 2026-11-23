@@ -8,7 +8,7 @@
 #     password and first admin password (made on first start, kept in /data)
 #     and prints the login in a CREDENTIALS box.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/requarks/wiki:3.5.0
 

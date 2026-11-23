@@ -3,7 +3,7 @@
 # TEF Notes all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
 # Shared files come from docker/_common, so build with:
 #   docker buildx build --build-context common=docker/_common docker/tef-notes
-# The weekly bumper (update-upstream.yml) keeps the FROM lines current.
+# The daily bumper (update-upstream.yml) keeps the FROM lines current.
 #
 # Services inside (from upstream's server/docker-compose.yml):
 #   pocketbase  chroot   (PocketBase with the hooks, migrations and web app, on 8090)

@@ -10,7 +10,7 @@
 #
 # Ghostfolio's first account (Get Started) is the admin.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghostfolio/ghostfolio:3.100.0
 

@@ -11,7 +11,7 @@
 # Kestello's own updater (signed updates) keeps it current after that.
 #
 # To ship a newer release to new installs, change KESTELLO_VERSION, bump
-# AIO_VERSION in build-kestello.yml and rebuild.
+# docker/kestello/VERSION and rebuild.
 
 ARG KESTELLO_VERSION=0.1.0-rc.1
 

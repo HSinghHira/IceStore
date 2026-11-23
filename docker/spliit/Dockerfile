@@ -9,7 +9,7 @@
 #
 # Spliit has no accounts: each group is shared by its link.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/spliit-app/spliit:1.30.0
 

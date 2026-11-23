@@ -9,7 +9,7 @@
 #     plain http.
 # Nothing else is changed.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/iamspido/github-release-monitor:2.6.1
 

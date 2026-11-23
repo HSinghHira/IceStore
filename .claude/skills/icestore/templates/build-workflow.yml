@@ -16,10 +16,10 @@ permissions:
 # The build steps are in build-image.yml (shared by every app).
 # Wrapper apps add `kind: wrapper` (and drop the docker/_common line above
 # unless their Dockerfile copies from it); amd64-only apps add
-# `platforms: linux/amd64`.
+# `platforms: linux/amd64`. The image version is in docker/__APP__/VERSION
+# (start it at 1.0.0); keep it out of this file, the bumper cannot push here.
 jobs:
   build:
     uses: ./.github/workflows/build-image.yml
     with:
       app: __APP__
-      AIO_VERSION: "1.0.0"

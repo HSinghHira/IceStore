@@ -9,7 +9,7 @@
 #   - moves Traefik to ports 6184 / 6185, since ZimaOS uses 80 itself.
 # Nothing else is changed.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM dokploy/dokploy:v0.30.10
 

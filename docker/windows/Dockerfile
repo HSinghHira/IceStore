@@ -5,7 +5,7 @@
 # kept in /storage) instead of upstream's shared default "admin". Nothing
 # else is changed.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM dockurr/windows:6.06
 

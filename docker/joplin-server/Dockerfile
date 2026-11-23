@@ -9,7 +9,7 @@
 #     and prints the login in a CREDENTIALS box.
 # The handwriting-recognition service (transcribe) is left out.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM joplin/server:3.7.6
 

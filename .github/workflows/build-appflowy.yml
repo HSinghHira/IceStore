@@ -19,4 +19,3 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       app: appflowy
-      AIO_VERSION: "1.2.0"

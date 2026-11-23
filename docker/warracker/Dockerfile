@@ -10,7 +10,7 @@
 # Warracker makes its own SECRET_KEY (kept in /data/uploads/.secret_key) and
 # the first account you register becomes the admin.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/sassanix/warracker/main:1.0.6
 

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 #
 # PullMD all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
-# The weekly bumper (update-upstream.yml) keeps the FROM lines current.
+# The daily bumper (update-upstream.yml) keeps the FROM lines current.
 #
 # Services inside:
 #   pullmd       chroot   (the web app, API and MCP server on 3000; cache in /data)

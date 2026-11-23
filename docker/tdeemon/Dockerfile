@@ -5,7 +5,7 @@
 # (upstream does that with `tdeemon user create --admin`). Upstream's image is
 # distroless, so a static busybox is added for the script.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/tdeemon/tdeemon:1.3.0
 

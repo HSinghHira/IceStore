@@ -7,7 +7,7 @@
 # on first start, gives the folder to Dashy's user (1000) and starts Dashy as
 # that user.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM lissy93/dashy:4.9.18
 

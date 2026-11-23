@@ -8,7 +8,7 @@
 #     the data folder) and prints the login in a CREDENTIALS box.
 # SQLite is the database (upstream's docker-compose.sqlite.yml).
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/paperless-ngx/paperless-ngx:3.5.1
 

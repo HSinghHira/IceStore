@@ -6,7 +6,7 @@
 #   - one IceStore start script that makes this install's SECRET_KEY and
 #     ENCRYPTION_KEY on first start and keeps them in the data folder.
 #
-# Upstream tags every build sha-<commit>; the weekly bumper
+# Upstream tags every build sha-<commit>; the daily bumper
 # (update-upstream.yml) moves the tag below to the one `latest` points at.
 
 FROM ghcr.io/wouekk/cartvibe:sha-591dc65

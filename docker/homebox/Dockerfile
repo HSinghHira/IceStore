@@ -6,7 +6,7 @@
 #
 # The first account you register is the owner of your home.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/sysadminsmedia/homebox:0.27.1
 

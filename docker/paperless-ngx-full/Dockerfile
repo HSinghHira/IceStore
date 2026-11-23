@@ -15,7 +15,7 @@
 # Paperless itself runs exactly as upstream ships it: the start script ends
 # with `exec /init`, so s6-overlay is still PID 1.
 #
-# The weekly bumper (update-upstream.yml) moves the three tags below.
+# The daily bumper (update-upstream.yml) moves the three tags below.
 # Paperless-ngx pins Gotenberg 8 and Tika 3 in its own compose files.
 
 # auto-update: keep-major

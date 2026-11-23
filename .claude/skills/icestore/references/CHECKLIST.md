@@ -53,8 +53,8 @@ Then check by hand what it can't see:
 10. **Images** the user still has to add are listed in your reply.
 10a. **Root README untouched**: the commit has no changes to `README.md` or
     `readme/*.svg`. `update-readme-svgs.yml` redraws them on `main`.
-11. **AIO version**: `AIO_VERSION` in the workflow is bumped for any change to
-    `docker/<app>/`.
+11. **AIO version**: `docker/<app>/VERSION` is raised for any change to
+    `docker/<app>/`, and `build-<app>.yml` has no `AIO_VERSION:` line.
 11a. **CREDENTIALS banner** (AIO, and wrappers that make a login):
     `just test <app>` passes and the banner it prints shows every login the
     user needs, with `<your ZimaOS IP>` instead of localhost. The install tips

@@ -74,7 +74,7 @@ Rules for the table:
   capture-meta.sh reads this pattern; `<svc>` is lowercase and equals the
   supervisord program name and `/opt/meta/<svc>.json`.
 - Pin a tag with numbers in it, in the form upstream releases use (`0.19.2`,
-  `v1.31.4`, `2026.8.4`). The weekly bumper (`REPO.md`, update-upstream.yml)
+  `v1.31.4`, `2026.8.4`). The daily bumper (`REPO.md`, update-upstream.yml)
   only moves a tag to a newer one of the same shape. To keep it from moving,
   put `# auto-update: hold` on the line above, with the reason. When a new
   major needs a data migration the app can't do itself (Odoo), put
@@ -335,15 +335,17 @@ Guardrails, because one change here reaches every app on it:
   and the Postgres helpers, on the runner's own PostgreSQL) and
   `bash .github/scripts/dry_run.sh <app>` (section 6) before building, so a
   broken change fails the build and the last good image stays in place. Run `just test <app>` before pushing a `_common` change.
-- Every build also pushes `<AIO_VERSION>-<short commit>`, a tag that is never
+- Every build also pushes `<VERSION>-<short commit>`, a tag that is never
   overwritten; pin it in the compose file to roll back.
 
 The ignore file must be named `.gitignore`
 (with the dot) and contain `meta/`. The workflow comes from
-`templates/build-workflow.yml` with `__APP__` replaced; start `AIO_VERSION` at
-`1.0.0`. Editing `build-image.yml` rebuilds nothing; each app uses it on its
-next build. Keep `workflow_dispatch:` and the `AIO_VERSION: "x.y.z"` form; the
-weekly bumper needs both.
+`templates/build-workflow.yml` with `__APP__` replaced. The image version goes
+in `docker/<app>/VERSION` (one line, `1.0.0` to start), never in the workflow:
+GITHUB_TOKEN may not push workflow files, so the bumper could not raise it there.
+Editing `build-image.yml` rebuilds nothing; each app uses it on its next build.
+Keep `workflow_dispatch:` in the workflow and `x.y.z` in VERSION; the bumper
+needs both.
 
 ### 3.9 Compose file
 
@@ -354,7 +356,7 @@ together (AppFlowy: 3072M limit, 512M reservation).
 
 ## 4. Updating an AIO app
 
-`update-upstream.yml` does steps 1, 3 and 4 every Monday on its own
+`update-upstream.yml` does steps 1, 3 and 4 every day on its own
 (`REPO.md`). Do them by hand only for a held tag, a shape change (`pg16` →
 `pg17`, a new major scheme) or when the user asks; step 2 is always by hand.
 After an automatic bump, if upstream added env vars, ports or services, step 2
@@ -363,7 +365,7 @@ still has to happen.
 1. Check every upstream image's releases. Change the `FROM` tags.
 2. Read upstream's changelog and compose diff for new env vars, ports, services
    or migrations, and mirror them in aio-init.sh / run-svc.sh / nginx.conf.tpl.
-3. Bump `AIO_VERSION` in `build-<app>.yml`.
+3. Raise the version in `docker/<app>/VERSION`.
 4. Update `x-casaos.version`, `update_at`, `release_notes` (new tags) in the compose.
 5. Run the checker and the dry run.
 
@@ -407,7 +409,7 @@ still has to happen.
   right after the meta is read, as AFFiNE, authentik and Trackie do.
 - Apps whose database schema is only upgraded by a separate command (Logto:
   `npm run cli db alteration deploy latest`) must run it before every start,
-  or the weekly bumper's next image breaks the app.
+  or the daily bumper's next image breaks the app.
 - One-off jobs (bucket creation, setting a first admin password) are built-in
   programs with `autorestart=unexpected`, `exitcodes=0`, `startsecs=0` that wait
   for their service, do the job idempotently and `exit 0` (ente's `s3init`,

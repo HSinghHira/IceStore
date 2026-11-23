@@ -5,7 +5,7 @@
 # its own login password, both kept in /app/cache. The app listens on 6170
 # instead of 8999, because it runs with host networking.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/isanto1306/disk-monitor:0.32.104
 

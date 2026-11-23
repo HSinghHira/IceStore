@@ -6,7 +6,7 @@
 #
 # Homarr asks for the first admin account on its onboarding page.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/homarr-labs/homarr:v2.14.0
 

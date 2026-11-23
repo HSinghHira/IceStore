@@ -10,7 +10,7 @@
 # icestore-init.sh and svc.sh).
 #
 # To update, change SELECT_REF below (and x-casaos.version in the compose
-# file), bump AIO_VERSION in build-select.yml and rebuild.
+# file), bump docker/select/VERSION and rebuild.
 
 ARG SELECT_REF=v1.0.0
 

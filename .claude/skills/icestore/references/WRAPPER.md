@@ -55,14 +55,14 @@ for every command (Pocket ID's `healthcheck` does), set the file path as an
   description saying it is made on first start and must not change afterwards.
 - The volume description names the secret's file and says to back it up.
 - `x-casaos.version` = the FROM tag exactly; `release_notes` as `en_US: |-`
-  bullets mentioning `<image> <tag>`, so the weekly bumper keeps it current.
+  bullets mentioning `<image> <tag>`, so the daily bumper keeps it current.
 
 ## Checks
 
 `check_app.py` treats `docker/<app>/` with a Dockerfile and no `aio-init.sh`
 as a wrapper: one pinned FROM, LABEL source, ENTRYPOINT, LF line endings,
 `sh -n` on the scripts, the workflow (arm64, `workflow_dispatch`,
-`AIO_VERSION`) and the bumper shapes. Test the script outside Docker by
+`docker/<app>/VERSION`) and the bumper shapes. Test the script outside Docker by
 pointing its paths at a temp folder and replacing the final `exec` with an
 `echo` of the variables: first start, restart, a value set, the value removed.
 

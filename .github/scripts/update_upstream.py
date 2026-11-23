@@ -21,7 +21,9 @@ To take newer tags only while the first number stays the same (odoo
     # auto-update: keep-major
 
 When something changes in an app, this also:
-  - raises the patch number of AIO_VERSION in .github/workflows/build-<app>.yml
+  - raises the patch number in docker/<app>/VERSION (the image's x.y.z tag;
+    it lives there, not in build-<app>.yml, because GITHUB_TOKEN may not push
+    changes to workflow files)
   - in Apps/<app>/docker-compose.yml: sets `version:` when the main image moved
     (the FROM line whose tag equals the current `version:`), sets `update_at:`
     to today, adds a release-notes line and refreshes "<image> <tag>" mentions
@@ -181,11 +183,13 @@ def update_dockerfile(path):
     return changes, "".join(lines)
 
 
-def bump_aio_version(text):
-    def repl(m):
-        major, minor, patch = m.group(2).split(".")
-        return f'{m.group(1)}{major}.{minor}.{int(patch) + 1}"'
-    return re.sub(r'(AIO_VERSION:\s*")(\d+\.\d+\.\d+)"', repl, text, count=1)
+def bump_version(text):
+    """'1.0.3' -> '1.0.4'. None when the file does not hold x.y.z."""
+    m = re.fullmatch(r"\s*(\d+)\.(\d+)\.(\d+)\s*", text)
+    if not m:
+        return None
+    major, minor, patch = m.groups()
+    return f"{major}.{minor}.{int(patch) + 1}"
 
 
 def update_compose(text, changes, today):
@@ -210,15 +214,12 @@ def update_compose(text, changes, today):
     return text, note
 
 
-def pin_image(compose_text, app, workflow_text):
+def pin_image(compose_text, app, version):
     """An app whose compose file pins its own image to a version
     (ghcr.io/hsinghhira/<app>:1.2.3 instead of :latest, so ZimaOS downloads the
-    new image even when it still has an older one) follows AIO_VERSION."""
-    m = re.search(r'AIO_VERSION:\s*"(\d+\.\d+\.\d+)"', workflow_text)
-    if not m:
-        return compose_text
+    new image even when it still has an older one) follows docker/<app>/VERSION."""
     return re.sub(rf"(image:\s*ghcr\.io/hsinghhira/{re.escape(app)}:)\d+\.\d+\.\d+(?![\w.])",
-                  rf"\g<1>{m.group(1)}", compose_text)
+                  rf"\g<1>{version}", compose_text)
 
 
 # -------------------------------------------------------------------- main ---
@@ -238,16 +239,18 @@ def main():
         changes, new_dockerfile = update_dockerfile(dockerfile)
         if not changes:
             continue
-        workflow = repo / ".github/workflows" / f"build-{app}.yml"
+        version_file = dockerfile.parent / "VERSION"
         compose = repo / "Apps" / app / "docker-compose.yml"
+        new_version = bump_version(version_file.read_text(encoding="utf-8")) if version_file.exists() else None
+        if not new_version:
+            sys.exit(f"{version_file}: missing or not x.y.z, so the image version cannot be raised")
         new_compose, note = update_compose(compose.read_text(encoding="utf-8"), changes, today)
-        new_workflow = bump_aio_version(workflow.read_text(encoding="utf-8"))
-        new_compose = pin_image(new_compose, app, new_workflow)
+        new_compose = pin_image(new_compose, app, new_version)
         changed.append(app)
         notes.append(f"{app}: {note.removeprefix('Updated ')}")
         if args.write:
             dockerfile.write_text(new_dockerfile, encoding="utf-8")
-            workflow.write_text(new_workflow, encoding="utf-8")
+            version_file.write_text(new_version + "\n", encoding="utf-8", newline="\n")
             compose.write_text(new_compose, encoding="utf-8")
 
     summary = "; ".join(notes) if notes else "no upstream updates"

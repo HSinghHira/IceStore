@@ -18,5 +18,4 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       app: job-application-tracker
-      AIO_VERSION: "1.0.0"
       kind: wrapper

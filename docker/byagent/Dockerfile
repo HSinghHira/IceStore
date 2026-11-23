@@ -5,7 +5,7 @@
 # kept in the data folder). Upstream's image is distroless (no shell), so a
 # static busybox is added for the script and the healthcheck.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/anup-a/byagent:v0.9.0
 

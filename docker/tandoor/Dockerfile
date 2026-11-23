@@ -9,7 +9,7 @@
 #
 # Tandoor asks for the first admin account on its setup page.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM vabene1111/recipes:2.7.6
 

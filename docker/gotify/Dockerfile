@@ -4,7 +4,7 @@
 # every install its own admin password on first start (upstream's default
 # is admin/admin) and prints it in the CREDENTIALS box.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM gotify/server:3.1.1
 

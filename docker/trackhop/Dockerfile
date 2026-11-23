@@ -5,7 +5,7 @@
 # data folder). Upstream's image has no shell, so a static busybox is added
 # for the script and the healthcheck.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/xlollx/trackhop:1.8.1
 

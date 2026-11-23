@@ -4,7 +4,7 @@
 .github/workflows/
   build-<app>.yml        one per all-in-one or wrapper app: builds docker/<app>/ and pushes ghcr.io/hsinghhira/<app>
   release-store.yml      builds the store and the website on every push to main
-  update-upstream.yml    weekly: bumps the FROM tags of every AIO app, then starts its build
+  update-upstream.yml    daily: bumps the FROM tags of every AIO app, then starts its build
 .github/scripts/
   update_upstream.py     the bumper that update-upstream.yml runs (dry run without --write)
 Apps/<app>/
@@ -70,8 +70,9 @@ README, icon or screenshots are only warnings.
 ## build-<app>.yml
 
 Runs when `docker/<app>/**`, `docker/_common/**` (apps that copy from it) or
-the workflow itself changes, or by hand. It only names the app and its
-`AIO_VERSION`; the steps are in the shared `build-image.yml`:
+the workflow itself changes, or by hand. It only names the app; the
+version comes from `docker/<app>/VERSION` and the steps are in the shared
+`build-image.yml`:
 
 1. All-in-one apps: `test_lib.sh` (shared helpers) and `dry_run.sh <app>`
    (trial run of the start-up); a failure stops the build before any push.
@@ -80,11 +81,11 @@ the workflow itself changes, or by hand. It only names the app and its
    `meta/` is git-ignored).
 3. QEMU + Buildx, log in to GHCR with `GITHUB_TOKEN`.
 4. Build `linux/amd64,linux/arm64` (or the `platforms:` input), push
-   `:<AIO_VERSION>`, `:<AIO_VERSION>-<short commit>` (never overwritten, for
-   rollback) and `:latest`. `AIO_VERSION` is this image's own version,
+   `:<VERSION>`, `:<VERSION>-<short commit>` (never overwritten, for
+   rollback) and `:latest`. VERSION is this image's own version,
    separate from the upstream version in `x-casaos.version`.
 
-Bump `AIO_VERSION` whenever the image changes (new upstream tag, script fix).
+Raise `docker/<app>/VERSION` whenever the image changes (new upstream tag, script fix).
 Cache uses `scope=<app>` so apps don't evict each other's build cache.
 Keep `workflow_dispatch:` — update-upstream.yml starts the build with it.
 
@@ -104,7 +105,7 @@ the server address.
 
 ## update-upstream.yml
 
-Runs every Monday 03:00 UTC, or by hand. It finds every `docker/*/Dockerfile`
+Runs every day at 03:00 UTC, or by hand. It finds every `docker/*/Dockerfile`
 by itself, so a new AIO app needs no change here — only the shapes below.
 
 1. `python .github/scripts/update_upstream.py --write`. For each
@@ -121,8 +122,8 @@ by itself, so a new AIO app needs no change here — only the shapes below.
    (strava-dawarich-sync); those follow `latest` (the line moves
    to the commit tag with `latest`'s digest), and `x-casaos.version` may be the
    first 7 characters of the main image's commit tag.
-2. For each app that changed it also: raises the patch of `AIO_VERSION` in
-   `build-<app>.yml`; in the compose, sets `version:` if the FROM whose tag
+2. For each app that changed it also: raises the patch in
+   `docker/<app>/VERSION`; in the compose, sets `version:` if the FROM whose tag
    equalled it moved, sets `update_at:` to today, puts
    `- Updated <name> <old> to <new>, ...` first under `release_notes.en_US: |-`,
    and rewrites every `<image> <old>` / `<basename> <old>` mention to the new tag.
@@ -135,7 +136,10 @@ So for the bumper to keep an AIO app current, the app must have:
 - `x-casaos.version` equal to the main image's FROM tag, character for character;
 - `release_notes:` written as `en_US: |-` followed by `      - ` bullets, with the
   image list as `<basename> <tag>` (AppFlowy) or `<image> <tag>` (AFFiNE);
-- `AIO_VERSION: "x.y.z"` and `workflow_dispatch:` in `build-<app>.yml`.
+- `x.y.z` in `docker/<app>/VERSION`, and `workflow_dispatch:` (but no
+  `AIO_VERSION:`) in `build-<app>.yml`. The bumper commits only `docker/` and
+  `Apps/`: GITHUB_TOKEN may not push `.github/workflows` (that is why all its
+  runs failed until 2026-11-23).
 
 Wrapper apps (`WRAPPER.md`) are bumped the same way: their single
 `FROM <image>:<tag>` line needs no `AS img-`, and `x-casaos.version` is that tag.

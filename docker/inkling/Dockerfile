@@ -3,7 +3,7 @@
 # Inkling all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
 # Shared files come from docker/_common, so build with:
 #   docker buildx build --build-context common=docker/_common docker/inkling
-# The weekly bumper (update-upstream.yml) keeps the FROM line current.
+# The daily bumper (update-upstream.yml) keeps the FROM line current.
 #
 # Services inside (from upstream's compose.yaml):
 #   postgres   built-in (PGDG postgresql-16, same major as upstream's postgres:16-alpine)

@@ -5,7 +5,7 @@
 # with one made for this install, and prints the login in a CREDENTIALS box.
 # Mealie makes its own secret keys; SQLite is the database.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/mealie-recipes/mealie:v3.31.0
 

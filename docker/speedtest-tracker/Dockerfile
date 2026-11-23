@@ -5,7 +5,7 @@
 # admin password (made on first start, kept in /config) and prints the login
 # in a CREDENTIALS box. SQLite is the database.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM lscr.io/linuxserver/speedtest-tracker:v1.15.1-ls183
 

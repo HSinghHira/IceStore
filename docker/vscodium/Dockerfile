@@ -4,7 +4,7 @@
 # start script that gives every install its own connection token (made on
 # first start, kept in /config). Nothing else is changed.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM lscr.io/linuxserver/vscodium-web:1.143.17183-ls45
 

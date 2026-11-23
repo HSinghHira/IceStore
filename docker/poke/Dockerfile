@@ -11,7 +11,7 @@
 #
 # Poke publishes no image, so it is built from a pinned commit. Invidious
 # publishes one tag per architecture (an "-arm64" twin), so the right one is
-# picked by TARGETARCH. Neither has tags the weekly bumper can follow: bump
+# picked by TARGETARCH. Neither has tags the daily bumper can follow: bump
 # POKE_COMMIT and the "auto-update: hold" tags by hand.
 
 # auto-update: hold

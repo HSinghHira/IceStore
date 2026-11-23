@@ -5,7 +5,7 @@
 # start, kept in the data folder). Yuvomi refuses to start without a session
 # secret, and a key written in the compose file would be the same for everyone.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/ulsklyc/yuvomi:2.79.0
 

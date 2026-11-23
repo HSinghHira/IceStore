@@ -19,5 +19,4 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       app: ech0
-      AIO_VERSION: "1.0.0"
       kind: wrapper

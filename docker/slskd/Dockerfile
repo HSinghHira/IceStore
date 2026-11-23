@@ -5,7 +5,7 @@
 # kept in /app), instead of upstream's default login slskd / slskd, and
 # prints the login in a CREDENTIALS box.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM slskd/slskd:0.26.2
 

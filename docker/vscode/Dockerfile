@@ -4,7 +4,7 @@
 # start script that gives every install its own login password (made on
 # first start, kept in /config). Nothing else is changed.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM lscr.io/linuxserver/vscode:1.143.1-ls31
 

@@ -8,7 +8,7 @@
 # instead of on first start.
 #
 # To update, change RC_REF below (and x-casaos.version in the compose file),
-# bump AIO_VERSION in build-root-cellar.yml and rebuild.
+# bump docker/root-cellar/VERSION and rebuild.
 
 ARG RC_REF=v1.0.0
 

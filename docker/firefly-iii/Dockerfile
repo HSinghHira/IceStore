@@ -8,7 +8,7 @@
 #     reminders) from inside the container, which upstream does with a
 #     third container.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM fireflyiii/core:version-6.7.9
 

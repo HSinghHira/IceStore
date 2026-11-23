@@ -4,7 +4,7 @@
 # gives every install its own SECRET_KEY (made on first start, kept in the
 # data folder). Nothing else is changed.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM g33kphr33k/kitchenboard:1.6
 

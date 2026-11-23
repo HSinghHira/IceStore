@@ -5,7 +5,7 @@
 # start, kept in the data folder). Nothing else is changed.
 #
 # Upstream only publishes amd64 images.
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM timwitzdam/gitsave:1.4.0
 

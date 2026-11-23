@@ -5,7 +5,10 @@
 #       uses: ./.github/workflows/build-image.yml
 #       with:
 #         app: <app>
-#         AIO_VERSION: "1.0.0"
+#
+# The image version (the x.y.z tag) is in docker/<app>/VERSION, where the
+# daily bumper (update-upstream.yml) raises it. It is kept out of the build-*.yml
+# files because GITHUB_TOKEN may not push changes to workflow files.
 #
 # kind: aio (default; all-in-one, docker/<app>/aio-init.sh) or wrapper.
 # platforms: default linux/amd64,linux/arm64.
@@ -21,8 +24,9 @@ on:
         type: string
         required: true
       AIO_VERSION:
+        description: Overrides docker/<app>/VERSION (normally left out)
         type: string
-        required: true
+        default: ""
       kind:
         type: string
         default: aio
@@ -44,6 +48,17 @@ jobs:
         run: |
           echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${{ inputs.app }}" >> "$GITHUB_ENV"
           echo "SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Read the image version
+        env:
+          OVERRIDE: ${{ inputs.AIO_VERSION }}
+        run: |
+          v="${OVERRIDE:-$(tr -d '[:space:]' < "docker/${{ inputs.app }}/VERSION" 2>/dev/null || true)}"
+          if ! [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::docker/${{ inputs.app }}/VERSION must hold a version like 1.0.0 (got '$v')"
+            exit 1
+          fi
+          echo "VERSION=$v" >> "$GITHUB_ENV"
 
       - name: Test the shared helpers (chroots, Postgres)
         if: inputs.kind == 'aio'
@@ -76,6 +91,6 @@ jobs:
           cache-from: type=gha,scope=${{ inputs.app }}
           cache-to: type=gha,mode=max,scope=${{ inputs.app }}
           tags: |
-            ${{ env.IMAGE }}:${{ inputs.AIO_VERSION }}
-            ${{ env.IMAGE }}:${{ inputs.AIO_VERSION }}-${{ env.SHA }}
+            ${{ env.IMAGE }}:${{ env.VERSION }}
+            ${{ env.IMAGE }}:${{ env.VERSION }}-${{ env.SHA }}
             ${{ env.IMAGE }}:latest

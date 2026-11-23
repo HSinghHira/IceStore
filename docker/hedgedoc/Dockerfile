@@ -4,7 +4,7 @@
 # every install its own session secret (made on first start, kept in /data)
 # and keeps the SQLite database in /data. Nothing else is changed.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM quay.io/hedgedoc/hedgedoc:1.12.0
 

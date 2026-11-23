@@ -8,7 +8,7 @@
 # Nothing else is changed. Search and speech services are not bundled; add
 # your own in OvertChat's settings.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/yoloyash/overtchat-app:0.29.0
 

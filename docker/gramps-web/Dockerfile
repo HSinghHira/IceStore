@@ -8,7 +8,7 @@
 #
 # Gramps Web asks for the owner account on its first page.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/gramps-project/grampsweb:26.11.3
 

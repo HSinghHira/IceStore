@@ -6,10 +6,10 @@
 # github.com/waddington/job-application-tracker, the way its README installs
 # it: `uv sync` for the Python app and `pnpm build` for the web UI. To update,
 # change JAT_VERSION below (and x-casaos.version in the compose file), bump
-# AIO_VERSION in build-job-application-tracker.yml and rebuild.
+# docker/job-application-tracker/VERSION and rebuild.
 #
 # One base image: Node 22 (for the UI build) on Debian trixie, whose python3
-# (3.13) runs the app. The weekly bumper keeps the Node tag current within 22.
+# (3.13) runs the app. The daily bumper keeps the Node tag current within 22.
 
 ARG JAT_VERSION=v1.1.0
 

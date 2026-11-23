@@ -5,7 +5,7 @@
 # postgres:16), started by supervisord. Upstream publishes no image.
 #
 # To update, change OCTYPO_VERSION (and x-casaos.version in the compose
-# file), bump AIO_VERSION in build-octypo.yml and rebuild. `octypo start`
+# file), bump docker/octypo/VERSION and rebuild. `octypo start`
 # applies new migrations itself.
 
 ARG OCTYPO_VERSION=1.0.0

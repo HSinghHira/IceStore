@@ -6,7 +6,7 @@
 # dependencies). One start script gives the data folder to the node user.
 #
 # To update, change KOVI_REF below (and x-casaos.version in the compose
-# file), bump AIO_VERSION in build-kovi.yml and rebuild.
+# file), bump docker/kovi/VERSION and rebuild.
 
 ARG KOVI_REF=2026.10.09
 

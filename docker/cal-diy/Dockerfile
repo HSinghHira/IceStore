@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 #
 # Cal.diy all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
-# The weekly bumper (update-upstream.yml) moves the tags below.
+# The daily bumper (update-upstream.yml) moves the tags below.
 #
 # Services inside:
 #   postgres   built-in (PGDG postgresql-17; upstream's compose uses postgres:latest)

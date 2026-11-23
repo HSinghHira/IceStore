@@ -7,7 +7,7 @@
 # it as SECRET_KEY_BASE_FILE. It also gives the storage folder, which
 # ZimaOS makes as root, to the app's user before starting it as that user.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM pglombardo/pwpush:2.17.2
 

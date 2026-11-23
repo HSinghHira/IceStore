@@ -6,7 +6,7 @@
 # FROM scratch, so a static busybox is added for the script and the
 # healthcheck.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM vikunja/vikunja:2.8.0
 

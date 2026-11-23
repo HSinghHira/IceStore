@@ -6,7 +6,7 @@
 # supervisord. Upstream publishes no image.
 #
 # To update, change KITH_REF below (and x-casaos.version in the compose
-# file), bump AIO_VERSION in build-kith.yml and rebuild. Database upgrades
+# file), bump docker/kith/VERSION and rebuild. Database upgrades
 # run as the site starts.
 
 ARG KITH_REF=v0.4.5

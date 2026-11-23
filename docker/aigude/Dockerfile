@@ -6,7 +6,7 @@
 # start script can put a starter show in place on the first start.
 #
 # To update, change AIGUDE_VERSION below (and x-casaos.version in the
-# compose file), bump AIO_VERSION in build-aigude.yml and rebuild.
+# compose file), bump docker/aigude/VERSION and rebuild.
 
 ARG AIGUDE_VERSION=0.1.0
 

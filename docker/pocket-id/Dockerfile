@@ -4,7 +4,7 @@
 # every install its own ENCRYPTION_KEY (made on first start, kept in the data
 # folder). Nothing else is changed.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/pocket-id/pocket-id:v2.19.1
 

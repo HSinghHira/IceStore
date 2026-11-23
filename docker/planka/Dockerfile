@@ -8,7 +8,7 @@
 #     database password and admin password (made on first start, kept in
 #     /data) and prints the login in a CREDENTIALS box.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/plankanban/planka:2.3.1
 

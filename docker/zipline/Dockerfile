@@ -9,7 +9,7 @@
 #
 # Zipline asks for the first admin account on its setup page.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/diced/zipline:4.8.4
 

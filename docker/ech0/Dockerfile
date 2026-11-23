@@ -7,7 +7,7 @@
 #
 # The first account you register is the owner.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM sn0wl1n/ech0:v5.9.10
 

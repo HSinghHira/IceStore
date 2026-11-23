@@ -6,7 +6,7 @@
 # commit of github.com/Evident-Dev/romseek.
 #
 # To update, change ROMSEEK_REF below (and x-casaos.version in the compose
-# file), bump AIO_VERSION in build-romseek.yml and rebuild.
+# file), bump docker/romseek/VERSION and rebuild.
 
 ARG ROMSEEK_REF=ea4f9091ca723347e798abdf3c3019154d385bf8
 

@@ -3,7 +3,7 @@
 # Fluxer all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
 # Shared files come from docker/_common, so build with:
 #   docker buildx build --build-context common=docker/_common docker/fluxer
-# The weekly bumper (update-upstream.yml) keeps the FROM lines current.
+# The daily bumper (update-upstream.yml) keeps the FROM lines current.
 # Upstream's compose bundle: the fluxer-compose-<version>.tar.gz asset of
 # each fluxer-release on https://github.com/fluxerapp/fluxer/releases
 #

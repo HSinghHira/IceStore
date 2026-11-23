@@ -6,7 +6,7 @@
 # in the browser with upstream's own code. The sync loop starts once Strava is
 # connected and the Dawarich settings are filled in.
 #
-# Upstream only publishes `latest` and `sha-<commit>` tags. The weekly bumper
+# Upstream only publishes `latest` and `sha-<commit>` tags. The daily bumper
 # (update-upstream.yml) moves the commit tag below to the one `latest` points at.
 
 FROM ghcr.io/benno93/strava-dawarich-sync:sha-5faa02f

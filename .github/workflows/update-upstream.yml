@@ -1,15 +1,18 @@
 name: Update upstream images
 
-# Once a week, look for newer tags of the images the all-in-one apps are built
+# Once a day, look for newer tags of the images the all-in-one apps are built
 # from (docker/*/Dockerfile FROM lines). If there are any, commit the bumps and
 # start the build for each changed app, then rebuild the store.
+#
+# It only commits under docker/ and Apps/: GITHUB_TOKEN may not push changes to
+# .github/workflows, which is why each app's version is in docker/<app>/VERSION.
 #
 # A push made with GITHUB_TOKEN does not trigger other workflows, so the builds
 # and the store release are started here with `gh workflow run`.
 
 on:
   schedule:
-    - cron: "0 3 * * 1"
+    - cron: "0 3 * * *"
   workflow_dispatch:
 
 permissions:
@@ -41,7 +44,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docker Apps .github/workflows
+          git add docker Apps
           git commit -m "Update upstream images" -m "$SUMMARY"
           git pull --rebase origin main
           git push origin HEAD:main

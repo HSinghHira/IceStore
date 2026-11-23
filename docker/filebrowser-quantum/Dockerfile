@@ -7,7 +7,7 @@
 # in the app folder) and a random admin password, shown in the CREDENTIALS
 # box. It runs as root so it can read and write the files ZimaOS owns.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM gtstef/filebrowser:2.0.2-stable
 

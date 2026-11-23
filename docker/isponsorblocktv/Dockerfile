@@ -5,7 +5,7 @@
 # ttyd shows that same wizard in the browser on port 6129. The start script
 # also runs the skipper and restarts it whenever the wizard saves config.json.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/dmunozv04/isponsorblocktv:v2.11.0
 

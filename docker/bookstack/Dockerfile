@@ -9,7 +9,7 @@
 #     /config), and a one-shot that puts that password on admin@admin.com;
 #   - the login in a CREDENTIALS box in the logs.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM lscr.io/linuxserver/bookstack:v26.09.3-ls300
 

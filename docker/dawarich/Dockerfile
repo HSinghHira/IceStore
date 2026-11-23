@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 #
 # Dawarich all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
-# The weekly bumper (update-upstream.yml) moves the tag on the FROM line below.
+# The daily bumper (update-upstream.yml) moves the tag on the FROM line below.
 #
 # Services inside:
 #   postgres   built-in (PGDG postgresql-17 + PostGIS 3, same major as upstream's postgis/postgis:17-3.5)

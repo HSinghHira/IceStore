@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 #
 # Norish all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
-# The weekly bumper (update-upstream.yml) keeps the FROM lines current.
+# The daily bumper (update-upstream.yml) keeps the FROM lines current.
 #
 # Services inside:
 #   postgres   built-in (PGDG postgresql-17, same major as upstream's postgres:17-alpine)

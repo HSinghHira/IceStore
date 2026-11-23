@@ -17,7 +17,7 @@
 # site name, support email, legal text and public address are app settings.
 #
 # To update, change OPENSIGNUP_REF below (and x-casaos.version in the compose
-# file), bump AIO_VERSION in build-opensignup.yml and rebuild.
+# file), bump docker/opensignup/VERSION and rebuild.
 
 ARG OPENSIGNUP_REF=66294005d715611729e574ad5de4227cc3703935
 

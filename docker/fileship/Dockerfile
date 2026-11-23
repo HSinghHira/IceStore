@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 #
 # Fileship all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
-# The weekly bumper (update-upstream.yml) keeps the FROM line current.
+# The daily bumper (update-upstream.yml) keeps the FROM line current.
 #
 # Services inside:
 #   postgres   built-in (PGDG postgresql-16, same major as upstream's postgres:16.9)

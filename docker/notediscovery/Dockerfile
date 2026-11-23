@@ -5,7 +5,7 @@
 # (made on first start, kept in /app/data). Upstream ships with the login off
 # and a default password of admin.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM ghcr.io/gamosoft/notediscovery:0.35.0
 

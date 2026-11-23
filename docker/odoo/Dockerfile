@@ -8,7 +8,7 @@
 #   odoo       chroot   (the official Odoo image as-is: Ubuntu, Python, wkhtmltopdf)
 #   gateway    built-in (nginx on 8080; Odoo itself listens on 127.0.0.1:8069/8072)
 
-# Odoo tags are <major>.0-<build date>. The weekly bumper takes newer builds of
+# Odoo tags are <major>.0-<build date>. The daily bumper takes newer builds of
 # the same major only: a new major needs a database upgrade Odoo can't do itself.
 # auto-update: keep-major
 FROM odoo:20.0-20261015 AS img-odoo

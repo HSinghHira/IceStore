@@ -63,7 +63,7 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    health endpoints, the upstream `docker-compose.yml` and nginx/reverse-proxy
    config, data paths, whether images are amd64+arm64. Look things up; do not
    recall tags from memory. The repo's own bumper finds the newest tag the
-   way the weekly job will (`import update_upstream as u; u.newest(image,
+   way the daily job will (`import update_upstream as u; u.newest(image,
    tag)`, `u.list_tags(image)` from `.github/scripts/`), and the registry API
    gives each image's architectures and `Entrypoint`/`Cmd`/`WorkingDir`/`User`
    without Docker. Also decide here whether the app works with
@@ -272,8 +272,9 @@ folder, the compose `name:`, the main service name, the image name
     sed setpriv` and `exec setpriv ...` directly (OpenSignup).
   - *A fixed image after a broken first release*: ZimaOS keeps the old
     `:latest` after uninstall and reinstalls from it. Pin the compose image
-    to the AIO_VERSION (`ghcr.io/hsinghhira/<app>:1.0.1`); the weekly
-    bumper moves that pin with AIO_VERSION (OpenSignup).
+    to the image version in `docker/<app>/VERSION`
+    (`ghcr.io/hsinghhira/<app>:1.0.1`); the daily bumper moves that pin with
+    it (OpenSignup).
   - *NEXT_PUBLIC_* baked at build*: build with placeholder words, fill them
     in on start from a pristine copy of `.next` (OpenSignup's fill-public.mjs).
   - *Upstream image is amd64 only*: add `platforms: linux/amd64` to the
@@ -335,8 +336,8 @@ folder, the compose `name:`, the main service name, the image name
   those conventions breaks the MOS template too. MOS-only differences go in
   `platforms/mos/overrides/<app>.yml`, never in `Apps/`.
 - **Pin every upstream tag** in the Dockerfile `FROM ... AS img-<name>` lines.
-- **AIO apps are kept current by `update-upstream.yml`** every Monday: it bumps
-  the FROM tags, `AIO_VERSION`, `version`, `update_at` and `release_notes`, then
+- **AIO apps are kept current by `update-upstream.yml`** every day: it bumps
+  the FROM tags, `docker/<app>/VERSION`, `version`, `update_at` and `release_notes`, then
   starts the build. Write a new AIO app in the shapes it reads (`REPO.md`
   § update-upstream.yml) and don't tell the user to bump versions by hand. A
   new app needs no change to the workflow.

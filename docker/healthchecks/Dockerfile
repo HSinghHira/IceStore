@@ -7,7 +7,7 @@
 #   - uses SQLite in /data, so no database container is needed;
 #   - prints the login in a CREDENTIALS box.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM healthchecks/healthchecks:v5.0.3
 

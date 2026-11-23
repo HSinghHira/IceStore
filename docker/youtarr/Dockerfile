@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 #
 # Youtarr all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 #
 # Services inside:
 #   mariadb    built-in (Debian's mariadb-server, in place of upstream's mariadb:10.3)

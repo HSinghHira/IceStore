@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 #
 # Ente - SeaweedFS S3 all-in-one. CI runs ../_common/capture-meta.sh first (it fills ./meta).
-# The weekly bumper keeps the FROM lines current. Ente only publishes "latest"
+# The daily bumper keeps the FROM lines current. Ente only publishes "latest"
 # and one tag per git commit, so its two images are pinned to commit tags and
 # follow "latest" (see .github/scripts/update_upstream.py).
 #

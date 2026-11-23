@@ -5,7 +5,7 @@
 # /app/pb_data) instead of upstream's default admin@certimate.fun /
 # 1234567890, and prints the login in a CREDENTIALS box.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM certimate/certimate:v0.4.38
 

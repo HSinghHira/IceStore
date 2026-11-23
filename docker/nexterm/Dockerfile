@@ -6,7 +6,7 @@
 #
 # Nexterm asks for the first admin account on its first page.
 #
-# The weekly bumper (update-upstream.yml) moves the tag below.
+# The daily bumper (update-upstream.yml) moves the tag below.
 
 FROM nexterm/server:1.2.2-BETA
 
