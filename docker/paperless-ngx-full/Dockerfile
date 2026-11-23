@@ -79,7 +79,12 @@ ENV PAPERLESS_REDIS=redis://127.0.0.1:6379 \
     PAPERLESS_DBUSER=paperless \
     PAPERLESS_TIKA_ENDPOINT=http://127.0.0.1:9998 \
     PAPERLESS_TIKA_GOTENBERG_ENDPOINT=http://127.0.0.1:3000 \
-    S6_SERVICES_GRACETIME=20000
+    S6_SERVICES_GRACETIME=20000 \
+    AIO_CRED_FILE=/tmp/icestore-credentials
+# AIO_CRED_FILE: the CREDENTIALS banner file. s6-overlay can put a fresh tmpfs
+# on /run in a privileged container, so it lives in /tmp. It is an image ENV
+# (not only exported by the start script) because IceDash finds the file from
+# the container's environment as Docker reports it.
 
 LABEL org.opencontainers.image.title="paperless-ngx-full" \
       org.opencontainers.image.description="Paperless-ngx with PostgreSQL, Redis, Tika and Gotenberg inside and per-install secrets" \

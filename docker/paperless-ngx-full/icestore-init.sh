@@ -26,8 +26,9 @@ PASS_FILE=$DATA/.admin_password
 DB_PASS_FILE=$DATA/.db_password
 ROOTFS=/opt/rootfs
 LOG_TAG=icestore
-# s6-overlay may put a fresh tmpfs on /run, so the banner file lives in /tmp.
-export AIO_CRED_FILE=/tmp/icestore-credentials
+# The banner file is in /tmp (AIO_CRED_FILE, set in the Dockerfile so IceDash
+# sees it too): s6-overlay may put a fresh tmpfs on /run.
+export AIO_CRED_FILE=${AIO_CRED_FILE:-/tmp/icestore-credentials}
 . /usr/local/lib/icestore/lib.sh
 
 # Random letters and digits, without openssl (the Paperless image has none).

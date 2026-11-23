@@ -2,7 +2,7 @@ name: paperless-ngx-full
 
 services:
   paperless-ngx-full:
-    image: ghcr.io/hsinghhira/paperless-ngx-full:latest
+    image: ghcr.io/hsinghhira/paperless-ngx-full:1.0.1
     container_name: paperless-ngx-full
     restart: unless-stopped
     stop_grace_period: 60s
@@ -238,6 +238,7 @@ x-casaos:
   update_at: "2026-11-23"
   release_notes:
     en_US: |-
+      - Image 1.0.1: the login now shows in IceDash's Credentials box (it was only in the logs)
       - First IceStore release, on port 6800 (asked for in IceStore issue 4)
       - Built on ghcr.io/paperless-ngx/paperless-ngx 3.5.1, like upstream's docker-compose.postgres-tika.yml, in one container
       - PostgreSQL 18 and Redis inside; gotenberg 8.40.0 and tika 3.3.3.1 inside, so Office files and emails (.eml) work

@@ -80,7 +80,9 @@ and keep the `"docker/_common/**"` line in the workflow. In the start script,
 just before `exec`:
 
 ```sh
-export AIO_CRED_FILE=/tmp/icestore-credentials   # only if the root is read-only
+# only if /run won't do (read-only root, s6-overlay remounting /run): set
+# ENV AIO_CRED_FILE=/tmp/icestore-credentials in the Dockerfile, not only
+# here — IceDash finds the file from the container's Docker env.
 LOG_TAG=icestore
 . /usr/local/lib/icestore/lib.sh
 cred_reset
