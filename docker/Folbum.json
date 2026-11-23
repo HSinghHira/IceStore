@@ -1,0 +1,69 @@
+{
+  "name": "Folbum",
+  "repo": "ghcr.io/theashutoshn/folbum:v0.2.1",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/theashutoshn/folbum/pkgs/container/folbum",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --memory=256m --memory-reservation=32m --user=0:0 --security-opt=no-new-privileges:true --tmpfs /tmp:size=16m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8765]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/icon.png",
+  "project": "https://github.com/theashutoshn/Folbum#readme",
+  "support": "https://github.com/theashutoshn/Folbum/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/folbum/",
+  "description": "Turn your MOS Photos folders into albums",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/folbum/data",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "Your Folbum account, settings, sync history and saved MOS sign-in. Keep it private and back it up."
+    },
+    {
+      "name": "Data",
+      "host": "/DATA",
+      "container": "/DATA",
+      "mode": "ro",
+      "description": "Your MOS storage, read-only at the same path. Only the optional Dashboard disk check reads it; Folbum never changes your photos."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6799",
+      "container": "8765",
+      "description": "Folbum web app, published on host as 6799"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "DATA_DIR",
+      "key": "DATA_DIR",
+      "value": "/app/data",
+      "mask": false,
+      "description": "Where Folbum keeps its account, settings and sync history inside the container. Leave it as /app/data."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
