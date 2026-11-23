@@ -1,0 +1,10 @@
+#!/command/with-contenv /usr/bin/bash
+# shellcheck shell=bash
+# PostgreSQL 18 for Paperless, on 127.0.0.1 only. icestore-init made the
+# cluster and the paperless role and database on first start.
+pg_dir=/var/lib/postgresql/data
+mkdir -p /run/postgresql
+chown postgres:postgres /run/postgresql
+exec s6-setuidgid postgres /usr/lib/postgresql/18/bin/postgres -D "$pg_dir" \
+  -c listen_addresses=127.0.0.1 -c port=5432 \
+  -c unix_socket_directories=/run/postgresql

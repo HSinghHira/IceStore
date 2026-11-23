@@ -185,7 +185,8 @@ x-casaos:
 
       Office files (Word, Excel) and emails as .eml need two more services
       (Tika and Gotenberg) that are not inside this app; PDFs and images
-      work.
+      work. For those, install Paperless-ngx Full from IceStore instead: it
+      has Tika, Gotenberg and PostgreSQL inside.
   tips:
     before_install:
       en_US: >-

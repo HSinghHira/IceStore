@@ -52,7 +52,7 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    file. If it cannot reach the repo, ask the user which ports are taken. Never
    guess. Older apps outside 61xx only show as warnings; leave their ports alone.
    **6101–6199 is full (Nov 2026).** New apps take the next free numbers in
-   6690–6799 (Reelsaw 6690, Lemmary 6691, Fluxer 6692–6694, KyIdentity
+   6690–6899 (Reelsaw 6690, Lemmary 6691, Fluxer 6692–6694, KyIdentity
    6695, ...); `ports.py` falls through to that range by itself and the
    checker accepts it. A port a protocol fixes (DNS on 53, KyDNS) is
    published as itself; it is in `FIXED_PORTS` in both scripts.
@@ -284,6 +284,13 @@ folder, the compose `name:`, the main service name, the image name
   - *s6-overlay image that needs Redis*: wrapper adds `redis-server` with apt
     and an s6 longrun (`svc-redis`, depends on `init-folders`; touch
     `init-wait-for-redis/dependencies.d/svc-redis`) (Paperless-ngx).
+  - *s6 app plus whole upstream side images* (Paperless-ngx Full: PGDG
+    Postgres as an s6 longrun before `init-wait-for-db`, Tika and Gotenberg
+    as `FROM <img>:<tag> AS img-<name>` copied to `/opt/rootfs/<name>` and
+    started by s6 with `chroot`, their ENV captured by a
+    `FROM img-<name> AS env-<name>` + `RUN env` stage; `privileged: true`
+    for the /proc and /dev mounts). The checker allows `img-` side stages
+    in a wrapper and the bumper moves them.
   - *MySQL 8 needed* (Ghost): run the official `mysql:8.4.x` image as a chroot
     service with its own entrypoint (MYSQL_* env, `/var/lib/mysql` bind) under
     `# auto-update: keep-major`; MariaDB from apt is fine where upstream uses

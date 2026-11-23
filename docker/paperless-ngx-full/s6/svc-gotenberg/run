@@ -1,0 +1,18 @@
+#!/command/with-contenv /usr/bin/bash
+# shellcheck shell=bash
+# Gotenberg, the upstream image run with chroot from /opt/rootfs/gotenberg
+# (icestore-init mounted /proc, /dev and /sys into it), as its own gotenberg
+# user, with only the settings of the Gotenberg image. The flags are the ones
+# Paperless-ngx's compose file uses: Chromium (used for .eml files) runs no
+# JavaScript and may only open the files Gotenberg was sent.
+root=/opt/rootfs/gotenberg
+mapfile -t image_env < /opt/icestore/gotenberg.env
+uid=$(awk -F: '$1=="gotenberg"{print $3}' "$root/etc/passwd")
+gid=$(awk -F: '$1=="gotenberg"{print $4}' "$root/etc/passwd")
+groups=$(awk -F: -v u=gotenberg '$4 ~ "(^|,)" u "(,|$)" {printf ",%s", $3}' "$root/etc/group")
+exec env -i "${image_env[@]}" chroot --userspec="${uid:-1001}:${gid:-1001}" \
+  --groups="${gid:-1001}${groups}" "$root" \
+  env -C /home/gotenberg gotenberg \
+  --api-bind-ip=127.0.0.1 --api-port=3000 \
+  --chromium-disable-javascript=true \
+  "--chromium-allow-list=^file:///tmp/.*"

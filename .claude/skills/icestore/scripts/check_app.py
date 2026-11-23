@@ -30,8 +30,8 @@ SITE_ICONS = {"github", "plus", "plus-circle", "issues", "grid", "copy", "check"
 SECRET = re.compile(r"(?:pass(?:word)?|secret|token|api[_-]?key|private[_-]?key|encryption[_-]?key)", re.I)
 PORT_LOW, PORT_HIGH = 6101, 6199
 # Apps with many ports get a block of 30 here instead (Ente: 6600, 6630, 6660).
-# Once 61xx filled up (Nov 2026), single apps continue from 6690 to 6799.
-BLOCK_LOW, BLOCK_HIGH = 6600, 6799
+# Once 61xx filled up (Nov 2026), single apps continue from 6690 to 6899.
+BLOCK_LOW, BLOCK_HIGH = 6600, 6899
 # Ports a protocol fixes, which clients can't be told to change (DNS servers: KyDNS).
 FIXED_PORTS = {"53"}
 AIO_FILES = ["Dockerfile", "aio-init.sh", "run-svc.sh", "capture-meta.sh", "supervisord.conf",
@@ -451,9 +451,18 @@ def check_wrapper(root, slug, data):
             err(f"docker/{slug}/{f.name} has Windows (CRLF) line endings; it must be LF to run in the image")
         if f.suffix == ".sh":
             sh_ok(f)
-    froms = re.findall(r"(?m)^FROM\s+(\S+)", dockerfile)
-    if len(froms) != 1:
-        err(f"a wrapper Dockerfile has exactly one FROM (the upstream image); found {len(froms)}")
+    # One FROM is the upstream app image. A wrapper may also carry other
+    # upstream images it runs beside the app (Paperless-ngx Full: Gotenberg and
+    # Tika), each as `FROM <image>:<tag> AS img-<name>` so the weekly bumper
+    # moves them, plus stages built on those (`FROM img-<name> AS ...`).
+    all_froms = re.findall(r"(?m)^FROM\s+(?:--platform=\S+\s+)?(\S+)(?:\s+AS\s+(\S+))?\s*$", dockerfile)
+    froms = [img for img, alias in all_froms if not img.startswith("img-")]
+    stray = [img for img, alias in all_froms
+             if not img.startswith("img-") and alias and not alias.startswith("img-")]
+    main = [img for img, alias in all_froms if not alias]
+    if len(main) != 1 or stray:
+        err(f"a wrapper Dockerfile has exactly one FROM (the upstream image), plus only "
+            f"'FROM <image>:<tag> AS img-<name>' side images; found {len(all_froms)}")
     tags = []
     for image in froms:
         tag = image.rsplit(":", 1)[1] if ":" in image.split("/")[-1] else ""

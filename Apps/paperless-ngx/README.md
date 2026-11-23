@@ -207,7 +207,7 @@ Paperless-ngx turns your pile of paper into a searchable online archive. Scan a 
 4. Or put files in `/DATA/AppData/paperless-ngx/consume` with the Files app. Paperless picks them up within a minute.
 5. Open a document to check its title, date and tags. Paperless gets better at guessing them the more you correct it.
 
-Office files (Word, Excel) and emails as `.eml` need two more services (Tika and Gotenberg) that are not inside this app; PDFs and images work.
+Office files (Word, Excel) and emails as `.eml` need two more services (Tika and Gotenberg) that are not inside this app; PDFs and images work. For those, install [Paperless-ngx Full](https://icestore.hsinghhira.me/app/paperless-ngx-full/), which has Tika, Gotenberg and PostgreSQL inside.
 
 ## Before you install
 

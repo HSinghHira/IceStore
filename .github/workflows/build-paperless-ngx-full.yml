@@ -1,0 +1,26 @@
+name: Build paperless-ngx-full
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/paperless-ngx-full/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-paperless-ngx-full.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+# Wrapper apps add `kind: wrapper` (and drop the docker/_common line above
+# unless their Dockerfile copies from it); amd64-only apps add
+# `platforms: linux/amd64`.
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: paperless-ngx-full
+      AIO_VERSION: "1.0.0"
+      kind: wrapper

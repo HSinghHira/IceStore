@@ -1,0 +1,16 @@
+#!/command/with-contenv /usr/bin/bash
+# shellcheck shell=bash
+# Apache Tika, the upstream image run with chroot from /opt/rootfs/tika
+# (icestore-init mounted /proc, /dev and /sys into it). It starts with only
+# the settings of the Tika image, like upstream's own container, and listens
+# on 127.0.0.1 only.
+root=/opt/rootfs/tika
+mapfile -t image_env < /opt/icestore/tika.env
+jar=$(cd "$root" && ls tika-server-standard-*.jar 2>/dev/null | head -n 1)
+if [[ -z $jar ]]; then
+  echo "[tika] no tika-server-standard-*.jar in the Tika image; Office files and emails cannot be read" >&2
+  exec sleep infinity
+fi
+exec env -i "${image_env[@]}" chroot --userspec=35002:35002 "$root" \
+  java -cp "/$jar:/tika-extras/*" org.apache.tika.server.core.TikaServerCli \
+  -h 127.0.0.1 -p 9998

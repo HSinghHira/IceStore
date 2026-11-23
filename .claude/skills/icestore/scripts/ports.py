@@ -28,8 +28,9 @@ except ImportError:
 REPO = "HSinghHira/IceStore"
 LOW, HIGH = 6101, 6199
 BLOCK_LOW, BLOCK_HIGH, BLOCK = 6600, 6699, 30
-# 61xx is full (Nov 2026): single apps continue here, after the Ente blocks.
-NEXT_LOW, NEXT_HIGH = 6690, 6799
+# 61xx is full (Nov 2026): single apps continue here, after the Ente blocks,
+# then on into 6800-6899.
+NEXT_LOW, NEXT_HIGH = 6690, 6899
 FIXED_PORTS = {"53"}  # DNS servers (KyDNS): clients can't use another port
 SOURCES = [
     f"https://codeload.github.com/{REPO}/tar.gz/refs/heads/main",
