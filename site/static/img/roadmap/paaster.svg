@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="264 215 518 613" width="518" height="613">
+  <title>Paaster logo</title>
+  <defs>
+    <linearGradient id="face" x1="266" y1="217" x2="780" y2="821" gradientUnits="userSpaceOnUse"><stop stop-color="#4468ff"/><stop offset=".35" stop-color="#3b5dff"/><stop offset=".7" stop-color="#2d4dfb"/><stop offset="1" stop-color="#203cf0"/></linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#658aff"/><stop offset=".48" stop-color="#2248f5"/><stop offset="1" stop-color="#00118b"/></linearGradient>
+    <linearGradient id="inset" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#071387"/><stop offset=".55" stop-color="#1c31ad"/><stop offset="1" stop-color="#577aff"/></linearGradient>
+    <path id="letter" fill-rule="evenodd" d="M277 217 H584 C704 217 779 294 779 413 C779 536 697 616 563 616 H416 Q407 616 407 625 V810 Q407 821 396 821 H277 Q266 821 266 810 V228 Q266 217 277 217 Z M416 340 Q407 340 407 349 V500 Q407 509 416 509 H540 C598 509 632 477 632 425 C632 373 599 340 540 340 Z"/>
+  </defs>
+  <use href="#letter" fill="#102ba8" transform="translate(0 5)"/>
+  <use href="#letter" fill="url(#face)" stroke="url(#edge)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M777 385 C788 519 708 613 567 613 H415 Q403 613 403 625 V808 Q403 817 394 817 H278 Q270 817 268 812" fill="none" stroke="#102ba5" stroke-opacity=".8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M774 414 C774 533 696 608 563 608 H415 Q399 608 399 624 V808 Q399 813 394 813 H278 Q273 813 273 807 V229" fill="none" stroke="#2749d8" stroke-width="3" stroke-opacity=".9"/>
+  <path d="M277 220 H584 C704 220 776 295 776 413" fill="none" stroke="#7496ff" stroke-opacity=".65" stroke-width="3"/>
+  <path d="M270 228 V808 Q270 816 278 816 H395" fill="none" stroke="#7192ff" stroke-opacity=".45" stroke-width="4"/>
+  <path d="M416 340 Q407 340 407 349 V500 Q407 509 416 509 H540 C598 509 632 477 632 425 C632 373 599 340 540 340 Z" fill="none" stroke="url(#inset)" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M403 500 V348 Q403 336 417 336 H540 C599 336 634 370 635 420" fill="none" stroke="#102aa9" stroke-width="4" opacity=".8"/>
+  <path d="M412 508 H540 C594 508 627 478 632 437" fill="none" stroke="#7093ff" stroke-width="2" opacity=".7"/>
+</svg>
