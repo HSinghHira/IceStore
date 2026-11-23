@@ -7,7 +7,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/isanto1306/disk-monitor:0.32.104
+FROM ghcr.io/isanto1306/disk-monitor:0.32.105
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 # Shared helpers and the CREDENTIALS banner (docker/_common; built with
