@@ -1,0 +1,151 @@
+name: folbum
+
+services:
+  folbum:
+    image: ghcr.io/theashutoshn/folbum:v0.2.1
+    container_name: folbum
+    user: "0:0"
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DATA_DIR=/app/data
+    ports:
+      - target: 8765
+        published: "6799"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+        read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/api/health',timeout=5)"]
+      interval: 30s
+      timeout: 6s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/icon.png
+    x-casaos:
+      id: com.icestore.folbum
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: DATA_DIR
+          description:
+            en_US: >-
+              Where Folbum keeps its account, settings and sync history
+              inside the container. Leave it as /app/data.
+      ports:
+        - container: "8765"
+          description:
+            en_US: Folbum web app, published on host as 6799
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Your Folbum account, settings, sync history and saved ZimaOS
+              sign-in. Keep it private and back it up.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS storage, read-only at the same path. Only the
+              optional Dashboard disk check reads it; Folbum never changes
+              your photos.
+
+x-casaos:
+  id: com.icestore.folbum
+  architectures:
+    - amd64
+    - arm64
+  main: folbum
+  author: HSinghHira
+  category: Media
+  developer: Ashutosh
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/icon.png
+  title:
+    en_US: Folbum
+  tagline:
+    en_US: Turn your ZimaOS Photos folders into albums
+  description:
+    en_US: >-
+      Folbum makes an album in ZimaOS Photos for every folder that Photos
+      has indexed. Each album is named after its folder and points at the
+      original photos and videos, so nothing is copied or moved. Preview
+      the changes, sync, and let it keep the albums up to date.
+
+
+      **Features**
+
+
+      - One album per media folder, named after the folder
+
+      - Preview what will be made or updated before you sync
+
+      - Repeat syncs add new files and keep what is already there
+
+      - Automatic sync on a timer
+
+      - Optional Dashboard check of files on disk against the Photos index
+
+
+      **How to use?**
+
+
+      1. Open Folbum from the ZimaOS dashboard and make your account.
+
+      2. In Connection, press + and enter your ZimaOS address and login.
+
+      3. In Sync, pick a Photos source, read the preview and run the sync.
+
+      4. Open ZimaOS Photos to see your new albums.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Right away, open Folbum and make your account. The password needs
+           at least 12 characters. Until you do, anyone on your network can.
+
+
+        3. In Connection, use http://[ZIMAOS-IP-ADDRESS] as the address, not
+           localhost. Then type your ZimaOS username and password.
+
+
+        4. Folbum is an unofficial helper. It only makes albums; your photos
+           stay where they are.
+  index: /
+  port_map: "6799"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.2.1"
+  update_at: "2026-11-23"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6799 (upstream uses 8765)
+      - The official ghcr.io/theashutoshn/folbum v0.2.1 image
+      - Runs as root so it can write its ZimaOS data folder, replacing upstream's one-time permissions container
+      - /DATA is shared read-only for the optional Dashboard disk check
+  repo: "https://github.com/theashutoshn/Folbum"
+  support: "https://github.com/theashutoshn/Folbum/issues"
+  docs: "https://github.com/theashutoshn/Folbum#readme"
