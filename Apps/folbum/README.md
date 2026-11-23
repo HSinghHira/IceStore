@@ -2,20 +2,22 @@
 source: https://github.com/theashutoshn/Folbum
 services:
   - { name: Folbum, path: /, icon: monitor }
+screenshots: [Dashboard, Sync, Connection]
 variables:
   - name: DISK_GALLERY_ROOT
     group: Dashboard disk check
     default: ""
     description: >-
       The folder Folbum walks to compare files on disk with the Photos
-      index, like /DATA/Gallery. /DATA is already shared read-only. Leave
-      blank to turn the check off.
+      index, like /media/HDD-Storage/Gallery. /DATA and /media are already
+      shared read-only. Leave blank to turn the check off.
   - name: DISK_SOURCE_PATH
     group: Dashboard disk check
     default: ""
     description: >-
-      The Photos source path exactly as Folbum shows it in Sync. The check
-      only runs for this source. Leave blank to turn the check off.
+      The Photos source path exactly as Folbum shows it in Sync, like
+      /media/HDD-Storage/Gallery. The check only runs for this source.
+      Leave blank to turn the check off.
 ---
 
 # Folbum
@@ -39,4 +41,4 @@ Folbum makes an album in ZimaOS Photos for every folder that Photos has indexed.
 
 ## Before you install
 
-Right after installing, open `http://[ZIMAOS-IP-ADDRESS]:6799` and make your account (the password needs at least 12 characters); until you do, anyone on your network can. In **Connection**, use `http://[ZIMAOS-IP-ADDRESS]` as the NAS address: inside the container, `localhost` is Folbum itself. Folbum is an unofficial helper for ZimaOS Photos and needs Photos installed. Your account, settings and saved ZimaOS sign-in are in `/DATA/AppData/folbum/data`; keep that folder private. For the Dashboard disk check, add `DISK_GALLERY_ROOT` and `DISK_SOURCE_PATH` in the app settings (see Variables).
+Right after installing, open `http://[ZIMAOS-IP-ADDRESS]:6799` and make your account (the password needs at least 12 characters); until you do, anyone on your network can. In **Connection**, use `http://[ZIMAOS-IP-ADDRESS]` as the NAS address: inside the container, `localhost` is Folbum itself. Folbum is an unofficial helper for ZimaOS Photos and needs Photos installed. Your account, settings and saved ZimaOS sign-in are in `/DATA/AppData/folbum/data`; keep that folder private. For the Dashboard disk check, add `DISK_GALLERY_ROOT` and `DISK_SOURCE_PATH` in the app settings, both set to the source path shown in **Sync** (like `/media/HDD-Storage/Gallery`); `/DATA` and `/media` are shared read-only for it.

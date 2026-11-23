@@ -24,6 +24,10 @@ services:
         source: /DATA
         target: /DATA
         read_only: true
+      - type: bind
+        source: /media
+        target: /media
+        read_only: true
     tmpfs:
       - /tmp:size=16m
     security_opt:
@@ -70,6 +74,12 @@ services:
               Your ZimaOS storage, read-only at the same path. Only the
               optional Dashboard disk check reads it; Folbum never changes
               your photos.
+        - container: /media
+          description:
+            en_US: >-
+              Your other ZimaOS disks, read-only at the same path, like
+              /media/HDD-Storage/Gallery. Only the optional Dashboard disk
+              check reads it.
 
 x-casaos:
   id: com.icestore.folbum
@@ -81,7 +91,11 @@ x-casaos:
   category: Media
   developer: Ashutosh
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/icon.png
-  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/folbum/screenshot-3.png
   title:
     en_US: Folbum
   tagline:
@@ -145,7 +159,7 @@ x-casaos:
       - First IceStore release, on port 6799 (upstream uses 8765)
       - The official ghcr.io/theashutoshn/folbum v0.2.1 image
       - Runs as root so it can write its ZimaOS data folder, replacing upstream's one-time permissions container
-      - /DATA is shared read-only for the optional Dashboard disk check
+      - /DATA and /media are shared read-only for the optional Dashboard disk check
   repo: "https://github.com/theashutoshn/Folbum"
   support: "https://github.com/theashutoshn/Folbum/issues"
   docs: "https://github.com/theashutoshn/Folbum#readme"
