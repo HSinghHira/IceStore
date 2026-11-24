@@ -1,0 +1,136 @@
+name: kavita
+
+services:
+  kavita:
+    image: jvmilazz0/kavita:0.9.1
+    container_name: kavita
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 5000
+        published: "6812"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /kavita/config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:5000/api/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kavita/icon.png
+    x-casaos:
+      id: com.icestore.kavita
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for scan schedules. It is filled in from your
+              ZimaOS time zone.
+      ports:
+        - container: "5000"
+          description:
+            en_US: Kavita web reader and OPDS, published on host as 6812
+      volumes:
+        - container: /kavita/config
+          description:
+            en_US: >-
+              Kavita's settings (appsettings.json), database, covers, logs
+              and backups. Back it up.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS storage at the same path. Add a folder like
+              /DATA/Media/Comics as a library.
+
+x-casaos:
+  id: com.icestore.kavita
+  architectures:
+    - amd64
+    - arm64
+  main: kavita
+  author: HSinghHira
+  category: Media
+  developer: Kareadita
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kavita/icon.png
+  title:
+    en_US: Kavita
+  tagline:
+    en_US: Reading server for manga, comics and ebooks
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kavita/](https://icestore.hsinghhira.me/app/kavita/) for full details
+
+
+      Kavita is a fast reading server for your manga, comics, webtoons and
+      ebooks. Read in any browser with a reader made for each format, and
+      keep your place across devices.
+
+
+      **Features**
+
+
+      - Readers for manga, comics and webtoons (CBZ, CBR, CB7, images),
+        EPUB and PDF
+
+      - Series grouped by folder, with covers and details from your files
+
+      - Reading lists, collections, want-to-read and progress per user
+
+      - Users with their own libraries, age ratings and rights
+
+      - OPDS feeds for reader apps, and send-to-device by email
+
+
+      **How to use?**
+
+
+      1. Open Kavita right away and make the admin account.
+
+      2. Add a library and pick a folder under /DATA, like
+         /DATA/Media/Comics.
+
+      3. Kavita scans it; start reading.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Kavita and make the admin account. Until you do,
+           anyone on your network can.
+
+
+        3. Put each series in its own folder, like
+           /DATA/Media/Comics/Series Name. Then add the top folder as a
+           library.
+  index: /
+  port_map: "6812"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.9.1"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release: jvmilazz0/kavita 0.9.1 on port 6812
+      - /DATA is shared at the same path for your libraries
+  repo: "https://github.com/Kareadita/Kavita"
+  support: "https://github.com/Kareadita/Kavita/issues"
+  docs: "https://wiki.kavitareader.com"
