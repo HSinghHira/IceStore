@@ -38,7 +38,8 @@ RUN set -eux; \
 COPY --from=img-backend / /opt/rootfs/backend/
 
 # The built web app, served by the gateway.
-COPY --from=web-dist /usr/share/nginx/html/ /srv/mailflow-web/
+# Since 4.5 the frontend image is Caddy with the built app in /srv (was nginx's html dir).
+COPY --from=web-dist /srv/ /srv/mailflow-web/
 
 COPY meta/ /opt/meta/
 COPY aio-init.sh /usr/local/bin/aio-init

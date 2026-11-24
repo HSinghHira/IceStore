@@ -28,9 +28,13 @@ RUN set -eux; \
         jpegoptim optipng; \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif; \
     docker-php-ext-install -j"$(nproc)" pdo_mysql pdo_pgsql mbstring gd zip intl bcmath; \
-    pecl install apcu; \
-    docker-php-ext-enable apcu; \
-    rm -rf /var/lib/apt/lists/* /tmp/pear; \
+    # PHP 8.6 images ship no pecl, so APCu is built from its PECL tarball.
+    docker-php-source extract; \
+    mkdir -p /usr/src/php/ext/apcu; \
+    curl -fsSL https://pecl.php.net/get/apcu | tar -xz --strip-components=1 -C /usr/src/php/ext/apcu; \
+    docker-php-ext-install -j"$(nproc)" apcu; \
+    docker-php-source delete; \
+    rm -rf /var/lib/apt/lists/*; \
     rm -f /etc/nginx/sites-enabled/default
 
 ADD https://github.com/kestellohq/cms/releases/download/v${KESTELLO_VERSION}/kestello-${KESTELLO_VERSION}.zip /tmp/kestello.zip
