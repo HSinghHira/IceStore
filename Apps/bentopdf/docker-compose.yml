@@ -1,0 +1,117 @@
+name: bentopdf
+
+services:
+  bentopdf:
+    image: ghcr.io/alam00000/bentopdf:2.8.12
+    container_name: bentopdf
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DISABLE_IPV6=true
+    ports:
+      - target: 8080
+        published: "6817"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bentopdf/icon.png
+    x-casaos:
+      id: com.icestore.bentopdf
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: DISABLE_IPV6
+          description:
+            en_US: >-
+              true makes the web server listen on IPv4 only, which works on
+              every ZimaOS. Set to false to listen on IPv6 too.
+      ports:
+        - container: "8080"
+          description:
+            en_US: BentoPDF web app, published on host as 6817
+
+x-casaos:
+  id: com.icestore.bentopdf
+  architectures:
+    - amd64
+    - arm64
+  main: bentopdf
+  author: HSinghHira
+  category: Productivity
+  developer: alam00000
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bentopdf/icon.png
+  title:
+    en_US: BentoPDF
+  tagline:
+    en_US: Private PDF toolkit that works in your browser
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/bentopdf/](https://icestore.hsinghhira.me/app/bentopdf/) for full details
+
+
+      BentoPDF is a set of over 50 PDF tools: merge, split, compress, sign,
+      edit, convert and more. Everything runs in your browser, so your
+      files never leave your device, not even to your ZimaOS.
+
+
+      **Features**
+
+
+      - Merge, split, rotate, reorder and delete pages
+
+      - Compress, protect, unlock and add watermarks
+
+      - Fill forms, sign, annotate and edit text
+
+      - Convert images, Markdown and text to PDF, and PDF to images
+
+      - OCR to make scanned PDFs searchable
+
+      - No account, no uploads, no limits
+
+
+      **How to use?**
+
+
+      1. Open BentoPDF and pick a tool.
+
+      2. Drop your PDF on the page, choose the options and download the
+         result.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open BentoPDF and pick a tool. Your files stay in your browser.
+
+
+        3. Converting Word, Excel and PowerPoint files needs https, through a
+           reverse proxy with your own domain. Every other tool works
+           without it.
+  index: /
+  port_map: "6817"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.8.12"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/alam00000/bentopdf 2.8.12 on port 6817
+  repo: "https://github.com/alam00000/bentopdf"
+  support: "https://github.com/alam00000/bentopdf/issues"
+  docs: "https://www.bentopdf.com/docs"
