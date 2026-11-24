@@ -58,4 +58,6 @@ jobs:
           for app in $APPS; do
             gh workflow run "build-$app.yml" --ref main
           done
-          gh workflow run release-store.yml --ref main
+          for wf in release-store.yml platforms.yml update-readme-svgs.yml; do
+            gh workflow run "$wf" --ref main
+          done

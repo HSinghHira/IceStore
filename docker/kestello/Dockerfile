@@ -15,7 +15,8 @@
 
 ARG KESTELLO_VERSION=0.1.0-rc.1
 
-FROM php:8.6.0-fpm-trixie
+# auto-update: keep-minor  (APCu does not build on PHP 8.6 yet; drop this once it does)
+FROM php:8.5.13-fpm-trixie
 ARG KESTELLO_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -28,7 +29,7 @@ RUN set -eux; \
         jpegoptim optipng; \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif; \
     docker-php-ext-install -j"$(nproc)" pdo_mysql pdo_pgsql mbstring gd zip intl bcmath; \
-    # PHP 8.6 images ship no pecl, so APCu is built from its PECL tarball.
+    # Built from the PECL tarball: PHP 8.6+ images ship no pecl.
     docker-php-source extract; \
     mkdir -p /usr/src/php/ext/apcu; \
     curl -fsSL https://pecl.php.net/get/apcu | tar -xz --strip-components=1 -C /usr/src/php/ext/apcu; \

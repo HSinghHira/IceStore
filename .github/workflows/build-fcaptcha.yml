@@ -9,8 +9,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write   # move_pin.sh commits the compose pin after the push
   packages: write
+  actions: write    # and starts the store rebuild
 
 jobs:
   build:

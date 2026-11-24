@@ -273,8 +273,11 @@ folder, the compose `name:`, the main service name, the image name
   - *A fixed image after a broken first release*: ZimaOS keeps the old
     `:latest` after uninstall and reinstalls from it. Pin the compose image
     to the image version in `docker/<app>/VERSION`
-    (`ghcr.io/hsinghhira/<app>:1.0.1`); the daily bumper moves that pin with
-    it (OpenSignup).
+    (`ghcr.io/hsinghhira/<app>:1.0.1`) and give `build-<app>.yml`
+    `contents: write` and `actions: write`. Don't move the pin by hand: after
+    each successful push the build runs `move_pin.sh`, which commits the new
+    pin and restarts the store, so a failed build never points installs at a
+    missing tag (OpenSignup).
   - *NEXT_PUBLIC_* baked at build*: build with placeholder words, fill them
     in on start from a pristine copy of `.next` (OpenSignup's fill-public.mjs).
   - *Upstream image is amd64 only*: add `platforms: linux/amd64` to the

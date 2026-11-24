@@ -34,9 +34,12 @@ on:
         type: string
         default: linux/amd64,linux/arm64
 
+# The most any caller may grant. A called workflow only ever gets what its
+# caller allows, so apps whose build-<app>.yml keeps `contents: read` stay read-only.
 permissions:
-  contents: read
+  contents: write
   packages: write
+  actions: write
 
 jobs:
   build:
@@ -94,3 +97,13 @@ jobs:
             ${{ env.IMAGE }}:${{ env.VERSION }}
             ${{ env.IMAGE }}:${{ env.VERSION }}-${{ env.SHA }}
             ${{ env.IMAGE }}:latest
+
+      # Apps whose compose file pins this image to x.y.z (instead of :latest)
+      # get the pin moved only now that the image is pushed, so a failed build
+      # never sends installs to a missing tag. Those apps' build-<app>.yml need
+      # `contents: write` and `actions: write`; the step is a no-op for the rest.
+      - name: Move the compose pin to the new image
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/move_pin.sh "${{ inputs.app }}" "$VERSION"

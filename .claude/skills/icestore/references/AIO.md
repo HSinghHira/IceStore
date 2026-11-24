@@ -79,7 +79,8 @@ Rules for the table:
   put `# auto-update: hold` on the line above, with the reason. When a new
   major needs a data migration the app can't do itself (Odoo), put
   `# auto-update: keep-major` there instead: newer tags with the same first
-  number are still taken.
+  number are still taken. `# auto-update: keep-minor` keeps the first two
+  (Kestello: PHP `8.5.x` patches, not `8.6`, until APCu builds on 8.6).
 - Built-ins: add apt packages. Extracting a binary (Silo):
   a small `debian:bookworm-slim` stage that `find`s it and `install -D`s it to
   `/out/...`, then `COPY --from=` that stage.

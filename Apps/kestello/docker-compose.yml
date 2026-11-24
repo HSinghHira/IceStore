@@ -134,7 +134,7 @@ x-casaos:
   update_at: "2026-11-24"
   release_notes:
     en_US: |-
-      - Updated php 8.5.12-fpm-trixie to 8.6.0-fpm-trixie
+      - Updated php 8.5.12-fpm-trixie to 8.5.13-fpm-trixie
       - First IceStore version: Kestello 0.1.0-rc.1 (the release zip) with PHP 8.5 FPM and nginx in one container.
       - Port 6704. The whole site lives in /DATA/AppData/kestello/site; it is copied in on the first start and Kestello's own updater keeps it current.
       - The scheduler (scheduled jobs) starts once the installer has finished.

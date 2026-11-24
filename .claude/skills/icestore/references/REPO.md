@@ -116,7 +116,8 @@ by itself, so a new AIO app needs no change here — only the shapes below.
    date). Betas, `latest` and digit-less tags (`debian:trixie-slim`) are skipped.
    A `# auto-update: hold` comment on the line above a FROM freezes it;
    `# auto-update: keep-major` only lets the first number stay the same
-   (Odoo: `20.0-20261015` → newer `20.0-` builds, never `21.0-`).
+   (Odoo: `20.0-20261015` → newer `20.0-` builds, never `21.0-`);
+   `# auto-update: keep-minor` the first two (PHP `8.5.12` → `8.5.13`, never `8.6.0`).
    Images that only publish `latest` plus one tag per git commit (`ghcr.io/ente/*`)
    are pinned to a 40-character commit tag, or a `sha-<short sha>` tag
    (strava-dawarich-sync); those follow `latest` (the line moves
@@ -130,6 +131,13 @@ by itself, so a new AIO app needs no change here — only the shapes below.
 3. Commits as github-actions[bot], pushes to main, then `gh workflow run
    build-<app>.yml` for each changed app and `release-store.yml` (a
    GITHUB_TOKEN push does not trigger workflows on its own).
+4. It never touches a compose pin (`image: ghcr.io/hsinghhira/<app>:1.2.3`).
+   `build-image.yml` moves the pin with `.github/scripts/move_pin.sh` after the
+   image is pushed (forward only; `<version>-<commit>` rollback pins and
+   `:latest` apps are left alone), commits it, and starts `release-store.yml`,
+   `platforms.yml` and `update-readme-svgs.yml`. So a failed build leaves every
+   app installable on its last good image. Pinned apps' `build-<app>.yml` need
+   `contents: write` and `actions: write` (the checker says so).
 
 So for the bumper to keep an AIO app current, the app must have:
 - pinned, numeric FROM tags in the exact `FROM <image>:<tag> AS img-<svc>` form;

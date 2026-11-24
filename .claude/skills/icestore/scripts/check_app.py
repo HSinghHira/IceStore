@@ -389,6 +389,17 @@ def check_workflow(root, slug, data, aio, shared=False):
     vf = Path(root, "docker", slug, "VERSION")
     if not vf.exists() or not re.fullmatch(r"\s*\d+\.\d+\.\d+\s*", vf.read_text(encoding="utf-8")):
         err(f'docker/{slug}/VERSION must hold the image version as x.y.z (e.g. 1.0.0)')
+    compose_path = Path(root, "Apps", slug, "docker-compose.yml")
+    pin = re.search(rf"image:\s*ghcr\.io/hsinghhira/{re.escape(slug)}:(\d+\.\d+\.\d+)(?![\w.-])",
+                    compose_path.read_text(encoding="utf-8")) if compose_path.exists() else None
+    if pin:
+        # move_pin.sh (run by build-image.yml) commits the pin after the push.
+        if not re.search(r"(?m)^\s*contents:\s*write", w) or not re.search(r"(?m)^\s*actions:\s*write", w):
+            err(f"build-{slug}.yml needs `contents: write` and `actions: write`: the compose file pins "
+                f"the image to {pin.group(1)}, and the build moves that pin after it pushes")
+        if vf.exists() and vf.read_text(encoding="utf-8").strip() != pin.group(1):
+            warn(f"the compose pin ({pin.group(1)}) is not docker/{slug}/VERSION; the next successful "
+                 "build moves it, so leave it be rather than raising it by hand")
     if f'"docker/{slug}/**"' not in w:
         err(f'build-{slug}.yml must build on changes to "docker/{slug}/**"')
     if shared and '"docker/_common/**"' not in w:

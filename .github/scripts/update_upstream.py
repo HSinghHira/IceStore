@@ -19,6 +19,9 @@ To keep an image where it is, put this comment on the line above its FROM:
 To take newer tags only while the first number stays the same (odoo
 20.0-20261015 -> 20.0-20261101, never 21.0-...), put this one there instead:
     # auto-update: keep-major
+To take newer tags only while the first two numbers stay the same (php
+8.5.12 -> 8.5.13, never 8.6.0), use:
+    # auto-update: keep-minor
 
 When something changes in an app, this also:
   - raises the patch number in docker/<app>/VERSION (the image's x.y.z tag;
@@ -27,6 +30,9 @@ When something changes in an app, this also:
   - in Apps/<app>/docker-compose.yml: sets `version:` when the main image moved
     (the FROM line whose tag equals the current `version:`), sets `update_at:`
     to today, adds a release-notes line and refreshes "<image> <tag>" mentions
+It does not move a compose pin (image: ghcr.io/hsinghhira/<app>:1.2.3): the
+build does that with move_pin.sh once the new image is pushed, so a failed
+build never points installs at a missing tag.
 
 Usage: update_upstream.py [--write] [--repo DIR]
 Without --write it only prints what it would change. With GITHUB_OUTPUT set it
@@ -46,7 +52,8 @@ from pathlib import Path
 
 FROM_RE = re.compile(r"^(FROM\s+(?:--platform=\S+\s+)?)(\S+?):([^\s@]+)(\s.*)?$")
 HOLD_RE = re.compile(r"#\s*auto-update:\s*hold", re.I)
-KEEP_MAJOR_RE = re.compile(r"#\s*auto-update:\s*keep-major", re.I)
+# keep-major keeps the first number of the tag, keep-minor the first two.
+KEEP_RE = re.compile(r"#\s*auto-update:\s*keep-(major|minor)", re.I)
 NUM_RE = re.compile(r"\d+")
 # Per-commit tags: a full 40-character sha (ghcr.io/ente/*) or the
 # `sha-<short sha>` tags docker/metadata-action makes. Both follow `latest`.
@@ -143,11 +150,12 @@ def key(tag):
     return tuple(int(n) for n in NUM_RE.findall(tag))
 
 
-def newest(image, current, keep_major=False):
+def newest(image, current, keep=0):
+    """keep: how many leading numbers must stay the same (0 = any newer tag)."""
     pattern = shape(current)
     candidates = [t for t in list_tags(image) if pattern.match(t)]
-    if keep_major:
-        candidates = [t for t in candidates if key(t)[:1] == key(current)[:1]]
+    if keep:
+        candidates = [t for t in candidates if key(t)[:keep] == key(current)[:keep]]
     best = max(candidates, key=key, default=current)
     return best if key(best) > key(current) else None
 
@@ -169,8 +177,9 @@ def update_dockerfile(path):
             print(f"  hold  {image}:{tag}")
             continue
         try:
-            keep_major = i > 0 and bool(KEEP_MAJOR_RE.search(lines[i - 1]))
-            new = follow_latest(image, tag) if COMMIT_RE.match(tag) else newest(image, tag, keep_major)
+            m = KEEP_RE.search(lines[i - 1]) if i > 0 else None
+            keep = {"major": 1, "minor": 2}[m.group(1).lower()] if m else 0
+            new = follow_latest(image, tag) if COMMIT_RE.match(tag) else newest(image, tag, keep)
         except Exception as e:  # one bad registry should not stop the others
             print(f"  WARN  {image}: could not list tags ({e})", file=sys.stderr)
             continue
@@ -214,14 +223,6 @@ def update_compose(text, changes, today):
     return text, note
 
 
-def pin_image(compose_text, app, version):
-    """An app whose compose file pins its own image to a version
-    (ghcr.io/hsinghhira/<app>:1.2.3 instead of :latest, so ZimaOS downloads the
-    new image even when it still has an older one) follows docker/<app>/VERSION."""
-    return re.sub(rf"(image:\s*ghcr\.io/hsinghhira/{re.escape(app)}:)\d+\.\d+\.\d+(?![\w.])",
-                  rf"\g<1>{version}", compose_text)
-
-
 # -------------------------------------------------------------------- main ---
 
 def main():
@@ -245,7 +246,6 @@ def main():
         if not new_version:
             sys.exit(f"{version_file}: missing or not x.y.z, so the image version cannot be raised")
         new_compose, note = update_compose(compose.read_text(encoding="utf-8"), changes, today)
-        new_compose = pin_image(new_compose, app, new_version)
         changed.append(app)
         notes.append(f"{app}: {note.removeprefix('Updated ')}")
         if args.write:
