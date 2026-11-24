@@ -1,0 +1,165 @@
+name: rclone
+
+services:
+  rclone:
+    image: ghcr.io/hsinghhira/rclone:latest
+    container_name: rclone
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - RCLONE_GUI_USER=admin
+    ports:
+      - target: 8080
+        published: "6803"
+        protocol: tcp
+      - target: 5572
+        published: "6804"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /data
+      - type: bind
+        source: /media
+        target: /media
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rclone/icon.png
+    x-casaos:
+      id: com.icestore.rclone
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: RCLONE_GUI_USER
+          description:
+            en_US: >-
+              The user name for the web GUI. The password is made on first
+              start and shown in the app's logs, in the box marked
+              CREDENTIALS.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Rclone web GUI, published on host as 6803
+        - container: "5572"
+          description:
+            en_US: >-
+              Rclone API that the web GUI talks to, published on host as
+              6804. It needs the same login.
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Your remotes and their keys (rclone/rclone.conf), the cache
+              and this install's password (.icestore-password). Keep it
+              private.
+        - container: /data
+          description:
+            en_US: >-
+              Your ZimaOS storage, to copy and sync with your cloud
+              remotes. Pick it as a local path, like /data/Documents.
+        - container: /media
+          description:
+            en_US: >-
+              Your other ZimaOS disks, like /media/HDD-Storage.
+
+x-casaos:
+  id: com.icestore.rclone
+  architectures:
+    - amd64
+    - arm64
+  main: rclone
+  author: HSinghHira
+  category: Others
+  developer: Rclone
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rclone/icon.png
+  title:
+    en_US: Rclone
+  tagline:
+    en_US: Web GUI to copy and sync files with over 70 cloud storage services
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/rclone/](https://icestore.hsinghhira.me/app/rclone/) for full details
+
+
+      Rclone moves files between your ZimaOS and cloud storage: Google
+      Drive, OneDrive, Dropbox, S3, Backblaze B2, pCloud, Mega, SFTP,
+      WebDAV and over 70 more. This app runs Rclone's built-in web GUI, so
+      you can set up remotes, browse them and start copies and syncs in the
+      browser.
+
+
+      **Features**
+
+
+      - Over 70 storage services, with encryption (crypt) on top of any
+
+      - Explorer to browse and transfer between remotes and your disks
+
+      - Copy, move and sync jobs with live progress
+
+      - Edit rclone.conf, logging and speed settings in the page
+
+
+      **How to use?**
+
+
+      1. Open Rclone. On the login page, type the API URL
+         http://[ZIMAOS-IP-ADDRESS]:6804 with your ZimaOS IP, and the user
+         and password from the CREDENTIALS box in the app's logs.
+
+      2. Add a remote in Remotes.
+
+      3. In Explorer, copy or sync between the remote and /data.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open Rclone. The login page asks for an API URL, a user and a
+           password. They are in the app's logs, in the box marked
+           CREDENTIALS.
+
+
+        3. For the API URL, type http://[ZIMAOS-IP-ADDRESS]:6804 with your
+           ZimaOS IP in place of [ZIMAOS-IP-ADDRESS], like
+           http://192.168.1.20:6804 for the IP 192.168.1.20 (use yours).
+
+
+        4. Rclone can change and delete files in /DATA. Keep the password
+           private.
+  index: /
+  port_map: "6803"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.76.0"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release: rclone/rclone 1.76.0 with its built-in web GUI
+      - Web GUI on port 6803 and the API it calls on port 6804
+      - A start script makes this install's GUI password on first start and keeps it in /DATA/AppData/rclone/config
+      - /DATA and /media are shared for copies and syncs
+  repo: "https://github.com/rclone/rclone"
+  support: "https://forum.rclone.org"
+  docs: "https://rclone.org/gui/"
