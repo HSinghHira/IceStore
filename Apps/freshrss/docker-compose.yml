@@ -1,0 +1,142 @@
+name: freshrss
+
+services:
+  freshrss:
+    image: freshrss/freshrss:1.31.0
+    container_name: freshrss
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - CRON_MIN=3,33
+    ports:
+      - target: 80
+        published: "6813"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /var/www/FreshRSS/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/extensions
+        target: /var/www/FreshRSS/extensions
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "cli/health.php"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/freshrss/icon.png
+    x-casaos:
+      id: com.icestore.freshrss
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: CRON_MIN
+          description:
+            en_US: >-
+              The minutes of each hour when feeds are refreshed, like 3,33
+              for twice an hour. Leave it empty to turn automatic refresh
+              off.
+      ports:
+        - container: "80"
+          description:
+            en_US: FreshRSS web app and reader-app API, published on host as 6813
+      volumes:
+        - container: /var/www/FreshRSS/data
+          description:
+            en_US: >-
+              Your users, feeds, articles (SQLite database) and settings.
+              Back it up.
+        - container: /var/www/FreshRSS/extensions
+          description:
+            en_US: >-
+              Extensions you add yourself, one folder each.
+
+x-casaos:
+  id: com.icestore.freshrss
+  architectures:
+    - amd64
+    - arm64
+  main: freshrss
+  author: HSinghHira
+  category: Productivity
+  developer: FreshRSS
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/freshrss/icon.png
+  title:
+    en_US: FreshRSS
+  tagline:
+    en_US: Feed reader for news, blogs and podcasts, with apps for your phone
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/freshrss/](https://icestore.hsinghhira.me/app/freshrss/) for full details
+
+
+      FreshRSS collects the news from your favourite websites in one place.
+      It checks your feeds on its own, keeps what you have read in sync
+      across devices and works with many phone and desktop reader apps.
+
+
+      **Features**
+
+
+      - RSS and Atom feeds, plus web pages watched with XPath or CSS
+
+      - Categories, labels, favourites and powerful filters
+
+      - Several users, each with their own feeds
+
+      - Google Reader and Fever API for apps like NetNewsWire, Reeder,
+        FeedMe and Readrops
+
+      - Extensions and themes
+
+      - Import and export your feeds as OPML
+
+
+      **How to use?**
+
+
+      1. Open FreshRSS right away and follow the install steps. Pick
+         SQLite and make your admin account.
+
+      2. Add feeds with the + button, or import an OPML file.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Right away, open FreshRSS and follow the install steps. Choose
+           SQLite as the database and make your admin account. Until you
+           do, anyone on your network can.
+
+
+        3. For phone apps, turn on API access in Settings, Authentication,
+           and set an API password in your Profile.
+  index: /
+  port_map: "6813"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.31.0"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release: freshrss/freshrss 1.31.0 on port 6813
+      - Feeds refresh at minutes 3 and 33 of every hour (CRON_MIN)
+  repo: "https://github.com/FreshRSS/FreshRSS"
+  support: "https://github.com/FreshRSS/FreshRSS/issues"
+  docs: "https://freshrss.github.io/FreshRSS/en/"
