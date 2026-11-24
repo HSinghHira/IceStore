@@ -1,0 +1,130 @@
+name: glance
+
+services:
+  glance:
+    image: ghcr.io/hsinghhira/glance:latest
+    container_name: glance
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6808"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /app/config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/glance/icon.png
+    x-casaos:
+      id: com.icestore.glance
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for the clock and calendar. It is filled in
+              from your ZimaOS time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: Glance dashboard, published on host as 6808
+      volumes:
+        - container: /app/config
+          description:
+            en_US: >-
+              Your dashboard (glance.yml) and your own icons and styles
+              (assets). Edit glance.yml with the ZimaOS Files app; Glance
+              reloads it when you save.
+
+x-casaos:
+  id: com.icestore.glance
+  architectures:
+    - amd64
+    - arm64
+  main: glance
+  author: HSinghHira
+  category: Productivity
+  developer: glanceapp
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/glance/icon.png
+  title:
+    en_US: Glance
+  tagline:
+    en_US: Dashboard that puts your feeds, widgets and server stats on one page
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/glance/](https://icestore.hsinghhira.me/app/glance/) for full details
+
+
+      Glance is a fast, good-looking start page. It puts your RSS feeds,
+      Reddit, Hacker News, YouTube channels, weather, calendar, stock
+      prices, GitHub releases and the status of your apps on one page,
+      set up in a single file.
+
+
+      **Features**
+
+
+      - RSS, Reddit, Hacker News, Lobsters and YouTube feeds
+
+      - Weather, calendar, clock, markets and GitHub releases
+
+      - Monitor widget that shows which of your apps are up
+
+      - Bookmarks, search box and your own widgets from any JSON API
+
+      - Several pages, themes and an optional login
+
+
+      **How to use?**
+
+
+      1. Open Glance. A starter dashboard is ready.
+
+      2. Edit /DATA/AppData/glance/config/glance.yml with the Files app.
+         Glance reloads it when you save.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open Glance. It shows a starter dashboard.
+
+
+        3. To change it, open the Files app and edit glance.yml in
+           /DATA/AppData/glance/config. Glance shows your changes when you
+           save.
+
+
+        4. Glance has no login at first. The starter glance.yml shows how
+           to add one.
+  index: /
+  port_map: "6808"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.8.8"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6808 (upstream uses 8080)
+      - glanceapp/glance v0.8.8, plus a start script that writes a starter glance.yml on first start
+      - Config in /DATA/AppData/glance/config
+  repo: "https://github.com/glanceapp/glance"
+  support: "https://github.com/glanceapp/glance/issues"
+  docs: "https://github.com/glanceapp/glance/blob/main/docs/configuration.md"

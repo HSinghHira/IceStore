@@ -1,0 +1,63 @@
+# Starter dashboard from IceStore. Edit this file: Glance reloads it when you
+# save. Every widget and setting is described at
+# https://github.com/glanceapp/glance/blob/main/docs/configuration.md
+
+server:
+  port: 8080
+  assets-path: /app/config/assets
+
+# To add a login, uncomment this block. Make the secret key with
+#   docker exec glance /app/glance secret:make
+# auth:
+#   secret-key: paste-the-secret-key-here
+#   users:
+#     admin:
+#       password: choose-a-password
+
+theme:
+  # dark is the default; try presets from docs/themes.md
+  contrast-multiplier: 1.1
+
+pages:
+  - name: Home
+    columns:
+      - size: small
+        widgets:
+          - type: calendar
+            first-day-of-week: monday
+
+          - type: rss
+            limit: 10
+            collapse-after: 3
+            cache: 12h
+            feeds:
+              - url: https://selfh.st/rss/
+                title: selfh.st
+
+      - size: full
+        widgets:
+          - type: search
+            search-engine: duckduckgo
+
+          - type: group
+            widgets:
+              - type: hacker-news
+              - type: lobsters
+
+          - type: reddit
+            subreddit: selfhosted
+            show-thumbnails: true
+
+      - size: small
+        widgets:
+          # Change the location to your own city.
+          - type: weather
+            location: London, United Kingdom
+            units: metric
+            hour-format: 24h
+
+          - type: releases
+            cache: 1d
+            repositories:
+              - glanceapp/glance
+              - IceWhaleTech/ZimaOS
