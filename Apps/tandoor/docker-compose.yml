@@ -2,7 +2,7 @@ name: tandoor
 
 services:
   tandoor:
-    image: ghcr.io/hsinghhira/tandoor:1.0.1
+    image: ghcr.io/hsinghhira/tandoor:1.0.2
     container_name: tandoor
     restart: unless-stopped
     stop_grace_period: 60s
