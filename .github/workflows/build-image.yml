@@ -34,12 +34,10 @@ on:
         type: string
         default: linux/amd64,linux/arm64
 
-# The most any caller may grant. A called workflow only ever gets what its
-# caller allows, so apps whose build-<app>.yml keeps `contents: read` stay read-only.
-permissions:
-  contents: write
-  packages: write
-  actions: write
+# No `permissions:` here on purpose: the job uses whatever the calling
+# build-<app>.yml grants. Asking for more than a caller gives (write here,
+# read there) makes GitHub refuse to start the run, so pinned apps grant
+# contents/actions write in their own file and the rest stay read-only.
 
 jobs:
   build:
