@@ -13,7 +13,10 @@
 FROM ghcr.io/plankanban/planka:2.3.1
 
 USER root
-RUN apk add --no-cache postgresql16 postgresql16-contrib postgresql16-client supervisor setpriv openssl tzdata
+# Upgrade python3 first: a newer python3-ndbm (pulled in by postgresql16)
+# takes over a file the image's older python3 still owns, and apk refuses.
+RUN apk upgrade --no-cache python3 && \
+    apk add --no-cache postgresql16 postgresql16-contrib postgresql16-client supervisor setpriv openssl tzdata
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 COPY svc.sh /usr/local/bin/planka-svc
