@@ -1,0 +1,130 @@
+name: pairdrop
+
+services:
+  pairdrop:
+    image: lscr.io/linuxserver/pairdrop:v1.11.2-ls150
+    container_name: pairdrop
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - WS_FALLBACK=true
+    ports:
+      - target: 3000
+        published: "6814"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pairdrop/icon.png
+    x-casaos:
+      id: com.icestore.pairdrop
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user PairDrop runs as. It is filled in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group PairDrop runs as. It is filled in by ZimaOS.
+        - container: WS_FALLBACK
+          description:
+            en_US: >-
+              true sends files through your ZimaOS when two devices cannot
+              connect to each other directly. Set to false to only allow
+              direct transfers.
+      ports:
+        - container: "3000"
+          description:
+            en_US: PairDrop web app, published on host as 6814
+
+x-casaos:
+  id: com.icestore.pairdrop
+  architectures:
+    - amd64
+    - arm64
+  main: pairdrop
+  author: HSinghHira
+  category: Others
+  developer: schlagmichdoch
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pairdrop/icon.png
+  title:
+    en_US: PairDrop
+  tagline:
+    en_US: Send files and text between your devices in the browser, like AirDrop
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/pairdrop/](https://icestore.hsinghhira.me/app/pairdrop/) for full details
+
+
+      PairDrop sends files and messages between phones, tablets and
+      computers on your home network, straight from the browser. Open the
+      page on two devices, and they see each other. No app, no account and
+      no upload to the cloud.
+
+
+      **Features**
+
+
+      - Devices on your network find each other by themselves
+
+      - Files go straight from device to device (WebRTC)
+
+      - Send text messages and links too
+
+      - Pair devices with a code to send between networks
+
+      - Public rooms with a short code for one-off sharing
+
+
+      **How to use?**
+
+
+      1. Open PairDrop on two devices on your network.
+
+      2. Tap the other device's icon and pick files, or right-click it to
+         send text.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open PairDrop on two devices at your ZimaOS IP with port 6814,
+           like http://192.168.1.20:6814 for the IP 192.168.1.20 (use
+           yours). They show up on each other's screen.
+
+
+        3. Copy buttons, notifications and installing it as an app only
+           work over https, through a reverse proxy with your own domain.
+           Sending files works without it.
+  index: /
+  port_map: "6814"
+  scheme: http
+  is_uncontrolled: false
+  version: "v1.11.2-ls150"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release: lscr.io/linuxserver/pairdrop v1.11.2-ls150 on port 6814
+      - Files are relayed through the server when devices cannot connect directly (WS_FALLBACK)
+  repo: "https://github.com/schlagmichdoch/PairDrop"
+  support: "https://github.com/schlagmichdoch/PairDrop/issues"
+  docs: "https://github.com/schlagmichdoch/PairDrop/blob/master/docs/host-your-own.md"
