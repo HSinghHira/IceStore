@@ -1,0 +1,193 @@
+name: kopia
+
+services:
+  kopia:
+    image: ghcr.io/hsinghhira/kopia:latest
+    container_name: kopia
+    hostname: kopia
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - KOPIA_SERVER_USERNAME=admin
+    ports:
+      - target: 51515
+        published: "6802"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /app/config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/cache
+        target: /app/cache
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/logs
+        target: /app/logs
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/repository
+        target: /repository
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /data
+        read_only: true
+      - type: bind
+        source: /media
+        target: /media
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-o", "/dev/null", "http://127.0.0.1:51515/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopia/icon.png
+    x-casaos:
+      id: com.icestore.kopia
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for backup schedules. It is filled in from your
+              ZimaOS time zone.
+        - container: KOPIA_SERVER_USERNAME
+          description:
+            en_US: >-
+              The user name for the Kopia web page. The password is made on
+              first start and shown in the app's logs, in the box marked
+              CREDENTIALS.
+      ports:
+        - container: "51515"
+          description:
+            en_US: Kopia web UI and API, published on host as 6802
+      volumes:
+        - container: /app/config
+          description:
+            en_US: >-
+              Kopia's repository connection (with the saved repository
+              password), policies and this install's web UI password
+              (.icestore-password). Keep it private.
+        - container: /app/cache
+          description:
+            en_US: >-
+              Cache of downloaded backup data. Safe to empty.
+        - container: /app/logs
+          description:
+            en_US: >-
+              Kopia's log files.
+        - container: /repository
+          description:
+            en_US: >-
+              A place for a backup repository on this disk. Pick
+              /repository as the folder when you create a Local Directory
+              repository, or use a cloud or another disk instead.
+        - container: /data
+          description:
+            en_US: >-
+              Your ZimaOS storage, read-only, to back up. Pick folders under
+              /data, like /data/Documents.
+        - container: /media
+          description:
+            en_US: >-
+              Your other ZimaOS disks, like /media/HDD-Storage. Use a folder
+              here as the repository to keep backups on a second disk.
+
+x-casaos:
+  id: com.icestore.kopia
+  architectures:
+    - amd64
+    - arm64
+  main: kopia
+  author: HSinghHira
+  category: Others
+  developer: Kopia
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kopia/icon.png
+  title:
+    en_US: Kopia
+  tagline:
+    en_US: Encrypted, deduplicated backups to local disks or cloud storage
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kopia/](https://icestore.hsinghhira.me/app/kopia/) for full details
+
+
+      Kopia makes fast, encrypted backups of your folders. Each backup is a
+      snapshot you can browse and restore, and files that did not change are
+      stored only once. Keep the backups on another disk, a NAS or cloud
+      storage like Backblaze B2, S3, Google Cloud, Azure, SFTP, WebDAV or
+      any rclone remote.
+
+
+      **Features**
+
+
+      - End-to-end encryption and compression
+
+      - Deduplication: unchanged data is stored once
+
+      - Snapshot schedules and keep rules (hourly, daily, weekly, ...)
+
+      - Browse snapshots and restore single files or whole folders
+
+      - Local disks, S3, B2, Azure, Google Cloud, SFTP, WebDAV and rclone
+
+
+      **How to use?**
+
+
+      1. Open Kopia and sign in with admin and the password from the
+         CREDENTIALS box in the app's logs.
+
+      2. Create a repository: a folder like /repository or a disk under
+         /media, or cloud storage. Choose a repository password and write
+         it down.
+
+      3. Add a snapshot of a folder under /data and set its schedule.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open Kopia. Your browser asks for a user name and a password. The
+           user name is admin. The password is in the app's logs, in the box
+           marked CREDENTIALS.
+
+
+        3. Create a repository. For a second disk, pick a folder under
+           /media. Choose a repository password and write it down. Without
+           it nobody, not even Kopia, can open your backups.
+
+
+        4. Your ZimaOS files are under /data, read-only. Add a snapshot of
+           the folders you want to keep safe.
+  index: /
+  port_map: "6802"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.23.1"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6802 (upstream uses 51515)
+      - kopia/kopia 0.23.1, plus a start script that makes this install's web UI password on first start and keeps it in /DATA/AppData/kopia/config
+      - The web UI server starts by itself; the repository password you type is saved, so backups keep running after a restart
+      - /DATA is shared read-only at /data to back up; /media is shared for repositories on other disks
+  repo: "https://github.com/kopia/kopia"
+  support: "https://github.com/kopia/kopia/issues"
+  docs: "https://kopia.io/docs/"
