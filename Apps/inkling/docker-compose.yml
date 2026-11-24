@@ -157,14 +157,15 @@ x-casaos:
   port_map: "6703"
   scheme: http
   is_uncontrolled: false
-  version: "0.8.0"
-  update_at: "2026-11-09"
+  version: "0.22.1"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated inkling 0.8.0 to 0.22.1
       - First IceStore release: Inkling in one container with PostgreSQL 16, on port 6703 with one data folder.
       - The database password, APP_SECRET_KEY (for two-step verification) and a first signup key are made on first start; the sign-up link is in the CREDENTIALS box.
       - Left out: upstream's backup sidecar. Back up /DATA/AppData/inkling instead.
-      - ghcr.io/prove1352/inkling 0.8.0
+      - ghcr.io/prove1352/inkling 0.22.1
   repo: "https://github.com/PROVE1352/inkling"
   support: "https://github.com/PROVE1352/inkling/issues"
   docs: "https://github.com/PROVE1352/inkling/blob/main/deploy/DEPLOY.md"

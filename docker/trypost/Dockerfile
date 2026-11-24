@@ -15,7 +15,7 @@
 #                        TryPost has no open sign-up)
 #   gateway    built-in (nginx on 8080)
 
-FROM ghcr.io/trypostit/trypost:2.0.1 AS img-trypost
+FROM ghcr.io/trypostit/trypost:2.1.0 AS img-trypost
 
 FROM debian:trixie-slim
 

@@ -12,8 +12,8 @@
 #
 # The signing certificate is made with openssl on first start (aio-init.sh).
 
-FROM documenso/documenso:v2.21.1 AS img-documenso
-FROM axllent/mailpit:v1.32.0 AS img-mailpit
+FROM documenso/documenso:v2.22.0 AS img-documenso
+FROM axllent/mailpit:v1.34.0 AS img-mailpit
 
 FROM debian:trixie-slim
 

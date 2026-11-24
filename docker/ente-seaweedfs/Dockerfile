@@ -17,10 +17,10 @@
 #                        8104 mail, 8105-8112 accounts, auth, cast, locker share,
 #                        embed, paste, locker, memories)
 
-FROM ghcr.io/ente/server:20fb6316bd98b1af613ef771c684d5cd46fbf371 AS img-museum
-FROM ghcr.io/ente/web:817ce840de0e05ae8f817ca218795d620bc122c8 AS img-web
-FROM axllent/mailpit:v1.32.0 AS img-mailpit
-FROM chrislusf/seaweedfs:4.48 AS img-seaweedfs
+FROM ghcr.io/ente/server:c2e571c599222ef6f8349dcc638bf23e0d885e21 AS img-museum
+FROM ghcr.io/ente/web:ce7e41f9f91a5de65f80663331f0ab00737f18cd AS img-web
+FROM axllent/mailpit:v1.34.0 AS img-mailpit
+FROM chrislusf/seaweedfs:4.55 AS img-seaweedfs
 
 FROM debian:trixie-slim
 

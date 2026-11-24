@@ -165,12 +165,13 @@ x-casaos:
   port_map: "6760"
   scheme: http
   is_uncontrolled: false
-  version: "3.5.0"
-  update_at: "2026-11-21"
+  version: "3.6.1"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated wiki 3.5.0 to 3.6.1
       - First IceStore release, on port 6760
-      - Built on ghcr.io/requarks/wiki 3.5.0, with PostgreSQL 18 added inside the same container
+      - Built on ghcr.io/requarks/wiki 3.6.1, with PostgreSQL 18 added inside the same container
       - Each install makes its own database password and first admin password on first start; the login is in the CREDENTIALS box in the logs
   repo: "https://github.com/requarks/wiki"
   support: "https://github.com/requarks/wiki/issues"

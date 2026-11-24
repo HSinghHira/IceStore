@@ -9,7 +9,7 @@
 # Upstream only publishes `latest` and `sha-<commit>` tags. The daily bumper
 # (update-upstream.yml) moves the commit tag below to the one `latest` points at.
 
-FROM ghcr.io/benno93/strava-dawarich-sync:sha-5faa02f
+FROM ghcr.io/benno93/strava-dawarich-sync:sha-6ce9bfd
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 COPY setup_page.py /opt/icestore/setup_page.py

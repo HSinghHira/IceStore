@@ -146,10 +146,11 @@ x-casaos:
   port_map: "6119"
   scheme: https
   is_uncontrolled: false
-  version: "1.143.1-ls31"
-  update_at: "2026-10-28"
+  version: "1.146.0-ls34"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated vscode 1.143.1-ls31 to 1.146.0-ls34
       - Fixed "Failed to start" ([icestore] cannot write). The start-up script now lives in the image (ghcr.io/hsinghhira/vscode) instead of the compose file, where ZimaOS emptied its variables and the container stopped right away.
       - Built on lscr.io/linuxserver/vscode 1.143.1-ls31.
       - PASSWORD is now blank by default, and each install makes its own random password on first start (saved in password.txt in the app folder and shown in the log) instead of CHANGEME_PASSWORD. The username is now admin.

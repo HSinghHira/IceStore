@@ -11,7 +11,7 @@
 #                        VAAPI drivers; its entrypoint drops to appuser via gosu)
 #   gateway    built-in (nginx on 8080)
 
-FROM ghcr.io/kaybi-gh/k7:1.17.2 AS img-k7
+FROM ghcr.io/kaybi-gh/k7:1.18.0 AS img-k7
 
 FROM debian:trixie-slim
 

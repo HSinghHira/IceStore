@@ -15,7 +15,7 @@
 
 ARG KESTELLO_VERSION=0.1.0-rc.1
 
-FROM php:8.5.12-fpm-trixie
+FROM php:8.6.0-fpm-trixie
 ARG KESTELLO_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
 

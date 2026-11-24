@@ -13,7 +13,7 @@
 # Left out: upstream's updater-agent (it needs the Docker socket). Updates come
 # from IceStore's image instead.
 
-FROM ghcr.io/hanzydev/fileship:6.3.1 AS img-fileship
+FROM ghcr.io/hanzydev/fileship:6.8.1 AS img-fileship
 
 FROM debian:trixie-slim
 

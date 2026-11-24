@@ -165,12 +165,13 @@ x-casaos:
   port_map: "6161"
   scheme: http
   is_uncontrolled: false
-  version: "2.79.0"
-  update_at: "2026-10-25"
+  version: "2.94.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated yuvomi 2.79.0 to 2.94.0
       - Moved to IceStore. The port changed from 8434 to 6161 and the app id is now com.icestore.yuvomi.
-      - Now runs ghcr.io/hsinghhira/yuvomi: ghcr.io/ulsklyc/yuvomi 2.79.0 plus a start script that makes this install's SESSION_SECRET and DB_ENCRYPTION_KEY on first start and keeps them in the data folder. The compose file no longer ships fixed keys.
+      - Now runs ghcr.io/hsinghhira/yuvomi: ghcr.io/ulsklyc/yuvomi 2.94.0 plus a start script that makes this install's SESSION_SECRET and DB_ENCRYPTION_KEY on first start and keeps them in the data folder. The compose file no longer ships fixed keys.
       - Optional settings moved to the Variables tab on the IceStore website.
   repo: "https://github.com/ulsklyc/yuvomi"
   support: "https://github.com/ulsklyc/yuvomi/issues"

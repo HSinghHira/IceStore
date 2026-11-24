@@ -164,11 +164,12 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "v1.1.0"
-  update_at: "2026-10-29"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated node 22.23.4-trixie-slim to 22.23.5-trixie-slim
       - First version in IceStore, on port 6172
-      - Built from upstream release v1.1.0 (upstream publishes no image), on node 22.23.4-trixie-slim with Debian's Python 3.13
+      - Built from upstream release v1.1.0 (upstream publishes no image), on node 22.23.5-trixie-slim with Debian's Python 3.13
       - The data folder is made a git repo on first start, so upstream's automatic snapshots work; set JAT_GIT_SNAPSHOTS=false to skip it
   repo: "https://github.com/waddington/job-application-tracker"
   support: "https://github.com/waddington/job-application-tracker/issues"

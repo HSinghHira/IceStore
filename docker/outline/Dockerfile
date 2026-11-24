@@ -10,8 +10,8 @@
 #   outline    chroot   (the upstream Node image as-is: API, web app and live collaboration)
 #   gateway    built-in (nginx on 8080)
 
-FROM outlinewiki/outline:1.12.0 AS img-outline
-FROM axllent/mailpit:v1.32.0 AS img-mailpit
+FROM outlinewiki/outline:1.13.0 AS img-outline
+FROM axllent/mailpit:v1.34.0 AS img-mailpit
 
 FROM debian:trixie-slim
 

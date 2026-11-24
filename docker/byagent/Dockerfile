@@ -7,7 +7,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/anup-a/byagent:v0.9.0
+FROM ghcr.io/anup-a/byagent:v0.10.0
 
 USER root
 COPY --from=busybox:1.38.0-musl /bin/busybox /bin/busybox

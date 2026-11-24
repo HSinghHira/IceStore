@@ -14,8 +14,8 @@
 # Left out: Redis (only needed for more than one realtime worker) and the optional
 # ai-server (upstream publishes no image for it).
 
-FROM ghcr.io/shaongitbd/doory-backend:0.2.0 AS img-api
-FROM ghcr.io/shaongitbd/doory-frontend:0.2.0 AS img-web
+FROM ghcr.io/shaongitbd/doory-backend:0.3.1 AS img-api
+FROM ghcr.io/shaongitbd/doory-frontend:0.3.1 AS img-web
 
 # The published backend image has no ffmpeg (upstream's own compose build adds it by
 # default). Add it so video clips work, and add the first-admin helper.

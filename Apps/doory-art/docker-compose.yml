@@ -184,15 +184,16 @@ x-casaos:
   port_map: "6143"
   scheme: http
   is_uncontrolled: false
-  version: "0.2.0"
-  update_at: "2026-10-25"
+  version: "0.3.1"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated doory-backend 0.2.0 to 0.3.1, doory-frontend 0.2.0 to 0.3.1
       - Single-container Doory with one port (6143) and one data folder
       - Secret key and database passwords are made on first start, so each install gets its own
       - The first admin account is made for you from ADMIN_EMAIL and ADMIN_PASSWORD
-      - ghcr.io/shaongitbd/doory-backend 0.2.0 (api, realtime and mcp), with ffmpeg added for video clips
-      - ghcr.io/shaongitbd/doory-frontend 0.2.0 (the web app, served by the built-in nginx)
+      - ghcr.io/shaongitbd/doory-backend 0.3.1 (api, realtime and mcp), with ffmpeg added for video clips
+      - ghcr.io/shaongitbd/doory-frontend 0.3.1 (the web app, served by the built-in nginx)
       - PostgreSQL 16 inside
       - Icons, fonts, starter templates, audio and the background-removal model are installed on first start
       - The MCP server for AI assistants is off until you add MCP_ENABLED=true

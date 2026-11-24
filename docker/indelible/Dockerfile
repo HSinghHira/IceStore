@@ -15,7 +15,7 @@
 FROM ghcr.io/useindelible/ind-api:0.1.1 AS img-api
 FROM ghcr.io/useindelible/ind-worker:0.1.1 AS img-worker
 FROM ghcr.io/useindelible/ind-renderer:0.1.1 AS img-renderer
-FROM pgsty/silo:RELEASE.2026-10-18T00-00-00Z AS img-silo
+FROM pgsty/silo:RELEASE.2026-11-12T00-00-00Z AS img-silo
 
 # Silo ships one static binary; it runs as a built-in service.
 FROM debian:bookworm-slim AS silo-bin

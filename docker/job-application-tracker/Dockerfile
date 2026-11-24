@@ -14,7 +14,7 @@
 ARG JAT_VERSION=v1.1.0
 
 # auto-update: keep-major
-FROM node:22.23.4-trixie-slim
+FROM node:22.23.5-trixie-slim
 
 ARG JAT_VERSION
 ENV DEBIAN_FRONTEND=noninteractive \

@@ -3,14 +3,14 @@
 # AppFlowy all-in-one. Build with ./capture-meta.sh run first (it fills ./meta).
 # To bump a version, change the tag on a FROM line below and rebuild.
 
-FROM appflowyinc/appflowy_cloud:0.19.2 AS img-cloud
-FROM appflowyinc/appflowy_worker:0.18.8 AS img-worker
-FROM appflowyinc/appflowy_search:0.18.8 AS img-search
-FROM appflowyinc/gotrue:0.18.8 AS img-gotrue
-FROM appflowyinc/admin_frontend:0.18.1 AS img-admin
-FROM appflowyinc/appflowy_web:0.19.8 AS img-web
-FROM axllent/mailpit:v1.31.4 AS img-mailpit
-FROM pgsty/silo:RELEASE.2026-09-16T00-00-00Z AS img-silo
+FROM appflowyinc/appflowy_cloud:0.21.9 AS img-cloud
+FROM appflowyinc/appflowy_worker:0.21.9 AS img-worker
+FROM appflowyinc/appflowy_search:0.21.9 AS img-search
+FROM appflowyinc/gotrue:0.20.6 AS img-gotrue
+FROM appflowyinc/admin_frontend:0.20.4 AS img-admin
+FROM appflowyinc/appflowy_web:0.20.15 AS img-web
+FROM axllent/mailpit:v1.34.0 AS img-mailpit
+FROM pgsty/silo:RELEASE.2026-11-12T00-00-00Z AS img-silo
 
 FROM debian:bookworm-slim AS silo-bin
 COPY --from=img-silo / /silo-root

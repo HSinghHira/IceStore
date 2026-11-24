@@ -143,12 +143,13 @@ x-casaos:
   port_map: "6769"
   scheme: http
   is_uncontrolled: false
-  version: "1.0.6"
-  update_at: "2026-11-21"
+  version: "1.0.7"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated main 1.0.6 to 1.0.7
       - First IceStore release, on port 6769
-      - Built on ghcr.io/sassanix/warracker/main 1.0.6, with PostgreSQL 17 inside the same container
+      - Built on ghcr.io/sassanix/warracker/main 1.0.7, with PostgreSQL 17 inside the same container
       - Each install makes its own database password on first start; Warracker makes its own secret key, and the first account you register is the admin
   repo: "https://github.com/sassanix/Warracker"
   support: "https://github.com/sassanix/Warracker/issues"

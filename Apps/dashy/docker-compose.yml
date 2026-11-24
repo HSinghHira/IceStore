@@ -138,11 +138,12 @@ x-casaos:
   port_map: "6732"
   scheme: http
   is_uncontrolled: false
-  version: "4.9.18"
-  update_at: "2026-11-16"
+  version: "4.10.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
-      - First IceStore version, built on lissy93/dashy 4.9.18
+      - Updated dashy 4.9.18 to 4.10.0
+      - First IceStore version, built on lissy93/dashy 4.10.0
       - A sample conf.yml is put in the empty config folder on first start, and the folder is made writable so the editor can save
       - Web page on port 6732
   repo: "https://github.com/Lissy93/dashy"

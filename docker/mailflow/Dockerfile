@@ -14,8 +14,8 @@
 # files are taken from it; the gateway serves them, so there is one nginx, not two.
 # Keep both tags the same: frontend and backend are released together.
 
-FROM ghcr.io/maathimself/mailflow-backend:4.1.0 AS img-backend
-FROM ghcr.io/maathimself/mailflow-frontend:4.1.0 AS web-dist
+FROM ghcr.io/maathimself/mailflow-backend:4.5.1 AS img-backend
+FROM ghcr.io/maathimself/mailflow-frontend:4.5.1 AS web-dist
 
 FROM debian:trixie-slim
 

@@ -168,16 +168,17 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "0.1.1"
-  update_at: "2026-10-25"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated silo RELEASE.2026-10-18T00-00-00Z to RELEASE.2026-11-12T00-00-00Z
       - Single-container Indelible with one port (6152) and one data folder
       - Every secret key and password is made on first start, so each install gets its own
       - Runs in development mode over http (works on your network) and production mode when PUBLIC_URL is https
       - ind-api 0.1.1
       - ind-worker 0.1.1
       - ind-renderer 0.1.1
-      - pgsty/silo RELEASE.2026-10-18T00-00-00Z
+      - pgsty/silo RELEASE.2026-11-12T00-00-00Z
       - PostgreSQL 18 with pgvector inside
   repo: "https://github.com/useindelible/indelible"
   support: "https://github.com/useindelible/indelible/issues"

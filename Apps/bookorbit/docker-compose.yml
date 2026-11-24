@@ -187,13 +187,14 @@ x-casaos:
   port_map: "6124"
   scheme: http
   is_uncontrolled: false
-  version: "3.5.0"
-  update_at: "2026-10-23"
+  version: "3.9.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated bookorbit 3.5.0 to 3.9.0
       - Single-container BookOrbit with one port (6124), one data folder and one books folder
       - JWT secret, encryption keys, setup token and database passwords are made on first start, so each install gets its own
-      - ghcr.io/bookorbit/bookorbit 3.5.0
+      - ghcr.io/bookorbit/bookorbit 3.9.0
       - PostgreSQL 18 with pgvector inside
       - The optional Kokoro text-to-speech container is left out
   repo: "https://github.com/bookorbit/bookorbit"

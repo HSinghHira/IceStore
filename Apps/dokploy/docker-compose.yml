@@ -198,12 +198,13 @@ x-casaos:
   port_map: "6183"
   scheme: http
   is_uncontrolled: false
-  version: "v0.30.10"
-  update_at: "2026-10-30"
+  version: "v0.31.4"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated dokploy v0.30.10 to v0.31.4
       - First IceStore release: dashboard on port 6183, deployed apps on 6184 (http) and 6185 (https)
-      - Built on dokploy/dokploy v0.30.10, plus a start script that does the host installer's work: Docker Swarm, dokploy-network, the dokploy-postgres service and the dokploy-traefik container
+      - Built on dokploy/dokploy v0.31.4, plus a start script that does the host installer's work: Docker Swarm, dokploy-network, the dokploy-postgres service and the dokploy-traefik container
       - Each install makes its own BETTER_AUTH_SECRET and Postgres password on first start and keeps them in the data folder
       - Postgres data is kept in the app's data folder, not in a Docker volume
   repo: "https://github.com/Dokploy/dokploy"

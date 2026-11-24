@@ -180,16 +180,17 @@ x-casaos:
   port_map: "6142"
   scheme: http
   is_uncontrolled: false
-  version: "v2.21.1"
-  update_at: "2026-10-24"
+  version: "v2.22.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated documenso v2.21.1 to v2.22.0, mailpit v1.32.0 to v1.34.0
       - Single-container Documenso with one port (6142) and one data folder
       - Secret keys, database passwords and a self-signed signing certificate are made on first start, so each install gets its own
       - Built-in mail viewer at /mail, used until you set an SMTP server
       - DOCUMENSO_ADMIN_EMAIL makes your account an admin, no database commands needed
-      - documenso/documenso v2.21.1
-      - axllent/mailpit v1.32.0
+      - documenso/documenso v2.22.0
+      - axllent/mailpit v1.34.0
       - PostgreSQL 15 inside
   repo: "https://github.com/documenso/documenso"
   support: "https://github.com/documenso/documenso/issues"

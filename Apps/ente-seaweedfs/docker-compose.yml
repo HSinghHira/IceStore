@@ -321,10 +321,11 @@ x-casaos:
   port_map: "6660"
   scheme: http
   is_uncontrolled: false
-  version: "20fb631"
-  update_at: "2026-10-27"
+  version: "c2e571c"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated server 20fb631 to c2e571c, web 817ce84 to ce7e41f, mailpit v1.32.0 to v1.34.0, seaweedfs 4.48 to 4.55
       - Every address (ENTE_API_URL, ENTE_S3_URL, ENTE_APPS_*) is now in the app settings, for people
         who use their own domain; the log warns when PUBLIC_URL has no port and they are blank
       - New ports: 6660 Web App, 6661 API, 6662 Public Albums, 6663 photo storage,
@@ -339,8 +340,8 @@ x-casaos:
       - Database, storage and museum keys are made on first start, so each install gets its own
       - Sign-up codes go to the built-in mail viewer unless you set your own email server
       - Every account gets 100 TB instead of Ente's 10 GB (ENTE_AIO_STORAGE_GB)
-      - server 20fb631, web 817ce84 (Ente only publishes commit tags; they follow latest)
-      - seaweedfs 4.48, mailpit v1.32.0, PostgreSQL 15
+      - server c2e571c, web ce7e41f (Ente only publishes commit tags; they follow latest)
+      - seaweedfs 4.55, mailpit v1.34.0, PostgreSQL 15
   repo: "https://github.com/ente/ente"
   support: "https://github.com/ente/ente/issues"
   docs: "https://ente.com/help/self-hosting/"

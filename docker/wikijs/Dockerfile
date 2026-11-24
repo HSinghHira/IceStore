@@ -10,7 +10,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/requarks/wiki:3.5.0
+FROM ghcr.io/requarks/wiki:3.6.1
 
 USER root
 # PostgreSQL's major version is pinned (18), so a newer Debian under the

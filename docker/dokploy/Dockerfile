@@ -11,7 +11,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM dokploy/dokploy:v0.30.10
+FROM dokploy/dokploy:v0.31.4
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 RUN chmod +x /usr/local/bin/icestore-init

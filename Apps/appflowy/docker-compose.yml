@@ -149,14 +149,15 @@ x-casaos:
   port_map: "6101"
   scheme: http
   is_uncontrolled: false
-  version: "0.19.2"
-  update_at: "2026-10-21"
+  version: "0.21.9"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated appflowy_cloud 0.19.2 to 0.21.9, appflowy_worker 0.18.8 to 0.21.9, appflowy_search 0.18.8 to 0.21.9, gotrue 0.18.8 to 0.20.6, admin_frontend 0.18.1 to 0.20.4, appflowy_web 0.19.8 to 0.20.15, mailpit v1.31.4 to v1.34.0, silo RELEASE.2026-09-16T00-00-00Z to RELEASE.2026-11-12T00-00-00Z
       - The mail viewer (/mail) login is now made on first start (admin and a random password, saved in data/mail-password.txt and shown in the log) instead of username:password. If you installed before, make MP_UI_AUTH blank in the app settings, or type your own login there.
       - Single-container AppFlowy with one port (6101) and one data folder
       - Secret keys are made on first start, so each install gets its own
-      - appflowy_cloud 0.19.2, appflowy_web 0.19.8, appflowy_worker 0.18.8, appflowy_search 0.18.8, gotrue 0.18.8, admin_frontend 0.18.1
+      - appflowy_cloud 0.21.9, appflowy_web 0.20.15, appflowy_worker 0.21.9, appflowy_search 0.21.9, gotrue 0.20.6, admin_frontend 0.20.4
       - File storage uses Silo (pgsty/silo), the community fork of MinIO
       - The app settings stay short; every other setting is listed on the IceStore app page (Variables tab) and can be added in the app settings
       - Blank or missing settings keep their defaults; they are no longer forwarded as empty values

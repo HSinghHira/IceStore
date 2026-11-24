@@ -170,12 +170,13 @@ x-casaos:
   port_map: "6127"
   scheme: http
   is_uncontrolled: false
-  version: "v4.23.4"
-  update_at: "2026-10-23"
+  version: "v4.23.16"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated cloudreve v4.23.4 to v4.23.16
       - Single-container Cloudreve Pro with one web port (6127), the aria2 port (6128) and one data folder
-      - ghcr.io/dvorinka/cloudreve v4.23.4
+      - ghcr.io/dvorinka/cloudreve v4.23.16
       - PostgreSQL 17 and Redis inside, on 127.0.0.1 only, with no passwords to set
   repo: "https://github.com/Dvorinka/cloudreve"
   support: "https://github.com/Dvorinka/cloudreve/issues"

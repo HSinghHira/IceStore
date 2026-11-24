@@ -188,10 +188,11 @@ x-casaos:
   port_map: "6145"
   scheme: http
   is_uncontrolled: false
-  version: "v2.38.2"
-  update_at: "2026-10-25"
+  version: "v2.39.4"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated coder v2.38.2 to v2.39.4
       - Single-container Coder with one port (6145) and one data folder
       - The database password is made on first start, so each install gets its own
       - Optional Docker workspaces: mount /var/run/docker.sock and Coder can use it

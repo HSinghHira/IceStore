@@ -6,7 +6,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/pocket-id/pocket-id:v2.19.1
+FROM ghcr.io/pocket-id/pocket-id:v2.19.3
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 RUN chmod +x /usr/local/bin/icestore-init

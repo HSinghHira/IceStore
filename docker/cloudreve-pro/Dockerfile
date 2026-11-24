@@ -11,7 +11,7 @@
 #                        thumbnails and remote downloads)
 #   gateway    built-in (nginx on 8080)
 
-FROM ghcr.io/dvorinka/cloudreve:v4.23.4 AS img-cloudreve
+FROM ghcr.io/dvorinka/cloudreve:v4.23.16 AS img-cloudreve
 
 FROM debian:trixie-slim
 

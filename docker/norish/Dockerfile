@@ -10,8 +10,8 @@
 #   norish     chroot   (the app on 3000: runs its own migrations on start)
 #   gateway    built-in (nginx on 8080)
 
-FROM norishapp/norish:v0.25.1-beta AS img-norish
-FROM norishapp/obscura:0.2.4-norish.2 AS img-obscura
+FROM norishapp/norish:v0.27.0-beta AS img-norish
+FROM norishapp/obscura:0.2.7-norish.1 AS img-obscura
 
 FROM debian:trixie-slim
 

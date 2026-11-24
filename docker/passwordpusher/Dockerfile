@@ -9,7 +9,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM pglombardo/pwpush:2.17.2
+FROM pglombardo/pwpush:2.17.4
 
 USER root
 RUN apk add --no-cache su-exec

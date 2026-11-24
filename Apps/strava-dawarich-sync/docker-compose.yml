@@ -188,11 +188,12 @@ x-casaos:
   port_map: "6176"
   scheme: http
   is_uncontrolled: false
-  version: "sha-5faa02f"
-  update_at: "2026-10-30"
+  version: "sha-6ce9bfd"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
-      - Initial IceStore version, built on ghcr.io/benno93/strava-dawarich-sync sha-5faa02f
+      - Updated strava-dawarich-sync sha-5fa to sha-6ce
+      - Initial IceStore version, built on ghcr.io/benno93/strava-dawarich-sync sha-6ce9bfd
       - Adds a setup page on port 6176 that does upstream's Strava sign-in (authorize.py) in the browser
       - The sync waits until the settings are filled in and Strava is connected, instead of failing every hour
       - Blank optional settings mean the default

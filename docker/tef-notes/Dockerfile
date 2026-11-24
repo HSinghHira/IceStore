@@ -11,9 +11,9 @@
 #   stt         chroot   (speech-to-text for voice input, on 8099)
 #   gateway     built-in (nginx on 8080: upstream's one-origin proxy rule)
 
-FROM ghcr.io/spyrosbazios/tef-notes:0.8.0 AS img-pocketbase
-FROM ghcr.io/spyrosbazios/tef-notes-agent:0.8.0 AS img-agent
-FROM ghcr.io/spyrosbazios/tef-notes-stt:0.8.0 AS img-stt
+FROM ghcr.io/spyrosbazios/tef-notes:0.15.0 AS img-pocketbase
+FROM ghcr.io/spyrosbazios/tef-notes-agent:0.15.0 AS img-agent
+FROM ghcr.io/spyrosbazios/tef-notes-stt:0.12.0 AS img-stt
 
 FROM debian:trixie-slim
 

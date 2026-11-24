@@ -10,7 +10,7 @@
 #   admin      built-in (one-off: replaces the seeded demo password with this install's own)
 #   gateway    built-in (nginx on 8080)
 
-FROM freikin/dawarich:1.19.0 AS img-dawarich
+FROM freikin/dawarich:1.23.0 AS img-dawarich
 
 FROM debian:trixie-slim
 

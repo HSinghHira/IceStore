@@ -155,9 +155,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "1.0.0"
-  update_at: "2026-11-10"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated node 22.23.4-trixie-slim to 22.23.5-trixie-slim
       - First IceStore version: Octypo 1.0.0 from npm (upstream's quick start) with PostgreSQL 16 in one container; upstream publishes no image.
       - Port 6719. The admin password, the database password and the secrets-file password are made on first start.
   repo: "https://github.com/KBRglobal/octypo-engine-oss"

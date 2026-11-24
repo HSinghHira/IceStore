@@ -121,9 +121,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "2026.10.09"
-  update_at: "2026-11-10"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated node 22.23.4-trixie-slim to 22.23.5-trixie-slim
       - First IceStore version: kovi 2026.10.09, built from upstream's release with its own Dockerfile (Node 22 and Calibre for covers); upstream publishes no image.
       - Port 6725; the data folder is /DATA/AppData/kovi/data.
   repo: "https://git.sysmd.uk/mdaleo404/kovi"

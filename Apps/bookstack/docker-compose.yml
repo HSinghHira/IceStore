@@ -168,12 +168,13 @@ x-casaos:
   port_map: "6758"
   scheme: http
   is_uncontrolled: false
-  version: "v26.09.3-ls300"
-  update_at: "2026-11-21"
+  version: "v26.09.3-ls301"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated bookstack v26.09.3-ls300 to v26.09.3-ls301
       - First IceStore release, on port 6758
-      - Built on lscr.io/linuxserver/bookstack v26.09.3-ls300, with MariaDB added inside the same container
+      - Built on lscr.io/linuxserver/bookstack v26.09.3-ls301, with MariaDB added inside the same container
       - Each install makes its own APP_KEY, database password and admin password on first start; the login is in the CREDENTIALS box in the logs
       - APP_URL is empty by default, so BookStack follows the address in your browser
   repo: "https://github.com/BookStackApp/BookStack"

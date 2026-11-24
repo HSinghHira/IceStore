@@ -210,15 +210,16 @@ x-casaos:
   port_map: "6186"
   scheme: http
   is_uncontrolled: false
-  version: "1.17.2"
-  update_at: "2026-11-08"
+  version: "1.18.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated k7 1.17.2 to 1.18.0
       - Add as many media folders as you like, at any container path (/movies, /tv, /doc ...)
       - Single-container K7 with one port (6186) and one data folder
       - Secret keys and the first admin are made on first start, so each install gets its own
       - PostgreSQL 18 inside; media folders at /media or any path you add
-      - ghcr.io/kaybi-gh/k7 1.17.2
+      - ghcr.io/kaybi-gh/k7 1.18.0
   repo: "https://github.com/kaybi-gh/K7"
   support: "https://github.com/kaybi-gh/K7/issues"
   docs: "https://github.com/kaybi-gh/K7/tree/main/docs"

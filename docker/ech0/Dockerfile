@@ -9,7 +9,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM sn0wl1n/ech0:v5.9.10
+FROM sn0wl1n/ech0:v6.0.0
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 # Shared helpers and the CREDENTIALS banner (docker/_common; built with

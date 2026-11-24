@@ -181,15 +181,16 @@ x-casaos:
   port_map: "6131"
   scheme: http
   is_uncontrolled: false
-  version: "6.3.1"
-  update_at: "2026-10-28"
+  version: "6.8.1"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated fileship 6.3.1 to 6.8.1
       - First release in IceStore: Fileship in a single container with one port (6131) and one data folder.
       - The database passwords and the admin password are made on first start, so each install gets its own. The default admin / password login is replaced.
       - The updater-agent is left out (it needs the Docker socket), so one-click updates from the dashboard are off. The IceStore image is updated to new Fileship versions every week instead.
       - The AI preset starts at low (upstream: medium) to use less memory. Change it with NUXT_AI_PRESET or in Administration, Instance.
-      - ghcr.io/hanzydev/fileship 6.3.1
+      - ghcr.io/hanzydev/fileship 6.8.1
       - PostgreSQL 16 inside
   repo: "https://github.com/hanzydev/Fileship"
   support: "https://github.com/hanzydev/Fileship/issues"

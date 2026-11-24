@@ -184,29 +184,30 @@ x-casaos:
   port_map: "6167"
   scheme: http
   is_uncontrolled: false
-  version: "v0.16.2"
-  update_at: "2026-10-25"
+  version: "v0.16.5"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated api v0.16.2 to v0.16.5, events v0.16.2 to v0.16.5, file-server v0.16.2 to v0.16.5, proxy v0.16.2 to v0.16.5, gifbox v0.16.2 to v0.16.5, crond v0.16.2 to v0.16.5, pushd v0.16.2 to v0.16.5, voice-ingress v0.16.2 to v0.16.5, mongo 8.3.13 to 8.3.17, rabbitmq 4.4.0 to 4.4.1, silo RELEASE.2026-10-18T00-00-00Z to RELEASE.2026-11-12T00-00-00Z
       - The web app now works from whatever address you open it at (LAN IP, localhost or your domain), instead of only the one in PUBLIC_URL. Before, it showed a dark screen or "Couldn't fetch Stoat configuration from 'localhost:6167'".
       - Moved to IceStore as a single container with one data folder. The web port changed from 8422 to 6167 and voice uses 6168 (TCP) and 6169 (UDP) instead of 8423-8429. The app id is now com.icestore.stoatchat.
       - The file encryption key, the VAPID push keys, the LiveKit key and every internal password are made on first start, so each install gets its own. The compose file no longer ships fixed keys.
       - Routes, ports and Revolt.toml follow upstream's self-hosted setup (the services listen on 14702-14706), and every Revolt.toml setting can be set with a REVOLT__SECTION__KEY variable.
       - LiveKit uses one TCP and one UDP port with the same number inside and outside, and the IP from PUBLIC_URL, so calls can connect.
       - Now runs on arm64 too. The web app's files are served by nginx.
-      - api v0.16.2
-      - events v0.16.2
-      - file-server v0.16.2
-      - proxy v0.16.2
-      - gifbox v0.16.2
-      - crond v0.16.2
-      - pushd v0.16.2
-      - voice-ingress v0.16.2
+      - api v0.16.5
+      - events v0.16.5
+      - file-server v0.16.5
+      - proxy v0.16.5
+      - gifbox v0.16.5
+      - crond v0.16.5
+      - pushd v0.16.5
+      - voice-ingress v0.16.5
       - ghcr.io/stoatchat/for-web 607a0ce (stoat-for-web v0.16.2)
       - ghcr.io/stoatchat/livekit-server v1.9.14
-      - mongo 8.3.13
-      - rabbitmq 4.4.0
-      - pgsty/silo RELEASE.2026-10-18T00-00-00Z
+      - mongo 8.3.17
+      - rabbitmq 4.4.1
+      - pgsty/silo RELEASE.2026-11-12T00-00-00Z
       - Redis inside
   repo: "https://github.com/stoatchat/self-hosted"
   support: "https://github.com/stoatchat/self-hosted/issues"

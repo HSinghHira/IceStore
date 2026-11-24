@@ -12,8 +12,8 @@
 #
 # amd64 only: ghcr.io/trackie-nz/trackie has no arm64 image.
 
-FROM ghcr.io/trackie-nz/trackie:26.9.0-trackie.2 AS img-trackie
-FROM svhd/logto:1.45.0 AS img-logto
+FROM ghcr.io/trackie-nz/trackie:26.11.0-trackie.1 AS img-trackie
+FROM svhd/logto:1.46.0 AS img-logto
 
 FROM debian:trixie-slim
 

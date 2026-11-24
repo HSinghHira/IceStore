@@ -154,14 +154,15 @@ x-casaos:
   port_map: "6156"
   scheme: http
   is_uncontrolled: false
-  version: "20.0-20261015"
-  update_at: "2026-10-25"
+  version: "20.0-20261112"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated odoo 20.0-20261015 to 20.0-20261112
       - Moved to IceStore as a single container, now on port 6156
       - Odoo and its PostgreSQL 16 database now run in one container with one data folder
       - No passwords in the compose file any more: they are made on first start and kept in the data folder
-      - odoo 20.0-20261015
+      - odoo 20.0-20261112
   repo: "https://github.com/odoo/odoo"
   support: "https://github.com/odoo/odoo/issues"
   docs: "https://www.odoo.com/documentation/20.0/"

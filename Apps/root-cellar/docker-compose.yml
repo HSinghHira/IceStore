@@ -157,9 +157,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "v1.0.0"
-  update_at: "2026-11-09"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated node 22.23.4-trixie-slim to 26.13.1-trixie-slim
       - First IceStore release: Root Cellar v1.0.0 (Checkbook, Notes, Movies and Labels) in one container, built from upstream's release; upstream publishes no image.
       - Ports 6711 (Checkbook), 6712 (Notes), 6713 (Movies) and 6714 (Labels); one data folder.
       - The Labels print system (CUPS with the DYMO drivers) is in the image, so the first start needs no download.

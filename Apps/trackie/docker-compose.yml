@@ -217,17 +217,18 @@ x-casaos:
   port_map: "6164"
   scheme: http
   is_uncontrolled: false
-  version: "26.9.0-trackie.2"
-  update_at: "2026-10-25"
+  version: "26.11.0-trackie.1"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated trackie 26.9.0-trackie.2 to 26.11.0-trackie.1, logto 1.45.0 to 1.46.0
       - PUBLIC_URL now starts as http://[ZIMAOS-IP-ADDRESS]:6164 so it is clear it must be set. Until it is, Trackie and Logto show a note saying what to set instead of sending you to localhost.
       - Moved to IceStore as a single container with one data folder. Ports changed from 8465-8467 to 6164 (Trackie), 6165 (Logto) and 6166 (Logto admin console). The app id is now com.icestore.trackie.
       - The identity secret, the Akahu token secret and the database passwords are made on first start, so each install gets its own. The compose file no longer ships fixed ones.
       - Logto's signing key is switched to RSA on first start and its database is brought up to date on every start, so there is no key rotation to do by hand.
       - The Logto addresses and the discovery URL now come from PUBLIC_URL.
-      - ghcr.io/trackie-nz/trackie 26.9.0-trackie.2
-      - svhd/logto 1.45.0
+      - ghcr.io/trackie-nz/trackie 26.11.0-trackie.1
+      - svhd/logto 1.46.0
       - PostgreSQL 17 inside
       - amd64 only: upstream publishes no arm64 Trackie image.
   repo: "https://github.com/trackie-nz/trackie"

@@ -141,11 +141,12 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "31b9ba0"
-  update_at: "2026-11-08"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated node 22.23.4-bookworm-slim to 22.23.5-bookworm-slim
       - First IceStore version, on port 6195
-      - Built from upstream commit 31b9ba0 (upstream publishes no image and no release tags yet), on node 22.23.4-bookworm-slim
+      - Built from upstream commit 31b9ba0 (upstream publishes no image and no release tags yet), on node 22.23.5-bookworm-slim
       - OpenCadence has no login, so nginx asks for a password first; the password is made on first start, so each install gets its own
       - Single user, like upstream's Community edition
       - Named opencadence-community because ghcr.io/hsinghhira/opencadence belongs to another build

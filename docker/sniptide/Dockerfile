@@ -10,7 +10,7 @@
 #   sniptide   chroot   (the upstream image: web app, API and MCP on 3000)
 #   gateway    built-in (nginx on 8080; replaces upstream's optional Caddy proxy)
 
-FROM ghcr.io/dino-kupinic/sniptide:0.78.1 AS img-sniptide
+FROM ghcr.io/dino-kupinic/sniptide:0.111.1 AS img-sniptide
 
 FROM debian:trixie-slim
 

@@ -13,7 +13,7 @@
 # The AI models are not inside: Reelsaw uses a hosted provider (OpenAI,
 # Groq, ...) or your own Ollama / Speaches server.
 
-FROM ghcr.io/osbytes/reelsaw:0.32.3 AS img-reelsaw
+FROM ghcr.io/osbytes/reelsaw:0.51.1 AS img-reelsaw
 
 FROM debian:trixie-slim
 

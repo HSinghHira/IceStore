@@ -11,7 +11,7 @@
 ARG KOVI_REF=2026.10.09
 
 # auto-update: keep-major
-FROM node:22.23.4-trixie-slim
+FROM node:22.23.5-trixie-slim
 ARG KOVI_REF
 
 RUN set -eux; \

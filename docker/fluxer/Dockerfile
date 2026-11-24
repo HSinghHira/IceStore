@@ -34,24 +34,24 @@
 # Every Fluxer image is versioned on its own (year.monthday.build). The
 # release's compose file pins them by digest; these are the same images.
 
-FROM ghcr.io/fluxerapp/fluxer-api:2026.1109.42841 AS img-api
-FROM ghcr.io/fluxerapp/fluxer-gateway:2026.1109.42842 AS img-realtime
-FROM ghcr.io/fluxerapp/fluxer-media-proxy:2026.1109.42917 AS img-media
-FROM ghcr.io/fluxerapp/fluxer-push:2026.1109.42836 AS img-push
-FROM ghcr.io/fluxerapp/fluxer-app-proxy-self-hosted:2026.1109.42903 AS img-app
-FROM ghcr.io/fluxerapp/fluxer-admin:2026.1109.42815 AS img-admin
-FROM ghcr.io/fluxerapp/fluxer-snowflakes:2026.1109.42849 AS img-snowflakes
-FROM ghcr.io/fluxerapp/fluxer-users:2026.1109.42852 AS img-users
-FROM ghcr.io/fluxerapp/fluxer-gifs:2026.1109.42837 AS img-gifs
-FROM ghcr.io/fluxerapp/fluxer-messages:2026.1109.42854 AS img-messages
-FROM ghcr.io/fluxerapp/fluxer-unfurl:2026.1109.42918 AS img-unfurl
-FROM livekit/livekit-server:v1.12.0 AS img-livekit
-FROM getmeili/meilisearch:v1.53 AS img-meilisearch
-FROM chrislusf/seaweedfs:4.52 AS img-seaweedfs
-FROM nats:2.14.9-alpine AS img-nats
+FROM ghcr.io/fluxerapp/fluxer-api:2026.1123.214908 AS img-api
+FROM ghcr.io/fluxerapp/fluxer-gateway:2026.1124.32854 AS img-realtime
+FROM ghcr.io/fluxerapp/fluxer-media-proxy:2026.1123.182235 AS img-media
+FROM ghcr.io/fluxerapp/fluxer-push:2026.1124.30102 AS img-push
+FROM ghcr.io/fluxerapp/fluxer-app-proxy-self-hosted:2026.1123.165450 AS img-app
+FROM ghcr.io/fluxerapp/fluxer-admin:2026.1123.165504 AS img-admin
+FROM ghcr.io/fluxerapp/fluxer-snowflakes:2026.1123.214057 AS img-snowflakes
+FROM ghcr.io/fluxerapp/fluxer-users:2026.1123.214037 AS img-users
+FROM ghcr.io/fluxerapp/fluxer-gifs:2026.1123.214028 AS img-gifs
+FROM ghcr.io/fluxerapp/fluxer-messages:2026.1123.214040 AS img-messages
+FROM ghcr.io/fluxerapp/fluxer-unfurl:2026.1123.214038 AS img-unfurl
+FROM livekit/livekit-server:v1.13.11 AS img-livekit
+FROM getmeili/meilisearch:v1.58 AS img-meilisearch
+FROM chrislusf/seaweedfs:4.55 AS img-seaweedfs
+FROM nats:2.15.3-alpine AS img-nats
 
 # fluxer-static is only files (avatars, emoji, web assets); nginx serves them.
-FROM ghcr.io/fluxerapp/fluxer-static:2026.1109.42914 AS static-files
+FROM ghcr.io/fluxerapp/fluxer-static:2026.1123.3207 AS static-files
 
 FROM debian:trixie-slim
 

@@ -8,7 +8,7 @@
 #   gamevault  chroot   (the upstream Node image as-is; its entrypoint drops to PUID/PGID)
 #   gateway    built-in (nginx on 8080; GameVault itself is moved to 8081)
 
-FROM phalcode/gamevault-backend:17.0.1 AS img-gamevault
+FROM phalcode/gamevault-backend:17.2.0 AS img-gamevault
 
 FROM debian:trixie-slim
 

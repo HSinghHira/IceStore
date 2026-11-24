@@ -9,7 +9,7 @@
 # Upstream tags every build sha-<commit>; the daily bumper
 # (update-upstream.yml) moves the tag below to the one `latest` points at.
 
-FROM ghcr.io/wouekk/cartvibe:sha-591dc65
+FROM ghcr.io/wouekk/cartvibe:sha-42cbaee
 
 RUN set -eux; \
     apt-get update; \

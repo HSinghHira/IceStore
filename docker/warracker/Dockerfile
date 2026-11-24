@@ -12,7 +12,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/sassanix/warracker/main:1.0.6
+FROM ghcr.io/sassanix/warracker/main:1.0.7
 
 USER root
 RUN apt-get update \

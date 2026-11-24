@@ -166,14 +166,15 @@ x-casaos:
   port_map: "6134"
   scheme: http
   is_uncontrolled: false
-  version: "v0.25.1-beta"
-  update_at: "2026-10-28"
+  version: "v0.27.0-beta"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated norish v0.25.1-beta to v0.27.0-beta, obscura 0.2.4-norish.2 to 0.2.7-norish.1
       - Single-container Norish with one port (6134) and one data folder
       - The master key, the Obscura token and database passwords are made on first start, so each install gets its own
-      - norishapp/norish v0.25.1-beta
-      - norishapp/obscura 0.2.4-norish.2 (page renderer for URL imports)
+      - norishapp/norish v0.27.0-beta
+      - norishapp/obscura 0.2.7-norish.1 (page renderer for URL imports)
       - PostgreSQL 17 and Redis inside
   repo: "https://github.com/norish-recipes/norish"
   support: "https://github.com/norish-recipes/norish/issues"

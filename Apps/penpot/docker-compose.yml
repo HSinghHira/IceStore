@@ -159,12 +159,13 @@ x-casaos:
   port_map: "6751"
   scheme: http
   is_uncontrolled: false
-  version: "2.19.3"
-  update_at: "2026-11-20"
+  version: "2.19.4"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated backend 2.19.3 to 2.19.4, exporter 2.19.3 to 2.19.4, frontend 2.19.3 to 2.19.4
       - First IceStore release, on port 6751
-      - All in one container: penpotapp/backend 2.19.3, penpotapp/exporter 2.19.3, penpotapp/frontend 2.19.3, axllent/mailpit v1.34.0, PostgreSQL 15, Redis and an nginx gateway
+      - All in one container: penpotapp/backend 2.19.4, penpotapp/exporter 2.19.4, penpotapp/frontend 2.19.4, axllent/mailpit v1.34.0, PostgreSQL 15, Redis and an nginx gateway
       - Each install makes its own PENPOT_SECRET_KEY and database password on first start
       - The admin console and the MCP server are left out
   repo: "https://github.com/penpot/penpot"

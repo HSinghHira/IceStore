@@ -160,15 +160,16 @@ x-casaos:
   port_map: "6147"
   scheme: http
   is_uncontrolled: false
-  version: "0.97.0"
-  update_at: "2026-10-25"
+  version: "0.98.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated docmost 0.97.0 to 0.98.0, mailpit v1.32.0 to v1.34.0
       - Single-container Docmost with one port (6147) and one data folder
       - The secret key and database passwords are made on first start, so each install gets its own
       - Built-in mail viewer at /mail, used until you set an SMTP server
-      - docmost/docmost 0.97.0
-      - axllent/mailpit v1.32.0
+      - docmost/docmost 0.98.0
+      - axllent/mailpit v1.34.0
       - PostgreSQL 18 and Redis inside
   repo: "https://github.com/docmost/docmost"
   support: "https://github.com/docmost/docmost/issues"

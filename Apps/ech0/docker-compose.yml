@@ -122,12 +122,13 @@ x-casaos:
   port_map: "6782"
   scheme: http
   is_uncontrolled: false
-  version: "v5.9.10"
-  update_at: "2026-11-21"
+  version: "v6.0.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated ech0 v5.9.10 to v6.0.0
       - First IceStore release, on port 6782
-      - Built on sn0wl1n/ech0 v5.9.10, with SQLite as the database
+      - Built on sn0wl1n/ech0 v6.0.0, with SQLite as the database
       - Each install makes its own JWT_SECRET on first start, so sign-ins last across restarts
   repo: "https://github.com/lin-snow/Ech0"
   support: "https://github.com/lin-snow/Ech0/issues"

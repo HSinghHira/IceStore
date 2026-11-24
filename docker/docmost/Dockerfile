@@ -10,8 +10,8 @@
 #   docmost    chroot   (the upstream Node image as-is: API, web app and live collaboration)
 #   gateway    built-in (nginx on 8080)
 
-FROM docmost/docmost:0.97.0 AS img-docmost
-FROM axllent/mailpit:v1.32.0 AS img-mailpit
+FROM docmost/docmost:0.98.0 AS img-docmost
+FROM axllent/mailpit:v1.34.0 AS img-mailpit
 
 FROM debian:trixie-slim
 

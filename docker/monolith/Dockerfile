@@ -21,7 +21,7 @@ ARG MONOLITH_VERSION=v0.1.22
 # auto-update: hold
 FROM node:22.23.4-bookworm-slim AS img-server
 
-FROM golang:1.27.3-bookworm AS go-toolchain
+FROM golang:1.27.4-bookworm AS go-toolchain
 
 # ---- the source, at the pinned release ----
 FROM debian:bookworm-slim AS src

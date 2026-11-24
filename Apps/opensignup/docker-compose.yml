@@ -2,7 +2,7 @@ name: opensignup
 
 services:
   opensignup:
-    image: ghcr.io/hsinghhira/opensignup:1.0.1
+    image: ghcr.io/hsinghhira/opensignup:1.0.2
     container_name: opensignup
     restart: unless-stopped
     stop_grace_period: 60s
@@ -159,9 +159,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "6629400"
-  update_at: "2026-11-12"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated node 22.22.3-alpine3.22 to 22.23.5-alpine3.24
       - First IceStore release: OpenSignup from commit 6629400 (upstream has no releases or image), built from upstream's source with PostgreSQL 16, the email worker and Mailpit in one container.
       - Port 6727 and one data folder. The database password, the session secret and the mail viewer login are made on first start.
       - Organizers sign in by emailed link: until you set SMTP_HOST, the emails land in the mail viewer at /mail.

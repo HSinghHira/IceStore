@@ -11,7 +11,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM lscr.io/linuxserver/bookstack:v26.09.3-ls300
+FROM lscr.io/linuxserver/bookstack:v26.09.3-ls301
 
 RUN apk add --no-cache mariadb
 

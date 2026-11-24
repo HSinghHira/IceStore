@@ -155,11 +155,12 @@ x-casaos:
   port_map: "6717"
   scheme: http
   is_uncontrolled: false
-  version: "sha-591dc65"
-  update_at: "2026-11-10"
+  version: "sha-42cbaee"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
-      - First IceStore version: ghcr.io/wouekk/cartvibe sha-591dc65, with Valkey inside (upstream runs it as a second container) and a start script that makes this install's SECRET_KEY and ENCRYPTION_KEY.
+      - Updated cartvibe sha-591 to sha-42c
+      - First IceStore version: ghcr.io/wouekk/cartvibe sha-42cbaee, with Valkey inside (upstream runs it as a second container) and a start script that makes this install's SECRET_KEY and ENCRYPTION_KEY.
       - Port 6717; data in /DATA/AppData/cartvibe (sqlite, data, logs). amd64 only, as upstream publishes.
       - The first sign-in is admin / admin (made by CartVibe itself; there is no sign-up page). The tips and the CREDENTIALS box in the logs now say so; change the password under Management, Users.
   repo: "https://github.com/wouekk/cartvibe"

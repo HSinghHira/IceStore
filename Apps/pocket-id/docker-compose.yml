@@ -173,12 +173,13 @@ x-casaos:
   port_map: "6157"
   scheme: http
   is_uncontrolled: false
-  version: "v2.19.1"
-  update_at: "2026-10-25"
+  version: "v2.19.3"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated pocket-id v2.19.1 to v2.19.3
       - Moved to IceStore, now on port 6157
-      - Built on ghcr.io/pocket-id/pocket-id v2.19.1, plus a start script that makes each install's own encryption key
+      - Built on ghcr.io/pocket-id/pocket-id v2.19.3, plus a start script that makes each install's own encryption key
       - No encryption key in the compose file any more: it is made on first start and kept in the data folder as .encryption_key
       - Data moved to /DATA/AppData/pocket-id/data
       - Optional settings moved to the Variables tab on the IceStore page, so Application Configuration in the admin pages works again

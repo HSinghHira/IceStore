@@ -171,14 +171,15 @@ x-casaos:
   port_map: "6151"
   scheme: http
   is_uncontrolled: false
-  version: "3.6.0"
-  update_at: "2026-10-25"
+  version: "3.7.1"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated homelable-backend 3.6.0 to 3.7.1, homelable-frontend 3.6.0 to 3.7.1
       - Single-container Homelable with one port (6151) and one data folder
       - The secret key and admin password are made on first start; set ADMIN_PASSWORD to choose your own (no bcrypt hash needed)
-      - homelable-backend 3.6.0
-      - homelable-frontend 3.6.0
+      - homelable-backend 3.7.1
+      - homelable-frontend 3.7.1
       - The optional MCP server for AI clients is not included
   repo: "https://github.com/Pouzor/homelable"
   support: "https://github.com/Pouzor/homelable/issues"

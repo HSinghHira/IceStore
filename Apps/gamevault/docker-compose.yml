@@ -178,13 +178,14 @@ x-casaos:
   port_map: "6149"
   scheme: http
   is_uncontrolled: false
-  version: "17.0.1"
-  update_at: "2026-10-25"
+  version: "17.2.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated gamevault-backend 17.0.1 to 17.2.0
       - Single-container GameVault with one port (6149), one data folder and your games folder
       - The database password and token seed are made on first start, so there is nothing to set
-      - gamevault-backend 17.0.1 (17.0 adds multiple versions per game; existing games are moved over on their own)
+      - gamevault-backend 17.2.0 (17.0 adds multiple versions per game; existing games are moved over on their own)
       - PostgreSQL 16 inside
   repo: "https://github.com/Phalcode/gamevault-backend"
   support: "https://github.com/Phalcode/gamevault-backend/issues"

@@ -188,29 +188,30 @@ x-casaos:
   port_map: "6692"
   scheme: http
   is_uncontrolled: false
-  version: "2026.1109.42841"
-  update_at: "2026-11-09"
+  version: "2026.1123.214908"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated fluxer-api 2026.1109.42841 to 2026.1123.214908, fluxer-gateway 2026.1109.42842 to 2026.1124.32854, fluxer-media-proxy 2026.1109.42917 to 2026.1123.182235, fluxer-push 2026.1109.42836 to 2026.1124.30102, fluxer-app-proxy-self-hosted 2026.1109.42903 to 2026.1123.165450, fluxer-admin 2026.1109.42815 to 2026.1123.165504, fluxer-snowflakes 2026.1109.42849 to 2026.1123.214057, fluxer-users 2026.1109.42852 to 2026.1123.214037, fluxer-gifs 2026.1109.42837 to 2026.1123.214028, fluxer-messages 2026.1109.42854 to 2026.1123.214040, fluxer-unfurl 2026.1109.42918 to 2026.1123.214038, livekit-server v1.12.0 to v1.13.11, meilisearch v1.53 to v1.58, seaweedfs 4.52 to 4.55, nats 2.14.9-alpine to 2.15.3-alpine, fluxer-static 2026.1109.42914 to 2026.1123.3207
       - First IceStore release: Fluxer's whole compose bundle in one container, with one web port (6692), voice on 6693 (TCP) and 6694 (UDP), and one data folder.
       - Every secret (database, search, storage, LiveKit, VAPID push keys, the ActivityPub key and the setup token) is made on first start, so each install gets its own.
       - nginx serves upstream's edge routes and the fluxer-static files in place of the Caddy edge and static-proxy.
-      - fluxer-api 2026.1109.42841
-      - fluxer-gateway 2026.1109.42842
-      - fluxer-media-proxy 2026.1109.42917
-      - fluxer-push 2026.1109.42836
-      - fluxer-app-proxy-self-hosted 2026.1109.42903
-      - fluxer-admin 2026.1109.42815
-      - fluxer-snowflakes 2026.1109.42849
-      - fluxer-users 2026.1109.42852
-      - fluxer-gifs 2026.1109.42837
-      - fluxer-messages 2026.1109.42854
-      - fluxer-unfurl 2026.1109.42918
-      - fluxer-static 2026.1109.42914
-      - livekit-server v1.12.0
-      - meilisearch v1.53
-      - seaweedfs 4.52
-      - nats 2.14.9-alpine
+      - fluxer-api 2026.1123.214908
+      - fluxer-gateway 2026.1124.32854
+      - fluxer-media-proxy 2026.1123.182235
+      - fluxer-push 2026.1124.30102
+      - fluxer-app-proxy-self-hosted 2026.1123.165450
+      - fluxer-admin 2026.1123.165504
+      - fluxer-snowflakes 2026.1123.214057
+      - fluxer-users 2026.1123.214037
+      - fluxer-gifs 2026.1123.214028
+      - fluxer-messages 2026.1123.214040
+      - fluxer-unfurl 2026.1123.214038
+      - fluxer-static 2026.1123.3207
+      - livekit-server v1.13.11
+      - meilisearch v1.58
+      - seaweedfs 4.55
+      - nats 2.15.3-alpine
       - PostgreSQL 16 and Valkey inside
   repo: "https://github.com/fluxerapp/fluxer"
   support: "https://feedback.fluxer.com"

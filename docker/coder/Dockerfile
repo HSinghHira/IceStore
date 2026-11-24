@@ -8,7 +8,7 @@
 #   coder      chroot   (the upstream Alpine image as-is: coder server, terraform, git, ssh)
 #   gateway    built-in (nginx on 8080)
 
-FROM ghcr.io/coder/coder:v2.38.2 AS img-coder
+FROM ghcr.io/coder/coder:v2.39.4 AS img-coder
 
 FROM debian:trixie-slim
 

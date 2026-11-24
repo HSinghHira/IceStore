@@ -25,21 +25,21 @@
 # The web app is static files (upstream serves them with a small Node
 # server); they are copied out of the for-web image and served by nginx.
 
-FROM ghcr.io/stoatchat/api:v0.16.2 AS img-api
-FROM ghcr.io/stoatchat/events:v0.16.2 AS img-events
-FROM ghcr.io/stoatchat/file-server:v0.16.2 AS img-autumn
-FROM ghcr.io/stoatchat/proxy:v0.16.2 AS img-january
-FROM ghcr.io/stoatchat/gifbox:v0.16.2 AS img-gifbox
-FROM ghcr.io/stoatchat/crond:v0.16.2 AS img-crond
-FROM ghcr.io/stoatchat/pushd:v0.16.2 AS img-pushd
-FROM ghcr.io/stoatchat/voice-ingress:v0.16.2 AS img-voice
+FROM ghcr.io/stoatchat/api:v0.16.5 AS img-api
+FROM ghcr.io/stoatchat/events:v0.16.5 AS img-events
+FROM ghcr.io/stoatchat/file-server:v0.16.5 AS img-autumn
+FROM ghcr.io/stoatchat/proxy:v0.16.5 AS img-january
+FROM ghcr.io/stoatchat/gifbox:v0.16.5 AS img-gifbox
+FROM ghcr.io/stoatchat/crond:v0.16.5 AS img-crond
+FROM ghcr.io/stoatchat/pushd:v0.16.5 AS img-pushd
+FROM ghcr.io/stoatchat/voice-ingress:v0.16.5 AS img-voice
 FROM ghcr.io/stoatchat/livekit-server:v1.9.14 AS img-livekit
 # Upstream pins mongo:8 "until 9 is supported".
 # auto-update: keep-major
-FROM mongo:8.3.13 AS img-mongo
+FROM mongo:8.3.17 AS img-mongo
 # auto-update: keep-major
-FROM rabbitmq:4.4.0 AS img-rabbit
-FROM pgsty/silo:RELEASE.2026-10-18T00-00-00Z AS img-silo
+FROM rabbitmq:4.4.1 AS img-rabbit
+FROM pgsty/silo:RELEASE.2026-11-12T00-00-00Z AS img-silo
 
 # for-web is tagged by git commit (607a0ce = stoat-for-web v0.16.2), and its
 # CI pushes some commits for one architecture only. The files are the same

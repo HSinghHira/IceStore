@@ -9,7 +9,7 @@
 #                        JRE with its font stack, run as user 1001)
 #   gateway    built-in (nginx on 8080)
 
-FROM ghcr.io/asm0dey/calit:1.28.1 AS img-calit
+FROM ghcr.io/asm0dey/calit:1.30.0 AS img-calit
 
 FROM debian:trixie-slim
 

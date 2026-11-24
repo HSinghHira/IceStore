@@ -15,7 +15,7 @@
 ARG CADENCE_REF=31b9ba009b09950f0444268acbe4586f02aacd3a
 
 # auto-update: keep-major
-FROM node:22.23.4-bookworm-slim
+FROM node:22.23.5-bookworm-slim
 ARG CADENCE_REF
 ENV DEBIAN_FRONTEND=noninteractive     COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN set -eux;     apt-get update;     apt-get install -y --no-install-recommends nginx openssl tzdata ca-certificates;     rm -rf /var/lib/apt/lists/* /etc/nginx/sites-enabled/default

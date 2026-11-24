@@ -176,15 +176,16 @@ x-casaos:
   port_map: "6190"
   scheme: http
   is_uncontrolled: false
-  version: "2.0.1"
-  update_at: "2026-11-08"
+  version: "2.1.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated trypost 2.0.1 to 2.1.0
       - Single-container TryPost with one port (6190) and one data folder
       - PostgreSQL 16 and Redis inside; Reverb, Horizon and the scheduler run as upstream ships them
       - APP_KEY, Passport keys, database and Reverb secrets and the first account are made on first start, so each install gets its own
       - Live updates follow the address you open, so they work from every device
-      - ghcr.io/trypostit/trypost 2.0.1
+      - ghcr.io/trypostit/trypost 2.1.0
   repo: "https://github.com/trypostit/trypost"
   support: "https://github.com/trypostit/trypost/issues"
   docs: "https://docs.trypost.it"

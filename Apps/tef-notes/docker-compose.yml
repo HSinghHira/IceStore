@@ -157,15 +157,16 @@ x-casaos:
   port_map: "6718"
   scheme: http
   is_uncontrolled: false
-  version: "0.8.0"
-  update_at: "2026-11-10"
+  version: "0.15.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated tef-notes 0.8.0 to 0.15.0, tef-notes-agent 0.8.0 to 0.15.0, tef-notes-stt 0.8.0 to 0.12.0
       - First IceStore release: upstream's three services in one container on port 6718, with / to PocketBase and /agent to the agent as upstream's one-origin proxy rule asks.
       - AI keys are set as app settings and written to the key files upstream reads; a push (VAPID) key is made on first start.
-      - tef-notes 0.8.0
-      - tef-notes-agent 0.8.0
-      - tef-notes-stt 0.8.0
+      - tef-notes 0.15.0
+      - tef-notes-agent 0.15.0
+      - tef-notes-stt 0.12.0
   repo: "https://github.com/spyrosbazios/tef-notes"
   support: "https://github.com/spyrosbazios/tef-notes/issues"
   docs: "https://github.com/spyrosbazios/tef-notes/blob/main/server/README.md"

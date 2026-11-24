@@ -168,15 +168,16 @@ x-casaos:
   port_map: "6155"
   scheme: http
   is_uncontrolled: false
-  version: "1.12.0"
-  update_at: "2026-10-25"
+  version: "1.13.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated outline 1.12.0 to 1.13.0, mailpit v1.32.0 to v1.34.0
       - Single-container Outline with one port (6155) and one data folder
       - The secret keys and database passwords are made on first start, so each install gets its own
       - Email sign-in works out of the box: links go to the built-in mail viewer at /mail until you set an SMTP server
-      - outlinewiki/outline 1.12.0
-      - axllent/mailpit v1.32.0
+      - outlinewiki/outline 1.13.0
+      - axllent/mailpit v1.34.0
       - PostgreSQL 16 and Redis inside
   repo: "https://github.com/outline/outline"
   support: "https://github.com/outline/outline/discussions"

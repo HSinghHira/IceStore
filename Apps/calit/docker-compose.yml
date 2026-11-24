@@ -189,13 +189,14 @@ x-casaos:
   port_map: "6137"
   scheme: http
   is_uncontrolled: false
-  version: "1.28.1"
-  update_at: "2026-10-29"
+  version: "1.30.0"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated calit 1.28.1 to 1.30.0
       - First version in IceStore, on port 6137
       - Single container: calit and PostgreSQL 18 inside, one data folder
-      - Built on ghcr.io/asm0dey/calit 1.28.1
+      - Built on ghcr.io/asm0dey/calit 1.30.0
       - Session, token and Google state keys are made on first start and kept in /data/state/secrets.env
       - Works on a plain http:// address on your network (the CSRF cookie is only forced secure on https)
   repo: "https://github.com/asm0dey/calit"

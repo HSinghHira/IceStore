@@ -14,9 +14,9 @@
 #   dashboard  chroot   (gami-dashboard on 3000)
 #   gateway    built-in (nginx on 8080: upstream's Caddyfile.example routes)
 
-FROM ghcr.io/gami-fied/gami-api:1.1.0 AS img-api
-FROM ghcr.io/gami-fied/gami-worker:1.1.0 AS img-worker
-FROM ghcr.io/gami-fied/gami-dashboard:1.1.0 AS img-dashboard
+FROM ghcr.io/gami-fied/gami-api:1.3.1 AS img-api
+FROM ghcr.io/gami-fied/gami-worker:1.3.1 AS img-worker
+FROM ghcr.io/gami-fied/gami-dashboard:1.3.1 AS img-dashboard
 
 FROM debian:trixie-slim
 

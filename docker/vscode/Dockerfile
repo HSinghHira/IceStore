@@ -6,7 +6,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM lscr.io/linuxserver/vscode:1.143.1-ls31
+FROM lscr.io/linuxserver/vscode:1.146.0-ls34
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 # Shared helpers and the CREDENTIALS banner (docker/_common; built with

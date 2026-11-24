@@ -12,7 +12,7 @@
 
 ARG RC_REF=v1.0.0
 
-FROM node:22.23.4-trixie-slim
+FROM node:26.13.1-trixie-slim
 ARG RC_REF
 ENV DEBIAN_FRONTEND=noninteractive NODE_ENV=production
 

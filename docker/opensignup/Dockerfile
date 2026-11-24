@@ -22,7 +22,7 @@
 ARG OPENSIGNUP_REF=66294005d715611729e574ad5de4227cc3703935
 
 # auto-update: keep-major
-FROM node:22.22.3-alpine3.22
+FROM node:22.23.5-alpine3.24
 ARG OPENSIGNUP_REF
 
 RUN set -eux; \

@@ -6,7 +6,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM lscr.io/linuxserver/vscodium-web:1.143.17183-ls45
+FROM lscr.io/linuxserver/vscodium-web:1.143.17232-ls49
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 RUN chmod +x /usr/local/bin/icestore-init

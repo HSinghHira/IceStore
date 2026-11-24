@@ -156,16 +156,17 @@ x-casaos:
   port_map: "6130"
   scheme: http
   is_uncontrolled: false
-  version: "4.1.0"
-  update_at: "2026-10-28"
+  version: "4.5.1"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated mailflow-backend 4.1.0 to 4.5.1, mailflow-frontend 4.1.0 to 4.5.1
       - Single-container MailFlow with one port (6130) and one data folder
       - Secret keys and web push keys are made on first start, so each install gets its own
       - Works from any address: the gateway passes live-update connections from the address you opened
       - Upstream's frontend nginx is replaced by the built-in gateway; the optional Caddy HTTPS service is left out
-      - mailflow-backend 4.1.0
-      - mailflow-frontend 4.1.0
+      - mailflow-backend 4.5.1
+      - mailflow-frontend 4.5.1
       - PostgreSQL 16 and Redis inside
   repo: "https://github.com/maathimself/mailflow"
   support: "https://github.com/maathimself/mailflow/issues"
