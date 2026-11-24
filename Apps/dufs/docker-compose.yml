@@ -1,0 +1,156 @@
+name: dufs
+
+services:
+  dufs:
+    image: ghcr.io/hsinghhira/dufs:latest
+    container_name: dufs
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DUFS_USER=admin
+      - DUFS_ALLOW_ALL=true
+    ports:
+      - target: 5000
+        published: "6801"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /srv
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:5000/__dufs__/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dufs/icon.png
+    x-casaos:
+      id: com.icestore.dufs
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: DUFS_USER
+          description:
+            en_US: >-
+              The user name you sign in with. The password is made on first
+              start and shown in the app's logs, in the box marked
+              CREDENTIALS.
+        - container: DUFS_ALLOW_ALL
+          description:
+            en_US: >-
+              true lets the signed-in user upload, delete, search, edit and
+              download folders as zip files. Set to false for read-only
+              downloads.
+      ports:
+        - container: "5000"
+          description:
+            en_US: Dufs web page and WebDAV, published on host as 6801
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              This install's password (.icestore-password). Keep it private.
+        - container: /srv
+          description:
+            en_US: >-
+              The files Dufs shares: your whole ZimaOS storage (/DATA). Point
+              it at a smaller folder to share less.
+
+x-casaos:
+  id: com.icestore.dufs
+  architectures:
+    - amd64
+    - arm64
+  main: dufs
+  author: HSinghHira
+  category: Others
+  developer: sigoden
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dufs/icon.png
+  title:
+    en_US: Dufs
+  tagline:
+    en_US: Small file server with uploads, search and WebDAV
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/dufs/](https://icestore.hsinghhira.me/app/dufs/) for full details
+
+
+      Dufs is a small, fast file server. Open it in a browser to browse,
+      upload, search, edit and download your files, or connect to it as a
+      WebDAV drive from your computer or phone.
+
+
+      **Features**
+
+
+      - Browse, upload (drag and drop, resumable) and delete files in the
+        browser
+
+      - Download whole folders as zip files
+
+      - Search file names
+
+      - Edit text files in the page
+
+      - WebDAV for Windows, macOS, Linux and phone file apps
+
+      - Accounts with read-only or read-write folders
+
+
+      **How to use?**
+
+
+      1. Open Dufs and sign in with admin and the password from the
+         CREDENTIALS box in the app's logs.
+
+      2. Browse your ZimaOS storage, or drop files on the page to upload.
+
+      3. For a network drive, add a WebDAV location with the same address
+         and login.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open Dufs. Your browser asks for a user name and a password. The
+           user name is admin. The password is in the app's logs, in the box
+           marked CREDENTIALS.
+
+
+        3. Dufs shares your whole ZimaOS storage, and admin can change and
+           delete files. To pick your own password, add DUFS_PASSWORD in
+           the app settings.
+
+
+        4. More settings are on the Dufs page at
+           https://icestore.hsinghhira.me/app/dufs/ (Variables tab).
+  index: /
+  port_map: "6801"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.47.0"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6801 (upstream uses 5000)
+      - sigoden/dufs v0.47.0, plus a start script that makes this install's password on first start and keeps it in /DATA/AppData/dufs/config
+      - Shares /DATA, with uploads, deletes and search on for the admin account
+  repo: "https://github.com/sigoden/dufs"
+  support: "https://github.com/sigoden/dufs/issues"
+  docs: "https://github.com/sigoden/dufs#readme"
