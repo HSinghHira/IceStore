@@ -1,0 +1,151 @@
+name: copyparty
+
+services:
+  copyparty:
+    image: ghcr.io/hsinghhira/copyparty:latest
+    container_name: copyparty
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - COPYPARTY_USER=admin
+    ports:
+      - target: 3923
+        published: "6809"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /cfg
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /w
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "3923"]
+      interval: 1m
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/copyparty/icon.png
+    x-casaos:
+      id: com.icestore.copyparty
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: COPYPARTY_USER
+          description:
+            en_US: >-
+              The admin user name written to copyparty.conf on first start.
+              The password is shown in the app's logs, in the box marked
+              CREDENTIALS. Later changes go in copyparty.conf.
+      ports:
+        - container: "3923"
+          description:
+            en_US: copyparty web page and WebDAV, published on host as 6809
+      volumes:
+        - container: /cfg
+          description:
+            en_US: >-
+              copyparty.conf (accounts, folders and settings), the search
+              index and thumbnails (hist) and this install's password
+              (.icestore-password). Keep it private.
+        - container: /w
+          description:
+            en_US: >-
+              The files copyparty shares: your whole ZimaOS storage (/DATA).
+
+x-casaos:
+  id: com.icestore.copyparty
+  architectures:
+    - amd64
+    - arm64
+  main: copyparty
+  author: HSinghHira
+  category: Others
+  developer: 9001
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/copyparty/icon.png
+  title:
+    en_US: copyparty
+  tagline:
+    en_US: File server with resumable uploads, WebDAV, search and a media player
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/copyparty/](https://icestore.hsinghhira.me/app/copyparty/) for full details
+
+
+      copyparty turns your ZimaOS into a file server for every device.
+      Upload huge files from the browser with resume and no size limit,
+      search everything, play music and video, see thumbnails, and connect
+      as a WebDAV drive.
+
+
+      **Features**
+
+
+      - Fast, resumable uploads of any size, with duplicate detection
+
+      - Search by name, size, date and music tags
+
+      - Music player with playlists, and video and image thumbnails
+
+      - WebDAV for Windows, macOS, Linux and phones
+
+      - Accounts with per-folder rights, share links and upload-only
+        folders
+
+      - Text editor, zip downloads and file renaming in the page
+
+
+      **How to use?**
+
+
+      1. Open copyparty and sign in with admin and the password from the
+         CREDENTIALS box in the app's logs.
+
+      2. Browse your ZimaOS storage, or drop files on the page to upload.
+
+      3. Add accounts and folders in
+         /DATA/AppData/copyparty/config/copyparty.conf.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about half a minute.
+
+
+        2. Open copyparty and press login. The user name is admin. The
+           password is in the app's logs, in the box marked CREDENTIALS.
+
+
+        3. copyparty shares your whole ZimaOS storage, and admin can change
+           and delete files. Only admin can open it at first.
+
+
+        4. Accounts, folders and settings are in copyparty.conf in
+           /DATA/AppData/copyparty/config. Restart the app after you edit
+           it.
+  index: /
+  port_map: "6809"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.20.28"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6809 (upstream uses 3923)
+      - copyparty/ac 1.20.28, plus a start script that writes copyparty.conf on first start with an admin account and this install's password, and no access for anyone else
+      - Shares /DATA; the search index and thumbnails stay in /DATA/AppData/copyparty/config/hist
+  repo: "https://github.com/9001/copyparty"
+  support: "https://github.com/9001/copyparty/issues"
+  docs: "https://github.com/9001/copyparty#readme"
