@@ -1,0 +1,146 @@
+name: siyuan
+
+services:
+  siyuan:
+    image: ghcr.io/hsinghhira/siyuan:latest
+    container_name: siyuan
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - SIYUAN_LANG=en
+    ports:
+      - target: 6806
+        published: "6807"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/workspace
+        target: /siyuan/workspace
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:6806/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/siyuan/icon.png
+    x-casaos:
+      id: com.icestore.siyuan
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns the workspace files. It is filled in by
+              ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns the workspace files. It is filled in by
+              ZimaOS.
+        - container: SIYUAN_LANG
+          description:
+            en_US: >-
+              The language of the app, like en, de, fr, ja or zh-CN. Remove
+              it to keep the language you pick in Settings.
+      ports:
+        - container: "6806"
+          description:
+            en_US: SiYuan web app, published on host as 6807
+      volumes:
+        - container: /siyuan/workspace
+          description:
+            en_US: >-
+              Your notebooks, settings, history and this install's access
+              code (.icestore-access-code). Back it up.
+
+x-casaos:
+  id: com.icestore.siyuan
+  architectures:
+    - amd64
+    - arm64
+  main: siyuan
+  author: HSinghHira
+  category: Productivity
+  developer: SiYuan
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/siyuan/icon.png
+  title:
+    en_US: SiYuan
+  tagline:
+    en_US: Privacy-first knowledge base with blocks, backlinks and Markdown
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/siyuan/](https://icestore.hsinghhira.me/app/siyuan/) for full details
+
+
+      SiYuan is a note-taking app and personal knowledge base. Every
+      paragraph is a block you can link to, embed and search, and your notes
+      stay on your ZimaOS in plain files.
+
+
+      **Features**
+
+
+      - Block editor with Markdown, tables, math, diagrams and code
+
+      - Links and backlinks between any blocks, with a graph view
+
+      - Embedded queries, database views and flashcards
+
+      - Full-text search, tags and history
+
+      - Export to Markdown, PDF, Word and HTML
+
+
+      **How to use?**
+
+
+      1. Open SiYuan and type the access code from the CREDENTIALS box in
+         the app's logs.
+
+      2. Make a notebook and start writing.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open SiYuan. It asks for an access code. The code is in the app's
+           logs, in the box marked CREDENTIALS.
+
+
+        3. To pick your own code, add SIYUAN_ACCESS_AUTH_CODE in the app
+           settings.
+
+
+        4. More settings are on the SiYuan page at
+           https://icestore.hsinghhira.me/app/siyuan/ (Variables tab).
+  index: /
+  port_map: "6807"
+  scheme: http
+  is_uncontrolled: false
+  version: "v3.8.11"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6807 (upstream uses 6806)
+      - b3log/siyuan v3.8.11, plus a start script that makes this install's access code on first start and keeps it in the workspace
+      - Workspace in /DATA/AppData/siyuan/workspace
+  repo: "https://github.com/siyuan-note/siyuan"
+  support: "https://github.com/siyuan-note/siyuan/issues"
+  docs: "https://b3log.org/siyuan/en/"
