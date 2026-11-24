@@ -178,6 +178,13 @@ def check_compose(root, slug, app_dir):
     for key in ("title", "tagline", "description", "icon", "index", "port_map", "scheme", "architectures", "author"):
         if not meta.get(key):
             err(f"x-casaos.{key} is missing")
+    # ZimaOS reads x-casaos as JSON into Go string fields: an unquoted number
+    # (developer: 9001, version: 1.2) fails to parse and the installed app shows
+    # as stopped with no menu (copyparty 2026-11-24).
+    for key in ("id", "main", "author", "developer", "category", "icon", "thumbnail", "index",
+                "port_map", "scheme", "version", "update_at", "repo", "support", "docs"):
+        if key in meta and meta[key] is not None and not isinstance(meta[key], str):
+            err(f"x-casaos.{key} is {meta[key]!r} ({type(meta[key]).__name__}); quote it, ZimaOS only reads text here")
     have = [k for k in ("version", "update_at", "release_notes") if meta.get(k)]
     if have and len(have) != 3:
         err(f"version, update_at and release_notes go together (only {have} present)")

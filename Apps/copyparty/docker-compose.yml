@@ -24,7 +24,7 @@ services:
         source: /DATA
         target: /w
     healthcheck:
-      test: ["CMD", "nc", "-z", "127.0.0.1", "3923"]
+      test: ["CMD", "python3", "-c", "import socket; socket.create_connection(('127.0.0.1', 3923), 5)"]
       interval: 1m
       timeout: 5s
       retries: 5
@@ -74,7 +74,7 @@ x-casaos:
   main: copyparty
   author: HSinghHira
   category: Others
-  developer: 9001
+  developer: "9001"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/copyparty/icon.png
   title:
     en_US: copyparty
@@ -143,6 +143,8 @@ x-casaos:
   update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Fixed: the developer field was a number, which ZimaOS could not read, so the app showed as stopped with no menu
+      - Healthcheck now uses python3 instead of nc
       - First IceStore release, on port 6809 (upstream uses 3923)
       - copyparty/ac 1.20.28, plus a start script that writes copyparty.conf on first start with an admin account and this install's password, and no access for anyone else
       - Shares /DATA; the search index and thumbnails stay in /DATA/AppData/copyparty/config/hist
