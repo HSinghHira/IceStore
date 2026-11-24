@@ -284,6 +284,10 @@ folder, the compose `name:`, the main service name, the image name
     app's `build-<app>.yml` (build-image.yml builds amd64+arm64 by
     default and fails with "no match for platform in manifest") and list
     only `amd64` in x-casaos `architectures` (Disk Monitor, Password Pusher).
+  - *Quote every x-casaos text value that looks like a number*
+    (`developer: "9001"`, `version: "1.2"`). ZimaOS reads x-casaos as JSON
+    into text fields; a bare number fails and the installed app shows as
+    stopped with no menu (copyparty). The checker flags it.
   - PHP 8.5 images have opcache built in: never `docker-php-ext-install opcache`.
   - *s6-overlay image that needs Redis*: wrapper adds `redis-server` with apt
     and an s6 longrun (`svc-redis`, depends on `init-folders`; touch
