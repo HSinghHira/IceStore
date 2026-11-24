@@ -6,7 +6,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM b3log/siyuan:v3.8.11
+FROM b3log/siyuan:v3.8.12
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 # Shared helpers and the CREDENTIALS banner (docker/_common; built with

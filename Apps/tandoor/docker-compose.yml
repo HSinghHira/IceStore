@@ -136,12 +136,13 @@ x-casaos:
   port_map: "6770"
   scheme: http
   is_uncontrolled: false
-  version: "2.7.6"
-  update_at: "2026-11-21"
+  version: "2.7.7"
+  update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated recipes 2.7.6 to 2.7.7
       - First IceStore release, on port 6770
-      - Built on vabene1111/recipes 2.7.6, with PostgreSQL 17 inside the same container
+      - Built on vabene1111/recipes 2.7.7, with PostgreSQL 17 inside the same container
       - Each install makes its own SECRET_KEY and database password on first start; Tandoor asks for the admin account on its first page
       - Fixed: every page answered 400 Bad Request (DisallowedHost); ALLOWED_HOSTS now defaults to * as listed.
       - The store now names the exact image version (1.0.1), so a new install downloads the fixed image instead of reusing an older one ZimaOS kept.

@@ -12,8 +12,8 @@
 #   web        chroot   (Next.js web app on 3000; proxies /api/backend to the api)
 #   gateway    built-in (nginx on 8080)
 
-FROM ghcr.io/asobeast/asobeast-api:1.16.0 AS img-api
-FROM ghcr.io/asobeast/asobeast-web:1.16.0 AS img-web
+FROM ghcr.io/asobeast/asobeast-api:2.0.0 AS img-api
+FROM ghcr.io/asobeast/asobeast-web:2.0.0 AS img-web
 
 FROM debian:trixie-slim
 

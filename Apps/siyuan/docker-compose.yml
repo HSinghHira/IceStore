@@ -134,12 +134,13 @@ x-casaos:
   port_map: "6807"
   scheme: http
   is_uncontrolled: false
-  version: "v3.8.11"
+  version: "v3.8.12"
   update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated siyuan v3.8.11 to v3.8.12
       - First IceStore release, on port 6807 (upstream uses 6806)
-      - b3log/siyuan v3.8.11, plus a start script that makes this install's access code on first start and keeps it in the workspace
+      - b3log/siyuan v3.8.12, plus a start script that makes this install's access code on first start and keeps it in the workspace
       - Workspace in /DATA/AppData/siyuan/workspace
   repo: "https://github.com/siyuan-note/siyuan"
   support: "https://github.com/siyuan-note/siyuan/issues"

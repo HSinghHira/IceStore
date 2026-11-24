@@ -15,9 +15,9 @@
 #
 # Left out: the admin console and the MCP server (optional extras).
 
-FROM penpotapp/backend:2.19.4 AS img-backend
-FROM penpotapp/exporter:2.19.4 AS img-exporter
-FROM penpotapp/frontend:2.19.4 AS img-frontend
+FROM penpotapp/backend:2.19.5 AS img-backend
+FROM penpotapp/exporter:2.19.5 AS img-exporter
+FROM penpotapp/frontend:2.19.5 AS img-frontend
 FROM axllent/mailpit:v1.34.0 AS img-mailpit
 
 FROM debian:trixie-slim

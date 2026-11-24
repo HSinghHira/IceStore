@@ -188,26 +188,27 @@ x-casaos:
   port_map: "6692"
   scheme: http
   is_uncontrolled: false
-  version: "2026.1123.214908"
+  version: "2026.1124.71330"
   update_at: "2026-11-24"
   release_notes:
     en_US: |-
+      - Updated fluxer-api 2026.1123.214908 to 2026.1124.71330, fluxer-gateway 2026.1124.32854 to 2026.1124.71258, fluxer-media-proxy 2026.1123.182235 to 2026.1124.71304, fluxer-push 2026.1124.30102 to 2026.1124.71316, fluxer-app-proxy-self-hosted 2026.1123.165450 to 2026.1124.71306, fluxer-admin 2026.1123.165504 to 2026.1124.71257, fluxer-snowflakes 2026.1123.214057 to 2026.1124.71334, fluxer-users 2026.1123.214037 to 2026.1124.71321, fluxer-gifs 2026.1123.214028 to 2026.1124.71229, fluxer-messages 2026.1123.214040 to 2026.1124.71305, fluxer-unfurl 2026.1123.214038 to 2026.1124.71340, fluxer-static 2026.1123.3207 to 2026.1124.71336
       - Updated fluxer-api 2026.1109.42841 to 2026.1123.214908, fluxer-gateway 2026.1109.42842 to 2026.1124.32854, fluxer-media-proxy 2026.1109.42917 to 2026.1123.182235, fluxer-push 2026.1109.42836 to 2026.1124.30102, fluxer-app-proxy-self-hosted 2026.1109.42903 to 2026.1123.165450, fluxer-admin 2026.1109.42815 to 2026.1123.165504, fluxer-snowflakes 2026.1109.42849 to 2026.1123.214057, fluxer-users 2026.1109.42852 to 2026.1123.214037, fluxer-gifs 2026.1109.42837 to 2026.1123.214028, fluxer-messages 2026.1109.42854 to 2026.1123.214040, fluxer-unfurl 2026.1109.42918 to 2026.1123.214038, livekit-server v1.12.0 to v1.13.11, meilisearch v1.53 to v1.58, seaweedfs 4.52 to 4.55, nats 2.14.9-alpine to 2.15.3-alpine, fluxer-static 2026.1109.42914 to 2026.1123.3207
       - First IceStore release: Fluxer's whole compose bundle in one container, with one web port (6692), voice on 6693 (TCP) and 6694 (UDP), and one data folder.
       - Every secret (database, search, storage, LiveKit, VAPID push keys, the ActivityPub key and the setup token) is made on first start, so each install gets its own.
       - nginx serves upstream's edge routes and the fluxer-static files in place of the Caddy edge and static-proxy.
-      - fluxer-api 2026.1123.214908
-      - fluxer-gateway 2026.1124.32854
-      - fluxer-media-proxy 2026.1123.182235
-      - fluxer-push 2026.1124.30102
-      - fluxer-app-proxy-self-hosted 2026.1123.165450
-      - fluxer-admin 2026.1123.165504
-      - fluxer-snowflakes 2026.1123.214057
-      - fluxer-users 2026.1123.214037
-      - fluxer-gifs 2026.1123.214028
-      - fluxer-messages 2026.1123.214040
-      - fluxer-unfurl 2026.1123.214038
-      - fluxer-static 2026.1123.3207
+      - fluxer-api 2026.1124.71330
+      - fluxer-gateway 2026.1124.71258
+      - fluxer-media-proxy 2026.1124.71304
+      - fluxer-push 2026.1124.71316
+      - fluxer-app-proxy-self-hosted 2026.1124.71306
+      - fluxer-admin 2026.1124.71257
+      - fluxer-snowflakes 2026.1124.71334
+      - fluxer-users 2026.1124.71321
+      - fluxer-gifs 2026.1124.71229
+      - fluxer-messages 2026.1124.71305
+      - fluxer-unfurl 2026.1124.71340
+      - fluxer-static 2026.1124.71336
       - livekit-server v1.13.11
       - meilisearch v1.58
       - seaweedfs 4.55
