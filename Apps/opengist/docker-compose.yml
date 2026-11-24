@@ -1,0 +1,150 @@
+name: opengist
+
+services:
+  opengist:
+    image: ghcr.io/thomiceli/opengist:1.16.0
+    container_name: opengist
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - UID=$PUID
+      - GID=$PGID
+      - OG_SSH_PORT=6816
+    ports:
+      - target: 6157
+        published: "6815"
+        protocol: tcp
+      - target: 6816
+        published: "6816"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /opengist
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:6157/healthcheck"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengist/icon.png
+    x-casaos:
+      id: com.icestore.opengist
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+        - container: UID
+          description:
+            en_US: >-
+              The user that owns the data folder. It is filled in by ZimaOS.
+        - container: GID
+          description:
+            en_US: >-
+              The group that owns the data folder. It is filled in by ZimaOS.
+        - container: OG_SSH_PORT
+          description:
+            en_US: >-
+              The port of the built-in SSH server for git clone and push. It
+              must stay the same as the published port (6816), so clone
+              links show the right port.
+      ports:
+        - container: "6157"
+          description:
+            en_US: Opengist web app and git over http, published on host as 6815
+        - container: "6816"
+          description:
+            en_US: Git over SSH, published on host as 6816
+      volumes:
+        - container: /opengist
+          description:
+            en_US: >-
+              Your gists (git repositories), the database, the search index,
+              the session key (opengist-secret.key) and logs. Back it up.
+
+x-casaos:
+  id: com.icestore.opengist
+  architectures:
+    - amd64
+    - arm64
+  main: opengist
+  author: HSinghHira
+  category: Developer
+  developer: thomiceli
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengist/icon.png
+  title:
+    en_US: Opengist
+  tagline:
+    en_US: Pastebin for code snippets, powered by Git, like GitHub Gist
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/opengist/](https://icestore.hsinghhira.me/app/opengist/) for full details
+
+
+      Opengist is a place for your code snippets, notes and config files.
+      Every gist is a Git repository, so you can edit it in the page or
+      clone, change and push it with git.
+
+
+      **Features**
+
+
+      - Public, unlisted and private gists with several files each
+
+      - Syntax highlighting, Markdown and CSV previews
+
+      - Full history of every change, likes and forks
+
+      - Clone and push over http or SSH
+
+      - Search across all gists, topics and an embed code
+
+      - Users, admin panel, sign-in with GitHub, GitLab, Gitea or OIDC
+
+
+      **How to use?**
+
+
+      1. Open Opengist right away and register. The first account is the
+         admin.
+
+      2. Press New, paste your snippet and save.
+
+      3. In the Admin panel, turn off sign-ups if only you should have an
+         account.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Right away, open Opengist and register. The first account
+           becomes the admin. Until you do, anyone on your network can.
+
+
+        3. Then open the Admin panel and turn off new sign-ups if you want
+           to be the only user.
+  index: /
+  port_map: "6815"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.16.0"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/thomiceli/opengist 1.16.0
+      - Web app on port 6815 and git over SSH on port 6816
+  repo: "https://github.com/thomiceli/opengist"
+  support: "https://github.com/thomiceli/opengist/issues"
+  docs: "https://opengist.io/docs/"
