@@ -1,0 +1,144 @@
+name: meilisearch
+
+services:
+  meilisearch:
+    image: ghcr.io/hsinghhira/meilisearch:latest
+    container_name: meilisearch
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - MEILI_ENV=development
+      - MEILI_NO_ANALYTICS=true
+    ports:
+      - target: 7700
+        published: "6810"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /meili_data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:7700/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/meilisearch/icon.png
+    x-casaos:
+      id: com.icestore.meilisearch
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for log times. It is filled in from your ZimaOS
+              time zone.
+        - container: MEILI_ENV
+          description:
+            en_US: >-
+              development shows the search preview page in the browser.
+              production hides it and gives shorter error messages. Both
+              need the master key.
+        - container: MEILI_NO_ANALYTICS
+          description:
+            en_US: >-
+              true stops Meilisearch from sending usage data to its makers.
+      ports:
+        - container: "7700"
+          description:
+            en_US: Meilisearch API and search preview, published on host as 6810
+      volumes:
+        - container: /meili_data
+          description:
+            en_US: >-
+              Your indexes (data.ms), dumps, snapshots and this install's
+              master key (.icestore-master-key). Keep the key private.
+
+x-casaos:
+  id: com.icestore.meilisearch
+  architectures:
+    - amd64
+    - arm64
+  main: meilisearch
+  author: HSinghHira
+  category: Developer
+  developer: Meilisearch
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/meilisearch/icon.png
+  title:
+    en_US: Meilisearch
+  tagline:
+    en_US: Fast search engine API with typo tolerance and hybrid search
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/meilisearch/](https://icestore.hsinghhira.me/app/meilisearch/) for full details
+
+
+      Meilisearch is a search engine for your own apps and websites. Send
+      it your documents as JSON and get fast, typo-tolerant results as you
+      type. Many self-hosted apps (like Karakeep and
+      Linkwarden) can use it for search.
+
+
+      **Features**
+
+
+      - Search-as-you-type results in under 50 ms
+
+      - Typo tolerance, synonyms, stop words and ranking rules
+
+      - Filters, facets, sorting and geo search
+
+      - Hybrid and semantic search with your own AI embedder
+
+      - API keys with their own rights and expiry
+
+
+      **How to use?**
+
+
+      1. Open Meilisearch and paste the master key from the CREDENTIALS
+         box in the app's logs to try the search preview.
+
+      2. Point your app at http://[ZIMAOS-IP-ADDRESS]:6810 with an API key
+         (list them with GET /keys and the master key).
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. The master key is in the app's logs, in the box marked
+           CREDENTIALS. Keep it private: it can do everything.
+
+
+        3. Open Meilisearch and paste the key to try searches in the
+           browser.
+
+
+        4. Apps use the address http://[ZIMAOS-IP-ADDRESS]:6810 with your
+           ZimaOS IP and an API key. Ask the API for them at /keys with
+           the master key.
+  index: /
+  port_map: "6810"
+  scheme: http
+  is_uncontrolled: false
+  version: "v1.58.0"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6810 (upstream uses 7700)
+      - getmeili/meilisearch v1.58.0, plus a start script that makes this install's master key on first start and keeps it in /DATA/AppData/meilisearch/data
+      - MEILI_UPGRADE_DB is on, so new versions open the existing database without a dump
+  repo: "https://github.com/meilisearch/meilisearch"
+  support: "https://github.com/meilisearch/meilisearch/issues"
+  docs: "https://www.meilisearch.com/docs"
