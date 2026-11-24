@@ -1,0 +1,104 @@
+{
+  "name": "qBittorrent",
+  "repo": "lscr.io/linuxserver/qbittorrent:5.3.0_v2.1.3-ls489",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://lscr.io/linuxserver/qbittorrent",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=60 --memory=2g --memory-reservation=64m --health-cmd=\"curl -s -o /dev/null http://127.0.0.1:6805/\" --health-interval=30s --health-timeout=5s --health-start-period=30s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:6805]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/qbittorrent/icon.png",
+  "project": "https://www.qbittorrent.org",
+  "support": "https://github.com/linuxserver/docker-qbittorrent/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/qbittorrent/",
+  "description": "BitTorrent client with a web UI",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/qbittorrent/config",
+      "container": "/config",
+      "mode": "rw",
+      "description": "qBittorrent's settings, torrent list and resume data."
+    },
+    {
+      "name": "Downloads",
+      "host": "/mnt/cache/downloads",
+      "container": "/downloads",
+      "mode": "rw",
+      "description": "Where downloads are saved: /mnt/cache/downloads on your MOS."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6805",
+      "container": "6805",
+      "description": "qBittorrent web UI, published on host as 6805"
+    },
+    {
+      "name": "Port 6806",
+      "protocol": "tcp",
+      "host": "6806",
+      "container": "6806",
+      "description": "BitTorrent connections from other peers (TCP and UDP), published on host as 6806"
+    },
+    {
+      "name": "Port 6806",
+      "protocol": "udp",
+      "host": "6806",
+      "container": "6806",
+      "description": "BitTorrent connections from other peers (TCP and UDP), published on host as 6806"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "WEBUI_PORT",
+      "key": "WEBUI_PORT",
+      "value": "6805",
+      "mask": false,
+      "description": "The web UI port inside the container. It must stay the same as the published port (6805), or the page refuses to sign in."
+    },
+    {
+      "name": "TORRENTING_PORT",
+      "key": "TORRENTING_PORT",
+      "value": "6806",
+      "mask": false,
+      "description": "The port other peers connect to (TCP and UDP). It must stay the same as the published port (6806). Forward it on your router for faster downloads."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
