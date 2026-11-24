@@ -2,7 +2,7 @@ name: planka
 
 services:
   planka:
-    image: ghcr.io/hsinghhira/planka:1.0.1
+    image: ghcr.io/hsinghhira/planka:1.0.2
     container_name: planka
     restart: unless-stopped
     stop_grace_period: 90s
