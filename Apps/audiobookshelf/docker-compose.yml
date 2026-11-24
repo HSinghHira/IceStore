@@ -1,0 +1,153 @@
+name: audiobookshelf
+
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:2.38.0
+    container_name: audiobookshelf
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6811"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/metadata
+        target: /metadata
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/audiobookshelf/icon.png
+    x-casaos:
+      id: com.icestore.audiobookshelf
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for podcast schedules and listening stats. It
+              is filled in from your ZimaOS time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: Audiobookshelf web app and API, published on host as 6811
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              The database with your users, libraries and listening
+              progress. Back it up.
+        - container: /metadata
+          description:
+            en_US: >-
+              Covers, author photos, cache, logs and backups.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS storage at the same path. Add a folder like
+              /DATA/Media/Audiobooks as a library. Podcasts are downloaded
+              into their library folder.
+
+x-casaos:
+  id: com.icestore.audiobookshelf
+  architectures:
+    - amd64
+    - arm64
+  main: audiobookshelf
+  author: HSinghHira
+  category: Media
+  developer: advplyr
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/audiobookshelf/icon.png
+  title:
+    en_US: Audiobookshelf
+  tagline:
+    en_US: Audiobook and podcast server with apps for your phone
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/audiobookshelf/](https://icestore.hsinghhira.me/app/audiobookshelf/) for full details
+
+
+      Audiobookshelf streams your audiobooks, ebooks and podcasts to the
+      browser and to its Android and iOS apps. It remembers where every
+      listener stopped, fetches covers and details, and downloads new
+      podcast episodes for you.
+
+
+      **Features**
+
+
+      - Streams every common audio format, with chapters
+
+      - Progress kept in sync across the browser and phone apps
+
+      - Downloads for offline listening in the apps
+
+      - Podcast search, subscriptions and automatic episode downloads
+
+      - Covers and details from Audible, Google Books and more
+
+      - Users with their own libraries and rights, and an ebook reader
+
+
+      **How to use?**
+
+
+      1. Open Audiobookshelf right away and make the root (admin) account.
+
+      2. Add a library and pick a folder under /DATA, like
+         /DATA/Media/Audiobooks.
+
+      3. On your phone, install the Audiobookshelf app and connect to
+         http://[ZIMAOS-IP-ADDRESS]:6811 with your ZimaOS IP.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about half a minute.
+
+
+        2. Right away, open Audiobookshelf and make the root account with a
+           password. Until you do, anyone on your network can.
+
+
+        3. Put your audiobooks in a folder like /DATA/Media/Audiobooks, one
+           folder for each book. Then add that folder as a library.
+
+
+        4. In the phone app, the server address is your ZimaOS IP with port
+           6811, like http://192.168.1.20:6811 for the IP 192.168.1.20 (use
+           yours).
+  index: /
+  port_map: "6811"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.38.0"
+  update_at: "2026-11-24"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/advplyr/audiobookshelf 2.38.0 on port 6811
+      - /DATA is shared at the same path for your libraries
+  repo: "https://github.com/advplyr/audiobookshelf"
+  support: "https://github.com/advplyr/audiobookshelf/issues"
+  docs: "https://www.audiobookshelf.org/docs"
