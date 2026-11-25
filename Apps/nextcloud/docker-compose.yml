@@ -1,0 +1,146 @@
+name: nextcloud
+
+services:
+  nextcloud:
+    image: nextcloud:35.0.3-apache
+    container_name: nextcloud
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PHP_UPLOAD_LIMIT=16G
+      - PHP_MEMORY_LIMIT=1G
+    ports:
+      - target: 80
+        published: "6850"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/html
+        target: /var/www/html
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 2m
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/icon.png
+    x-casaos:
+      id: com.icestore.nextcloud
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: PHP_UPLOAD_LIMIT
+          description:
+            en_US: >-
+              The largest file you can upload in the browser,
+              like 16G.
+        - container: PHP_MEMORY_LIMIT
+          description:
+            en_US: >-
+              Memory for each PHP request, like 1G.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              Nextcloud web app, WebDAV and sync, published on
+              host as 6850
+      volumes:
+        - container: /var/www/html
+          description:
+            en_US: >-
+              Nextcloud's program, apps, settings
+              (config/config.php), SQLite database and your
+              files (data). Back it up.
+
+x-casaos:
+  id: com.icestore.nextcloud
+  architectures:
+    - amd64
+    - arm64
+  main: nextcloud
+  author: HSinghHira
+  category: Productivity
+  developer: "Nextcloud GmbH"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/icon.png
+  title:
+    en_US: Nextcloud
+  tagline:
+    en_US: File sync, sharing and collaboration platform with hundreds of apps
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/nextcloud/](https://icestore.hsinghhira.me/app/nextcloud/) for full details
+
+
+      Nextcloud is your own cloud: sync files between your devices,
+      share them with links, and add calendars, contacts, notes, photos,
+      office documents and hundreds more apps from its app store.
+      Desktop and phone apps keep everything in sync.
+
+
+      **Features**
+
+
+      - File sync for Windows, macOS, Linux, Android and iOS, with
+        WebDAV
+
+      - Share links with passwords and expiry, and shared folders
+
+      - Calendar, Contacts, Notes, Deck, Photos, Talk and more from the
+        app store
+
+      - Office documents with Nextcloud Office or OnlyOffice
+
+      - Users, groups, quotas and two-factor sign-in
+
+
+      **How to use?**
+
+
+      1. Open Nextcloud right away, make the admin account and press
+         Install (SQLite is fine for a few users).
+
+      2. Install the desktop or phone app and sign in at
+         http://[ZIMAOS-IP-ADDRESS]:6850.
+
+      3. Add apps like Calendar and Contacts from the Apps page.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. The first start takes a minute or
+           two.
+
+
+        2. Right away, open Nextcloud and make the admin account.
+           Until you do, anyone on your network can.
+
+
+        3. Open it at your ZimaOS IP with port 6850. Nextcloud only
+           answers on the address you set it up with; add more in
+           config.php (trusted_domains).
+  index: /
+  port_map: "6850"
+  scheme: http
+  is_uncontrolled: false
+  version: "35.0.3-apache"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: nextcloud 35.0.3-apache on port 6850
+      - Program, settings, database and files are in /DATA/AppData/nextcloud/html
+  repo: "https://github.com/nextcloud/server"
+  support: "https://github.com/nextcloud/docker/issues"
+  docs: "https://docs.nextcloud.com/server/latest/admin_manual/"
