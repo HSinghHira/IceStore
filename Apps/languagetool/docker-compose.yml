@@ -1,0 +1,132 @@
+name: languagetool
+
+services:
+  languagetool:
+    image: erikvl87/languagetool:6.8
+    container_name: languagetool
+    user: "0:0"
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - Java_Xmx=1g
+    ports:
+      - target: 8010
+        published: "6839"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/ngrams
+        target: /ngrams
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "--data", "language=en-US&text=a simple test", "http://127.0.0.1:8010/v2/check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/languagetool/icon.png
+    x-casaos:
+      id: com.icestore.languagetool
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: Java_Xmx
+          description:
+            en_US: >-
+              The most memory LanguageTool may use, like 1g or
+              2g (keep it below the app's limit).
+      ports:
+        - container: "8010"
+          description:
+            en_US: >-
+              LanguageTool API, published on host as 6839
+      volumes:
+        - container: /ngrams
+          description:
+            en_US: >-
+              Optional n-gram data for better checks (download
+              from languagetool.org, several GB per language).
+
+x-casaos:
+  id: com.icestore.languagetool
+  architectures:
+    - amd64
+    - arm64
+  main: languagetool
+  author: HSinghHira
+  category: Productivity
+  developer: "LanguageTool"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/languagetool/icon.png
+  title:
+    en_US: LanguageTool
+  tagline:
+    en_US: Grammar, style and spell checker server for over 30 languages
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/languagetool/](https://icestore.hsinghhira.me/app/languagetool/) for full details
+
+
+      LanguageTool checks grammar, style and spelling in over 30
+      languages. Run your own server and point the LanguageTool browser
+      extension, LibreOffice or Obsidian at it, so your writing never
+      leaves your home.
+
+
+      **Features**
+
+
+      - Grammar, style and spelling checks for English, German, French,
+        Spanish, Dutch and many more
+
+      - Works with the browser extensions, LibreOffice, Thunderbird,
+        Obsidian and editors
+
+      - Optional n-gram data for catching commonly confused words
+
+      - Simple HTTP API
+
+
+      **How to use?**
+
+
+      1. In the LanguageTool browser extension, open Settings, Advanced,
+         and pick Local server or Other server with
+         http://[ZIMAOS-IP-ADDRESS]:6839/v2.
+
+      2. Write anywhere; mistakes are underlined.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. LanguageTool has no web page. Point the browser extension
+           or LibreOffice at http://[ZIMAOS-IP-ADDRESS]:6839/v2 with
+           your ZimaOS IP.
+
+
+        3. It has no password. Only use it on your home network.
+  index: /v2/languages
+  port_map: "6839"
+  scheme: http
+  is_uncontrolled: false
+  version: "6.8"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: erikvl87/languagetool 6.8 on port 6839
+  repo: "https://github.com/languagetool-org/languagetool"
+  support: "https://github.com/Erikvl87/docker-languagetool/issues"
+  docs: "https://github.com/Erikvl87/docker-languagetool#readme"
