@@ -1,0 +1,129 @@
+name: domoticz
+
+services:
+  domoticz:
+    image: domoticz/domoticz:2026.4
+    container_name: domoticz
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6847"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/userdata
+        target: /opt/domoticz/userdata
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domoticz/icon.png
+    x-casaos:
+      id: com.icestore.domoticz
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for timers and sunrise and sunset.
+              It is filled in from your ZimaOS time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Domoticz web app and API, published on host as
+              6847
+      volumes:
+        - container: /opt/domoticz/userdata
+          description:
+            en_US: >-
+              Domoticz's database, scripts, plugins and logs.
+              Back it up.
+
+x-casaos:
+  id: com.icestore.domoticz
+  architectures:
+    - amd64
+    - arm64
+  main: domoticz
+  author: HSinghHira
+  category: Home
+  developer: "Domoticz"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domoticz/icon.png
+  title:
+    en_US: Domoticz
+  tagline:
+    en_US: Home automation system for lights, sensors, switches and energy meters
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/domoticz/](https://icestore.hsinghhira.me/app/domoticz/) for full details
+
+
+      Domoticz controls and monitors your home: lights, switches,
+      sensors, weather stations, smart meters and more. It supports many
+      protocols and devices, shows history graphs and runs your
+      automations with scenes, timers and scripts.
+
+
+      **Features**
+
+
+      - Z-Wave, Zigbee, RFXtrx, MQTT, Philips Hue, Tasmota, ESPHome and
+        hundreds more devices
+
+      - Energy, gas, water and temperature history
+
+      - Scenes, timers and events with Blockly, Lua, dzVents and Python
+
+      - Notifications by email, Telegram, Pushover and more
+
+      - Phone apps and a simple web page
+
+
+      **How to use?**
+
+
+      1. Open Domoticz and go to Setup, Settings to set your location
+         and a login.
+
+      2. Add your hardware in Setup, Hardware.
+
+      3. Your devices appear under Devices; add them to your dashboard.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Domoticz has no login at first. Right away, set a website
+           user and password in Setup, Settings, System.
+
+
+        3. USB sticks (Z-Wave, Zigbee, RFXtrx) need the device added
+           to the app, like /dev/ttyUSB0, in the app settings.
+  index: /
+  port_map: "6847"
+  scheme: http
+  is_uncontrolled: false
+  version: "2026.4"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: domoticz/domoticz 2026.4 on port 6847
+  repo: "https://github.com/domoticz/domoticz"
+  support: "https://github.com/domoticz/domoticz/issues"
+  docs: "https://wiki.domoticz.com"
