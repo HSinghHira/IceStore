@@ -1,0 +1,141 @@
+name: dagu
+
+services:
+  dagu:
+    image: ghcr.io/dagucloud/dagu:2.27.0
+    container_name: dagu
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DAGU_TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 8080
+        published: "6853"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /var/lib/dagu
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dagu/icon.png
+    x-casaos:
+      id: com.icestore.dagu
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for schedules. It is filled in
+              from your ZimaOS time zone.
+        - container: DAGU_TZ
+          description:
+            en_US: >-
+              The time zone schedules run in. It is filled in
+              from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user jobs run as. It is filled in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group jobs run as. It is filled in by ZimaOS.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Dagu web app and API, published on host as 6853
+      volumes:
+        - container: /var/lib/dagu
+          description:
+            en_US: >-
+              Your workflows (dags), run history, logs, users
+              and settings. Back it up.
+
+x-casaos:
+  id: com.icestore.dagu
+  architectures:
+    - amd64
+    - arm64
+  main: dagu
+  author: HSinghHira
+  category: Developer
+  developer: "Dagu"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dagu/icon.png
+  title:
+    en_US: Dagu
+  tagline:
+    en_US: Workflow engine that runs scheduled jobs from simple YAML files
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/dagu/](https://icestore.hsinghhira.me/app/dagu/) for full details
+
+
+      Dagu runs your scripts and jobs as workflows written in small YAML
+      files, with schedules, dependencies, retries and a web page to
+      watch, start and debug every run. It is a lightweight alternative
+      to cron and Airflow.
+
+
+      **Features**
+
+
+      - Workflows (DAGs) in YAML with steps, dependencies and conditions
+
+      - Cron schedules, retries, timeouts and parallel steps
+
+      - Web page to edit, start, stop and follow runs with live logs
+
+      - Shell, HTTP, SSH, mail and JSON steps, and sub-workflows
+
+      - Users and roles, API and a built-in MCP server
+
+
+      **How to use?**
+
+
+      1. Open Dagu right away and make the admin account.
+
+      2. Press New DAG, write the steps and a schedule, and save.
+
+      3. Start it and follow the log.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Right away, open Dagu and make the admin account. Until you
+           do, anyone on your network can.
+
+
+        3. Steps run inside the Dagu container. Running Docker steps
+           needs Docker access, which this app does not get.
+  index: /
+  port_map: "6853"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.27.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/dagucloud/dagu 2.27.0 on port 6853
+  repo: "https://github.com/dagucloud/dagu"
+  support: "https://github.com/dagucloud/dagu/issues"
+  docs: "https://docs.dagu.cloud"
