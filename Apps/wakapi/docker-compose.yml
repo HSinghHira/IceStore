@@ -1,0 +1,135 @@
+name: wakapi
+
+services:
+  wakapi:
+    image: ghcr.io/hsinghhira/wakapi:latest
+    container_name: wakapi
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - WAKAPI_INSECURE_COOKIES=true
+    ports:
+      - target: 3000
+        published: "6865"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wakapi/icon.png
+    x-casaos:
+      id: com.icestore.wakapi
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for daily stats. It is filled in
+              from your ZimaOS time zone.
+        - container: WAKAPI_INSECURE_COOKIES
+          description:
+            en_US: >-
+              true lets you sign in over plain http. Set to
+              false once Wakapi is behind https.
+      ports:
+        - container: "3000"
+          description:
+            en_US: >-
+              Wakapi web app and WakaTime-compatible API,
+              published on host as 6865
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database with your users, heartbeats
+              and stats, and this install's password salt. Back
+              it up.
+
+x-casaos:
+  id: com.icestore.wakapi
+  architectures:
+    - amd64
+    - arm64
+  main: wakapi
+  author: HSinghHira
+  category: Developer
+  developer: "muety"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wakapi/icon.png
+  title:
+    en_US: Wakapi
+  tagline:
+    en_US: Coding time tracker that works with the WakaTime editor plugins
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/wakapi/](https://icestore.hsinghhira.me/app/wakapi/) for full details
+
+
+      Wakapi counts the time you spend coding, per project, language,
+      editor and machine, using the WakaTime plugins for VS Code,
+      JetBrains, Vim and many more editors. Your data stays on your
+      ZimaOS.
+
+
+      **Features**
+
+
+      - Works with every WakaTime editor plugin
+
+      - Stats by project, language, editor, OS, machine and branch
+
+      - Leaderboards, badges and weekly email reports
+
+      - Import from WakaTime and relay to it
+
+      - Prometheus metrics and a WakaTime-compatible API
+
+
+      **How to use?**
+
+
+      1. Open Wakapi and sign up; the first account is yours.
+
+      2. Copy your API key from Settings.
+
+      3. In your editor's WakaTime plugin, set api_url to
+         http://[ZIMAOS-IP-ADDRESS]:6865/api and your API key.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open Wakapi and sign up. Then set WAKAPI_ALLOW_SIGNUP to
+           false in the app settings if nobody else should.
+
+
+        3. In ~/.wakatime.cfg on your computer, set api_url to
+           http://[ZIMAOS-IP-ADDRESS]:6865/api with your ZimaOS IP,
+           and api_key to the key from Wakapi's Settings.
+  index: /
+  port_map: "6865"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.18.2"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: muety/wakapi 2.18.2, plus a start script that makes this install's password salt on first start
+  repo: "https://github.com/muety/wakapi"
+  support: "https://github.com/muety/wakapi/issues"
+  docs: "https://github.com/muety/wakapi#readme"
