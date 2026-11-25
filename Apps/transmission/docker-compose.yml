@@ -1,0 +1,179 @@
+name: transmission
+
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:4.1.4-r0-ls371
+    container_name: transmission
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - PEERPORT=6832
+    ports:
+      - target: 9091
+        published: "6831"
+        protocol: tcp
+      - target: 6832
+        published: "6832"
+        protocol: tcp
+      - target: 6832
+        published: "6832"
+        protocol: udp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Downloads
+        target: /downloads
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Downloads/watch
+        target: /watch
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-o", "/dev/null", "http://127.0.0.1:9091/transmission/web/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/transmission/icon.png
+    x-casaos:
+      id: com.icestore.transmission
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for schedules. It is filled in
+              from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns downloaded files. It is filled
+              in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns downloaded files. It is filled
+              in by ZimaOS.
+        - container: PEERPORT
+          description:
+            en_US: >-
+              The port other peers connect to (TCP and UDP). It
+              must stay the same as the published port (6832).
+              Forward it on your router for faster downloads.
+      ports:
+        - container: "9091"
+          description:
+            en_US: >-
+              Transmission web interface and RPC, published on
+              host as 6831
+        - container: "6832"
+          description:
+            en_US: >-
+              BitTorrent connections from other peers (TCP),
+              published on host as 6832
+        - container: "6832"
+          description:
+            en_US: >-
+              BitTorrent connections from other peers (UDP),
+              published on host as 6832
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Transmission's settings (settings.json), torrents
+              and resume data.
+        - container: /downloads
+          description:
+            en_US: >-
+              Where downloads are saved: /DATA/Downloads on your
+              ZimaOS.
+        - container: /watch
+          description:
+            en_US: >-
+              Drop .torrent files here to start them.
+
+x-casaos:
+  id: com.icestore.transmission
+  architectures:
+    - amd64
+    - arm64
+  main: transmission
+  author: HSinghHira
+  category: Media
+  developer: "Transmission"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/transmission/icon.png
+  title:
+    en_US: Transmission
+  tagline:
+    en_US: Simple, light BitTorrent client with a web interface
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/transmission/](https://icestore.hsinghhira.me/app/transmission/) for full details
+
+
+      Transmission downloads torrents and magnet links on your ZimaOS
+      with very little memory. Manage everything from its web page or
+      from apps like Transmission Remote and Tremotesf.
+
+
+      **Features**
+
+
+      - Torrents and magnet links, with file selection and priorities
+
+      - Speed limits and an alternative speed schedule
+
+      - Watch folder for .torrent files
+
+      - Encryption, DHT, PEX and local peer discovery
+
+      - Remote control from phone and desktop apps over RPC
+
+
+      **How to use?**
+
+
+      1. Open Transmission and add a torrent or magnet link.
+
+      2. Files land in /DATA/Downloads.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Transmission has no password at first. To add one, set USER
+           and PASS in the app settings and restart.
+
+
+        3. Downloads are saved in /DATA/Downloads. Drop .torrent files
+           in /DATA/Downloads/watch to start them.
+  index: /
+  port_map: "6831"
+  scheme: http
+  is_uncontrolled: false
+  version: "4.1.4-r0-ls371"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: lscr.io/linuxserver/transmission 4.1.4-r0-ls371
+      - Web interface on port 6831 and peer connections on port 6832 (TCP and UDP)
+  repo: "https://github.com/transmission/transmission"
+  support: "https://github.com/linuxserver/docker-transmission/issues"
+  docs: "https://docs.linuxserver.io/images/docker-transmission/"
