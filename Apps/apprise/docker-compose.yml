@@ -1,0 +1,174 @@
+name: apprise
+
+services:
+  apprise:
+    image: caronc/apprise:2.2.0
+    container_name: apprise
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - APPRISE_STATEFUL_MODE=simple
+    ports:
+      - target: 8000
+        published: "6821"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/attach
+        target: /attach
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/plugin
+        target: /plugin
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/status', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/apprise/icon.png
+    x-casaos:
+      id: com.icestore.apprise
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone
+        - container: PUID
+          description:
+            en_US: >-
+              The user Apprise runs as. It is filled in by
+              ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group Apprise runs as. It is filled in by
+              ZimaOS.
+        - container: APPRISE_STATEFUL_MODE
+          description:
+            en_US: >-
+              simple saves each configuration you make in the
+              web page, so other apps can notify by its key. Set
+              to disabled to only accept URLs sent with each
+              message.
+      ports:
+        - container: "8000"
+          description:
+            en_US: >-
+              Apprise web page and API, published on host as
+              6821
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Your saved notification configurations, with the
+              service URLs and their keys. Keep it private.
+        - container: /attach
+          description:
+            en_US: >-
+              Attachments sent with notifications
+        - container: /plugin
+          description:
+            en_US: >-
+              Your own notification plugins (Python files).
+
+x-casaos:
+  id: com.icestore.apprise
+  architectures:
+    - amd64
+    - arm64
+  main: apprise
+  author: HSinghHira
+  category: Others
+  developer: "caronc"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/apprise/icon.png
+  title:
+    en_US: Apprise
+  tagline:
+    en_US: One API to send notifications to over 100 services
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/apprise/](https://icestore.hsinghhira.me/app/apprise/) for full details
+
+
+      Apprise sends notifications to Telegram, Discord, Slack, email,
+      ntfy, Gotify, Pushover, Matrix, Home Assistant and over 100 other
+      services through one simple API. Save your services once under a
+      key, and every app or script on your ZimaOS can notify you with a
+      single call.
+
+
+      **Features**
+
+
+      - Over 100 services, each written as one URL, like
+        tgram://token/chat
+
+      - Web page to save, test and organize your notification setups
+        under keys
+
+      - Tags to send a message to only some of your services
+
+      - Attachments, Markdown and HTML messages
+
+      - Reminders that send a message later or on a repeat
+
+      - Works with apps that speak the Apprise API, like
+        changedetection.io and Uptime Kuma
+
+
+      **How to use?**
+
+
+      1. Open Apprise and make a configuration key, like home.
+
+      2. Add your service URLs (see the Apprise wiki for each service)
+         and press Test.
+
+      3. Have your apps post to
+         http://[ZIMAOS-IP-ADDRESS]:6821/notify/home with a title and
+         body.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open Apprise, make a key and add the URLs of the services
+           you want to reach.
+
+
+        3. Apprise has no login. Anyone on your network can send
+           through it and read the saved URLs, so keep it off the
+           internet, or set a key's own password in its settings.
+  index: /
+  port_map: "6821"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.2.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: caronc/apprise 2.2.0 on port 6821
+      - Saved configurations stay in /DATA/AppData/apprise/config
+  repo: "https://github.com/caronc/apprise-api"
+  support: "https://github.com/caronc/apprise-api/issues"
+  docs: "https://github.com/caronc/apprise-api#readme"
