@@ -1,0 +1,69 @@
+{
+  "name": "Nextcloud",
+  "repo": "nextcloud:35.0.3-apache",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://hub.docker.com/_/nextcloud",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=2g --memory-reservation=128m --health-cmd=\"bash -c 'exec 3<>/dev/tcp/127.0.0.1/80'\" --health-interval=30s --health-timeout=10s --health-start-period=2m --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:80]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/icon.png",
+  "project": "https://nextcloud.com",
+  "support": "https://github.com/nextcloud/docker/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/nextcloud/",
+  "description": "File sync, sharing and collaboration platform with hundreds of apps",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Html",
+      "host": "/mnt/cache/appdata/nextcloud/html",
+      "container": "/var/www/html",
+      "mode": "rw",
+      "description": "Nextcloud's program, apps, settings (config/config.php), SQLite database and your files (data). Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6850",
+      "container": "80",
+      "description": "Nextcloud web app, WebDAV and sync, published on host as 6850"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PHP_UPLOAD_LIMIT",
+      "key": "PHP_UPLOAD_LIMIT",
+      "value": "16G",
+      "mask": false,
+      "description": "The largest file you can upload in the browser, like 16G."
+    },
+    {
+      "name": "PHP_MEMORY_LIMIT",
+      "key": "PHP_MEMORY_LIMIT",
+      "value": "1G",
+      "mask": false,
+      "description": "Memory for each PHP request, like 1G."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
