@@ -1,0 +1,148 @@
+name: kutt
+
+services:
+  kutt:
+    image: ghcr.io/hsinghhira/kutt:latest
+    container_name: kutt
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DEFAULT_DOMAIN=[ZIMAOS-IP-ADDRESS]:6859
+      - SITE_NAME=Kutt
+    ports:
+      - target: 3000
+        published: "6859"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/db
+        target: /kutt/db
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/custom
+        target: /kutt/custom
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/v2/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kutt/icon.png
+    x-casaos:
+      id: com.icestore.kutt
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for link stats. It is filled in
+              from your ZimaOS time zone.
+        - container: DEFAULT_DOMAIN
+          description:
+            en_US: >-
+              The address short links start with: replace
+              [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              192.168.1.20:6859, or your own domain.
+        - container: SITE_NAME
+          description:
+            en_US: >-
+              The name shown on the page.
+      ports:
+        - container: "3000"
+          description:
+            en_US: >-
+              Kutt web app, short links and API, published on
+              host as 6859
+      volumes:
+        - container: /kutt/db
+          description:
+            en_US: >-
+              The SQLite database with your links, stats and
+              users, and this install's JWT secret
+              (.icestore-jwt-secret). Back it up.
+        - container: /kutt/custom
+          description:
+            en_US: >-
+              Your own logo, styles and pages to change how Kutt
+              looks.
+
+x-casaos:
+  id: com.icestore.kutt
+  architectures:
+    - amd64
+    - arm64
+  main: kutt
+  author: HSinghHira
+  category: Others
+  developer: "thedevs-network"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kutt/icon.png
+  title:
+    en_US: Kutt
+  tagline:
+    en_US: Short link maker with custom domains, stats and an API
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kutt/](https://icestore.hsinghhira.me/app/kutt/) for full details
+
+
+      Kutt shortens long links and counts the visits, with the browser,
+      country and referrer of each one. Use your own domain, set expiry
+      and passwords on links, and make links from scripts with its API.
+
+
+      **Features**
+
+
+      - Short links with your own slug, password, expiry and description
+
+      - Visit stats by browser, OS, country and referrer
+
+      - Custom domains and a browser extension
+
+      - Users, an admin page and an API with keys
+
+      - OIDC sign-in and email for password resets
+
+
+      **How to use?**
+
+
+      1. Open Kutt right away and make the admin account.
+
+      2. Paste a long link and press Shorten.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install and replace
+           [ZIMAOS-IP-ADDRESS] in DEFAULT_DOMAIN with your ZimaOS IP,
+           like 192.168.1.20:6859 (use yours), or your own domain.
+
+
+        2. Start the installation. It is ready in about a minute.
+
+
+        3. Right away, open Kutt and make the admin account. The first
+           account is the admin.
+  index: /
+  port_map: "6859"
+  scheme: http
+  is_uncontrolled: false
+  version: "v3.2.6"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: kutt/kutt v3.2.6, plus a start script that makes this install's JWT_SECRET on first start
+      - SQLite database in /DATA/AppData/kutt/db
+  repo: "https://github.com/thedevs-network/kutt"
+  support: "https://github.com/thedevs-network/kutt/issues"
+  docs: "https://github.com/thedevs-network/kutt#readme"

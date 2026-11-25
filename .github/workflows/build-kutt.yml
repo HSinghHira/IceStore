@@ -1,0 +1,22 @@
+name: Build kutt
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/kutt/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-kutt.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: kutt
+      kind: wrapper
