@@ -34,6 +34,8 @@ make_secret LIVEBOOK_PASSWORD 12
 make_secret LIVEBOOK_SECRET_KEY_BASE 48
 export LIVEBOOK_HOME="${LIVEBOOK_HOME:-/data}"
 export LIVEBOOK_DATA_PATH="${LIVEBOOK_DATA_PATH:-/data/.livebook}"
+# Livebook checks this folder is writable but does not create it.
+mkdir -p "$LIVEBOOK_HOME" "$LIVEBOOK_DATA_PATH"
 
 cred_reset
 cred_add "URL" "http://<your ZimaOS IP>:6867"
