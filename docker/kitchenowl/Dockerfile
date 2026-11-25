@@ -7,6 +7,10 @@
 
 FROM tombursch/kitchenowl:v0.8.1
 
+# uWSGI's default 4 KB request buffer rejects requests with big headers (large
+# cookies, shared by every app on this IP), so the app returned no response.
+ENV UWSGI_BUFFER_SIZE=65535
+
 COPY icestore-init.sh /usr/local/bin/icestore-init
 # Shared helpers and the CREDENTIALS banner (docker/_common; built with
 # --build-context common=docker/_common).
