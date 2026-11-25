@@ -165,11 +165,12 @@ x-casaos:
   port_map: "6858"
   scheme: http
   is_uncontrolled: false
-  version: "261029"
+  version: "20220121"
   update_at: "2026-11-25"
   release_notes:
     en_US: |-
-      - First IceStore release: photoprism/photoprism 261029, plus a start script that makes this install's admin password on first start
+      - Updated photoprism 261029 to 20220121
+      - First IceStore release: photoprism/photoprism 20220121, plus a start script that makes this install's admin password on first start
       - Indexes /DATA/Gallery; the index and thumbnails are in /DATA/AppData/photoprism/storage
   repo: "https://github.com/photoprism/photoprism"
   support: "https://github.com/photoprism/photoprism/issues"

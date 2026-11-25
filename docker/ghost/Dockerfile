@@ -14,7 +14,7 @@
 # Left out: Caddy (TLS), ActivityPub and Tinybird web analytics from upstream's
 # ghost-docker compose.
 
-FROM ghost:6.78.0 AS img-ghost
+FROM ghost:6.79.0 AS img-ghost
 # auto-update: keep-major (MySQL 9 is not supported by Ghost)
 FROM mysql:8.4.13 AS img-mysql
 FROM axllent/mailpit:v1.34.0 AS img-mailpit

@@ -7,7 +7,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/ulsklyc/yuvomi:2.94.0
+FROM ghcr.io/ulsklyc/yuvomi:2.95.0
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 RUN chmod +x /usr/local/bin/icestore-init

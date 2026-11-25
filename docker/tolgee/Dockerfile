@@ -12,7 +12,7 @@
 #   tolgee     chroot   (the upstream image as-is, on port 8081)
 #   gateway    built-in (nginx on 8080)
 
-FROM tolgee/tolgee:v3.246.0 AS img-tolgee
+FROM tolgee/tolgee:v3.246.1 AS img-tolgee
 
 FROM debian:trixie-slim
 

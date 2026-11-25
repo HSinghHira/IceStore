@@ -10,7 +10,7 @@
 #
 # Left out: the optional Kokoro text-to-speech container (upstream's "tts" profile).
 
-FROM ghcr.io/bookorbit/bookorbit:3.9.0 AS img-bookorbit
+FROM ghcr.io/bookorbit/bookorbit:3.10.0 AS img-bookorbit
 
 FROM debian:trixie-slim
 

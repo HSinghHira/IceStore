@@ -121,10 +121,11 @@ x-casaos:
   port_map: "6863"
   scheme: http
   is_uncontrolled: false
-  version: "v0.13.4"
+  version: "v0.13.5"
   update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated open-webui v0.13.4 to v0.13.5
       - First IceStore release: open-webui/open-webui v0.13.4, plus a start script that makes this install's WEBUI_SECRET_KEY on first start
   repo: "https://github.com/open-webui/open-webui"
   support: "https://github.com/open-webui/open-webui/issues"

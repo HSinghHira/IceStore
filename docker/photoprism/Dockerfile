@@ -5,7 +5,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM photoprism/photoprism:261029
+FROM photoprism/photoprism:20220121
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 # Shared helpers and the CREDENTIALS banner (docker/_common; built with

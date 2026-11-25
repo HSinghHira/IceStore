@@ -34,11 +34,11 @@
 # Every Fluxer image is versioned on its own (year.monthday.build). The
 # release's compose file pins them by digest; these are the same images.
 
-FROM ghcr.io/fluxerapp/fluxer-api:2026.1124.71330 AS img-api
+FROM ghcr.io/fluxerapp/fluxer-api:2026.1125.11634 AS img-api
 FROM ghcr.io/fluxerapp/fluxer-gateway:2026.1124.71258 AS img-realtime
 FROM ghcr.io/fluxerapp/fluxer-media-proxy:2026.1124.71304 AS img-media
 FROM ghcr.io/fluxerapp/fluxer-push:2026.1124.71316 AS img-push
-FROM ghcr.io/fluxerapp/fluxer-app-proxy-self-hosted:2026.1124.71306 AS img-app
+FROM ghcr.io/fluxerapp/fluxer-app-proxy-self-hosted:2026.1124.195247 AS img-app
 FROM ghcr.io/fluxerapp/fluxer-admin:2026.1124.71257 AS img-admin
 FROM ghcr.io/fluxerapp/fluxer-snowflakes:2026.1124.71334 AS img-snowflakes
 FROM ghcr.io/fluxerapp/fluxer-users:2026.1124.71321 AS img-users

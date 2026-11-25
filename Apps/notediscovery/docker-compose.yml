@@ -130,13 +130,14 @@ x-casaos:
   port_map: "6788"
   scheme: http
   is_uncontrolled: false
-  version: "0.36.0"
-  update_at: "2026-11-24"
+  version: "0.36.1"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated notediscovery 0.36.0 to 0.36.1
       - Updated notediscovery 0.35.0 to 0.36.0
       - First IceStore release, on port 6788
-      - Built on ghcr.io/gamosoft/notediscovery 0.36.0
+      - Built on ghcr.io/gamosoft/notediscovery 0.36.1
       - The login is on, with a password and session key made for each install (upstream ships it off, with the password admin); the password is in the CREDENTIALS box in the logs
   repo: "https://github.com/gamosoft/NoteDiscovery"
   support: "https://github.com/gamosoft/NoteDiscovery/issues"

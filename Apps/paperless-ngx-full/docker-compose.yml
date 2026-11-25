@@ -235,13 +235,14 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "3.5.1"
-  update_at: "2026-11-23"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated tika 3.3.3.1 to 3.4.0.0
       - Image 1.0.1: the login now shows in IceDash's Credentials box (it was only in the logs)
       - First IceStore release, on port 6800 (asked for in IceStore issue 4)
       - Built on ghcr.io/paperless-ngx/paperless-ngx 3.5.1, like upstream's docker-compose.postgres-tika.yml, in one container
-      - PostgreSQL 18 and Redis inside; gotenberg 8.40.0 and tika 3.3.3.1 inside, so Office files and emails (.eml) work
+      - PostgreSQL 18 and Redis inside; gotenberg 8.40.0 and tika 3.4.0.0 inside, so Office files and emails (.eml) work
       - Each install makes its own PAPERLESS_SECRET_KEY, database password and admin password on first start; the login is in the CREDENTIALS box in the logs
   repo: "https://github.com/paperless-ngx/paperless-ngx"
   support: "https://github.com/paperless-ngx/paperless-ngx/issues"

@@ -11,7 +11,7 @@
 # Odoo tags are <major>.0-<build date>. The daily bumper takes newer builds of
 # the same major only: a new major needs a database upgrade Odoo can't do itself.
 # auto-update: keep-major
-FROM odoo:20.0-20261112 AS img-odoo
+FROM odoo:20.0-20261123 AS img-odoo
 
 FROM debian:trixie-slim
 

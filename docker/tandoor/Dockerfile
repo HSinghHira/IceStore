@@ -11,7 +11,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM vabene1111/recipes:2.7.7
+FROM vabene1111/recipes:2.7.8
 
 USER root
 RUN apk add --no-cache postgresql17 postgresql17-contrib supervisor setpriv openssl tzdata bash curl

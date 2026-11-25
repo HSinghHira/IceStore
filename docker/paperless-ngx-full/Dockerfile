@@ -21,7 +21,7 @@
 # auto-update: keep-major
 FROM gotenberg/gotenberg:8.40.0 AS img-gotenberg
 # auto-update: keep-major
-FROM apache/tika:3.3.3.1 AS img-tika
+FROM apache/tika:3.4.0.0 AS img-tika
 
 # The settings each image starts with (its ENV), so the s6 services can start
 # Gotenberg and Tika with exactly those, whatever a new release changes.
