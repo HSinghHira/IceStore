@@ -96,6 +96,9 @@ class Adapter:
         fallback = self.cfg.get("path_fallback")
         if fallback:
             s = DATA_FOLDER.sub(lambda m: fallback.replace("{folder}", m.group(1).lower()), s)
+        root = (self.cfg.get("path_map") or {}).get("/DATA")
+        if root:   # the whole storage, as in "your files (/DATA)"
+            s = re.sub(r"(?<![\w.-])/DATA\b(?!/)", root, s)
         return s
 
     def category(self, app):

@@ -21,7 +21,7 @@ import shlex
 
 import yaml
 
-from model import deep_merge, dump_yaml, env_list, parse_port, parse_volume, walk
+from model import deep_merge, dump_yaml, env_list, parse_port, parse_volume, text, walk
 
 from .base import Adapter, Skip
 
@@ -162,7 +162,12 @@ class MOS(Adapter):
                 host = f"{self.cfg['path_map'].get('/DATA/AppData/$AppID', '/mnt/cache/appdata/{slug}')}"\
                     .replace("{slug}", app.slug) + f"/{host or vv['target'].strip('/').replace('/', '-')}"
                 result.warnings.append(f"named volume {vv['source']} -> {host}")
-            desc = self.words(app.described(svc_name, "volumes", vv["target"]), app)
+            # The master describes the volume by its ZimaOS container path; a same-path
+            # mount like /DATA:/DATA has been rewritten on both sides, so match that too.
+            desc = app.described(svc_name, "volumes", vv["target"]) or next(
+                (text(i.get("description")).strip() for i in app.service_meta(svc_name).get("volumes") or []
+                 if self.translate(str(i.get("container")), app) == vv["target"]), "")
+            desc = self.words(desc, app)
             paths.append({
                 "name": "AppData" if host.rstrip("/").endswith("/" + app.slug) else
                         vv["target"].rstrip("/").rsplit("/", 1)[-1].replace("-", " ").title() or "Path",
@@ -348,9 +353,11 @@ class MOS(Adapter):
             for k in need:
                 if t.get(k) in (None, "") and not (k in ("paths", "ports", "variables") and t.get(k) == []):
                     r.errors.append(f"template has no {k}")
-            for bad in ("/DATA/", "$AppID", "${AppID}", "[ZIMAOS-IP-ADDRESS]", "x-casaos"):
+            for bad in ("$AppID", "${AppID}", "[ZIMAOS-IP-ADDRESS]", "x-casaos"):
                 if bad in body:
                     r.errors.append(f"output still has {bad}")
+            if re.search(r"(?<![\w.-])/DATA\b", body):   # /DATA itself or /DATA/<anything>
+                r.errors.append("output still has /DATA")
             key = r.path.name.lower()
             if key in names:
                 r.errors.append(f"same template name as {names[key]}")

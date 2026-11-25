@@ -30,6 +30,8 @@ platforms:
       /DATA/AppData/$AppID: /mnt/cache/appdata/{slug}
       /DATA/Downloads: /mnt/cache/downloads
       /DATA/Media: /mnt/cache/media
+      # Apps that share the whole ZimaOS storage (file managers, backups).
+      /DATA: /mnt/cache
     # Any other ZimaOS folder (/DATA/Gallery, /DATA/Documents, ...) goes to
     # /mnt/cache/<folder in lower case>, in paths and in descriptions alike.
     path_fallback: /mnt/cache/{folder}
