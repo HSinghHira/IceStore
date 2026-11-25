@@ -1,0 +1,47 @@
+{
+  "name": "ChartDB",
+  "repo": "ghcr.io/chartdb/chartdb:1.21.0",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/chartdb/chartdb/pkgs/container/chartdb",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --memory=128m --memory-reservation=16m --health-cmd=\"wget -q -O /dev/null http://127.0.0.1:80/\" --health-interval=30s --health-timeout=10s --health-start-period=30s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:80]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/chartdb/icon.png",
+  "project": "https://chartdb.io",
+  "support": "https://github.com/chartdb/chartdb/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/chartdb/",
+  "description": "Database diagram editor that imports your schema with one query",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6837",
+      "container": "80",
+      "description": "ChartDB web app, published on host as 6837"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
