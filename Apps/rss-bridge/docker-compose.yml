@@ -1,0 +1,127 @@
+name: rss-bridge
+
+services:
+  rss-bridge:
+    image: rssbridge/rss-bridge:2026-09-30
+    container_name: rss-bridge
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6834"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rss-bridge/icon.png
+    x-casaos:
+      id: com.icestore.rss-bridge
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              RSS-Bridge web page and feeds, published on host
+              as 6834
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Your own config.ini.php and whitelist.txt (which
+              bridges are on), and your own bridges. Leave it
+              empty for the defaults.
+
+x-casaos:
+  id: com.icestore.rss-bridge
+  architectures:
+    - amd64
+    - arm64
+  main: rss-bridge
+  author: HSinghHira
+  category: Productivity
+  developer: "RSS-Bridge community"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rss-bridge/icon.png
+  title:
+    en_US: RSS-Bridge
+  tagline:
+    en_US: Makes RSS and Atom feeds for websites that do not have one
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/rss-bridge/](https://icestore.hsinghhira.me/app/rss-bridge/) for full details
+
+
+      RSS-Bridge turns social networks, video sites, shops and news
+      pages without feeds into RSS and Atom feeds you can follow in
+      FreshRSS, Miniflux or any feed reader. Pick a bridge, fill in the
+      form and copy the feed link.
+
+
+      **Features**
+
+
+      - Over 400 bridges for YouTube, Reddit, Telegram channels,
+        Bandcamp, shops and more
+
+      - Atom, RSS, JSON, HTML and Mrss output
+
+      - Choose which bridges are on with a whitelist
+
+      - Add your own bridges as PHP files
+
+
+      **How to use?**
+
+
+      1. Open RSS-Bridge and find a bridge with the search box.
+
+      2. Fill in its form and press a format, like Atom.
+
+      3. Copy the address and add it to your feed reader.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Only some bridges are on at first. To turn on all of them,
+           put a whitelist.txt with a single * in
+           /DATA/AppData/rss-bridge/config and restart.
+
+
+        3. In FreshRSS, add the feed with your ZimaOS IP (not
+           localhost) and allow it in INTERNAL_HOST_ALLOWLIST.
+  index: /
+  port_map: "6834"
+  scheme: http
+  is_uncontrolled: false
+  version: "2026-09-30"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: rssbridge/rss-bridge 2026-09-30 on port 6834
+  repo: "https://github.com/RSS-Bridge/rss-bridge"
+  support: "https://github.com/RSS-Bridge/rss-bridge/issues"
+  docs: "https://rss-bridge.github.io/rss-bridge/"
