@@ -1,0 +1,135 @@
+name: ombi
+
+services:
+  ombi:
+    image: lscr.io/linuxserver/ombi:v4.53.10-ls278
+    container_name: ombi
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 3579
+        published: "6833"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3579/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ombi/icon.png
+    x-casaos:
+      id: com.icestore.ombi
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user Ombi runs as. It is filled in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group Ombi runs as. It is filled in by ZimaOS.
+      ports:
+        - container: "3579"
+          description:
+            en_US: >-
+              Ombi web app and API, published on host as 6833
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Ombi's databases, settings and logs. Back it up.
+
+x-casaos:
+  id: com.icestore.ombi
+  architectures:
+    - amd64
+    - arm64
+  main: ombi
+  author: HSinghHira
+  category: Media
+  developer: "Ombi"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ombi/icon.png
+  title:
+    en_US: Ombi
+  tagline:
+    en_US: Lets your users request movies, shows and music for Plex, Emby and Jellyfin
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/ombi/](https://icestore.hsinghhira.me/app/ombi/) for full details
+
+
+      Ombi gives the people who use your Plex, Emby or Jellyfin server a
+      place to ask for new movies, shows and music. Requests can be
+      approved by you or automatically, and are sent to Sonarr, Radarr
+      and Lidarr.
+
+
+      **Features**
+
+
+      - Users sign in with their Plex, Emby or Jellyfin account
+
+      - Movie, TV and music requests with approval and limits
+
+      - Sends requests to Sonarr, Radarr, Lidarr, CouchPotato and
+        SickRage
+
+      - Issue reporting for broken files
+
+      - Notifications by email, Discord, Telegram, Pushover and more
+
+
+      **How to use?**
+
+
+      1. Open Ombi right away and follow the setup wizard.
+
+      2. Connect your media server, then add Sonarr, Radarr or Lidarr.
+
+      3. Share the address with your users.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Ombi and finish the setup wizard. Until
+           you do, anyone on your network can.
+
+
+        3. Use your ZimaOS IP for Jellyfin, Sonarr and Radarr, not
+           localhost.
+  index: /
+  port_map: "6833"
+  scheme: http
+  is_uncontrolled: false
+  version: "v4.53.10-ls278"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: lscr.io/linuxserver/ombi v4.53.10-ls278 on port 6833
+  repo: "https://github.com/Ombi-app/Ombi"
+  support: "https://github.com/Ombi-app/Ombi/issues"
+  docs: "https://docs.ombi.app"
