@@ -1,0 +1,142 @@
+name: metabase
+
+services:
+  metabase:
+    image: metabase/metabase:v0.65.7.1
+    container_name: metabase
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - JAVA_TIMEZONE=$TZ
+      - MB_DB_FILE=/metabase-data/metabase.db
+    ports:
+      - target: 3000
+        published: "6840"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /metabase-data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 3m
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metabase/icon.png
+    x-casaos:
+      id: com.icestore.metabase
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: JAVA_TIMEZONE
+          description:
+            en_US: >-
+              The time zone Metabase reports in. It is filled in
+              from your ZimaOS time zone.
+        - container: MB_DB_FILE
+          description:
+            en_US: >-
+              Where Metabase keeps its own settings, questions
+              and dashboards. Leave it as it is.
+      ports:
+        - container: "3000"
+          description:
+            en_US: >-
+              Metabase web app and API, published on host as
+              6840
+      volumes:
+        - container: /metabase-data
+          description:
+            en_US: >-
+              Metabase's own H2 database with your questions,
+              dashboards, users and connections. Back it up.
+
+x-casaos:
+  id: com.icestore.metabase
+  architectures:
+    - amd64
+    - arm64
+  main: metabase
+  author: HSinghHira
+  category: Others
+  developer: "Metabase"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metabase/icon.png
+  title:
+    en_US: Metabase
+  tagline:
+    en_US: Business intelligence tool for asking questions about your data and building dashboards
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/metabase/](https://icestore.hsinghhira.me/app/metabase/) for full details
+
+
+      Metabase connects to your databases and lets anyone ask questions
+      about the data with a simple editor or SQL, then turns the answers
+      into charts and dashboards to share.
+
+
+      **Features**
+
+
+      - Question builder for people who do not write SQL, plus a full
+        SQL editor
+
+      - Charts, maps, pivot tables and dashboards with filters
+
+      - Works with PostgreSQL, MySQL, MariaDB, SQLite, SQL Server,
+        MongoDB, BigQuery and more
+
+      - Scheduled email and Slack reports, and alerts
+
+      - Users, groups and data permissions
+
+
+      **How to use?**
+
+
+      1. Open Metabase right away and make the admin account.
+
+      2. Add your database with its host, port and login.
+
+      3. Ask a question, save it and add it to a dashboard.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. The first start takes two or three
+           minutes.
+
+
+        2. Right away, open Metabase and make the admin account. Until
+           you do, anyone on your network can.
+
+
+        3. Databases on your ZimaOS are reached at your ZimaOS IP with
+           their published port, not localhost.
+  index: /
+  port_map: "6840"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.65.7.1"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: metabase/metabase v0.65.7.1 on port 6840
+      - Keeps its own data in an H2 file in /DATA/AppData/metabase/data
+  repo: "https://github.com/metabase/metabase"
+  support: "https://github.com/metabase/metabase/issues"
+  docs: "https://www.metabase.com/docs/latest/"
