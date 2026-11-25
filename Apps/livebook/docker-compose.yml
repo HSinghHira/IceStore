@@ -1,0 +1,139 @@
+name: livebook
+
+services:
+  livebook:
+    image: ghcr.io/hsinghhira/livebook:latest
+    container_name: livebook
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - LIVEBOOK_IFRAME_PORT=6868
+    ports:
+      - target: 8080
+        published: "6867"
+        protocol: tcp
+      - target: 6868
+        published: "6868"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8080/public/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/livebook/icon.png
+    x-casaos:
+      id: com.icestore.livebook
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: LIVEBOOK_IFRAME_PORT
+          description:
+            en_US: >-
+              The port for notebook outputs (charts, maps). It
+              must stay the same as the published port (6868).
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Livebook web app, published on host as 6867
+        - container: "6868"
+          description:
+            en_US: >-
+              Livebook output frames (charts and widgets),
+              published on host as 6868
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Your notebooks, settings, installed packages cache
+              and this install's password and session key. Back
+              it up.
+
+x-casaos:
+  id: com.icestore.livebook
+  architectures:
+    - amd64
+    - arm64
+  main: livebook
+  author: HSinghHira
+  category: Developer
+  developer: "Livebook"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/livebook/icon.png
+  title:
+    en_US: Livebook
+  tagline:
+    en_US: Interactive, collaborative notebooks for Elixir with data and AI tools
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/livebook/](https://icestore.hsinghhira.me/app/livebook/) for full details
+
+
+      Livebook is a notebook for Elixir: write code, Markdown and charts
+      in one document, explore data, build small apps and work with AI
+      models. Several people can edit the same notebook at once.
+
+
+      **Features**
+
+
+      - Code, Markdown, charts, tables and maps in one notebook
+
+      - Smart cells for databases, charts, maps and AI models
+
+      - Real-time collaboration on the same notebook
+
+      - Turn notebooks into apps you can share
+
+      - Notebooks saved as plain .livemd files
+
+
+      **How to use?**
+
+
+      1. Open Livebook and type the password from the CREDENTIALS box in
+         the app's logs.
+
+      2. Make a new notebook in /data and start writing code.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about half a minute.
+
+
+        2. Open Livebook. The password is in the app's logs, in the
+           box marked CREDENTIALS.
+
+
+        3. Notebooks run code inside the container. Only share the
+           password with people you trust.
+  index: /
+  port_map: "6867"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.19.11"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: livebook-dev/livebook 0.19.11, plus a start script that makes this install's password and session key on first start
+      - Web app on port 6867 and output frames on port 6868
+  repo: "https://github.com/livebook-dev/livebook"
+  support: "https://github.com/livebook-dev/livebook/issues"
+  docs: "https://github.com/livebook-dev/livebook#readme"
