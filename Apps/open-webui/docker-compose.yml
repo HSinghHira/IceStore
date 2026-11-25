@@ -1,0 +1,131 @@
+name: open-webui
+
+services:
+  open-webui:
+    image: ghcr.io/hsinghhira/open-webui:latest
+    container_name: open-webui
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6863"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/backend/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 3m
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-webui/icon.png
+    x-casaos:
+      id: com.icestore.open-webui
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Open WebUI web app and API, published on host as
+              6863
+      volumes:
+        - container: /app/backend/data
+          description:
+            en_US: >-
+              The database with users and chats, uploaded
+              documents, the vector store, cached models and
+              this install's secret key. Back it up.
+
+x-casaos:
+  id: com.icestore.open-webui
+  architectures:
+    - amd64
+    - arm64
+  main: open-webui
+  author: HSinghHira
+  category: AI
+  developer: "Open WebUI"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-webui/icon.png
+  title:
+    en_US: Open WebUI
+  tagline:
+    en_US: Chat interface for Ollama and OpenAI-compatible models, with RAG and tools
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/open-webui/](https://icestore.hsinghhira.me/app/open-webui/) for full details
+
+
+      Open WebUI is a full-featured chat app for your own AI models.
+      Connect Ollama on your ZimaOS or any OpenAI-compatible service,
+      chat with your documents, search the web, and share it with your
+      family with separate accounts.
+
+
+      **Features**
+
+
+      - Ollama and OpenAI-compatible connections, with model management
+
+      - Chat with documents and knowledge bases (RAG)
+
+      - Web search, image generation, voice and video calls
+
+      - Tools, functions and pipelines in Python
+
+      - Users, groups and roles, with the first account as admin
+
+
+      **How to use?**
+
+
+      1. Open Open WebUI right away and make the first (admin) account.
+
+      2. In Admin Settings, Connections, check your Ollama address or
+         add an API key.
+
+      3. Pick a model and chat.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. The first start downloads models
+           for document search and takes a few minutes.
+
+
+        2. Right away, open Open WebUI and make your account. The
+           first account is the admin.
+
+
+        3. Then, in Admin Settings, Connections, add your Ollama at
+           your ZimaOS IP with its port (IceStore's Ollama uses 6844),
+           or an API key.
+  index: /
+  port_map: "6863"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.13.4"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: open-webui/open-webui v0.13.4, plus a start script that makes this install's WEBUI_SECRET_KEY on first start
+  repo: "https://github.com/open-webui/open-webui"
+  support: "https://github.com/open-webui/open-webui/issues"
+  docs: "https://docs.openwebui.com"
