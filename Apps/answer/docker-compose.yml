@@ -1,0 +1,126 @@
+name: answer
+
+services:
+  answer:
+    image: apache/answer:2.0.3
+    container_name: answer
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6835"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/answer/icon.png
+    x-casaos:
+      id: com.icestore.answer
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              Apache Answer web app, published on host as 6835
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database, uploads, config
+              (conf/config.yaml) and plugins. Back it up.
+
+x-casaos:
+  id: com.icestore.answer
+  architectures:
+    - amd64
+    - arm64
+  main: answer
+  author: HSinghHira
+  category: Social
+  developer: "Apache Software Foundation"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/answer/icon.png
+  title:
+    en_US: Apache Answer
+  tagline:
+    en_US: Q&A platform for teams and communities, like your own Stack Overflow
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/answer/](https://icestore.hsinghhira.me/app/answer/) for full details
+
+
+      Apache Answer is a question-and-answer site for your team, product
+      or community. People ask questions, post answers, vote, and earn
+      reputation, so knowledge is easy to find later.
+
+
+      **Features**
+
+
+      - Questions, answers, comments, votes and accepted answers
+
+      - Tags, search and reputation with badges
+
+      - Markdown editor with images
+
+      - Roles, moderation and review queues
+
+      - Plugins for sign-in (OAuth, LDAP), search and storage
+
+
+      **How to use?**
+
+
+      1. Open Apache Answer right away and follow the install steps.
+         Pick SQLite.
+
+      2. Set the site address, name and your admin account.
+
+      3. Ask the first question.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Right away, open it and follow the install steps. Choose
+           SQLite as the database. Until you finish, anyone on your
+           network can.
+
+
+        3. For the site URL, use http://[ZIMAOS-IP-ADDRESS]:6835 with
+           your ZimaOS IP.
+  index: /
+  port_map: "6835"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.0.3"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: apache/answer 2.0.3 on port 6835
+  repo: "https://github.com/apache/answer"
+  support: "https://github.com/apache/answer/issues"
+  docs: "https://answer.apache.org/docs"
