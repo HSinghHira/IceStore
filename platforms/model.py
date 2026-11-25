@@ -176,8 +176,9 @@ def walk(obj, fn):
 
 
 def sub_var(s, name, value):
-    """Replace $name and ${name} in a compose string, but not the escaped $$name."""
-    pat = re.compile(r"(?<!\$)\$(?:\{" + re.escape(name) + r"\}|" + re.escape(name) + r"(?![A-Za-z0-9_]))")
+    """Replace $name, ${name} and ${name:-default} in a compose string, but not the escaped $$name.
+    The platform's value wins over the master file's fallback."""
+    pat = re.compile(r"(?<!\$)\$(?:\{" + re.escape(name) + r"(?::?[-=][^}]*)?\}|" + re.escape(name) + r"(?![A-Za-z0-9_]))")
     return pat.sub(lambda _m: value, s)
 
 
