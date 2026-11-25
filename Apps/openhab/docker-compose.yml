@@ -1,0 +1,166 @@
+name: openhab
+
+services:
+  openhab:
+    image: openhab/openhab:5.2.5-debian
+    container_name: openhab
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - USER_ID=$PUID
+      - GROUP_ID=$PGID
+      - CRYPTO_POLICY=unlimited
+    ports:
+      - target: 8080
+        published: "6855"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/conf
+        target: /openhab/conf
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/userdata
+        target: /openhab/userdata
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/addons
+        target: /openhab/addons
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 3m
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openhab/icon.png
+    x-casaos:
+      id: com.icestore.openhab
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for rules and sunrise and sunset.
+              It is filled in from your ZimaOS time zone.
+        - container: USER_ID
+          description:
+            en_US: >-
+              The user openHAB runs as. It is filled in by
+              ZimaOS.
+        - container: GROUP_ID
+          description:
+            en_US: >-
+              The group openHAB runs as. It is filled in by
+              ZimaOS.
+        - container: CRYPTO_POLICY
+          description:
+            en_US: >-
+              Leave as unlimited for full encryption support.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              openHAB web app and REST API, published on host as
+              6855
+      volumes:
+        - container: /openhab/conf
+          description:
+            en_US: >-
+              Your text configuration: things, items, rules,
+              sitemaps and services.
+        - container: /openhab/userdata
+          description:
+            en_US: >-
+              openHAB's database, settings made in the web app,
+              users, logs and persistence. Back it up.
+        - container: /openhab/addons
+          description:
+            en_US: >-
+              Add-on files you install by hand (.jar or .kar).
+
+x-casaos:
+  id: com.icestore.openhab
+  architectures:
+    - amd64
+    - arm64
+  main: openhab
+  author: HSinghHira
+  category: Home
+  developer: "openHAB Foundation"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openhab/icon.png
+  title:
+    en_US: openHAB
+  tagline:
+    en_US: Open home automation platform for devices of every brand
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/openhab/](https://icestore.hsinghhira.me/app/openhab/) for full details
+
+
+      openHAB connects smart-home devices from hundreds of brands and
+      protocols and lets you automate them with rules, from one place
+      that runs at home. Set it up in the web app, or with text files if
+      you prefer.
+
+
+      **Features**
+
+
+      - Over 400 add-ons for Zigbee, Z-Wave, Matter, Hue, Sonos, KNX,
+        MQTT and more
+
+      - Rules with a visual editor, Blockly, JavaScript and more
+
+      - Main UI with pages, charts and a phone app for Android and iOS
+
+      - Persistence and history graphs
+
+      - Voice, notifications and the myopenHAB cloud for remote access
+
+
+      **How to use?**
+
+
+      1. Open openHAB right away and make the admin account.
+
+      2. Pick your region and add-ons in the setup wizard.
+
+      3. Add things from the Inbox and build your pages.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. The first start takes two or three
+           minutes.
+
+
+        2. Right away, open openHAB and make the admin account. Until
+           you do, anyone on your network can.
+
+
+        3. Some devices are found automatically only with host
+           networking. Add them by IP if they do not show up in the
+           Inbox.
+  index: /
+  port_map: "6855"
+  scheme: http
+  is_uncontrolled: false
+  version: "5.2.5-debian"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: openhab/openhab 5.2.5-debian on port 6855
+  repo: "https://github.com/openhab/openhab-distro"
+  support: "https://community.openhab.org"
+  docs: "https://www.openhab.org/docs/"
