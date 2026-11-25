@@ -206,6 +206,9 @@ Paperless-ngx turns your pile of paper into a searchable online archive. Scan a 
 - Picks up files from its inbox folder, from email accounts, from the upload button or from the mobile apps
 - Users, groups and sharing rights, plus two-factor sign-in
 - PostgreSQL 18 as the database, for large archives
+- EU e-invoices (XRechnung and ZUGFeRD), with the parser included
+
+The EU e-invoice parser for XRechnung and ZUGFeRD is included, so Paperless can read these invoices. On start, the log should show `Loaded third-party parser 'XRechnung'`.
 
 ## How to use
 

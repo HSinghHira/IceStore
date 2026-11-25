@@ -47,6 +47,25 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends postgresql-18 redis-server util-linux; \
     rm -rf /var/lib/apt/lists/*
 
+# EU e-invoice parser (XRechnung and ZUGFeRD), as upstream
+# bitbetterde/paperless-ngx-erechnung ships it. Apache FOP renders the
+# XSL-FO output of KoSIT's stylesheet into the archive PDF, and it is a JVM
+# program, so a headless JRE comes with it.
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends default-jre-headless fop; \
+    rm -rf /var/lib/apt/lists/*
+
+# The plugin is pinned to one release. `python3 -m pip` is the interpreter
+# Paperless runs (its s6 scripts call `python3`), so the parser is loaded
+# from the same environment. The checks fail the build if the package, the
+# `fop` command or Java is missing.
+RUN set -eux; \
+    python3 -m pip install --no-cache-dir paperless-ngx-erechnung==0.1.4; \
+    python3 -m pip show paperless-ngx-erechnung; \
+    command -v fop; \
+    java -version 2>&1 | head -1
+
 # Tika and Gotenberg, whole, plus the settings they start with.
 COPY --from=img-gotenberg / /opt/rootfs/gotenberg/
 COPY --from=img-tika / /opt/rootfs/tika/
