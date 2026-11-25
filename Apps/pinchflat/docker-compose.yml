@@ -1,0 +1,141 @@
+name: pinchflat
+
+services:
+  pinchflat:
+    image: ghcr.io/kieraneglin/pinchflat:v2025.6.6
+    container_name: pinchflat
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8945
+        published: "6824"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media/YouTube
+        target: /downloads
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8945/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pinchflat/icon.png
+    x-casaos:
+      id: com.icestore.pinchflat
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for download schedules. It is
+              filled in from your ZimaOS time zone.
+      ports:
+        - container: "8945"
+          description:
+            en_US: >-
+              Pinchflat web app, published on host as 6824
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Pinchflat's database, settings, cookies file and
+              logs.
+        - container: /downloads
+          description:
+            en_US: >-
+              Where videos are saved: /DATA/Media/YouTube on
+              your ZimaOS. Add it to Jellyfin or Plex.
+
+x-casaos:
+  id: com.icestore.pinchflat
+  architectures:
+    - amd64
+    - arm64
+  main: pinchflat
+  author: HSinghHira
+  category: Media
+  developer: "kieraneglin"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pinchflat/icon.png
+  title:
+    en_US: Pinchflat
+  tagline:
+    en_US: Downloads YouTube channels and playlists on a schedule with yt-dlp
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/pinchflat/](https://icestore.hsinghhira.me/app/pinchflat/) for full details
+
+
+      Pinchflat watches YouTube channels and playlists and downloads new
+      videos with yt-dlp, named and organized for Jellyfin, Plex or
+      Kodi. Set up a media profile once, add your sources, and let it
+      keep your library up to date.
+
+
+      **Features**
+
+
+      - Channels and playlists checked on your schedule, with only new
+        videos fetched
+
+      - Media profiles for quality, format, file names, subtitles and
+        thumbnails
+
+      - Filters by title, length and date, and SponsorBlock to cut
+        segments
+
+      - Media-center metadata (NFO files) and a podcast RSS feed per
+        source
+
+      - Old videos removed after a set number of days if you like
+
+
+      **How to use?**
+
+
+      1. Open Pinchflat and make a Media Profile (quality and file
+         names).
+
+      2. Add a Source with a channel or playlist link.
+
+      3. New videos appear in /DATA/Media/YouTube.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Pinchflat has no login at first. To add one, set
+           BASIC_AUTH_USERNAME and BASIC_AUTH_PASSWORD in the app
+           settings.
+
+
+        3. Videos are saved in /DATA/Media/YouTube.
+  index: /
+  port_map: "6824"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2025.6.6"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/kieraneglin/pinchflat v2025.6.6 on port 6824
+      - Downloads go to /DATA/Media/YouTube
+  repo: "https://github.com/kieraneglin/pinchflat"
+  support: "https://github.com/kieraneglin/pinchflat/issues"
+  docs: "https://github.com/kieraneglin/pinchflat/wiki"
