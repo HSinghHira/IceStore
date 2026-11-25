@@ -1,0 +1,136 @@
+name: seerr
+
+services:
+  seerr:
+    image: ghcr.io/seerr-team/seerr:v3.5.2
+    container_name: seerr
+    user: "0:0"
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - LOG_LEVEL=info
+    ports:
+      - target: 5055
+        published: "6830"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /app/config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:5055/api/v1/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/seerr/icon.png
+    x-casaos:
+      id: com.icestore.seerr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: LOG_LEVEL
+          description:
+            en_US: >-
+              How much is logged: debug, info, warn or error.
+      ports:
+        - container: "5055"
+          description:
+            en_US: >-
+              Seerr web app and API, published on host as 6830
+      volumes:
+        - container: /app/config
+          description:
+            en_US: >-
+              Seerr's database, settings and logs. Back it up.
+
+x-casaos:
+  id: com.icestore.seerr
+  architectures:
+    - amd64
+    - arm64
+  main: seerr
+  author: HSinghHira
+  category: Media
+  developer: "Seerr team"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/seerr/icon.png
+  title:
+    en_US: Seerr
+  tagline:
+    en_US: Request movies and shows for Jellyfin, Plex and Emby, with Sonarr and Radarr
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/seerr/](https://icestore.hsinghhira.me/app/seerr/) for full details
+
+
+      Seerr lets your family and friends browse movies and shows and ask
+      for the ones they want. Approved requests go straight to Sonarr
+      and Radarr, and everyone sees when their request is ready to watch
+      on Jellyfin, Plex or Emby. It is the merged successor of Overseerr
+      and Jellyseerr.
+
+
+      **Features**
+
+
+      - Sign in with your Jellyfin, Plex or Emby account
+
+      - Discover trending and upcoming movies and shows
+
+      - Requests sent to Sonarr and Radarr, with approval rules and
+        limits
+
+      - Shows what is already in your library
+
+      - Notifications by email, Discord, Telegram, ntfy, Pushover and
+        more
+
+
+      **How to use?**
+
+
+      1. Open Seerr right away and sign in with your Jellyfin, Plex or
+         Emby admin account.
+
+      2. Pick the libraries to scan, then add Sonarr and Radarr with
+         their API keys.
+
+      3. Import your media server's users and let them request.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Seerr and finish the setup with your media
+           server's admin account.
+
+
+        3. Use your ZimaOS IP for Jellyfin, Sonarr and Radarr, not
+           localhost.
+  index: /
+  port_map: "6830"
+  scheme: http
+  is_uncontrolled: false
+  version: "v3.5.2"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/seerr-team/seerr v3.5.2 on port 6830
+      - Runs as root so it can write its ZimaOS data folder
+  repo: "https://github.com/seerr-team/seerr"
+  support: "https://github.com/seerr-team/seerr/issues"
+  docs: "https://docs.seerr.dev"
