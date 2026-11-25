@@ -31,9 +31,9 @@
       "description": "Kavita's settings (appsettings.json), database, covers, logs and backups. Back it up."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "rw",
       "description": "Your MOS storage at the same path. Add a folder like /mnt/cache/media/Comics as a library."
     }

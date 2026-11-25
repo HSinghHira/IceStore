@@ -32,10 +32,10 @@
     },
     {
       "name": "Srv",
-      "host": "/DATA",
+      "host": "/mnt/cache",
       "container": "/srv",
       "mode": "rw",
-      "description": "The files Dufs shares: your whole MOS storage (/DATA). Point it at a smaller folder to share less."
+      "description": "The files Dufs shares: your whole MOS storage (/mnt/cache). Point it at a smaller folder to share less."
     }
   ],
   "ports": [

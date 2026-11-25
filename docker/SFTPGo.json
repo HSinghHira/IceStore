@@ -38,9 +38,9 @@
       "description": "The default home folders of new users (data) and backups."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "rw",
       "description": "Your MOS files, so you can set a user's home folder to an existing one, like /mnt/cache/media."
     }

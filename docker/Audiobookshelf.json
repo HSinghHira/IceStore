@@ -38,9 +38,9 @@
       "description": "Covers, author photos, cache, logs and backups."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "rw",
       "description": "Your MOS storage at the same path. Add a folder like /mnt/cache/media/Audiobooks as a library. Podcasts are downloaded into their library folder."
     }

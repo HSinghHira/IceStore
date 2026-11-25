@@ -31,9 +31,9 @@
       "description": "Your Folbum account, settings, sync history and saved MOS sign-in. Keep it private and back it up."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "ro",
       "description": "Your MOS storage, read-only at the same path. Only the optional Dashboard disk check reads it; Folbum never changes your photos."
     },

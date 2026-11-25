@@ -45,9 +45,9 @@
       "description": "Restic's cache. Safe to empty."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "rw",
       "description": "Your MOS storage at the same path, to back up and restore."
     },

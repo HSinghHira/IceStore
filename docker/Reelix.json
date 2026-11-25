@@ -32,10 +32,10 @@
     },
     {
       "name": "Data",
-      "host": "/DATA",
+      "host": "/mnt/cache",
       "container": "/data",
       "mode": "rw",
-      "description": "Your MOS storage (/DATA), one mount for downloads and media so hardlinks work. Your media is under /data inside, like /data/Media/Movies."
+      "description": "Your MOS storage (/mnt/cache), one mount for downloads and media so hardlinks work. Your media is under /data inside, like /data/Media/Movies."
     }
   ],
   "ports": [

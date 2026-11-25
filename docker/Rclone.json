@@ -32,7 +32,7 @@
     },
     {
       "name": "Data",
-      "host": "/DATA",
+      "host": "/mnt/cache",
       "container": "/data",
       "mode": "rw",
       "description": "Your MOS storage, to copy and sync with your cloud remotes. Pick it as a local path, like /data/Documents."

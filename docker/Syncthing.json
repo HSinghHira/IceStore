@@ -31,11 +31,11 @@
       "description": "Syncthing's settings, device keys and database, plus the Default Folder (Sync). Back up the config folder: it holds this device's ID."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "rw",
-      "description": "Your MOS storage, at the same path inside, so you can share any folder under /DATA."
+      "description": "Your MOS storage, at the same path inside, so you can share any folder under /mnt/cache."
     }
   ],
   "ports": [],

@@ -32,10 +32,10 @@
     },
     {
       "name": "W",
-      "host": "/DATA",
+      "host": "/mnt/cache",
       "container": "/w",
       "mode": "rw",
-      "description": "The files copyparty shares: your whole MOS storage (/DATA)."
+      "description": "The files copyparty shares: your whole MOS storage (/mnt/cache)."
     }
   ],
   "ports": [

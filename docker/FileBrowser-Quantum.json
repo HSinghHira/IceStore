@@ -32,10 +32,10 @@
     },
     {
       "name": "Srv",
-      "host": "/DATA",
+      "host": "/mnt/cache",
       "container": "/srv",
       "mode": "rw",
-      "description": "The files FileBrowser shows: all of your MOS /DATA folder. Change this to a smaller folder to share less."
+      "description": "The files FileBrowser shows: all of your MOS /mnt/cache folder. Change this to a smaller folder to share less."
     }
   ],
   "ports": [
