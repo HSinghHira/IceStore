@@ -1,0 +1,135 @@
+name: ollama
+
+services:
+  ollama:
+    image: ollama/ollama:0.40.18
+    container_name: ollama
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - OLLAMA_KEEP_ALIVE=5m
+    ports:
+      - target: 11434
+        published: "6844"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/models
+        target: /root/.ollama
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+        reservations:
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ollama/icon.png
+    x-casaos:
+      id: com.icestore.ollama
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: OLLAMA_KEEP_ALIVE
+          description:
+            en_US: >-
+              How long a model stays in memory after its last
+              use, like 5m or 1h.
+      ports:
+        - container: "11434"
+          description:
+            en_US: >-
+              Ollama API, published on host as 6844
+      volumes:
+        - container: /root/.ollama
+          description:
+            en_US: >-
+              Downloaded models (often several GB each) and
+              Ollama's keys.
+
+x-casaos:
+  id: com.icestore.ollama
+  architectures:
+    - amd64
+    - arm64
+  main: ollama
+  author: HSinghHira
+  category: AI
+  developer: "Ollama"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ollama/icon.png
+  title:
+    en_US: Ollama
+  tagline:
+    en_US: Runs open large language models on your own hardware behind a simple API
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/ollama/](https://icestore.hsinghhira.me/app/ollama/) for full details
+
+
+      Ollama downloads and runs open language models like Llama, Gemma,
+      Qwen, Mistral and DeepSeek on your ZimaOS, and serves them through
+      an API that chat apps such as Open WebUI, big-AGI and NextChat can
+      use. It runs on the CPU here; small models work best.
+
+
+      **Features**
+
+
+      - Hundreds of models from the Ollama library, pulled with one
+        command
+
+      - OpenAI-compatible API at /v1, plus Ollama's own API
+
+      - Embeddings, vision and tool calling with supporting models
+
+      - Models load on demand and unload when idle
+
+
+      **How to use?**
+
+
+      1. Pull a model: docker exec ollama ollama pull llama3.2 (or from
+         a chat app that can pull models).
+
+      2. Point your chat app at http://[ZIMAOS-IP-ADDRESS]:6844 with
+         your ZimaOS IP.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Ollama has no web page. Chat apps use it at your ZimaOS IP
+           with port 6844, like http://192.168.1.20:6844 for the IP
+           192.168.1.20 (use yours).
+
+
+        3. Models are big and run on the CPU here. Start with a small
+           one, like llama3.2 or gemma3:1b.
+
+
+        4. It has no password. Only use it on your home network.
+  index: /api/version
+  port_map: "6844"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.40.18"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ollama/ollama 0.40.18 on port 6844 (CPU only)
+  repo: "https://github.com/ollama/ollama"
+  support: "https://github.com/ollama/ollama/issues"
+  docs: "https://github.com/ollama/ollama/tree/main/docs"
