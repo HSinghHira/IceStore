@@ -1,0 +1,127 @@
+name: termix
+
+services:
+  termix:
+    image: ghcr.io/lukegus/termix:release-2.9.2
+    container_name: termix
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6872"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/').then(()=>process.exit(0)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/termix/icon.png
+    x-casaos:
+      id: com.icestore.termix
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Termix web app, published on host as 6872
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Termix's database with users, saved hosts, keys
+              and passwords (encrypted). Keep it private and
+              back it up.
+
+x-casaos:
+  id: com.icestore.termix
+  architectures:
+    - amd64
+    - arm64
+  main: termix
+  author: HSinghHira
+  category: Developer
+  developer: "LukeGus"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/termix/icon.png
+  title:
+    en_US: Termix
+  tagline:
+    en_US: SSH terminals, file manager and tunnels for your servers in the browser
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/termix/](https://icestore.hsinghhira.me/app/termix/) for full details
+
+
+      Termix is a server manager in your browser. Save your SSH hosts
+      once, then open terminals in tabs and split panes, browse and edit
+      files, run tunnels and watch server stats, from any device.
+
+
+      **Features**
+
+
+      - SSH terminals with tabs and split screens
+
+      - File manager to upload, download and edit files over SSH
+
+      - SSH tunnels and port forwards that reconnect by themselves
+
+      - Host list with folders, tags, keys and saved passwords
+
+      - Server stats, users with roles and OIDC sign-in
+
+
+      **How to use?**
+
+
+      1. Open Termix right away and make your account. The first account
+         is the admin.
+
+      2. Add a host with its address, user and password or key.
+
+      3. Open a terminal or the file manager.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about half a minute.
+
+
+        2. Right away, open Termix and make your account. The first
+           account is the admin; then turn off sign-ups in the admin
+           settings.
+
+
+        3. To reach this ZimaOS itself, add a host with its IP and
+           port 22 (if SSH is on).
+  index: /
+  port_map: "6872"
+  scheme: http
+  is_uncontrolled: false
+  version: "release-2.9.2"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/lukegus/termix release-2.9.2 on port 6872
+  repo: "https://github.com/Termix-SSH/Termix"
+  support: "https://github.com/Termix-SSH/Termix/issues"
+  docs: "https://docs.termix.site"
