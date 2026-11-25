@@ -1,0 +1,153 @@
+name: lidarr
+
+services:
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:3.1.6.5079-ls49
+    container_name: lidarr
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 8686
+        published: "6829"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8686/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lidarr/icon.png
+    x-casaos:
+      id: com.icestore.lidarr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for schedules and the calendar. It
+              is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns your media files. It is filled
+              in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns your media files. It is filled
+              in by ZimaOS.
+      ports:
+        - container: "8686"
+          description:
+            en_US: >-
+              Lidarr web app and API, published on host as 6829
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Lidarr's database, settings, API key and logs.
+              Back it up.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS storage at the same path, so Lidarr
+              sees your downloads folder and your library (like
+              /DATA/Media/Music) and can move files without
+              copying.
+
+x-casaos:
+  id: com.icestore.lidarr
+  architectures:
+    - amd64
+    - arm64
+  main: lidarr
+  author: HSinghHira
+  category: Media
+  developer: "Lidarr team"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/lidarr/icon.png
+  title:
+    en_US: Lidarr
+  tagline:
+    en_US: Finds, downloads and organizes your music automatically
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/lidarr/](https://icestore.hsinghhira.me/app/lidarr/) for full details
+
+
+      Lidarr follows your favourite artists, grabs new albums through
+      your Usenet or BitTorrent client, then tags, renames and files
+      them into your music library for Navidrome, Jellyfin or Plex.
+
+
+      **Features**
+
+
+      - Artists and albums from MusicBrainz, with release monitoring
+
+      - Quality profiles for FLAC, MP3 and more, with upgrades
+
+      - Works with qBittorrent, Transmission, SABnzbd, NZBGet and more
+
+      - Imports and tags existing music folders
+
+      - Renames and organizes files, and tells your media server to
+        refresh
+
+
+      **How to use?**
+
+
+      1. Open Lidarr right away and set up the login it asks for (Forms
+         login).
+
+      2. In Settings, Media Management, add your root folder, like
+         /DATA/Media/Music.
+
+      3. Add your download client and indexers (or connect Prowlarr),
+         then add what you want.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Lidarr. It asks you to choose how to sign
+           in; pick Forms and set a user name and password.
+
+
+        3. Your ZimaOS storage is at /DATA inside the app. Use the
+           same /DATA paths in your download client so Lidarr can find
+           finished downloads.
+  index: /
+  port_map: "6829"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.1.6.5079-ls49"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: lscr.io/linuxserver/lidarr 3.1.6.5079-ls49 on port 6829
+      - /DATA is shared at the same path, so downloads can be moved into your library without copying
+  repo: "https://github.com/Lidarr/Lidarr"
+  support: "https://github.com/Lidarr/Lidarr/issues"
+  docs: "https://wiki.servarr.com/lidarr"
