@@ -1,0 +1,160 @@
+name: openproject
+
+services:
+  openproject:
+    image: ghcr.io/hsinghhira/openproject:latest
+    container_name: openproject
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - OPENPROJECT_HOST__NAME=[ZIMAOS-IP-ADDRESS]:6869
+      - OPENPROJECT_HTTPS=false
+      - OPENPROJECT_DEFAULT__LANGUAGE=en
+    ports:
+      - target: 80
+        published: "6869"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/pgdata
+        target: /var/openproject/pgdata
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/assets
+        target: /var/openproject/assets
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5m
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 512M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openproject/icon.png
+    x-casaos:
+      id: com.icestore.openproject
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: OPENPROJECT_HOST__NAME
+          description:
+            en_US: >-
+              Required. The address you open OpenProject at,
+              without http://: replace [ZIMAOS-IP-ADDRESS] with
+              your ZimaOS IP, like 192.168.1.20:6869, or your
+              domain. It must match what your browser shows.
+        - container: OPENPROJECT_HTTPS
+          description:
+            en_US: >-
+              false lets you use OpenProject over plain http.
+              Set to true when it is behind an https reverse
+              proxy.
+        - container: OPENPROJECT_DEFAULT__LANGUAGE
+          description:
+            en_US: >-
+              The language of the first data (types, statuses)
+              and the default for new users, like en, de or fr.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              OpenProject web app and API, published on host as
+              6869
+      volumes:
+        - container: /var/openproject/pgdata
+          description:
+            en_US: >-
+              OpenProject's built-in PostgreSQL database with
+              all your projects. Back it up.
+        - container: /var/openproject/assets
+          description:
+            en_US: >-
+              Uploaded files and attachments, and this install's
+              secret key and first admin password (.icestore-*
+              files). Back it up.
+
+x-casaos:
+  id: com.icestore.openproject
+  architectures:
+    - amd64
+    - arm64
+  main: openproject
+  author: HSinghHira
+  category: Productivity
+  developer: "OpenProject GmbH"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openproject/icon.png
+  title:
+    en_US: OpenProject
+  tagline:
+    en_US: Project management with work packages, Gantt charts, boards and time tracking
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/openproject/](https://icestore.hsinghhira.me/app/openproject/) for full details
+
+
+      OpenProject plans and tracks projects of any size: work packages
+      with Gantt charts, agile boards, backlogs, time and cost tracking,
+      wikis, meetings and document collaboration, for your team or club.
+
+
+      **Features**
+
+
+      - Work packages with types, workflows, relations and custom fields
+
+      - Gantt charts, team planner and roadmaps
+
+      - Scrum and kanban boards, backlogs and sprints
+
+      - Time and cost tracking, meetings and wikis
+
+      - Users, groups, roles and project permissions
+
+
+      **How to use?**
+
+
+      1. Open OpenProject and sign in as admin with the password from
+         the CREDENTIALS box in the app's logs.
+
+      2. Create a project and add work packages.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install. Replace
+           [ZIMAOS-IP-ADDRESS] in OPENPROJECT_HOST__NAME with your
+           ZimaOS IP, like 192.168.1.20:6869 for the IP 192.168.1.20
+           (use yours). You must do this.
+
+
+        2. Start the installation. The first start sets up the
+           database and takes about five minutes.
+
+
+        3. Open OpenProject. The user name is admin. The password is
+           in the app's logs, in the box marked CREDENTIALS.
+  index: /
+  port_map: "6869"
+  scheme: http
+  is_uncontrolled: false
+  version: "17.9.8"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: openproject/openproject 17.9.8 (all-in-one with PostgreSQL), plus a start script that makes this install's secret key and admin password on first start
+  repo: "https://github.com/opf/openproject"
+  support: "https://community.openproject.org"
+  docs: "https://www.openproject.org/docs/"
