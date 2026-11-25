@@ -1,0 +1,127 @@
+name: kitchenowl
+
+services:
+  kitchenowl:
+    image: ghcr.io/hsinghhira/kitchenowl:latest
+    container_name: kitchenowl
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6862"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchenowl/icon.png
+    x-casaos:
+      id: com.icestore.kitchenowl
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for meal plans. It is filled in
+              from your ZimaOS time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              KitchenOwl web app and API for the phone apps,
+              published on host as 6862
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The database, uploaded photos and this install's
+              JWT secret (.icestore-jwt-secret-key). Back it up.
+
+x-casaos:
+  id: com.icestore.kitchenowl
+  architectures:
+    - amd64
+    - arm64
+  main: kitchenowl
+  author: HSinghHira
+  category: Home
+  developer: "TomBursch"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kitchenowl/icon.png
+  title:
+    en_US: KitchenOwl
+  tagline:
+    en_US: Shared grocery list, recipes, meal plans and expenses for your household
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kitchenowl/](https://icestore.hsinghhira.me/app/kitchenowl/) for full details
+
+
+      KitchenOwl keeps your household's grocery list in sync on every
+      phone, with recipes that add their ingredients to the list, a meal
+      planner and an expense tracker to share costs.
+
+
+      **Features**
+
+
+      - Shared shopping list that updates live, sorted by how you shop
+
+      - Recipes with import from websites, tags and servings
+
+      - Weekly meal planner that fills the shopping list
+
+      - Expense tracking and balances for shared costs
+
+      - Apps for Android, iOS and the web, with several households
+
+
+      **How to use?**
+
+
+      1. Open KitchenOwl right away and make the first (admin) account.
+
+      2. Make a household and invite the others.
+
+      3. In the phone app, use http://[ZIMAOS-IP-ADDRESS]:6862 as the
+         server.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open KitchenOwl and make your account. The
+           first account is the admin.
+
+
+        3. In the phone app, the server is your ZimaOS IP with port
+           6862, like http://192.168.1.20:6862 for the IP 192.168.1.20
+           (use yours).
+  index: /
+  port_map: "6862"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.8.1"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: tombursch/kitchenowl v0.8.1, plus a start script that makes this install's JWT_SECRET_KEY on first start
+  repo: "https://github.com/TomBursch/kitchenowl"
+  support: "https://github.com/TomBursch/kitchenowl/issues"
+  docs: "https://docs.kitchenowl.org"
