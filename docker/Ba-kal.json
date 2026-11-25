@@ -1,0 +1,62 @@
+{
+  "name": "Ba-kal",
+  "repo": "ckulka/baikal:0.10.1-nginx",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://hub.docker.com/r/ckulka/baikal",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --memory=256m --memory-reservation=32m --health-cmd=\"bash -c 'exec 3<>/dev/tcp/127.0.0.1/80'\" --health-interval=30s --health-timeout=10s --health-start-period=30s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:80]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baikal/icon.png",
+  "project": "https://sabre.io/baikal/",
+  "support": "https://github.com/ckulka/baikal-docker/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/baikal/",
+  "description": "Lightweight CalDAV and CardDAV server for your calendars and contacts",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/baikal/config",
+      "container": "/var/www/baikal/config",
+      "mode": "rw",
+      "description": "Baïkal's settings (baikal.yaml), with the admin password hash."
+    },
+    {
+      "name": "Specific",
+      "host": "/mnt/cache/appdata/baikal/data",
+      "container": "/var/www/baikal/Specific",
+      "mode": "rw",
+      "description": "The SQLite database with your calendars, contacts and users. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6836",
+      "container": "80",
+      "description": "Baïkal admin page and CalDAV/CardDAV, published on host as 6836"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
