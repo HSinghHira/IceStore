@@ -1,0 +1,22 @@
+name: Build photoprism
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/photoprism/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-photoprism.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: photoprism
+      kind: wrapper

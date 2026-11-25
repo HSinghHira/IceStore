@@ -1,0 +1,176 @@
+name: photoprism
+
+services:
+  photoprism:
+    image: ghcr.io/hsinghhira/photoprism:latest
+    container_name: photoprism
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PHOTOPRISM_ADMIN_USER=admin
+      - PHOTOPRISM_SITE_URL=http://[ZIMAOS-IP-ADDRESS]:6858/
+      - PHOTOPRISM_DATABASE_DRIVER=sqlite
+    ports:
+      - target: 2342
+        published: "6858"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/storage
+        target: /photoprism/storage
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Gallery
+        target: /photoprism/originals
+      - type: bind
+        source: /DATA/AppData/$AppID/import
+        target: /photoprism/import
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "photoprism", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 2m
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/photoprism/icon.png
+    x-casaos:
+      id: com.icestore.photoprism
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: PHOTOPRISM_ADMIN_USER
+          description:
+            en_US: >-
+              The admin user made on first start. The password
+              is shown in the app's logs, in the box marked
+              CREDENTIALS.
+        - container: PHOTOPRISM_SITE_URL
+          description:
+            en_US: >-
+              The address you open PhotoPrism at, used in share
+              links: replace [ZIMAOS-IP-ADDRESS] with your
+              ZimaOS IP, like http://192.168.1.20:6858/.
+        - container: PHOTOPRISM_DATABASE_DRIVER
+          description:
+            en_US: >-
+              sqlite keeps the index in a file in the storage
+              folder. Use mysql with your own MariaDB for big
+              libraries.
+      ports:
+        - container: "2342"
+          description:
+            en_US: >-
+              PhotoPrism web app, WebDAV and API, published on
+              host as 6858
+      volumes:
+        - container: /photoprism/storage
+          description:
+            en_US: >-
+              The index database, thumbnails, sidecar files,
+              settings and this install's admin password
+              (.icestore-photoprism-admin-password). Back it up.
+        - container: /photoprism/originals
+          description:
+            en_US: >-
+              Your photos and videos: /DATA/Gallery on your
+              ZimaOS. PhotoPrism indexes them and puts uploads
+              here.
+        - container: /photoprism/import
+          description:
+            en_US: >-
+              Drop files here to import them into originals,
+              sorted by date.
+
+x-casaos:
+  id: com.icestore.photoprism
+  architectures:
+    - amd64
+    - arm64
+  main: photoprism
+  author: HSinghHira
+  category: Media
+  developer: "PhotoPrism"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/photoprism/icon.png
+  title:
+    en_US: PhotoPrism
+  tagline:
+    en_US: Photo library with face recognition, maps and search
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/photoprism/](https://icestore.hsinghhira.me/app/photoprism/) for full details
+
+
+      PhotoPrism organizes your photos and videos with AI: it recognizes
+      faces, places and things, so you can search for "beach 2019" or a
+      friend's name. It shows your pictures on a world map, plays Live
+      Photos and videos, and shares albums with a link.
+
+
+      **Features**
+
+
+      - Face recognition, object labels and color search
+
+      - World map and places from GPS data
+
+      - RAW, HEIC, Live Photos and videos, with duplicate detection
+
+      - Albums, favourites, archives and share links
+
+      - Sync with phones over WebDAV, and a progressive web app
+
+
+      **How to use?**
+
+
+      1. Open PhotoPrism and sign in as admin with the password from the
+         CREDENTIALS box in the app's logs.
+
+      2. Press Library, then Index, to scan /DATA/Gallery.
+
+      3. Browse, search and make albums.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration before you install and replace
+           [ZIMAOS-IP-ADDRESS] in PHOTOPRISM_SITE_URL with your ZimaOS
+           IP, like http://192.168.1.20:6858/ for the IP 192.168.1.20
+           (use yours).
+
+
+        2. Start the installation. It is ready in about two minutes.
+
+
+        3. Open PhotoPrism. The user name is admin. The password is in
+           the app's logs, in the box marked CREDENTIALS.
+
+
+        4. Your photos are read from /DATA/Gallery. Press Library,
+           then Index, to scan them.
+  index: /
+  port_map: "6858"
+  scheme: http
+  is_uncontrolled: false
+  version: "261029"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: photoprism/photoprism 261029, plus a start script that makes this install's admin password on first start
+      - Indexes /DATA/Gallery; the index and thumbnails are in /DATA/AppData/photoprism/storage
+  repo: "https://github.com/photoprism/photoprism"
+  support: "https://github.com/photoprism/photoprism/issues"
+  docs: "https://docs.photoprism.app"
