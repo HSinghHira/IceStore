@@ -1,0 +1,138 @@
+name: komga
+
+services:
+  komga:
+    image: gotson/komga:1.30.2
+    container_name: komga
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 25600
+        published: "6819"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-o", "/dev/null", "http://127.0.0.1:25600/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/komga/icon.png
+    x-casaos:
+      id: com.icestore.komga
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone
+      ports:
+        - container: "25600"
+          description:
+            en_US: >-
+              Komga web reader, published on host as 6819
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Komga's database, thumbnails, Lucene search index,
+              logs and settings (application.yml). Back it up.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS storage at the same path. Add a folder
+              like /DATA/Media/Comics as a library.
+
+x-casaos:
+  id: com.icestore.komga
+  architectures:
+    - amd64
+    - arm64
+  main: komga
+  author: HSinghHira
+  category: Media
+  developer: "gotson"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/komga/icon.png
+  title:
+    en_US: Komga
+  tagline:
+    en_US: Media server for comics, manga, magazines and ebooks
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/komga/](https://icestore.hsinghhira.me/app/komga/) for full details
+
+
+      Komga organizes and serves your comics, manga, magazines and
+      ebooks. Read them in the browser, sync them to reader apps over
+      OPDS or the Kobo and KOReader integrations, and keep reading
+      progress for every user.
+
+
+      **Features**
+
+
+      - CBZ, CBR, PDF and EPUB, with a web reader for each
+
+      - Series, collections, read lists and metadata from ComicInfo.xml
+        and EPUB files
+
+      - OPDS feeds and Kobo sync, plus apps like Tachiyomi/Mihon and
+        Paperback
+
+      - Users with library access rights and age restrictions
+
+      - Duplicate page detection and metadata editing in the browser
+
+
+      **How to use?**
+
+
+      1. Open Komga right away and make the admin account.
+
+      2. Add a library and pick a folder under /DATA, like
+         /DATA/Media/Comics.
+
+      3. Komga scans it; open a series and start reading.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Komga and make the admin account. Until
+           you do, anyone on your network can.
+
+
+        3. Put each series in its own folder, like
+           /DATA/Media/Comics/Series Name, then add the top folder as
+           a library.
+  index: /
+  port_map: "6819"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.30.2"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: gotson/komga 1.30.2 on port 6819
+      - /DATA is shared at the same path for your libraries
+  repo: "https://github.com/gotson/komga"
+  support: "https://github.com/gotson/komga/issues"
+  docs: "https://komga.org/docs/introduction"
