@@ -1,0 +1,128 @@
+name: cloudbeaver
+
+services:
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:26.2.5
+    container_name: cloudbeaver
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8978
+        published: "6856"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/workspace
+        target: /opt/cloudbeaver/workspace
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8978"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cloudbeaver/icon.png
+    x-casaos:
+      id: com.icestore.cloudbeaver
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "8978"
+          description:
+            en_US: >-
+              CloudBeaver web app, published on host as 6856
+      volumes:
+        - container: /opt/cloudbeaver/workspace
+          description:
+            en_US: >-
+              CloudBeaver's settings, users, saved connections
+              and scripts. Back it up.
+
+x-casaos:
+  id: com.icestore.cloudbeaver
+  architectures:
+    - amd64
+    - arm64
+  main: cloudbeaver
+  author: HSinghHira
+  category: Developer
+  developer: "DBeaver"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/cloudbeaver/icon.png
+  title:
+    en_US: CloudBeaver
+  tagline:
+    en_US: Database manager in the browser, from the makers of DBeaver
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/cloudbeaver/](https://icestore.hsinghhira.me/app/cloudbeaver/) for full details
+
+
+      CloudBeaver brings DBeaver to the browser. Connect to your
+      databases, browse and edit data, run SQL with autocomplete, and
+      see table relations as a diagram, from any computer.
+
+
+      **Features**
+
+
+      - PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, Oracle,
+        ClickHouse and more
+
+      - Data editor with filters, sorting and export
+
+      - SQL editor with autocomplete, history and saved scripts
+
+      - ER diagrams of your tables
+
+      - Users, roles and shared connections
+
+
+      **How to use?**
+
+
+      1. Open CloudBeaver right away and finish the setup with an admin
+         login.
+
+      2. Add a connection with the database's host, port and login.
+
+      3. Browse tables or open the SQL editor.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open CloudBeaver and finish the setup with an
+           admin user name and password. Until you do, anyone on your
+           network can.
+
+
+        3. Databases on your ZimaOS are reached at your ZimaOS IP with
+           their published port, not localhost.
+  index: /
+  port_map: "6856"
+  scheme: http
+  is_uncontrolled: false
+  version: "26.2.5"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: dbeaver/cloudbeaver 26.2.5 on port 6856
+  repo: "https://github.com/dbeaver/cloudbeaver"
+  support: "https://github.com/dbeaver/cloudbeaver/issues"
+  docs: "https://github.com/dbeaver/cloudbeaver/wiki"
