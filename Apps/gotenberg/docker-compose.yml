@@ -1,0 +1,117 @@
+name: gotenberg
+
+services:
+  gotenberg:
+    image: gotenberg/gotenberg:9.10.0
+    container_name: gotenberg
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 3000
+        published: "6820"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gotenberg/icon.png
+    x-casaos:
+      id: com.icestore.gotenberg
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "3000"
+          description:
+            en_US: >-
+              Gotenberg API, published on host as 6820
+
+x-casaos:
+  id: com.icestore.gotenberg
+  architectures:
+    - amd64
+    - arm64
+  main: gotenberg
+  author: HSinghHira
+  category: Developer
+  developer: "gotenberg"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gotenberg/icon.png
+  title:
+    en_US: Gotenberg
+  tagline:
+    en_US: API that turns web pages, Markdown and Office files into PDF
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/gotenberg/](https://icestore.hsinghhira.me/app/gotenberg/) for full details
+
+
+      Gotenberg is a document conversion service for your other apps and
+      scripts. Send it a web page, HTML, Markdown or an Office file over
+      HTTP and get a PDF back. Paperless-ngx, Docmost and many other
+      apps can use it.
+
+
+      **Features**
+
+
+      - Web pages and HTML to PDF with Chromium, including headers and
+        footers
+
+      - Word, Excel, PowerPoint and over 100 other formats to PDF with
+        LibreOffice
+
+      - Merge and split PDFs, and convert them to PDF/A or PDF/UA
+
+      - Screenshots of web pages as PNG, JPEG or WebP
+
+      - Webhooks for long conversions and a health endpoint
+
+
+      **How to use?**
+
+
+      1. Point your app at http://[ZIMAOS-IP-ADDRESS]:6820 with your
+         ZimaOS IP (for example Paperless-ngx's
+         PAPERLESS_TIKA_GOTENBERG_ENDPOINT).
+
+      2. Or send a file yourself: curl -F files=@report.docx
+         http://[ZIMAOS-IP-ADDRESS]:6820/forms/libreoffice/convert -o
+         report.pdf
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about half a minute.
+
+
+        2. Gotenberg has no web page. Other apps use it at your ZimaOS
+           IP with port 6820, like http://192.168.1.20:6820 for the IP
+           192.168.1.20 (use yours).
+
+
+        3. It has no password. Only use it on your home network.
+  index: /health
+  port_map: "6820"
+  scheme: http
+  is_uncontrolled: false
+  version: "9.10.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: gotenberg/gotenberg 9.10.0 on port 6820
+  repo: "https://github.com/gotenberg/gotenberg"
+  support: "https://github.com/gotenberg/gotenberg/issues"
+  docs: "https://gotenberg.dev/docs/getting-started/introduction"
