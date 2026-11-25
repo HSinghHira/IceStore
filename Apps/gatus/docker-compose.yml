@@ -1,0 +1,138 @@
+name: gatus
+
+services:
+  gatus:
+    image: ghcr.io/hsinghhira/gatus:latest
+    container_name: gatus
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6857"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gatus/icon.png
+    x-casaos:
+      id: com.icestore.gatus
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Gatus status page and API, published on host as
+              6857
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Your checks in config.yaml (a starter one is
+              written on first start). Edit it with the Files
+              app; Gatus reloads it by itself.
+        - container: /data
+          description:
+            en_US: >-
+              The SQLite database with check history.
+
+x-casaos:
+  id: com.icestore.gatus
+  architectures:
+    - amd64
+    - arm64
+  main: gatus
+  author: HSinghHira
+  category: Networking
+  developer: "TwiN"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gatus/icon.png
+  title:
+    en_US: Gatus
+  tagline:
+    en_US: Status page and uptime monitor configured in one YAML file
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/gatus/](https://icestore.hsinghhira.me/app/gatus/) for full details
+
+
+      Gatus checks your websites and services (HTTP, TCP, DNS, ping and
+      more) on a schedule, shows their history on a clean status page,
+      and alerts you when something is down. Everything is set up in one
+      YAML file.
+
+
+      **Features**
+
+
+      - HTTP, TCP, UDP, ICMP, DNS, SSH, TLS certificate and WebSocket
+        checks
+
+      - Conditions on status, body, response time and certificate expiry
+
+      - Alerts to Discord, Slack, Telegram, ntfy, Gotify, email,
+        PagerDuty and more
+
+      - Status page with groups, badges and history kept in SQLite
+
+      - Config reloaded by itself when you save it
+
+
+      **How to use?**
+
+
+      1. Open Gatus. The starter checks are on the page.
+
+      2. Edit /DATA/AppData/gatus/config/config.yaml with the Files app
+         to add your own sites.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Edit config.yaml in /DATA/AppData/gatus/config with the
+           Files app to add your own checks. Gatus picks up the change
+           by itself.
+
+
+        3. Apps on your ZimaOS are checked at your ZimaOS IP with
+           their port, not localhost.
+  index: /
+  port_map: "6857"
+  scheme: http
+  is_uncontrolled: false
+  version: "v5.38.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: twin/gatus v5.38.0, plus a start script that writes a starter config.yaml on first start
+  repo: "https://github.com/TwiN/gatus"
+  support: "https://github.com/TwiN/gatus/issues"
+  docs: "https://github.com/TwiN/gatus#readme"

@@ -1,0 +1,43 @@
+# Starter checks from IceStore. Edit this file: Gatus reloads it when you
+# save. Every option: https://github.com/TwiN/gatus#configuration
+# Apps on this ZimaOS are reached at its IP and port, not localhost.
+
+storage:
+  type: sqlite
+  path: /data/data.db
+
+ui:
+  title: Status
+  header: Status
+
+endpoints:
+  - name: IceStore
+    group: Internet
+    url: "https://icestore.hsinghhira.me/"
+    interval: 5m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: Cloudflare DNS
+    group: Internet
+    url: "1.1.1.1"
+    interval: 5m
+    dns:
+      query-name: "example.com"
+      query-type: "A"
+    conditions:
+      - "[DNS_RCODE] == NOERROR"
+
+  # An app on this ZimaOS (change the IP and port):
+  # - name: Jellyfin
+  #   group: Home
+  #   url: "http://192.168.1.20:6798/health"
+  #   interval: 1m
+  #   conditions:
+  #     - "[STATUS] == 200"
+
+# alerting:
+#   ntfy:
+#     topic: "my-alerts"
+#     url: "http://192.168.1.20:6720"
