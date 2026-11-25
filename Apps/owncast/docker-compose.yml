@@ -1,0 +1,144 @@
+name: owncast
+
+services:
+  owncast:
+    image: ghcr.io/hsinghhira/owncast:latest
+    container_name: owncast
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6860"
+        protocol: tcp
+      - target: 1935
+        published: "6861"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/owncast/icon.png
+    x-casaos:
+      id: com.icestore.owncast
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Owncast stream page, chat and admin (/admin),
+              published on host as 6860
+        - container: "1935"
+          description:
+            en_US: >-
+              RTMP input for OBS and other streaming apps,
+              published on host as 6861
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Owncast's database with settings, chat and
+              followers, its logs, backups and this install's
+              admin password and stream key. Back it up.
+
+x-casaos:
+  id: com.icestore.owncast
+  architectures:
+    - amd64
+    - arm64
+  main: owncast
+  author: HSinghHira
+  category: Media
+  developer: "Owncast"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/owncast/icon.png
+  title:
+    en_US: Owncast
+  tagline:
+    en_US: Your own live streaming server with chat, like Twitch at home
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/owncast/](https://icestore.hsinghhira.me/app/owncast/) for full details
+
+
+      Owncast is a live streaming server you run yourself. Stream from
+      OBS or any RTMP app, and your viewers watch on your own page with
+      chat, emoji and followers, without ads or a platform in between.
+
+
+      **Features**
+
+
+      - Works with OBS, Streamlabs, Larix and any RTMP software
+
+      - Built-in chat with moderation, emoji and custom styles
+
+      - Several video qualities with transcoding, or passthrough to save
+        CPU
+
+      - Fediverse followers and notifications to Discord and more
+
+      - Your own page, colours, logo and offline message
+
+
+      **How to use?**
+
+
+      1. Open Owncast's admin page at /admin. The user name is admin;
+         the password is in the CREDENTIALS box in the app's logs.
+
+      2. In OBS, set the server to rtmp://[ZIMAOS-IP-ADDRESS]:6861/live
+         and the stream key from the same box.
+
+      3. Start streaming and share the page address.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open Owncast and add /admin to the address. The user name
+           is admin. The password and the stream key are in the app's
+           logs, in the box marked CREDENTIALS.
+
+
+        3. In OBS, use rtmp://[ZIMAOS-IP-ADDRESS]:6861/live with your
+           ZimaOS IP as the server, and that stream key.
+
+
+        4. In the admin page, under Server Setup, Stream Keys, delete
+           the old default key abc123.
+  index: /
+  port_map: "6860"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.3.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: owncast/owncast 0.3.0, plus a start script that sets this install's admin password and stream key on every start
+      - Stream page on port 6860 and RTMP on port 6861
+  repo: "https://github.com/owncast/owncast"
+  support: "https://github.com/owncast/owncast/issues"
+  docs: "https://owncast.online/docs/"
