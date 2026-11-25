@@ -1,0 +1,141 @@
+name: linkding
+
+services:
+  linkding:
+    image: ghcr.io/hsinghhira/linkding:latest
+    container_name: linkding
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - LD_SUPERUSER_NAME=admin
+    ports:
+      - target: 9090
+        published: "6818"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /etc/linkding/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:9090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/linkding/icon.png
+    x-casaos:
+      id: com.icestore.linkding
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: LD_SUPERUSER_NAME
+          description:
+            en_US: >-
+              The admin user made on first start. The password
+              is shown in the app's logs, in the box marked
+              CREDENTIALS.
+      ports:
+        - container: "9090"
+          description:
+            en_US: >-
+              linkding web app and REST API, published on host
+              as 6818
+      volumes:
+        - container: /etc/linkding/data
+          description:
+            en_US: >-
+              Your bookmarks database, favicons, previews, saved
+              web pages, the secret key and this install's admin
+              password (.icestore-ld-superuser-password). Back
+              it up.
+
+x-casaos:
+  id: com.icestore.linkding
+  architectures:
+    - amd64
+    - arm64
+  main: linkding
+  author: HSinghHira
+  category: Productivity
+  developer: "sissbruecker"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/linkding/icon.png
+  title:
+    en_US: linkding
+  tagline:
+    en_US: Bookmark manager that is fast, simple and good-looking
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/linkding/](https://icestore.hsinghhira.me/app/linkding/) for full details
+
+
+      linkding saves and organizes your bookmarks. Add tags and notes,
+      search everything in a moment, archive pages so they never
+      disappear, and save links from any browser with its extension or
+      bookmarklet.
+
+
+      **Features**
+
+
+      - Fast search across titles, descriptions, notes and tags
+
+      - Browser extensions for Firefox and Chrome, and a bookmarklet
+
+      - Saves a full copy of each page (HTML snapshot) or uses the
+        Internet Archive
+
+      - Read-it-later list, bundles and shared bookmarks for other users
+
+      - Import and export in the Netscape HTML format, and a REST API
+
+      - Several users, with sign-in through OIDC if you want
+
+
+      **How to use?**
+
+
+      1. Open linkding and sign in as admin with the password from the
+         CREDENTIALS box in the app's logs.
+
+      2. Install the browser extension or drag the bookmarklet from
+         Settings, Integrations.
+
+      3. Save a link, add tags, and find it again with the search box.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about half a minute.
+
+
+        2. Open linkding. The user name is admin. The password is in
+           the app's logs, in the box marked CREDENTIALS.
+
+
+        3. Change the password in Settings once you are in, if you
+           like. The box keeps showing the first one.
+  index: /
+  port_map: "6818"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.47.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: sissbruecker/linkding 1.47.0 on port 6818
+      - A start script makes the admin account's password on first start and keeps it in the data folder
+  repo: "https://github.com/sissbruecker/linkding"
+  support: "https://github.com/sissbruecker/linkding/issues"
+  docs: "https://linkding.link/"
