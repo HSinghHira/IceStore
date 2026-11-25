@@ -1,0 +1,118 @@
+name: adminer
+
+services:
+  adminer:
+    image: adminer:6.3.1
+    container_name: adminer
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - ADMINER_DESIGN=pepa-linha
+    ports:
+      - target: 8080
+        published: "6848"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:8080/') === false ? 1 : 0);"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/adminer/icon.png
+    x-casaos:
+      id: com.icestore.adminer
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: ADMINER_DESIGN
+          description:
+            en_US: >-
+              The look of the page, like pepa-linha, dracula,
+              nette or hydra. Leave empty for the classic one.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Adminer web page, published on host as 6848
+
+x-casaos:
+  id: com.icestore.adminer
+  architectures:
+    - amd64
+    - arm64
+  main: adminer
+  author: HSinghHira
+  category: Developer
+  developer: "Jakub Vrána"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/adminer/icon.png
+  title:
+    en_US: Adminer
+  tagline:
+    en_US: Database manager in a single page for MySQL, PostgreSQL, SQLite and more
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/adminer/](https://icestore.hsinghhira.me/app/adminer/) for full details
+
+
+      Adminer manages your databases from one simple page: browse and
+      edit tables, run SQL, import and export, and change structure, for
+      MySQL, MariaDB, PostgreSQL, SQLite, SQL Server and more.
+
+
+      **Features**
+
+
+      - MySQL, MariaDB, PostgreSQL, SQLite, SQL Server, Oracle and more
+
+      - Browse, search, edit and insert rows
+
+      - SQL command window with history
+
+      - Create and change tables, indexes, foreign keys and users
+
+      - Import and export SQL and CSV
+
+
+      **How to use?**
+
+
+      1. Open Adminer, pick the database type and type the server, user
+         and password.
+
+      2. For a database app on your ZimaOS, the server is your ZimaOS IP
+         and its published port, like 192.168.1.20:5432.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Adminer keeps no data. You sign in with each database's own
+           user and password.
+
+
+        3. Databases on your ZimaOS are reached at your ZimaOS IP and
+           their published port, not localhost.
+  index: /
+  port_map: "6848"
+  scheme: http
+  is_uncontrolled: false
+  version: "6.3.1"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: adminer 6.3.1 on port 6848
+  repo: "https://github.com/vrana/adminer"
+  support: "https://github.com/vrana/adminer/issues"
+  docs: "https://github.com/vrana/adminer#readme"
