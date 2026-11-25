@@ -1,0 +1,55 @@
+{
+  "name": "Node-RED",
+  "repo": "nodered/node-red:5.0.10",
+  "category": [
+    "Home Automation"
+  ],
+  "registry": "https://hub.docker.com/r/nodered/node-red",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --memory=1g --memory-reservation=64m --user=0:0 --health-cmd=\"node /healthcheck.js\" --health-interval=30s --health-timeout=10s --health-start-period=30s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:1880]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/node-red/icon.png",
+  "project": "https://nodered.org",
+  "support": "https://github.com/node-red/node-red/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/node-red/",
+  "description": "Low-code tool for wiring together devices, APIs and online services",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/node-red/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Your flows, credentials (flows_cred.json), installed nodes and settings.js. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6822",
+      "container": "1880",
+      "description": "Node-RED editor, dashboards and HTTP endpoints, published on host as 6822"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
