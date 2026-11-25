@@ -1,0 +1,111 @@
+name: myip
+
+services:
+  myip:
+    image: jason5ng32/myip:v8.2.0
+    container_name: myip
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 18966
+        published: "6826"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:18966/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myip/icon.png
+    x-casaos:
+      id: com.icestore.myip
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "18966"
+          description:
+            en_US: >-
+              MyIP web page, published on host as 6826
+
+x-casaos:
+  id: com.icestore.myip
+  architectures:
+    - amd64
+    - arm64
+  main: myip
+  author: HSinghHira
+  category: Networking
+  developer: "jason5ng32"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myip/icon.png
+  title:
+    en_US: MyIP
+  tagline:
+    en_US: All-in-one IP toolbox for checking your connection, DNS, WebRTC and speed
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/myip/](https://icestore.hsinghhira.me/app/myip/) for full details
+
+
+      MyIP shows the public IP addresses your devices are seen with,
+      where they are, and whether your VPN or proxy leaks. It also tests
+      which websites you can reach, DNS and WebRTC leaks, connection
+      speed, and runs global ping and MTR checks.
+
+
+      **Features**
+
+
+      - Your IPv4 and IPv6 addresses from several sources, with location
+        and network owner
+
+      - Reachability of Google, GitHub, YouTube, ChatGPT and more
+
+      - WebRTC and DNS leak tests for VPN users
+
+      - Speed test, global latency, ping and MTR
+
+      - Whois, DNS lookups and censorship checks
+
+
+      **How to use?**
+
+
+      1. Open MyIP on any device. Your addresses and tests show right
+         away.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open MyIP from the device you want to check. The tests run
+           from that device's browser.
+
+
+        3. Some lookups work better with your own free API keys; they
+           are listed on the MyIP page in IceStore (Variables tab).
+  index: /
+  port_map: "6826"
+  scheme: http
+  is_uncontrolled: false
+  version: "v8.2.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: jason5ng32/myip v8.2.0 on port 6826
+  repo: "https://github.com/jason5ng32/MyIP"
+  support: "https://github.com/jason5ng32/MyIP/issues"
+  docs: "https://github.com/jason5ng32/MyIP#readme"
