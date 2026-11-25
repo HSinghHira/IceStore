@@ -1,0 +1,131 @@
+name: bytebase
+
+services:
+  bytebase:
+    image: bytebase/bytebase:3.25.0
+    container_name: bytebase
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8080
+        published: "6823"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /var/opt/bytebase
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytebase/icon.png
+    x-casaos:
+      id: com.icestore.bytebase
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Bytebase web app and API, published on host as
+              6823
+      volumes:
+        - container: /var/opt/bytebase
+          description:
+            en_US: >-
+              Bytebase's own built-in PostgreSQL database with
+              your projects, users, connections and change
+              history. Back it up.
+
+x-casaos:
+  id: com.icestore.bytebase
+  architectures:
+    - amd64
+    - arm64
+  main: bytebase
+  author: HSinghHira
+  category: Developer
+  developer: "Bytebase"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytebase/icon.png
+  title:
+    en_US: Bytebase
+  tagline:
+    en_US: Database change management, SQL editor and access control in one web app
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/bytebase/](https://icestore.hsinghhira.me/app/bytebase/) for full details
+
+
+      Bytebase is a web workspace for your databases. Review and roll
+      out schema changes, query data in a shared SQL editor, and control
+      who may see or change what, for PostgreSQL, MySQL, SQL Server,
+      Oracle, MongoDB and more.
+
+
+      **Features**
+
+
+      - SQL review with over 200 lint rules before changes run
+
+      - Change history, drift detection and rollback plans
+
+      - Web SQL editor with data masking and access requests
+
+      - Projects, roles and approval flows for teams
+
+      - GitOps with GitHub, GitLab, Bitbucket and Azure DevOps
+
+      - Over 20 database engines
+
+
+      **How to use?**
+
+
+      1. Open Bytebase right away and make the admin account.
+
+      2. Add a database instance with its host, port and login.
+
+      3. Open the SQL editor, or start a change in a project.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Bytebase and make the admin account. Until
+           you do, anyone on your network can.
+
+
+        3. Databases on your ZimaOS are reached at your ZimaOS IP with
+           their published port, not localhost.
+  index: /
+  port_map: "6823"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.25.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: bytebase/bytebase 3.25.0 on port 6823
+      - Uses Bytebase's built-in PostgreSQL, kept in /DATA/AppData/bytebase/data
+  repo: "https://github.com/bytebase/bytebase"
+  support: "https://github.com/bytebase/bytebase/issues"
+  docs: "https://docs.bytebase.com"
