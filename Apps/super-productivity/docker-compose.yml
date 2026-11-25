@@ -1,0 +1,113 @@
+name: super-productivity
+
+services:
+  super-productivity:
+    image: johannesjo/super-productivity:v20.1.0
+    container_name: super-productivity
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6841"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/super-productivity/icon.png
+    x-casaos:
+      id: com.icestore.super-productivity
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              Super Productivity web app, published on host as
+              6841
+
+x-casaos:
+  id: com.icestore.super-productivity
+  architectures:
+    - amd64
+    - arm64
+  main: super-productivity
+  author: HSinghHira
+  category: Productivity
+  developer: "johannesjo"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/super-productivity/icon.png
+  title:
+    en_US: Super Productivity
+  tagline:
+    en_US: To-do list with time tracking, timeboxing and integrations
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/super-productivity/](https://icestore.hsinghhira.me/app/super-productivity/) for full details
+
+
+      Super Productivity is a to-do list made for focused work. Plan
+      your day, track the time you spend on each task, take breaks with
+      the Pomodoro timer, and pull in issues from Jira, GitHub, GitLab
+      and more.
+
+
+      **Features**
+
+
+      - Tasks with sub-tasks, notes, attachments, tags and projects
+
+      - Time tracking, timeboxing and work-day summaries
+
+      - Pomodoro timer and break reminders
+
+      - Jira, GitHub, GitLab, Gitea, OpenProject and CalDAV integrations
+
+      - Sync between devices with WebDAV or Dropbox, and full offline
+        use
+
+
+      **How to use?**
+
+
+      1. Open Super Productivity and add your first task.
+
+      2. Start the timer on a task while you work.
+
+      3. To use it on several devices, set up WebDAV sync in Settings
+         (for example with a WebDAV app on your ZimaOS).
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Your tasks are kept in the browser you use, not on the
+           ZimaOS. Set up sync in Settings to keep a copy and use it
+           on other devices.
+  index: /
+  port_map: "6841"
+  scheme: http
+  is_uncontrolled: false
+  version: "v20.1.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: johannesjo/super-productivity v20.1.0 on port 6841
+  repo: "https://github.com/super-productivity/super-productivity"
+  support: "https://github.com/super-productivity/super-productivity/issues"
+  docs: "https://github.com/super-productivity/super-productivity#readme"
