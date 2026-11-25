@@ -1,0 +1,104 @@
+name: openspeedtest
+
+services:
+  openspeedtest:
+    image: openspeedtest/latest:v2.0.9
+    container_name: openspeedtest
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 3000
+        published: "6854"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 8M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openspeedtest/icon.png
+    x-casaos:
+      id: com.icestore.openspeedtest
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "3000"
+          description:
+            en_US: >-
+              OpenSpeedTest web page, published on host as 6854
+
+x-casaos:
+  id: com.icestore.openspeedtest
+  architectures:
+    - amd64
+    - arm64
+  main: openspeedtest
+  author: HSinghHira
+  category: Networking
+  developer: "OpenSpeedTest"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openspeedtest/icon.png
+  title:
+    en_US: OpenSpeedTest
+  tagline:
+    en_US: Tests the speed between your devices and your ZimaOS in the browser
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/openspeedtest/](https://icestore.hsinghhira.me/app/openspeedtest/) for full details
+
+
+      OpenSpeedTest measures the download and upload speed, ping and
+      jitter between any device and your ZimaOS, right in the browser.
+      Use it to check your Wi-Fi, cables and switches, with no app to
+      install.
+
+
+      **Features**
+
+
+      - Download, upload, ping and jitter in any browser
+
+      - Tests your home network, not your internet connection
+
+      - No app, no account and no data kept
+
+      - Works on phones, tablets, computers and smart TVs
+
+
+      **How to use?**
+
+
+      1. Open OpenSpeedTest on the device to test and press Start.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Open it on the device you want to test, with your ZimaOS IP
+           and port 6854 in the address bar; it measures the link
+           between that device and the ZimaOS.
+  index: /
+  port_map: "6854"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.0.9"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: openspeedtest/latest v2.0.9 on port 6854
+  repo: "https://github.com/openspeedtest/Speed-Test"
+  support: "https://github.com/openspeedtest/Speed-Test/issues"
+  docs: "https://github.com/openspeedtest/Speed-Test#readme"
