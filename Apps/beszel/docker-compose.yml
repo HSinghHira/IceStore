@@ -1,0 +1,128 @@
+name: beszel
+
+services:
+  beszel:
+    image: henrygd/beszel:0.21.2
+    container_name: beszel
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 8090
+        published: "6825"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /beszel_data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "/beszel", "health", "--url", "http://localhost:8090"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/beszel/icon.png
+    x-casaos:
+      id: com.icestore.beszel
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for charts. It is filled in from
+              your ZimaOS time zone.
+      ports:
+        - container: "8090"
+          description:
+            en_US: >-
+              Beszel hub web app, published on host as 6825
+      volumes:
+        - container: /beszel_data
+          description:
+            en_US: >-
+              The hub's database with your systems, history,
+              users and alerts, and its SSH key. Back it up.
+
+x-casaos:
+  id: com.icestore.beszel
+  architectures:
+    - amd64
+    - arm64
+  main: beszel
+  author: HSinghHira
+  category: Networking
+  developer: "henrygd"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/beszel/icon.png
+  title:
+    en_US: Beszel
+  tagline:
+    en_US: Lightweight server monitoring with history, Docker stats and alerts
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/beszel/](https://icestore.hsinghhira.me/app/beszel/) for full details
+
+
+      Beszel shows the CPU, memory, disk, network, temperature and
+      container use of your servers on one dashboard, with history and
+      alerts. This app is the hub; each machine you watch runs a tiny
+      agent that the hub connects to.
+
+
+      **Features**
+
+
+      - Live and historical charts for CPU, memory, disks, network and
+        temperatures
+
+      - Docker and Podman container stats per machine
+
+      - Alerts by email, ntfy, Telegram, Discord and more
+
+      - Several users, each seeing their own systems, and OAuth sign-in
+
+      - Automatic backups to disk or S3
+
+
+      **How to use?**
+
+
+      1. Open Beszel right away and make the admin account.
+
+      2. Press Add System and copy the agent command it shows.
+
+      3. Run the agent on the machine to watch; it shows up in a few
+         seconds.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Right away, open Beszel and make the admin account. Until
+           you do, anyone on your network can.
+
+
+        3. To watch a machine, press Add System and run the agent it
+           shows on that machine. For this ZimaOS, use its IP and the
+           agent's Docker command.
+  index: /
+  port_map: "6825"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.21.2"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: henrygd/beszel 0.21.2 (the hub) on port 6825
+  repo: "https://github.com/henrygd/beszel"
+  support: "https://github.com/henrygd/beszel/issues"
+  docs: "https://beszel.dev/guide/getting-started"
