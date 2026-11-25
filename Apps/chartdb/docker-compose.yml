@@ -1,0 +1,110 @@
+name: chartdb
+
+services:
+  chartdb:
+    image: ghcr.io/chartdb/chartdb:1.21.0
+    container_name: chartdb
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6837"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/chartdb/icon.png
+    x-casaos:
+      id: com.icestore.chartdb
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              ChartDB web app, published on host as 6837
+
+x-casaos:
+  id: com.icestore.chartdb
+  architectures:
+    - amd64
+    - arm64
+  main: chartdb
+  author: HSinghHira
+  category: Developer
+  developer: "ChartDB"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/chartdb/icon.png
+  title:
+    en_US: ChartDB
+  tagline:
+    en_US: Database diagram editor that imports your schema with one query
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/chartdb/](https://icestore.hsinghhira.me/app/chartdb/) for full details
+
+
+      ChartDB draws diagrams of your databases. Run one query it gives
+      you in your database, paste the result, and get an editable
+      diagram of every table and relation. Edit it, export SQL for
+      another database, or share an image.
+
+
+      **Features**
+
+
+      - Imports PostgreSQL, MySQL, MariaDB, SQL Server, SQLite,
+        ClickHouse and CockroachDB schemas
+
+      - Editable tables, fields, relations and areas
+
+      - Export to SQL for another database, PNG, SVG and JSON
+
+      - Optional AI export with your own OpenAI key
+
+      - Diagrams are kept in your browser
+
+
+      **How to use?**
+
+
+      1. Open ChartDB and pick your database type.
+
+      2. Run the query it shows in your database and paste the result.
+
+      3. Edit the diagram, then export SQL or an image.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. ChartDB keeps your diagrams in the browser you use, not on
+           the ZimaOS. Export them to keep a copy.
+  index: /
+  port_map: "6837"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.21.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/chartdb/chartdb 1.21.0 on port 6837
+  repo: "https://github.com/chartdb/chartdb"
+  support: "https://github.com/chartdb/chartdb/issues"
+  docs: "https://github.com/chartdb/chartdb#readme"
