@@ -2,7 +2,7 @@ name: paperless-ngx-full
 
 services:
   paperless-ngx-full:
-    image: ghcr.io/hsinghhira/paperless-ngx-full:1.0.2
+    image: ghcr.io/hsinghhira/paperless-ngx-full:1.0.3
     container_name: paperless-ngx-full
     restart: unless-stopped
     stop_grace_period: 60s
