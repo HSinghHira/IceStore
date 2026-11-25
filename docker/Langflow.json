@@ -1,0 +1,62 @@
+{
+  "name": "Langflow",
+  "repo": "ghcr.io/hsinghhira/langflow:latest",
+  "category": [
+    "AI"
+  ],
+  "registry": "https://github.com/hsinghhira/langflow/pkgs/container/langflow",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=4g --memory-reservation=256m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:7860]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/langflow/icon.png",
+  "project": "https://www.langflow.org",
+  "support": "https://github.com/langflow-ai/langflow/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/langflow/",
+  "description": "Visual builder for AI agents and workflows",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Langflow",
+      "host": "/mnt/cache/appdata/langflow/data",
+      "container": "/app/langflow",
+      "mode": "rw",
+      "description": "The database with your flows, users and API keys, uploaded files and this install's secrets. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6864",
+      "container": "7860",
+      "description": "Langflow web app and API, published on host as 6864"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "LANGFLOW_SUPERUSER",
+      "key": "LANGFLOW_SUPERUSER",
+      "value": "admin",
+      "mask": false,
+      "description": "The admin user. The password is shown in the app's logs, in the box marked CREDENTIALS."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

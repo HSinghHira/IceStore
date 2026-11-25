@@ -1,0 +1,62 @@
+{
+  "name": "OpenBot",
+  "repo": "ghcr.io/hsinghhira/openbot:latest",
+  "category": [
+    "AI"
+  ],
+  "registry": "https://github.com/hsinghhira/openbot/pkgs/container/openbot",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=60 --memory=4g --memory-reservation=256m --shm-size=1g --security-opt=seccomp:unconfined --security-opt=no-new-privileges:true --health-cmd=\"bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080'\" --health-interval=30s --health-timeout=10s --health-start-period=60s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openbot/icon.png",
+  "project": "https://openbot.run",
+  "support": "https://github.com/nightly-labs/openbot/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/openbot/",
+  "description": "A server for your AI agents that keeps working when your computer is off",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/openbot/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Everything OpenBot keeps: the server's sign-in, agents, their workspaces, conversations, memory and installed tools (like Hermes Agent). Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6873",
+      "container": "8080",
+      "description": "OpenBot sign-in and setup page, published on host as 6873"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "OPENBOT_SETUP_PAGE_PORT",
+      "key": "OPENBOT_SETUP_PAGE_PORT",
+      "value": "8080",
+      "mask": false,
+      "description": "The port of the sign-in and setup page inside the container. Leave it as 8080."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}

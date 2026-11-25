@@ -1,0 +1,76 @@
+{
+  "name": "Kutt",
+  "repo": "ghcr.io/hsinghhira/kutt:latest",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://github.com/hsinghhira/kutt/pkgs/container/kutt",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --memory=512m --memory-reservation=32m --health-cmd=\"wget -q -O /dev/null http://127.0.0.1:3000/api/v2/health\" --health-interval=30s --health-timeout=10s --health-start-period=60s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kutt/icon.png",
+  "project": "https://kutt.it",
+  "support": "https://github.com/thedevs-network/kutt/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/kutt/",
+  "description": "Short link maker with custom domains, stats and an API",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Db",
+      "host": "/mnt/cache/appdata/kutt/db",
+      "container": "/kutt/db",
+      "mode": "rw",
+      "description": "The SQLite database with your links, stats and users, and this install's JWT secret (.icestore-jwt-secret). Back it up."
+    },
+    {
+      "name": "Custom",
+      "host": "/mnt/cache/appdata/kutt/custom",
+      "container": "/kutt/custom",
+      "mode": "rw",
+      "description": "Your own logo, styles and pages to change how Kutt looks."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6859",
+      "container": "3000",
+      "description": "Kutt web app, short links and API, published on host as 6859"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "DEFAULT_DOMAIN",
+      "key": "DEFAULT_DOMAIN",
+      "value": "YOUR-SERVER-IP:6859",
+      "mask": false,
+      "description": "The address short links start with: replace YOUR-SERVER-IP with your server IP, like 192.168.1.20:6859, or your own domain."
+    },
+    {
+      "name": "SITE_NAME",
+      "key": "SITE_NAME",
+      "value": "Kutt",
+      "mask": false,
+      "description": "The name shown on the page."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
