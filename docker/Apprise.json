@@ -1,0 +1,90 @@
+{
+  "name": "Apprise",
+  "repo": "caronc/apprise:2.2.0",
+  "category": [
+    "Misc"
+  ],
+  "registry": "https://hub.docker.com/r/caronc/apprise",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --memory=256m --memory-reservation=32m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/apprise/icon.png",
+  "project": "https://github.com/caronc/apprise-api#readme",
+  "support": "https://github.com/caronc/apprise-api/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/apprise/",
+  "description": "One API to send notifications to over 100 services",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/apprise/config",
+      "container": "/config",
+      "mode": "rw",
+      "description": "Your saved notification configurations, with the service URLs and their keys. Keep it private."
+    },
+    {
+      "name": "Attach",
+      "host": "/mnt/cache/appdata/apprise/attach",
+      "container": "/attach",
+      "mode": "rw",
+      "description": "Attachments sent with notifications"
+    },
+    {
+      "name": "Plugin",
+      "host": "/mnt/cache/appdata/apprise/plugin",
+      "container": "/plugin",
+      "mode": "rw",
+      "description": "Your own notification plugins (Python files)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6821",
+      "container": "8000",
+      "description": "Apprise web page and API, published on host as 6821"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "mask": false,
+      "description": "The user id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "mask": false,
+      "description": "The group id that owns the app's files. 500 is the MOS default."
+    },
+    {
+      "name": "APPRISE_STATEFUL_MODE",
+      "key": "APPRISE_STATEFUL_MODE",
+      "value": "simple",
+      "mask": false,
+      "description": "simple saves each configuration you make in the web page, so other apps can notify by its key. Set to disabled to only accept URLs sent with each message."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
