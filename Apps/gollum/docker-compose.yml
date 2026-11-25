@@ -1,0 +1,130 @@
+name: gollum
+
+services:
+  gollum:
+    image: gollumwiki/gollum:v5.3.2
+    container_name: gollum
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - GOLLUM_AUTHOR_USERNAME=Gollum
+      - GOLLUM_AUTHOR_EMAIL=gollum@localhost
+    ports:
+      - target: 4567
+        published: "6852"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/wiki
+        target: /wiki
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/4567"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gollum/icon.png
+    x-casaos:
+      id: com.icestore.gollum
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: GOLLUM_AUTHOR_USERNAME
+          description:
+            en_US: >-
+              The name saved with each change in Git.
+        - container: GOLLUM_AUTHOR_EMAIL
+          description:
+            en_US: >-
+              The email saved with each change in Git.
+      ports:
+        - container: "4567"
+          description:
+            en_US: >-
+              Gollum wiki, published on host as 6852
+      volumes:
+        - container: /wiki
+          description:
+            en_US: >-
+              Your wiki: a Git repository with one file per
+              page. Back it up, or push it to another Git
+              server.
+
+x-casaos:
+  id: com.icestore.gollum
+  architectures:
+    - amd64
+    - arm64
+  main: gollum
+  author: HSinghHira
+  category: Productivity
+  developer: "Gollum"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gollum/icon.png
+  title:
+    en_US: Gollum
+  tagline:
+    en_US: Simple wiki that keeps every page in a Git repository
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/gollum/](https://icestore.hsinghhira.me/app/gollum/) for full details
+
+
+      Gollum is a wiki where every page is a plain file in a Git
+      repository. Write in Markdown, AsciiDoc, Org and more, see the
+      full history of every page, and edit the same pages in the browser
+      or with your own editor and git.
+
+
+      **Features**
+
+
+      - Markdown, AsciiDoc, Org, RDoc, Textile, MediaWiki and more
+
+      - Full page history, diffs and reverts through Git
+
+      - Search, a page tree, uploads and math with MathJax
+
+      - Diagrams with PlantUML and Mermaid
+
+      - Edit in the browser or clone the wiki and push changes
+
+
+      **How to use?**
+
+
+      1. Open Gollum and create the Home page.
+
+      2. Link pages with [[Page Name]] and save.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Gollum has no login. Anyone on your network can read and
+           edit the wiki, so keep it off the internet.
+  index: /
+  port_map: "6852"
+  scheme: http
+  is_uncontrolled: false
+  version: "v5.3.2"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: gollumwiki/gollum v5.3.2 on port 6852
+  repo: "https://github.com/gollum/gollum"
+  support: "https://github.com/gollum/gollum/issues"
+  docs: "https://github.com/gollum/gollum/wiki"
