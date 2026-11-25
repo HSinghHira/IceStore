@@ -1,0 +1,136 @@
+name: heimdall
+
+services:
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:v2.8.4-ls375
+    container_name: heimdall
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 80
+        published: "6870"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heimdall/icon.png
+    x-casaos:
+      id: com.icestore.heimdall
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user Heimdall runs as. It is filled in by
+              ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group Heimdall runs as. It is filled in by
+              ZimaOS.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              Heimdall start page, published on host as 6870
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Heimdall's database, your tiles, icons and
+              settings. Back it up.
+
+x-casaos:
+  id: com.icestore.heimdall
+  architectures:
+    - amd64
+    - arm64
+  main: heimdall
+  author: HSinghHira
+  category: Productivity
+  developer: "linuxserver.io"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heimdall/icon.png
+  title:
+    en_US: Heimdall
+  tagline:
+    en_US: Simple start page for all your web apps and links
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/heimdall/](https://icestore.hsinghhira.me/app/heimdall/) for full details
+
+
+      Heimdall is a tidy start page with a tile for each of your web
+      apps. Some tiles show live information, like downloads in progress
+      or your Pi-hole stats, and a search bar sends you to your
+      favourite search engine.
+
+
+      **Features**
+
+
+      - Tiles with icons and colours for every app and link
+
+      - Enhanced tiles with live stats for over 100 apps
+
+      - Tags to group tiles, and several users
+
+      - Search bar for Google, DuckDuckGo, Bing and more
+
+      - Your own background image
+
+
+      **How to use?**
+
+
+      1. Open Heimdall and press Add an application.
+
+      2. Type the app's name; Heimdall finds its icon. Add its address
+         and save.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Heimdall has no password at first. Set one for the admin
+           user in Users if others use your network.
+
+
+        3. Add apps with your ZimaOS IP and their port, like
+           http://192.168.1.20:6798 (use yours).
+  index: /
+  port_map: "6870"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.8.4-ls375"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: lscr.io/linuxserver/heimdall v2.8.4-ls375 on port 6870
+  repo: "https://github.com/linuxserver/Heimdall"
+  support: "https://github.com/linuxserver/docker-heimdall/issues"
+  docs: "https://docs.linuxserver.io/images/docker-heimdall/"
