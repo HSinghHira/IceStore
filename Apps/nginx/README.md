@@ -23,4 +23,4 @@ Nginx serves the website files you put in a folder: a homepage, a portfolio, doc
 
 ## Before you install
 
-Put your website in /DATA/AppData/nginx/html; index.html is the first page. With an empty conf.d folder Nginx uses its default site, which serves that folder. Add your own *.conf files to conf.d (or *.conf.template files to templates, filled in from environment variables) and restart the app to change it. Nginx has no login, so everything in html is public on your network. For HTTPS with your own domain, put a reverse proxy in front.
+Put your website in /DATA/AppData/nginx/html; index.html is the first page. On first start, if conf.d is empty, the app creates conf.d/default.conf (a site that serves that folder) and a welcome index.html if html is empty. Add your own *.conf files to conf.d (or *.conf.template files to templates, filled in from environment variables) and restart the app to change it. Nginx has no login, so everything in html is public on your network. For HTTPS with your own domain, put a reverse proxy in front.

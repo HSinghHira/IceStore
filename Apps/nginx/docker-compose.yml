@@ -8,6 +8,17 @@ services:
     network_mode: bridge
     environment:
       - TZ=$TZ
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        if ! ls /etc/nginx/conf.d/*.conf >/dev/null 2>&1 && ! ls /etc/nginx/templates/*.template >/dev/null 2>&1; then
+          printf '%s\n' 'server {' '    listen 80;' '    listen [::]:80;' '    server_name _;' '    root /usr/share/nginx/html;' '    index index.html index.htm;' '    location / {' '        try_files $$uri $$uri/ =404;' '    }' '}' > /etc/nginx/conf.d/default.conf
+        fi
+        if [ -z "$$(ls -A /usr/share/nginx/html 2>/dev/null)" ]; then
+          printf '%s\n' '<!DOCTYPE html><html><head><title>Nginx on IceStore</title></head><body style="font-family:sans-serif;max-width:40em;margin:4em auto">' '<h1>Nginx is running</h1>' '<p>Put your website files in <code>/DATA/AppData/nginx/html</code> with the Files app. The first page must be called <code>index.html</code>.</p>' '</body></html>' > /usr/share/nginx/html/index.html
+        fi
+        exec /docker-entrypoint.sh nginx -g 'daemon off;'
     ports:
       - target: 80
         published: "6849"
@@ -64,8 +75,9 @@ services:
         - container: /etc/nginx/conf.d
           description:
             en_US: >-
-              Nginx site settings (*.conf). Leave it empty for
-              the default site; IceStore writes nothing here.
+              Nginx site settings (*.conf). If it is empty on
+              start, a default.conf serving the html folder is
+              created; edit or replace it.
         - container: /etc/nginx/templates
           description:
             en_US: >-
@@ -126,9 +138,9 @@ x-casaos:
            app. The first page must be called index.html.
 
 
-        3. An empty conf.d folder means Nginx's default site, which
-           serves the html folder. Add your own .conf files there to
-           change it.
+        3. On first start Nginx creates conf.d/default.conf, which
+           serves the html folder, and a welcome index.html. Edit them
+           or add your own .conf files to change the site.
   index: /
   port_map: "6849"
   scheme: http
