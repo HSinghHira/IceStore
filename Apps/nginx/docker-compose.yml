@@ -1,0 +1,143 @@
+name: nginx
+
+services:
+  nginx:
+    image: nginx:1.31.10-alpine
+    container_name: nginx
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6849"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/html
+        target: /usr/share/nginx/html
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/conf.d
+        target: /etc/nginx/conf.d
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/templates
+        target: /etc/nginx/templates
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 8M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nginx/icon.png
+    x-casaos:
+      id: com.icestore.nginx
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for log times. It is filled in
+              from your ZimaOS time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              Your website, published on host as 6849
+      volumes:
+        - container: /usr/share/nginx/html
+          description:
+            en_US: >-
+              Your website files. Put index.html here with the
+              Files app.
+        - container: /etc/nginx/conf.d
+          description:
+            en_US: >-
+              Nginx site settings (*.conf). Leave it empty for
+              the default site; IceStore writes nothing here.
+        - container: /etc/nginx/templates
+          description:
+            en_US: >-
+              Optional *.conf.template files, filled in with
+              your environment variables on start.
+
+x-casaos:
+  id: com.icestore.nginx
+  architectures:
+    - amd64
+    - arm64
+  main: nginx
+  author: HSinghHira
+  category: Developer
+  developer: "F5 NGINX"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nginx/icon.png
+  title:
+    en_US: Nginx
+  tagline:
+    en_US: Web server for hosting your static websites
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/nginx/](https://icestore.hsinghhira.me/app/nginx/) for full details
+
+
+      Nginx serves the website files you put in a folder: a homepage, a
+      portfolio, documentation built with a static site generator, or
+      files to share. Add your own server blocks for redirects, caching
+      or a simple reverse proxy.
+
+
+      **Features**
+
+
+      - Serves HTML, CSS, JavaScript, images and downloads fast
+
+      - Your own server blocks in conf.d
+
+      - Templates filled in from environment variables
+
+      - Gzip, caching headers and directory listings
+
+
+      **How to use?**
+
+
+      1. Put your website files in /DATA/AppData/nginx/html with the
+         Files app (index.html first).
+
+      2. Open Nginx to see your site.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Put your website in /DATA/AppData/nginx/html with the Files
+           app. The first page must be called index.html.
+
+
+        3. An empty conf.d folder means Nginx's default site, which
+           serves the html folder. Add your own .conf files there to
+           change it.
+  index: /
+  port_map: "6849"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.31.10-alpine"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: nginx 1.31.10-alpine on port 6849
+  repo: "https://github.com/nginx/nginx"
+  support: "https://github.com/nginx/nginx/issues"
+  docs: "https://nginx.org/en/docs/"
