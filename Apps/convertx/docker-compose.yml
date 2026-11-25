@@ -1,0 +1,133 @@
+name: convertx
+
+services:
+  convertx:
+    image: ghcr.io/c4illin/convertx:v0.20.0
+    container_name: convertx
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - HTTP_ALLOWED=true
+      - ACCOUNT_REGISTRATION=false
+    ports:
+      - target: 3000
+        published: "6838"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/convertx/icon.png
+    x-casaos:
+      id: com.icestore.convertx
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for cleaning up old files. It is
+              filled in from your ZimaOS time zone.
+        - container: HTTP_ALLOWED
+          description:
+            en_US: >-
+              true lets you sign in over plain http on your home
+              network. Set to false once ConvertX is behind
+              https.
+        - container: ACCOUNT_REGISTRATION
+          description:
+            en_US: >-
+              false allows only the first account; set to true
+              to let others sign up.
+      ports:
+        - container: "3000"
+          description:
+            en_US: >-
+              ConvertX web app, published on host as 6838
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              The user database, uploaded files and converted
+              results.
+
+x-casaos:
+  id: com.icestore.convertx
+  architectures:
+    - amd64
+    - arm64
+  main: convertx
+  author: HSinghHira
+  category: Others
+  developer: "C4illin"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/convertx/icon.png
+  title:
+    en_US: ConvertX
+  tagline:
+    en_US: File converter for over a thousand formats, in your browser
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/convertx/](https://icestore.hsinghhira.me/app/convertx/) for full details
+
+
+      ConvertX converts images, documents, audio, video, e-books and 3D
+      files between over a thousand formats, using FFmpeg, LibreOffice,
+      Pandoc, ImageMagick, Calibre and more inside one app. Upload, pick
+      a format, download.
+
+
+      **Features**
+
+
+      - Over a thousand formats through FFmpeg, ImageMagick,
+        LibreOffice, Pandoc, Calibre, Inkscape and more
+
+      - Convert many files at once
+
+      - Accounts with password protection
+
+      - Old files cleaned up after a set time
+
+
+      **How to use?**
+
+
+      1. Open ConvertX right away and make your account.
+
+      2. Drop files, pick the target format and press Convert.
+
+      3. Download the results.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about half a minute.
+
+
+        2. Right away, open ConvertX and make your account. Only the
+           first account can sign up.
+  index: /
+  port_map: "6838"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.20.0"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/c4illin/convertx v0.20.0 on port 6838
+  repo: "https://github.com/C4illin/ConvertX"
+  support: "https://github.com/C4illin/ConvertX/issues"
+  docs: "https://github.com/C4illin/ConvertX#readme"
