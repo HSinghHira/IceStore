@@ -1,0 +1,141 @@
+name: onedev
+
+services:
+  onedev:
+    image: 1dev/server:17.2.4
+    container_name: onedev
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 6610
+        published: "6842"
+        protocol: tcp
+      - target: 6611
+        published: "6843"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /opt/onedev
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6610"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 2m
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/onedev/icon.png
+    x-casaos:
+      id: com.icestore.onedev
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "6610"
+          description:
+            en_US: >-
+              OneDev web app and Git over http, published on
+              host as 6842
+        - container: "6611"
+          description:
+            en_US: >-
+              Git over SSH, published on host as 6843
+      volumes:
+        - container: /opt/onedev
+          description:
+            en_US: >-
+              Your repositories, the built-in database, builds,
+              settings and logs. Back it up.
+
+x-casaos:
+  id: com.icestore.onedev
+  architectures:
+    - amd64
+    - arm64
+  main: onedev
+  author: HSinghHira
+  category: Developer
+  developer: "OneDev"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/onedev/icon.png
+  title:
+    en_US: OneDev
+  tagline:
+    en_US: Git server with CI/CD, kanban boards and code search, in one app
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/onedev/](https://icestore.hsinghhira.me/app/onedev/) for full details
+
+
+      OneDev is a self-hosted Git server with everything around it: code
+      review, issues, kanban boards, CI/CD pipelines, packages and fast
+      code search with symbol navigation. Set it up in a few clicks and
+      keep your code at home.
+
+
+      **Features**
+
+
+      - Git repositories with pull requests, reviews and branch
+        protection
+
+      - Built-in CI/CD with a visual job editor, running on the server
+        or on agents
+
+      - Issues, boards, milestones and time tracking
+
+      - Code search and symbol navigation across repositories
+
+      - Package registry for Docker, npm, Maven, PyPI and more
+
+
+      **How to use?**
+
+
+      1. Open OneDev right away and make the admin account in the setup
+         page.
+
+      2. Set the server URL to http://[ZIMAOS-IP-ADDRESS]:6842 with your
+         ZimaOS IP.
+
+      3. Create a project and push your code.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. The first start takes about two
+           minutes.
+
+
+        2. Right away, open OneDev and make the admin account. Until
+           you do, anyone on your network can.
+
+
+        3. In the setup page, set the server URL to
+           http://[ZIMAOS-IP-ADDRESS]:6842 and the SSH root URL to
+           ssh://[ZIMAOS-IP-ADDRESS]:6843 with your ZimaOS IP.
+  index: /
+  port_map: "6842"
+  scheme: http
+  is_uncontrolled: false
+  version: "17.2.4"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: 1dev/server 17.2.4
+      - Web app on port 6842 and Git over SSH on port 6843
+  repo: "https://github.com/theonedev/onedev"
+  support: "https://github.com/theonedev/onedev/issues"
+  docs: "https://docs.onedev.io"
