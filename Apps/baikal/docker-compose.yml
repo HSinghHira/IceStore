@@ -1,0 +1,140 @@
+name: baikal
+
+services:
+  baikal:
+    image: ckulka/baikal:0.10.1-nginx
+    container_name: baikal
+    restart: unless-stopped
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6836"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /var/www/baikal/config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /var/www/baikal/Specific
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baikal/icon.png
+    x-casaos:
+      id: com.icestore.baikal
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              Baïkal admin page and CalDAV/CardDAV, published on
+              host as 6836
+      volumes:
+        - container: /var/www/baikal/config
+          description:
+            en_US: >-
+              Baïkal's settings (baikal.yaml), with the admin
+              password hash.
+        - container: /var/www/baikal/Specific
+          description:
+            en_US: >-
+              The SQLite database with your calendars, contacts
+              and users. Back it up.
+
+x-casaos:
+  id: com.icestore.baikal
+  architectures:
+    - amd64
+    - arm64
+  main: baikal
+  author: HSinghHira
+  category: Productivity
+  developer: "sabre.io"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/baikal/icon.png
+  title:
+    en_US: Baïkal
+  tagline:
+    en_US: Lightweight CalDAV and CardDAV server for your calendars and contacts
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/baikal/](https://icestore.hsinghhira.me/app/baikal/) for full details
+
+
+      Baïkal keeps your calendars and contacts on your ZimaOS and syncs
+      them with your phones and computers over CalDAV and CardDAV. It is
+      small, fast and managed from a simple admin page.
+
+
+      **Features**
+
+
+      - CalDAV calendars and to-dos, CardDAV address books
+
+      - Works with iOS, macOS, Thunderbird, DAVx5 on Android and more
+
+      - Several users, each with their own calendars and contacts
+
+      - SQLite by default, or MySQL
+
+      - Simple admin page for users and settings
+
+
+      **How to use?**
+
+
+      1. Open Baïkal right away and set the admin password, time zone
+         and database (SQLite).
+
+      2. Add a user in the admin page.
+
+      3. On your device, add a CalDAV or CardDAV account with
+         http://[ZIMAOS-IP-ADDRESS]:6836/dav.php and that user.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in a few seconds.
+
+
+        2. Right away, open Baïkal and finish the setup: choose the
+           admin password and SQLite. Until you do, anyone on your
+           network can.
+
+
+        3. On phones, the server address is
+           http://[ZIMAOS-IP-ADDRESS]:6836/dav.php with your ZimaOS
+           IP. iPhones and Macs want https for CalDAV accounts,
+           through a reverse proxy with your own domain.
+  index: /
+  port_map: "6836"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.10.1-nginx"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ckulka/baikal 0.10.1-nginx on port 6836
+  repo: "https://github.com/sabre-io/Baikal"
+  support: "https://github.com/ckulka/baikal-docker/issues"
+  docs: "https://sabre.io/baikal/"
