@@ -1,0 +1,17 @@
+{
+  "name": "Nginx",
+  "category": [
+    "Utilities"
+  ],
+  "web_ui_url": "http://[IP]:6849/",
+  "website": "https://nginx.org",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nginx/icon.png",
+  "project": "https://nginx.org",
+  "support": "https://github.com/nginx/nginx/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/nginx/",
+  "description": "Web server for hosting your static websites",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}
