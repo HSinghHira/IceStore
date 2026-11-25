@@ -1,0 +1,136 @@
+name: langflow
+
+services:
+  langflow:
+    image: ghcr.io/hsinghhira/langflow:latest
+    container_name: langflow
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - LANGFLOW_SUPERUSER=admin
+    ports:
+      - target: 7860
+        published: "6864"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/langflow
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 2m
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/langflow/icon.png
+    x-casaos:
+      id: com.icestore.langflow
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: LANGFLOW_SUPERUSER
+          description:
+            en_US: >-
+              The admin user. The password is shown in the app's
+              logs, in the box marked CREDENTIALS.
+      ports:
+        - container: "7860"
+          description:
+            en_US: >-
+              Langflow web app and API, published on host as
+              6864
+      volumes:
+        - container: /app/langflow
+          description:
+            en_US: >-
+              The database with your flows, users and API keys,
+              uploaded files and this install's secrets. Back it
+              up.
+
+x-casaos:
+  id: com.icestore.langflow
+  architectures:
+    - amd64
+    - arm64
+  main: langflow
+  author: HSinghHira
+  category: AI
+  developer: "Langflow"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/langflow/icon.png
+  title:
+    en_US: Langflow
+  tagline:
+    en_US: Visual builder for AI agents and workflows
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/langflow/](https://icestore.hsinghhira.me/app/langflow/) for full details
+
+
+      Langflow lets you build AI agents, RAG pipelines and chat flows by
+      dragging components onto a canvas and wiring them together. Test
+      them in the playground, then call them from your apps through the
+      API or MCP.
+
+
+      **Features**
+
+
+      - Visual editor with components for models, prompts, tools, memory
+        and vector stores
+
+      - OpenAI, Anthropic, Google, Ollama and many more providers
+
+      - Playground to chat with a flow while you build it
+
+      - Every flow becomes an API endpoint and an MCP tool
+
+      - Starter templates and Python custom components
+
+
+      **How to use?**
+
+
+      1. Open Langflow and sign in as admin with the password from the
+         CREDENTIALS box in the app's logs.
+
+      2. Start from a template, add your model's API key, and run it in
+         the playground.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. The first start takes a minute or
+           two.
+
+
+        2. Open Langflow. The user name is admin. The password is in
+           the app's logs, in the box marked CREDENTIALS.
+
+
+        3. Flows can run Python code, so only give accounts to people
+           you trust.
+  index: /
+  port_map: "6864"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.13.4"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: langflowai/langflow 1.13.4, plus a start script that makes the admin password and secret key on first start (automatic sign-in is off)
+  repo: "https://github.com/langflow-ai/langflow"
+  support: "https://github.com/langflow-ai/langflow/issues"
+  docs: "https://docs.langflow.org"
