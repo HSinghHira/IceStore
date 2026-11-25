@@ -1,0 +1,153 @@
+name: sonarr
+
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.20.3014-ls329
+    container_name: sonarr
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 8989
+        published: "6827"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8989/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sonarr/icon.png
+    x-casaos:
+      id: com.icestore.sonarr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for schedules and the calendar. It
+              is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns your media files. It is filled
+              in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns your media files. It is filled
+              in by ZimaOS.
+      ports:
+        - container: "8989"
+          description:
+            en_US: >-
+              Sonarr web app and API, published on host as 6827
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Sonarr's database, settings, API key and logs.
+              Back it up.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS storage at the same path, so Sonarr
+              sees your downloads folder and your library (like
+              /DATA/Media/TV) and can move files without
+              copying.
+
+x-casaos:
+  id: com.icestore.sonarr
+  architectures:
+    - amd64
+    - arm64
+  main: sonarr
+  author: HSinghHira
+  category: Media
+  developer: "Sonarr team"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sonarr/icon.png
+  title:
+    en_US: Sonarr
+  tagline:
+    en_US: Finds, downloads and organizes your TV shows automatically
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/sonarr/](https://icestore.hsinghhira.me/app/sonarr/) for full details
+
+
+      Sonarr watches for new episodes of the shows you follow, grabs
+      them through your Usenet or BitTorrent client, then renames and
+      files them into your library for Jellyfin, Plex or Emby.
+
+
+      **Features**
+
+
+      - Calendar of upcoming episodes and automatic search when they air
+
+      - Quality profiles and upgrades to better releases
+
+      - Works with qBittorrent, Transmission, SABnzbd, NZBGet and more
+
+      - Indexers through Prowlarr or added by hand
+
+      - Renames and organizes files, and tells your media server to
+        refresh
+
+
+      **How to use?**
+
+
+      1. Open Sonarr right away and set up the login it asks for (Forms
+         login).
+
+      2. In Settings, Media Management, add your root folder, like
+         /DATA/Media/TV.
+
+      3. Add your download client and indexers (or connect Prowlarr),
+         then add what you want.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Sonarr. It asks you to choose how to sign
+           in; pick Forms and set a user name and password.
+
+
+        3. Your ZimaOS storage is at /DATA inside the app. Use the
+           same /DATA paths in your download client so Sonarr can find
+           finished downloads.
+  index: /
+  port_map: "6827"
+  scheme: http
+  is_uncontrolled: false
+  version: "4.0.20.3014-ls329"
+  update_at: "2026-11-25"
+  release_notes:
+    en_US: |-
+      - First IceStore release: lscr.io/linuxserver/sonarr 4.0.20.3014-ls329 on port 6827
+      - /DATA is shared at the same path, so downloads can be moved into your library without copying
+  repo: "https://github.com/Sonarr/Sonarr"
+  support: "https://github.com/Sonarr/Sonarr/issues"
+  docs: "https://wiki.servarr.com/sonarr"
