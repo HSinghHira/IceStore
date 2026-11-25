@@ -273,7 +273,7 @@ class MOS(Adapter):
     def compose_template(self, app, name, out, ov, result):
         # Host folders and the IP placeholder become .env settings, so people change them in one place.
         env, pm = {}, {}
-        for src, dst in (self.cfg.get("path_map") or {}).items():
+        for src, dst in self.path_map_for(app).items():
             var = "APPDATA" if src.endswith("$AppID") else src.rstrip("/").rsplit("/", 1)[-1].upper() + "_PATH"
             pm[src] = "${" + var + "}"
             env[var] = dst.replace("{slug}", app.slug)

@@ -5,6 +5,9 @@ from pathlib import Path
 
 from model import fmt, map_paths, sub_var, walk
 
+# A ZimaOS top-level data folder in a path, like /DATA/Gallery (AppData is mapped per app).
+DATA_FOLDER = re.compile(r"/DATA/(?!AppData\b)([A-Za-z0-9_-]+)")
+
 
 class Skip(Exception):
     """Raise from build_app when an app cannot run on this platform. The message is the reason."""
@@ -59,7 +62,7 @@ class Adapter:
 
     def translate(self, obj, app, keep_vars=(), path_map=None, placeholders=None):
         """Master compose strings -> this platform: host paths, CasaOS variables, IP placeholders."""
-        path_map = {k: fmt(v, app) for k, v in (path_map or self.cfg.get("path_map") or {}).items()}
+        path_map = {k: fmt(v, app) for k, v in (path_map or self.path_map_for(app)).items()}
         vars_ = {k: fmt(v, app) for k, v in (self.cfg.get("vars") or {}).items() if k not in keep_vars}
         holders = placeholders or self.cfg.get("placeholders") or {}
 
@@ -75,10 +78,24 @@ class Adapter:
             return s
         return walk(obj, fn)
 
+    def path_map_for(self, app):
+        """path_map plus every other /DATA/<Folder> the app uses, mapped with path_fallback,
+        so a ZimaOS folder missing from config.yml cannot leave /DATA/ in the output."""
+        pm = dict(self.cfg.get("path_map") or {})
+        fallback = self.cfg.get("path_fallback")
+        if fallback:
+            for folder in sorted(set(DATA_FOLDER.findall(str(app.compose)))):
+                if not any(k == f"/DATA/{folder}" or k.startswith(f"/DATA/{folder}/") for k in pm):
+                    pm[f"/DATA/{folder}"] = fallback.replace("{folder}", folder.lower())
+        return pm
+
     def words(self, s, app, **extra):
         """App Store copy (description, notes) with platform wording."""
         for a, b in self.cfg.get("text_replace") or []:
             s = s.replace(fmt(a, app, **extra), fmt(b, app, **extra))
+        fallback = self.cfg.get("path_fallback")
+        if fallback:
+            s = DATA_FOLDER.sub(lambda m: fallback.replace("{folder}", m.group(1).lower()), s)
         return s
 
     def category(self, app):
