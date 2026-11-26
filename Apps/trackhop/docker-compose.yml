@@ -159,12 +159,13 @@ x-casaos:
   port_map: "6715"
   scheme: http
   is_uncontrolled: false
-  version: "2.1.5"
-  update_at: "2026-11-24"
+  version: "2.2.1"
+  update_at: "2026-11-26"
   release_notes:
     en_US: |-
+      - Updated trackhop 2.1.5 to 2.2.1
       - Updated trackhop 1.8.1 to 2.1.5
-      - First IceStore version: ghcr.io/xlollx/trackhop 2.1.5, plus a start script that makes this install's SONGPORT_PASSWORD on first start and keeps it in the data folder.
+      - First IceStore version: ghcr.io/xlollx/trackhop 2.2.1, plus a start script that makes this install's SONGPORT_PASSWORD on first start and keeps it in the data folder.
       - Port 6715; the data folder is /DATA/AppData/trackhop/data.
       - Fixed: the healthcheck and the CREDENTIALS box now use /health, which needs no password, so the app turns healthy and the box with the password shows in the logs within a minute.
   repo: "https://github.com/xlollx/Trackhop"

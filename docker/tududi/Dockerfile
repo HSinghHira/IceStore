@@ -10,7 +10,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM chrisvel/tududi:2.1.3
+FROM chrisvel/tududi:2.1.5
 
 USER root
 RUN apk add --no-cache postgresql16 postgresql16-contrib postgresql16-client supervisor setpriv openssl tzdata

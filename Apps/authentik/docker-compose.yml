@@ -162,14 +162,15 @@ x-casaos:
   port_map: "6123"
   scheme: http
   is_uncontrolled: false
-  version: "2026.8.6"
-  update_at: "2026-11-24"
+  version: "2026.8.7"
+  update_at: "2026-11-26"
   release_notes:
     en_US: |-
+      - Updated server 2026.8.6 to 2026.8.7
       - Updated server 2026.8.4 to 2026.8.6
       - Single-container authentik with one port (6123) and one data folder
       - Secret key and database passwords are made on first start, so each install gets its own
-      - ghcr.io/goauthentik/server 2026.8.6 in allinone mode (server and worker in one process)
+      - ghcr.io/goauthentik/server 2026.8.7 in allinone mode (server and worker in one process)
       - PostgreSQL 16 inside
       - The separate HTTPS port 9443 with a self-signed certificate is left out; use a reverse proxy for HTTPS
       - To let authentik manage outpost containers, add /var/run/docker.sock as a volume

@@ -176,14 +176,15 @@ x-casaos:
   port_map: "6763"
   scheme: http
   is_uncontrolled: false
-  version: "2.1.3"
-  update_at: "2026-11-24"
+  version: "2.1.5"
+  update_at: "2026-11-26"
   release_notes:
     en_US: |-
+      - Updated tududi 2.1.3 to 2.1.5
       - Updated tududi 2.1.1 to 2.1.3
       - Added the PostgreSQL extensions package (pg_trgm and friends), the same fix as PLANKA (image 1.0.1)
       - First IceStore release, on port 6763
-      - Built on chrisvel/tududi 2.1.3, with PostgreSQL 16 added inside the same container
+      - Built on chrisvel/tududi 2.1.5, with PostgreSQL 16 added inside the same container
       - Each install makes its own session secret, database password and first account password on first start; the login is in the CREDENTIALS box in the logs
   repo: "https://github.com/chrisvel/tududi"
   support: "https://github.com/chrisvel/tududi/issues"

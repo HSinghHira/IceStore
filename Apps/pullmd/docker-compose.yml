@@ -191,15 +191,16 @@ x-casaos:
   port_map: "6132"
   scheme: http
   is_uncontrolled: false
-  version: "3.21.0"
-  update_at: "2026-11-24"
+  version: "3.22.0"
+  update_at: "2026-11-26"
   release_notes:
     en_US: |-
+      - Updated pullmd 3.21.0 to 3.22.0, pullmd-trafilatura 3.21.0 to 3.22.0, pullmd-markitdown 3.21.0 to 3.22.0
       - Updated pullmd 3.16.0 to 3.21.0, pullmd-trafilatura 3.16.0 to 3.21.0, pullmd-markitdown 3.16.0 to 3.21.0
       - Single-container PullMD with one port (6132) and one data folder
-      - aeternalabshq/pullmd 3.21.0
-      - aeternalabshq/pullmd-trafilatura 3.21.0
-      - aeternalabshq/pullmd-markitdown 3.21.0
+      - aeternalabshq/pullmd 3.22.0
+      - aeternalabshq/pullmd-trafilatura 3.22.0
+      - aeternalabshq/pullmd-markitdown 3.22.0
       - YouTube transcripts are on (upstream: off), since MarkItDown is inside
       - Left out: the Playwright helper (headless Chromium, about 3.7 GB)
   repo: "https://github.com/AeternaLabsHQ/pullmd"

@@ -11,7 +11,7 @@
 #
 # Upstream dropped Redis in 2025.10; everything lives in PostgreSQL now.
 
-FROM ghcr.io/goauthentik/server:2026.8.6 AS img-authentik
+FROM ghcr.io/goauthentik/server:2026.8.7 AS img-authentik
 
 FROM debian:trixie-slim
 
