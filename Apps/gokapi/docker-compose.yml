@@ -1,0 +1,163 @@
+name: gokapi
+
+services:
+  gokapi:
+    image: f0rc3/gokapi:v2.2.4
+    container_name: gokapi
+    restart: unless-stopped
+    stop_grace_period: 40s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 53842
+        published: "6874"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /app/config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:53842/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gokapi/icon.png
+    x-casaos:
+      id: com.icestore.gokapi
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+      ports:
+        - container: "53842"
+          description:
+            en_US: Gokapi upload page, admin menu and download links, published on host as 6874
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              Your uploaded files and the SQLite database with links, users
+              and download counts. Back it up.
+        - container: /app/config
+          description:
+            en_US: >-
+              The settings from the setup page (config.json), with password
+              salts and any encryption key. Back it up together with data. Do
+              not delete it.
+
+x-casaos:
+  id: com.icestore.gokapi
+  architectures:
+    - amd64
+    - arm64
+  main: gokapi
+  author: HSinghHira
+  category: Productivity
+  developer: Forceu
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gokapi/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gokapi/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gokapi/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gokapi/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gokapi/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gokapi/screenshot-4.png
+  title:
+    en_US: Gokapi
+  tagline:
+    en_US: Share files with links that expire after a set number of downloads or days
+  description:
+    en_US: >-
+      Gokapi is a light, self-hosted file sharing server. Upload a file, get
+      a link, and the file is deleted on its own after a number of downloads
+      or days you pick. Only you and the users you add can upload, so it is
+      not an open file host.
+
+
+      **Features**
+
+
+      - Links that expire after a set number of downloads or days
+
+      - Optional password on each download
+
+      - Optional end-to-end encryption, so files are stored encrypted
+
+      - File requests: let someone upload files to you without an account
+
+      - Several users with their own rights, or sign-in with OpenID Connect
+
+      - API for scripts, plus hotlinks for images
+
+      - Files on this server or in S3-compatible cloud storage
+
+
+      **How to use?**
+
+
+      1. Open http://[ZIMAOS-IP-ADDRESS]:6874/setup in your browser. Until
+         the setup is done, the other pages say the server is in
+         maintenance mode.
+
+      2. Keep SQLite as the database and SSL off.
+
+      3. Change the public facing URL to http://[ZIMAOS-IP-ADDRESS]:6874/
+         (or your domain), make the admin account and finish the setup.
+
+      4. Open Gokapi from the ZimaOS dashboard and sign in.
+
+      5. Drop a file on the upload box and copy its link.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in under a minute.
+
+
+        2. Right away, open http://[ZIMAOS-IP-ADDRESS]:6874/setup and finish
+           the setup: it makes the admin account. It has no password, so
+           until you finish, anyone on your network can do it.
+
+
+        3. Change the public facing URL to http://[ZIMAOS-IP-ADDRESS]:6874/
+           so your share links work.
+
+
+        4. After the setup, open Gokapi from the ZimaOS dashboard and sign
+           in.
+
+
+        5. Sharing links outside your home? Put a reverse proxy with HTTPS
+           in front and use its https address as the public URL.
+  index: /admin
+  port_map: "6874"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.2.4"
+  update_at: "2026-11-26"
+  release_notes:
+    en_US: |-
+      - First IceStore release, on port 6874
+      - The official f0rc3/gokapi image, v2.2.4
+      - The setup page at /setup makes the admin account; sign in at /admin; files and settings are in the data and config folders
+  repo: "https://github.com/Forceu/Gokapi"
+  support: "https://github.com/Forceu/Gokapi/issues"
+  docs: "https://gokapi.readthedocs.io/en/latest/"
