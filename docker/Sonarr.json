@@ -31,9 +31,9 @@
       "description": "Sonarr's database, settings, API key and logs. Back it up."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "rw",
       "description": "Your MOS storage at the same path, so Sonarr sees your downloads folder and your library (like /mnt/cache/media/TV) and can move files without copying."
     }

@@ -38,9 +38,9 @@
       "description": "Images and transcoding scratch files. Safe to delete."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "rw",
       "description": "Your MOS storage, at the same path inside, so libraries can point at folders like /mnt/cache/media/Movies."
     }

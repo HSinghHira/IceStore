@@ -53,7 +53,7 @@
     },
     {
       "name": "Data",
-      "host": "/DATA",
+      "host": "/mnt/cache",
       "container": "/data",
       "mode": "ro",
       "description": "Your MOS storage, read-only, to back up. Pick folders under /data, like /data/Documents."

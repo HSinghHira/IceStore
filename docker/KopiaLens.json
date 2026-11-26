@@ -31,11 +31,11 @@
       "description": "KopiaLens's settings, the index, kopia's cache and connection files."
     },
     {
-      "name": "Data",
-      "host": "/DATA",
-      "container": "/DATA",
+      "name": "Cache",
+      "host": "/mnt/cache",
+      "container": "/mnt/cache",
       "mode": "rw",
-      "description": "Your MOS storage, at the same path inside, so Kopia repositories and backed-up folders under /DATA keep their paths. Repositories elsewhere (S3, B2, SFTP) need nothing here."
+      "description": "Your MOS storage, at the same path inside, so Kopia repositories and backed-up folders under /mnt/cache keep their paths. Repositories elsewhere (S3, B2, SFTP) need nothing here."
     }
   ],
   "ports": [
