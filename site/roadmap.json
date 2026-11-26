@@ -1026,5 +1026,6 @@
   {"name": "zot", "category": "Developer", "desc": "OCI-native container image registry.", "url": "https://github.com/project-zot/zot", "icon": "zot.png"},
   {"name": "Maddy", "category": "Networking", "desc": "Composable all-in-one mail server.", "url": "https://github.com/foxcpp/maddy", "icon": "maddy.png"},
   {"name": "OpenSpeedTest", "category": "Networking", "desc": "HTML5 network speed test.", "url": "https://github.com/openspeedtest/Speed-Test", "icon": "openspeedtest.png"},
-  {"name": "Onyx", "category": "AI", "desc": "AI chat and search over your company documents.", "url": "https://github.com/onyx-dot-app/onyx", "icon": "onyx.png"}
+  {"name": "Onyx", "category": "AI", "desc": "AI chat and search over your company documents.", "url": "https://github.com/onyx-dot-app/onyx", "icon": "onyx.png"},
+  {"name": "Nightlight", "category": "Home", "desc": "Baby monitor with live view, sleep tracking and alerts for your own RTSP cameras.", "url": "https://github.com/sauso/nightlight", "icon": "nightlight.png"}
 ]
