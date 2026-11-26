@@ -157,12 +157,13 @@ x-casaos:
   port_map: "6752"
   scheme: http
   is_uncontrolled: false
-  version: "6.78.0"
-  update_at: "2026-11-20"
+  version: "6.79.0"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated ghost 6.78.0 to 6.79.0
       - First IceStore release, on port 6752
-      - All in one container: ghost 6.78.0, mysql 8.4.13, axllent/mailpit v1.34.0 and an nginx gateway
+      - All in one container: ghost 6.79.0, mysql 8.4.13, axllent/mailpit v1.34.0 and an nginx gateway
       - Each install makes its own MySQL passwords on first start
       - Caddy, ActivityPub and Tinybird analytics from upstream's compose are left out
   repo: "https://github.com/TryGhost/Ghost"

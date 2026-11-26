@@ -165,15 +165,16 @@ x-casaos:
   port_map: "6192"
   scheme: http
   is_uncontrolled: false
-  version: "v3.246.0"
-  update_at: "2026-11-24"
+  version: "v3.246.1"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated tolgee v3.246.0 to v3.246.1
       - Updated tolgee v3.242.4 to v3.246.0
       - Single-container Tolgee with one port (6192) and one data folder
       - PostgreSQL 17 inside, as upstream recommends; the image's bundled PostgreSQL 13 (gone in Tolgee v4) is not used
       - Sign-in is on, and the admin password is made on first start, so each install gets its own
-      - tolgee/tolgee v3.246.0
+      - tolgee/tolgee v3.246.1
   repo: "https://github.com/tolgee/tolgee-platform"
   support: "https://github.com/tolgee/tolgee-platform/issues"
   docs: "https://docs.tolgee.io/platform/self_hosting/configuration"

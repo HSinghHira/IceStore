@@ -10,7 +10,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/yoloyash/overtchat-app:0.35.0
+FROM ghcr.io/yoloyash/overtchat-app:0.36.0
 
 USER root
 COPY icestore-init.sh /usr/local/bin/icestore-init

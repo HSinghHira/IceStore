@@ -145,13 +145,14 @@ x-casaos:
   port_map: "6755"
   scheme: http
   is_uncontrolled: false
-  version: "v1.95.0"
-  update_at: "2026-11-24"
+  version: "v1.96.0"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated youtarr v1.95.0 to v1.96.0
       - Updated youtarr v1.93.0 to v1.95.0
       - First IceStore release, on port 6755
-      - All in one container: dialmaster/youtarr v1.95.0, MariaDB and an nginx gateway
+      - All in one container: dialmaster/youtarr v1.96.0, MariaDB and an nginx gateway
       - Each install makes its own database and admin passwords on first start
       - Videos are saved to /DATA/Media/YouTube
   repo: "https://github.com/DialmasterOrg/Youtarr"

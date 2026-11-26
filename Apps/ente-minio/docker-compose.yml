@@ -322,9 +322,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "c2e571c"
-  update_at: "2026-11-24"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated web ce7e41f to b665538
       - Updated server 20fb631 to c2e571c, web 817ce84 to ce7e41f, mailpit v1.32.0 to v1.34.0, silo RELEASE.2026-10-18T00-00-00Z to RELEASE.2026-11-12T00-00-00Z
       - Every address (ENTE_API_URL, ENTE_S3_URL, ENTE_APPS_*) is now in the app settings, for people
         who use their own domain; the log warns when PUBLIC_URL has no port and they are blank
@@ -340,7 +341,7 @@ x-casaos:
       - Database, storage and museum keys are made on first start, so each install gets its own
       - Sign-up codes go to the built-in mail viewer unless you set your own email server
       - Every account gets 100 TB instead of Ente's 10 GB (ENTE_AIO_STORAGE_GB)
-      - server c2e571c, web ce7e41f (Ente only publishes commit tags; they follow latest)
+      - server c2e571c, web b665538 (Ente only publishes commit tags; they follow latest)
       - silo RELEASE.2026-11-12T00-00-00Z, mailpit v1.34.0, PostgreSQL 15
   repo: "https://github.com/ente/ente"
   support: "https://github.com/ente/ente/issues"

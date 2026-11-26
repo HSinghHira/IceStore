@@ -5,7 +5,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/open-webui/open-webui:v0.13.4
+FROM ghcr.io/open-webui/open-webui:v0.13.5
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 # Shared helpers and the CREDENTIALS banner (docker/_common; built with

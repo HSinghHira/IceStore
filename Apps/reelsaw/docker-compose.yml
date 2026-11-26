@@ -181,16 +181,17 @@ x-casaos:
   port_map: "6690"
   scheme: http
   is_uncontrolled: false
-  version: "0.51.1"
-  update_at: "2026-11-24"
+  version: "0.52.0"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated reelsaw 0.51.1 to 0.52.0
       - Updated reelsaw 0.32.3 to 0.51.1
       - Single-container Reelsaw with one port (6690) and one data folder
       - PostgreSQL 17 inside; web app and pipeline workers in one process, as in upstream's compose
       - The auth secret and database password are made on first start, so each install gets its own
       - Ollama, Speaches and MinIO are not included: use a hosted provider or your own servers
-      - ghcr.io/osbytes/reelsaw 0.51.1
+      - ghcr.io/osbytes/reelsaw 0.52.0
   repo: "https://github.com/osbytes/reelsaw"
   support: "https://github.com/osbytes/reelsaw/issues"
   docs: "https://github.com/osbytes/reelsaw/blob/main/docs/CONFIG.md"

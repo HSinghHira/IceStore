@@ -146,10 +146,11 @@ x-casaos:
   port_map: "6119"
   scheme: https
   is_uncontrolled: false
-  version: "1.146.0-ls34"
-  update_at: "2026-11-24"
+  version: "1.147.0-ls35"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated vscode 1.146.0-ls34 to 1.147.0-ls35
       - Updated vscode 1.143.1-ls31 to 1.146.0-ls34
       - Fixed "Failed to start" ([icestore] cannot write). The start-up script now lives in the image (ghcr.io/hsinghhira/vscode) instead of the compose file, where ZimaOS emptied its variables and the container stopped right away.
       - Built on lscr.io/linuxserver/vscode 1.143.1-ls31.

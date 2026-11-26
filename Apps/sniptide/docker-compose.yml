@@ -147,14 +147,15 @@ x-casaos:
   port_map: "6716"
   scheme: http
   is_uncontrolled: false
-  version: "0.111.1"
-  update_at: "2026-11-24"
+  version: "0.112.1"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated sniptide 0.111.1 to 0.112.1
       - Updated sniptide 0.78.1 to 0.111.1
       - First IceStore release: Sniptide in one container with PostgreSQL 17, on port 6716 with one data folder; nginx takes the place of upstream's optional Caddy proxy.
       - BETTER_AUTH_SECRET, the environment-secrets key and the database password are made on first start.
-      - ghcr.io/dino-kupinic/sniptide 0.111.1
+      - ghcr.io/dino-kupinic/sniptide 0.112.1
   repo: "https://github.com/Dino-Kupinic/sniptide"
   support: "https://github.com/Dino-Kupinic/sniptide/issues"
   docs: "https://docs.sniptide.com"

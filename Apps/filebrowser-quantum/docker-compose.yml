@@ -157,11 +157,12 @@ x-casaos:
   port_map: "6738"
   scheme: http
   is_uncontrolled: false
-  version: "2.0.2-stable"
-  update_at: "2026-11-16"
+  version: "2.1.0-stable"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
-      - First IceStore version, built on gtstef/filebrowser 2.0.2-stable
+      - Updated filebrowser 2.0.2-stable to 2.1.0-stable
+      - First IceStore version, built on gtstef/filebrowser 2.1.0-stable
       - A starter config.yaml is made on first start, with your /DATA folder as the source
       - Each install makes its own random admin password, shown in the CREDENTIALS box
       - Web page on port 6738

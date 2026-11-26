@@ -18,7 +18,7 @@
 #                        embed, paste, locker, memories)
 
 FROM ghcr.io/ente/server:c2e571c599222ef6f8349dcc638bf23e0d885e21 AS img-museum
-FROM ghcr.io/ente/web:ce7e41f9f91a5de65f80663331f0ab00737f18cd AS img-web
+FROM ghcr.io/ente/web:b665538f70621797702313cabff0db989081eeab AS img-web
 FROM axllent/mailpit:v1.34.0 AS img-mailpit
 FROM chrislusf/seaweedfs:4.55 AS img-seaweedfs
 

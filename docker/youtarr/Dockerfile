@@ -8,7 +8,7 @@
 #   youtarr    chroot   (the upstream image as-is: web UI, scheduler and yt-dlp, on 3011)
 #   gateway    built-in (nginx on 8080)
 
-FROM dialmaster/youtarr:v1.95.0 AS img-youtarr
+FROM dialmaster/youtarr:v1.96.0 AS img-youtarr
 
 FROM debian:trixie-slim
 

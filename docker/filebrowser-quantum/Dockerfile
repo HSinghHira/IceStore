@@ -9,7 +9,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM gtstef/filebrowser:2.0.2-stable
+FROM gtstef/filebrowser:2.1.0-stable
 
 USER root
 COPY icestore-init.sh /usr/local/bin/icestore-init

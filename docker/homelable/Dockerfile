@@ -11,8 +11,8 @@
 #
 # The optional MCP server (for AI clients) is left out.
 
-FROM ghcr.io/pouzor/homelable-backend:3.7.1 AS img-backend
-FROM ghcr.io/pouzor/homelable-frontend:3.7.1 AS img-frontend
+FROM ghcr.io/pouzor/homelable-backend:3.8.0 AS img-backend
+FROM ghcr.io/pouzor/homelable-frontend:3.8.0 AS img-frontend
 
 FROM debian:trixie-slim
 

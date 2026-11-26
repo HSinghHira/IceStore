@@ -167,13 +167,14 @@ x-casaos:
   port_map: "6139"
   scheme: http
   is_uncontrolled: false
-  version: "0.35.0"
-  update_at: "2026-11-24"
+  version: "0.36.0"
+  update_at: "2026-11-25"
   release_notes:
     en_US: |-
+      - Updated overtchat-app 0.35.0 to 0.36.0
       - Updated overtchat-app 0.29.0 to 0.35.0
       - First version in IceStore, on port 6139
-      - Built on ghcr.io/yoloyash/overtchat-app 0.35.0, plus a start script that makes each install's own BETTER_AUTH_SECRET
+      - Built on ghcr.io/yoloyash/overtchat-app 0.36.0, plus a start script that makes each install's own BETTER_AUTH_SECRET
       - Sign-in works from any home-network address on port 6139 (192.168.x, 10.x, 172.x, 100.x and .local); BETTER_AUTH_URL is now optional and defaults to http://localhost:6139
       - Single container: upstream's optional Redis, SearXNG, Kokoro and speech-to-text services are not bundled; add your own in Settings
   repo: "https://github.com/yoloyash/overtchat"
