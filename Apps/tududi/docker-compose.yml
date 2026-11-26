@@ -2,7 +2,7 @@ name: tududi
 
 services:
   tududi:
-    image: ghcr.io/hsinghhira/tududi:1.0.2
+    image: ghcr.io/hsinghhira/tududi:1.0.3
     container_name: tududi
     restart: unless-stopped
     stop_grace_period: 90s
