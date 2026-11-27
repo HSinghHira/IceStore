@@ -10,7 +10,7 @@ services:
     init: true
     environment:
       - TZ=$TZ
-      - KY_APP_URL=http://[ZIMAOS-IP-ADDRESS]:6876
+      - KY_APP_URL=https://calendar.example.com
       - KY_ADMIN_PASSWORD=
     ports:
       - target: 8080
@@ -54,12 +54,12 @@ services:
         - container: KY_APP_URL
           description:
             en_US: >-
-              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
-              http://192.168.1.20:6876, or use your https address behind a
-              reverse proxy, like https://calendar.example.com. It must be the
-              exact address you open in the browser, or sign-in and changes
-              are refused. Sign-in with KyIdentity and access from outside
-              your home need the https address.
+              Required. Replace https://calendar.example.com with the https
+              address of your reverse proxy (like Nginx Proxy Manager) that
+              points at http://[ZIMAOS-IP-ADDRESS]:6876. KyCalendar needs
+              https to sign in: its sign-in check only runs on an https page.
+              It must be the exact address you open in the browser, or
+              sign-in and changes are refused.
         - container: KY_ADMIN_PASSWORD
           description:
             en_US: >-
@@ -72,9 +72,10 @@ services:
           description:
             en_US: >-
               KyCalendar web app and CalDAV for calendar apps, published on
-              host as 6876. Phone and desktop calendar apps need an https
-              address and an everyday account with an app password; the
-              admin account is refused on CalDAV.
+              host as 6876. Plain http, for your https reverse proxy to point
+              at: sign-in only works through the proxy's https address.
+              Calendar apps use that https address and an everyday account
+              with an app password; the admin account is refused on CalDAV.
       volumes:
         - container: /app/data
           description:
@@ -111,10 +112,13 @@ x-casaos:
       sign-in is optional.
 
 
-      The web app works at home over http. Phone and desktop calendar apps
-      need an https address (a reverse proxy with your domain) and an
-      everyday account with an app password: the admin account is refused
-      on CalDAV.
+      KyCalendar needs https: you can only sign in on an https address, so
+      put it behind a reverse proxy (like Nginx Proxy Manager or a
+      Cloudflare tunnel) with your own domain. Opening
+      http://[ZIMAOS-IP-ADDRESS]:6876 directly shows the sign-in page, but
+      sign-in fails. Phone and desktop calendar apps use the same https
+      address and an everyday account with an app password: the admin
+      account is refused on CalDAV.
 
 
       **Features**
@@ -134,14 +138,15 @@ x-casaos:
       **How to use?**
 
 
-      1. Set KY_APP_URL to the address you will open, before you install.
+      1. Set up an https reverse proxy for KyCalendar and set KY_APP_URL to
+         its https address, before you install.
 
 
       2. Find the admin password in the app's logs, in the box marked
          CREDENTIALS.
 
 
-      3. Open KyCalendar, sign in as admin and change the password.
+      3. Open your https address, sign in as admin and change the password.
 
 
       4. Add an everyday account, sign in with it and make calendars. For
@@ -150,17 +155,20 @@ x-casaos:
   tips:
     before_install:
       en_US: >-
-        1. Open the app configuration and set KY_APP_URL. Replace
-           [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
-           http://192.168.1.20:6876 for use at home. You must do this, or
-           sign-in won't work from your other devices.
+        1. KyCalendar needs https. You can only sign in on an https
+           address, so set up a reverse proxy first (like Nginx Proxy
+           Manager or a Cloudflare tunnel) with your own domain, like
+           https://calendar.example.com, pointed at
+           http://[ZIMAOS-IP-ADDRESS]:6876. Opening that http address
+           directly shows the sign-in page, but sign-in fails.
 
 
-        2. For use from outside your home, or sign-in with KyIdentity, put
-           KyCalendar behind a reverse proxy (like Nginx Proxy Manager or a
-           Cloudflare tunnel) with your own domain. Then set KY_APP_URL to
-           that https address, like https://calendar.example.com. Phone and
-           desktop calendar apps also need this https address.
+        2. Open the app configuration and set KY_APP_URL to your https
+           address. You must do this, or sign-in won't work. Phone and
+           desktop calendar apps use this address too. Also add the setting
+           KY_TRUSTED_PROXIES with your proxy's address, like 172.17.0.5/32
+           (never 0.0.0.0/0), so sign-in limits count each person, not the
+           proxy.
 
 
         3. Leave KY_ADMIN_PASSWORD empty to get a made-up password, or type
@@ -180,7 +188,8 @@ x-casaos:
            the admin user name and password.
 
 
-        7. Open KyCalendar, sign in as admin and change the password.
+        7. Open your https address, sign in as admin and change the
+           password.
 
 
         8. Add an everyday account for yourself. Phone and desktop calendar
@@ -196,6 +205,7 @@ x-casaos:
   release_notes:
     en_US: |-
       - First IceStore version: ghcr.io/busnes-app/kycalendar 0.6.1.3
+      - Needs an https reverse proxy to sign in; set KY_APP_URL to its address.
       - Port 6876; data in /DATA/AppData/kycalendar (data and backups folders).
       - The session secret is made on first start and kept in the data folder.
   repo: "https://github.com/Busnes-app/KyCalendar"

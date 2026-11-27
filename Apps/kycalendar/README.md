@@ -16,15 +16,15 @@ variables:
     group: Reverse proxy
     default: ""
     description: >-
-      Leave empty to set the secure cookie flag from KY_APP_URL: off for http
-      and on for https. Set true or false only when your proxy cannot report
-      the original address correctly.
+      Leave empty to mark cookies secure for KyCalendar's required https
+      address. Set true or false only when your proxy cannot report the
+      original address correctly.
   - name: KY_ALLOW_INSECURE_HTTP
     group: Reverse proxy
     default: ""
     description: >-
-      Leave empty to set this from KY_APP_URL. It allows http at home and stays
-      off for an https address. Do not turn it on for an internet-facing app.
+      Leave empty. KyCalendar needs an https address for its sign-in security
+      check, so do not turn this on for a normal install.
   - name: KY_TRUSTED_PROXIES
     group: Reverse proxy
     default: ""
@@ -167,14 +167,15 @@ KyCalendar is a private calendar for the Busnes Ky Suite. It gives each person a
 
 ## How to use
 
-1. Open the app logs and find the box marked **CREDENTIALS**. It has the first `admin` password when `KY_ADMIN_PASSWORD` was left empty; otherwise use the password you set. The made password is also in `initial-admin-password` in the data folder.
-2. Open KyCalendar at the address in `KY_APP_URL`, sign in as `admin` and change the password. Then create everyday people and local groups under **People**.
-3. Create a calendar and an event in the web app.
-4. Sign in as an everyday user, not `admin`, then make an app password with the `dav` scope in **Settings** → **Phones & apps**. Connect a phone or computer to your own https address, such as `https://calendar.example.com/dav/`.
-5. If you use KyIdentity, connect it for single sign-on and provisioning. Connect KyPost only when you want email invitations.
+1. Set up an https reverse proxy, such as Nginx Proxy Manager, with your own domain. Point it at `http://[ZIMAOS-IP-ADDRESS]:6876`, then set `KY_APP_URL` to the proxy's exact https address.
+2. Open the app logs and find the box marked **CREDENTIALS**. It has the first `admin` password when `KY_ADMIN_PASSWORD` was left empty; otherwise use the password you set. The made password is also in `initial-admin-password` in the data folder.
+3. Open KyCalendar at the https address in `KY_APP_URL`, sign in as `admin` and change the password. Then create everyday people and local groups under **People**.
+4. Create a calendar and an event in the web app.
+5. Sign in as an everyday user, not `admin`, then make an app password with the `dav` scope in **Settings** → **Phones & apps**. Connect a phone or computer to your own https address, such as `https://calendar.example.com/dav/`.
+6. If you use KyIdentity, connect it for single sign-on and provisioning. Connect KyPost only when you want email invitations.
 
 ## Before you install
 
-**You must set `KY_APP_URL` first.** It must be the exact address you open. At home, `http://[ZIMAOS-IP-ADDRESS]:6876` works for the web app. For access outside your home, KyIdentity or phone and desktop calendar apps, use an https address through a reverse proxy, such as `https://calendar.example.com`, pointed at `http://[ZIMAOS-IP-ADDRESS]:6876`. Set `KY_TRUSTED_PROXIES` to the proxy's exact address so KyCalendar can see the real visitor address.
+**KyCalendar requires https to sign in.** Its browser security check only runs on a secure connection. Set up a reverse proxy, such as Nginx Proxy Manager, with your own domain and point it at `http://[ZIMAOS-IP-ADDRESS]:6876`. Set `KY_APP_URL` to the proxy's exact https address, such as `https://calendar.example.com`, before you install. Add the proxy's exact address to `KY_TRUSTED_PROXIES` so KyCalendar can see the real visitor address. Opening `http://[ZIMAOS-IP-ADDRESS]:6876` directly shows the sign-in page, but sign-in fails. CalDAV also needs the https address and an everyday account with an app password.
 
 When `KY_ADMIN_PASSWORD` is empty, the first administrator password is in the **CREDENTIALS** box in the app logs and also in `initial-admin-password` in `/DATA/AppData/kycalendar/data` (open it with the Files app). If you set `KY_ADMIN_PASSWORD`, use that instead. Change the password after the first sign-in and remove the file. Back up both the data and backups folders: they hold the calendar data, keys and encrypted recovery capsules. More optional settings are in the Variables tab; add them in the app settings.

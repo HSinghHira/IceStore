@@ -8,13 +8,16 @@
 #     out). A value from the app settings is used and saved; blank means the
 #     saved one, or a new one made on first start, kept in
 #     /app/data/.icestore/ (back up the whole data folder).
-#   - KY_APP_URL: the address people open. It must match the browser's
-#     address exactly, or KyCalendar refuses sign-in and changes. While it
-#     still has [ZIMAOS-IP-ADDRESS], localhost is used and the log says what
-#     to do.
+#   - KY_APP_URL: the https address of the reverse proxy in front of
+#     KyCalendar. It must match the browser's address exactly, or KyCalendar
+#     refuses sign-in and changes, and sign-in only works on an https page
+#     (its sign-in check needs one). While it is blank, the example address
+#     or still has [ZIMAOS-IP-ADDRESS], the log says to set the proxy's https
+#     address (blank or the placeholder run on http://localhost meanwhile).
 #   - Plain http address: KY_ALLOW_INSECURE_HTTP=true (production refuses
 #     http without it) and KY_COOKIE_SECURE=false (browsers drop Secure
-#     cookies on http, so sign-in would fail), unless you set them.
+#     cookies on http), unless you set them, and a log line that sign-in
+#     needs https.
 #   - SCIM stays off until you set KY_SCIM_TOKEN (32+ characters).
 #   - The CREDENTIALS banner shows the first admin password.
 #
@@ -77,17 +80,21 @@ make_secret KY_SESSION_SECRET 32
 [ -n "${KY_APP_URL:-}" ] || KY_APP_URL="http://[ZIMAOS-IP-ADDRESS]:$PORT"
 case $KY_APP_URL in
   *"[ZIMAOS-IP-ADDRESS]"*)
-    log "KY_APP_URL is still $KY_APP_URL: replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP in the app settings, like http://192.168.1.20:$PORT, or with your https address behind a reverse proxy."
-    log "Until then KyCalendar only works on the ZimaOS box itself, at http://localhost:$PORT; other devices can't sign in."
+    ADDR_WARNED=1
+    log "KY_APP_URL is not set ($KY_APP_URL): set it in the app settings to the https address of your reverse proxy (like Nginx Proxy Manager) pointed at http://<your ZimaOS IP>:$PORT. KyCalendar only lets you sign in on an https page."
     KY_APP_URL=$(printf '%s' "$KY_APP_URL" | sed 's/\[ZIMAOS-IP-ADDRESS\]/localhost/') ;;
 esac
 KY_APP_URL=${KY_APP_URL%/}
+case $KY_APP_URL in
+  *calendar.example.com*)
+    log "KY_APP_URL is still the example $KY_APP_URL: set it to your own https address (a reverse proxy pointed at http://<your ZimaOS IP>:$PORT). KyCalendar only lets you sign in on an https page." ;;
+esac
 case $KY_APP_URL in
   https://*) ;;
   *) [ -n "${KY_ALLOW_INSECURE_HTTP:-}" ] || KY_ALLOW_INSECURE_HTTP=true
      [ -n "${KY_COOKIE_SECURE:-}" ] || KY_COOKIE_SECURE=false
      export KY_ALLOW_INSECURE_HTTP KY_COOKIE_SECURE
-     log "KY_APP_URL is plain http, so sign-in cookies don't get the Secure flag. Use an https address behind a reverse proxy for access from outside your home network." ;;
+     [ -n "${ADDR_WARNED:-}" ] || log "KY_APP_URL is plain http ($KY_APP_URL): the page opens, but sign-in only works on https (or on the box itself at http://localhost:$PORT). Put an https reverse proxy in front and set KY_APP_URL to its address." ;;
 esac
 export KY_APP_URL
 
