@@ -1,6 +1,6 @@
 {
   "name": "FCaptcha",
-  "repo": "ghcr.io/hsinghhira/fcaptcha:1.0.2",
+  "repo": "ghcr.io/hsinghhira/fcaptcha:1.0.3",
   "category": [
     "Utilities"
   ],
