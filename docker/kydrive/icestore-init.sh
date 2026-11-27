@@ -35,7 +35,17 @@ LOG_TAG=icestore
 for d in "$DATA" "$BACKUPS" "$BULK"; do
   mkdir -p "$d"
   [ "$(stat -c %u:%g "$d")" = "$APP_UID:$APP_GID" ] || chown -R "$APP_UID:$APP_GID" "$d"
+  # The app refuses to start ("setup socket directory has an ancestor
+  # other users can modify") when a folder above <data>/installer is group- or
+  # other-writable, as ZimaOS may make the bind folders. Private on every start,
+  # so an existing install recovers too.
+  chmod 700 "$d"
 done
+# The installer socket folder must be private and owned by the app user.
+if [ -d "$DATA/installer" ]; then
+  chown "$APP_UID:$APP_GID" "$DATA/installer"
+  chmod 700 "$DATA/installer"
+fi
 mkdir -p "$DIR"
 chown "$APP_UID:$APP_GID" "$DIR"
 chmod 700 "$DIR"
