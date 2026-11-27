@@ -137,6 +137,12 @@ variables:
     default: gpt-4o
     description: >-
       The model to use.
+  - name: AI_GATEWAY_ALLOW_PRIVATE_URL
+    group: AI
+    default: "false"
+    description: >-
+      Set to true to let the AI gateway use a custom model address on your
+      own network, like a local Ollama.
   - name: DISABLE_AUTO_CLEAR
     group: Data
     default: "false"

@@ -179,9 +179,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "1.34.5"
-  update_at: "2026-11-26"
+  update_at: "2026-11-27"
   release_notes:
     en_US: |-
+      - Added the AI_GATEWAY_ALLOW_PRIVATE_URL setting, needed since 1.34.5 for custom model addresses on your own network
       - Updated tianji 1.34.4 to 1.34.5
       - Updated tianji 1.34.3 to 1.34.4
       - Updated tianji 1.33.12 to 1.34.3
