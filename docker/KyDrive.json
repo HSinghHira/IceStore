@@ -50,7 +50,7 @@
       "protocol": "tcp",
       "host": "6875",
       "container": "8080",
-      "description": "KyDrive web app, WebDAV (/dav) and MCP for AI agents (/mcp), published on host as 6875. WebDAV and MCP only work over https, through a reverse proxy listed in KY_TRUSTED_PROXIES."
+      "description": "KyDrive web app, WebDAV (/dav) and MCP for AI agents (/mcp), published on host as 6875. Plain http, for your https reverse proxy to point at: sign-in only works through the proxy's https address, and WebDAV and MCP also need the proxy listed in KY_TRUSTED_PROXIES."
     }
   ],
   "variables": [
@@ -64,9 +64,9 @@
     {
       "name": "KY_APP_URL",
       "key": "KY_APP_URL",
-      "value": "http://YOUR-SERVER-IP:6875",
+      "value": "https://drive.example.com",
       "mask": false,
-      "description": "Required. Replace YOUR-SERVER-IP with your server IP, like http://192.168.1.20:6875, or use your https address behind a reverse proxy, like https://drive.example.com. It must be the exact address you open in the browser, or sign-in and uploads are refused. Sign-in with KyIdentity and access from outside your home need the https address."
+      "description": "Required. Replace https://drive.example.com with the https address of your reverse proxy (like Nginx Proxy Manager) that points at http://YOUR-SERVER-IP:6875. KyDrive needs https to sign in: its sign-in check only runs on an https page. It must be the exact address you open in the browser, or sign-in and uploads are refused."
     },
     {
       "name": "KY_ADMIN_PASSWORD",
