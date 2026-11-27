@@ -13,7 +13,7 @@
 # Left out: upstream's backup sidecar. Back up /DATA/AppData/inkling instead
 # (ZimaOS backup, or a copy while the app is stopped).
 
-FROM ghcr.io/prove1352/inkling:0.25.3 AS img-inkling
+FROM ghcr.io/prove1352/inkling:0.26.1 AS img-inkling
 
 FROM debian:trixie-slim
 

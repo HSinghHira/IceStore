@@ -132,12 +132,13 @@ x-casaos:
   port_map: "6747"
   scheme: http
   is_uncontrolled: false
-  version: "2.17.4"
-  update_at: "2026-11-24"
+  version: "2.17.5"
+  update_at: "2026-11-27"
   release_notes:
     en_US: |-
+      - Updated pwpush 2.17.4 to 2.17.5
       - Updated pwpush 2.17.2 to 2.17.4
-      - First IceStore version, built on pglombardo/pwpush 2.17.4
+      - First IceStore version, built on pglombardo/pwpush 2.17.5
       - Each install makes its own SECRET_KEY_BASE on first start, so sessions and pushes survive restarts
       - Web page on port 6747
   repo: "https://github.com/pglombardo/PasswordPusher"

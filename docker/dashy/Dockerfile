@@ -9,7 +9,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM lissy93/dashy:4.10.0
+FROM lissy93/dashy:4.10.2
 
 USER root
 RUN apk add --no-cache su-exec \

@@ -1,4 +1,4 @@
-FROM ghcr.io/webdecoy/fcaptcha:1.52.0
+FROM ghcr.io/webdecoy/fcaptcha:1.53.0
 
 USER 0:0
 RUN apk add --no-cache su-exec

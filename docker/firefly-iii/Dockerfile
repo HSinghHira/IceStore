@@ -10,7 +10,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM fireflyiii/core:version-6.7.9
+FROM fireflyiii/core:version-6.7.12
 
 USER root
 RUN apt-get update \

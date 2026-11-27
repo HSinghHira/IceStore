@@ -155,12 +155,13 @@ x-casaos:
   port_map: "6771"
   scheme: http
   is_uncontrolled: false
-  version: "version-6.7.9"
-  update_at: "2026-11-21"
+  version: "version-6.7.12"
+  update_at: "2026-11-27"
   release_notes:
     en_US: |-
+      - Updated core version-6.7.9 to version-6.7.12
       - First IceStore release, on port 6771
-      - Built on fireflyiii/core version-6.7.9, with SQLite as the database
+      - Built on fireflyiii/core version-6.7.12, with SQLite as the database
       - Each install makes its own APP_KEY and cron token on first start, and the daily jobs run inside the container
       - Fixed: Firefly III stopped at start with "failed to open error_log (/proc/self/fd/2): Permission denied".
       - 1.0.1 did not fix it; 1.0.2 does (the log pipes are now given to www-data correctly).

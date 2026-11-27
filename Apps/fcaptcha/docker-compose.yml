@@ -88,10 +88,11 @@ x-casaos:
   port_map: "6790"
   scheme: http
   is_uncontrolled: false
-  version: "1.52.0"
-  update_at: "2026-11-26"
+  version: "1.53.0"
+  update_at: "2026-11-27"
   release_notes:
     en_US: |-
+      - Updated fcaptcha 1.52.0 to 1.53.0
       - Updated fcaptcha 1.51.4 to 1.52.0
       - Updated fcaptcha 1.51.1 to 1.51.4
       - Initial IceStore package using ghcr.io/webdecoy/fcaptcha 1.51.1.

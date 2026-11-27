@@ -178,17 +178,18 @@ x-casaos:
   port_map: "6163"
   scheme: http
   is_uncontrolled: false
-  version: "1.34.5"
+  version: "1.34.6"
   update_at: "2026-11-27"
   release_notes:
     en_US: |-
+      - Updated tianji 1.34.5 to 1.34.6
       - Added the AI_GATEWAY_ALLOW_PRIVATE_URL setting, needed since 1.34.5 for custom model addresses on your own network
       - Updated tianji 1.34.4 to 1.34.5
       - Updated tianji 1.34.3 to 1.34.4
       - Updated tianji 1.33.12 to 1.34.3
       - Moved to IceStore as a single container with one port (6163, was 8432) and one data folder. The app id is now com.icestore.tianji.
       - The JWT secret, the database passwords and the admin password are made on first start, so each install gets its own. The default admin / admin login is replaced.
-      - moonrailgun/tianji 1.34.5
+      - moonrailgun/tianji 1.34.6
       - PostgreSQL 15 inside
   repo: "https://github.com/msgbyte/tianji"
   support: "https://github.com/msgbyte/tianji/issues"

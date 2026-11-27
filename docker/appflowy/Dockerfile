@@ -3,11 +3,11 @@
 # AppFlowy all-in-one. Build with ./capture-meta.sh run first (it fills ./meta).
 # To bump a version, change the tag on a FROM line below and rebuild.
 
-FROM appflowyinc/appflowy_cloud:0.22.0 AS img-cloud
-FROM appflowyinc/appflowy_worker:0.22.0 AS img-worker
-FROM appflowyinc/appflowy_search:0.22.0 AS img-search
-FROM appflowyinc/gotrue:0.22.0 AS img-gotrue
-FROM appflowyinc/admin_frontend:0.20.5 AS img-admin
+FROM appflowyinc/appflowy_cloud:0.22.2 AS img-cloud
+FROM appflowyinc/appflowy_worker:0.22.2 AS img-worker
+FROM appflowyinc/appflowy_search:0.22.2 AS img-search
+FROM appflowyinc/gotrue:0.22.2 AS img-gotrue
+FROM appflowyinc/admin_frontend:0.21.0 AS img-admin
 FROM appflowyinc/appflowy_web:0.21.0 AS img-web
 FROM axllent/mailpit:v1.34.0 AS img-mailpit
 FROM pgsty/silo:RELEASE.2026-11-12T00-00-00Z AS img-silo
