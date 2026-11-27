@@ -22,9 +22,9 @@ variables:
     group: Reverse proxy
     default: ""
     description: >-
-      Leave empty to keep cookies unsecured for an http address and secure for
-      an https address. Set true or false only when your proxy cannot report
-      the original address correctly.
+      Leave empty to mark cookies secure for KyDrive's required https address.
+      Set true or false only when your proxy cannot report the original address
+      correctly.
   - name: KY_TRUSTED_PROXIES
     group: Reverse proxy
     default: ""
@@ -148,14 +148,14 @@ KyDrive is a private file drive for the Busnes Ky Suite. It keeps files in share
 
 ## How to use
 
-1. Set `KY_APP_URL` to the exact address you will open. `http://[ZIMAOS-IP-ADDRESS]:6875` works for the web app and its built-in administrator at home.
-2. For outside access, KyIdentity sign-in, WebDAV or MCP, put KyDrive behind an https reverse proxy and set `KY_APP_URL` to that https address. Add your proxy's address to `KY_TRUSTED_PROXIES`.
+1. Set up an https reverse proxy, such as Nginx Proxy Manager, with your own domain. Point it at `http://[ZIMAOS-IP-ADDRESS]:6875`, then set `KY_APP_URL` to the proxy's exact https address.
+2. Add your proxy's address to `KY_TRUSTED_PROXIES` for WebDAV and MCP. KyDrive's sign-in puzzle and other security checks need the https address in `KY_APP_URL`.
 3. Open the app logs and find the box marked **CREDENTIALS**. It has the first `admin` password when `KY_ADMIN_PASSWORD` was left empty; otherwise use the password you set. The made password is also in `initial-admin-password` in the data folder.
-4. Open KyDrive at the address in `KY_APP_URL`, sign in as `admin` and change the password. Connect KyIdentity before adding everyday users: the local administrator only manages the drive.
+4. Open KyDrive at the https address in `KY_APP_URL`, sign in as `admin` and change the password. Connect KyIdentity before adding everyday users: the local administrator only manages the drive.
 5. KyDrive sets up its bulk-file backup repository on first start. Copy `data`, `backups` and `bulk` to another disk or machine: all three are needed for recovery.
 
 ## Before you install
 
-**You must set `KY_APP_URL` first.** It must be the exact address you open. At home, `http://[ZIMAOS-IP-ADDRESS]:6875` works for the web app and its administrator. For access outside your home, KyIdentity, WebDAV or MCP, use an https address such as `https://drive.example.com` through a reverse proxy pointed at `http://[ZIMAOS-IP-ADDRESS]:6875`, and set `KY_TRUSTED_PROXIES` to that proxy's address. Do not change the public address after people start using the drive.
+**KyDrive requires https to sign in.** Its sign-in puzzle and security checks only run on a secure connection. Set up a reverse proxy, such as Nginx Proxy Manager, with your own domain and point it at `http://[ZIMAOS-IP-ADDRESS]:6875`. Set `KY_APP_URL` to the proxy's exact https address, such as `https://drive.example.com`, before you install. Add the proxy's address to `KY_TRUSTED_PROXIES` for WebDAV and MCP. Opening `http://[ZIMAOS-IP-ADDRESS]:6875` directly shows the sign-in page, but sign-in fails. Do not change the public address after people start using the drive.
 
 When `KY_ADMIN_PASSWORD` is empty, the first administrator password is in the **CREDENTIALS** box in the app logs and also in `initial-admin-password` in `/DATA/AppData/kydrive/data` (open it with the Files app). If you set `KY_ADMIN_PASSWORD`, use that instead. Change the password after the first sign-in and remove the file. Keep `data`, `backups` and `bulk` together in a copy on another disk: the metadata backup alone does not contain every file. More optional settings are in the Variables tab; add them in the app settings. The image is built for amd64 only.

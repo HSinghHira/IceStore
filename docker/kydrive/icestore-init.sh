@@ -7,11 +7,14 @@
 #     production without them. A value from the app settings is used and
 #     saved; blank means the saved one, or a new one made on first start.
 #     Both are kept in /app/data/.icestore/ (back up the whole data folder).
-#   - KY_APP_URL: the address people open. It must match the browser's
-#     address exactly, or KyDrive refuses sign-in and uploads. While it still
-#     has [ZIMAOS-IP-ADDRESS], localhost is used and the log says what to do.
+#   - KY_APP_URL: the https address of the reverse proxy in front of
+#     KyDrive. It must match the browser's address exactly, or KyDrive
+#     refuses sign-in and uploads, and sign-in only works on an https page
+#     (its sign-in check needs one). While it is blank, the example address
+#     or still has [ZIMAOS-IP-ADDRESS], the log says to set the proxy's https
+#     address (blank or the placeholder run on http://localhost meanwhile).
 #   - KY_COOKIE_SECURE: blank means off for an http:// address (browsers drop
-#     Secure cookies there, so sign-in would fail) and on for https://.
+#     Secure cookies there) and on for https://.
 #   - After the server answers, `bulk-init` sets up the file backup
 #     repository in /app/bulk (it changes nothing when it already exists),
 #     and the CREDENTIALS banner shows the first admin password.
@@ -77,16 +80,21 @@ make_secret KY_SCIM_TOKEN 32
 [ -n "${KY_APP_URL:-}" ] || KY_APP_URL="http://[ZIMAOS-IP-ADDRESS]:$PORT"
 case $KY_APP_URL in
   *"[ZIMAOS-IP-ADDRESS]"*)
-    log "KY_APP_URL is still $KY_APP_URL: replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP in the app settings, like http://192.168.1.20:$PORT, or with your https address behind a reverse proxy."
-    log "Until then KyDrive only works on the ZimaOS box itself, at http://localhost:$PORT; other devices can't sign in."
+    ADDR_WARNED=1
+    log "KY_APP_URL is not set ($KY_APP_URL): set it in the app settings to the https address of your reverse proxy (like Nginx Proxy Manager) pointed at http://<your ZimaOS IP>:$PORT. KyDrive only lets you sign in on an https page."
     KY_APP_URL=$(printf '%s' "$KY_APP_URL" | sed 's/\[ZIMAOS-IP-ADDRESS\]/localhost/') ;;
 esac
 KY_APP_URL=${KY_APP_URL%/}
+case $KY_APP_URL in
+  *drive.example.com*)
+    log "KY_APP_URL is still the example $KY_APP_URL: set it to your own https address (a reverse proxy pointed at http://<your ZimaOS IP>:$PORT). KyDrive only lets you sign in on an https page." ;;
+  http://*)
+    [ -n "${ADDR_WARNED:-}" ] || log "KY_APP_URL is plain http ($KY_APP_URL): the page opens, but sign-in only works on https (or on the box itself at http://localhost:$PORT). Put an https reverse proxy in front and set KY_APP_URL to its address." ;;
+esac
 if [ -z "${KY_COOKIE_SECURE:-}" ]; then
   case $KY_APP_URL in
     https://*) KY_COOKIE_SECURE=true ;;
-    *) KY_COOKIE_SECURE=false
-       log "KY_APP_URL is plain http, so sign-in cookies don't get the Secure flag. Use an https address behind a reverse proxy for access from outside your home network." ;;
+    *) KY_COOKIE_SECURE=false ;;
   esac
 fi
 export KY_APP_URL KY_COOKIE_SECURE
