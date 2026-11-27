@@ -2,7 +2,7 @@ name: fcaptcha
 
 services:
   fcaptcha:
-    image: ghcr.io/hsinghhira/fcaptcha:1.0.2
+    image: ghcr.io/hsinghhira/fcaptcha:1.0.3
     container_name: fcaptcha
     restart: unless-stopped
     network_mode: bridge
