@@ -1,0 +1,246 @@
+name: kypost
+
+services:
+  kypost:
+    image: ghcr.io/busnes-app/kypost-server:0.6.1.4
+    container_name: kypost
+    restart: unless-stopped
+    stop_grace_period: 300s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - SERVER_BASE_URL=https://mail.example.com
+      - KYPOST_BIND=0.0.0.0
+      - ALLOW_INSECURE_HTTP=true
+      - KYPOST_DISABLE_AI_SORTING=false
+    ports:
+      - target: 5866
+        published: "6877"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /kypost/config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/private
+        target: /kypost/private
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/state
+        target: /kypost/state
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/logs
+        target: /kypost/logs
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/ollama-models
+        target: /kypost/ollama-models
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5866/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 6144M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypost/icon.png
+    x-casaos:
+      id: com.icestore.kypost
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: SERVER_BASE_URL
+          description:
+            en_US: >-
+              Required. Replace https://mail.example.com with the https
+              address of your reverse proxy (like Nginx Proxy Manager) that
+              points at http://[ZIMAOS-IP-ADDRESS]:6877. KyPost needs https to
+              sign in: its sign-in check only runs on an https page. Links in
+              pickup and pairing messages use this address too.
+        - container: KYPOST_BIND
+          description:
+            en_US: >-
+              The address KyPost listens on inside the container. Leave it as
+              0.0.0.0 so the port works.
+        - container: ALLOW_INSECURE_HTTP
+          description:
+            en_US: >-
+              Leave it as true. KyPost serves plain http on its port for your
+              https reverse proxy to point at; without this it refuses to
+              start.
+        - container: KYPOST_DISABLE_AI_SORTING
+          description:
+            en_US: >-
+              false sorts and labels your mail with a local AI model (about 3
+              GB download on first start and up to about 3 GB of memory).
+              Set true to turn AI sorting off and save the memory.
+      ports:
+        - container: "5866"
+          description:
+            en_US: >-
+              KyPost web app, published on host as 6877. Plain http, for your
+              https reverse proxy to point at: sign-in only works through the
+              proxy's https address.
+      volumes:
+        - container: /kypost/config
+          description:
+            en_US: >-
+              Accounts and settings. first-run-password.txt here holds the
+              first admin password until you delete it.
+        - container: /kypost/private
+          description:
+            en_US: >-
+              The encryption and signing keys KyPost makes on first start.
+              Back them up: without them the saved mail account passwords
+              and sign-in codes can't be read.
+        - container: /kypost/state
+          description:
+            en_US: >-
+              The mail cache, sorting state and backups. Back it up with the
+              other folders.
+        - container: /kypost/logs
+          description:
+            en_US: Log files of the web app, the mail worker and the AI model.
+        - container: /kypost/ollama-models
+          description:
+            en_US: >-
+              The local AI model for mail sorting, downloaded on first start
+              (about 3 GB). Not needed with KYPOST_DISABLE_AI_SORTING=true.
+
+x-casaos:
+  id: com.icestore.kypost
+  architectures:
+    - amd64
+  main: kypost
+  author: HSinghHira
+  category: Productivity
+  developer: Busnes-app
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypost/icon.png
+  title:
+    en_US: KyPost
+  tagline:
+    en_US: Web mail client for your existing mailboxes, with local AI sorting, part of the Ky Suite.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kypost/](https://icestore.hsinghhira.me/app/kypost/) for full details
+
+
+      KyPost is the mail app of the Busnes Ky Suite: a web client for the
+      mailboxes you already have (IMAP and SMTP), that sorts and labels new
+      mail with a small AI model running on your ZimaOS. Nothing leaves your
+      box for the sorting.
+
+
+      KyPost needs https: you can only sign in on an https address, so put
+      it behind a reverse proxy (like Nginx Proxy Manager or a Cloudflare
+      tunnel) with your own domain. Opening http://[ZIMAOS-IP-ADDRESS]:6877
+      directly shows the sign-in page, but sign-in fails.
+
+
+      **Features**
+
+
+      - Read, write and search mail from your existing IMAP and SMTP accounts
+
+      - Local AI sorting and labels (Ollama), or turn it off
+
+      - Multi-factor sign-in and several users
+
+      - Links with KyDrive, KyCalendar and KyIdentity
+
+      - Sealed backups of settings and keys
+
+
+      **How to use?**
+
+
+      1. Set up an https reverse proxy for KyPost and set SERVER_BASE_URL to
+         its https address, before you install.
+
+
+      2. Open the Files app, go to AppData, kypost, config and open
+         first-run-password.txt for the admin password.
+
+
+      3. Open your https address, sign in as admin and change the password.
+
+
+      4. Create an everyday account (Settings, Server, Manage Users) and
+         sign in with it. If KyPost asks you to set up an encryption key,
+         keep the recovery copy somewhere safe.
+
+
+      5. Add your mailbox under Settings, Mail, Email settings, then press
+         Save and Test connection. KyPost starts sorting your inbox.
+  tips:
+    before_install:
+      en_US: >-
+        1. KyPost needs https. You can only sign in on an https address, so
+           set up a reverse proxy first (like Nginx Proxy Manager or a
+           Cloudflare tunnel) with your own domain, like
+           https://mail.example.com, pointed at
+           http://[ZIMAOS-IP-ADDRESS]:6877. Opening that http address
+           directly shows the sign-in page, but sign-in fails.
+
+
+        2. Open the app configuration and set SERVER_BASE_URL to your https
+           address. You must do this, or sign-in won't work. Also add the
+           setting TRUSTED_PROXY_CIDRS with your proxy's address, like
+           172.17.0.5/32 (never 0.0.0.0/0), so sign-in limits count each
+           person, not the proxy.
+
+
+        3. AI sorting downloads a model of about 3 GB on first start and can
+           use about 3 GB of memory. To skip it, set
+           KYPOST_DISABLE_AI_SORTING to true.
+
+
+        4. More settings, like your proxy's address, mail limits and links to
+           the other Ky apps, are listed on the KyPost page at
+           https://icestore.hsinghhira.me/app/kypost/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation. The web app is ready in a minute or two;
+           AI sorting starts once its model has downloaded.
+
+
+        6. Open the Files app and go to AppData, kypost, config. Open
+           first-run-password.txt to see the user name and password.
+
+
+        7. Open your https address and sign in. Choose a new password when
+           asked, then delete the file.
+  index: /
+  port_map: "6877"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.6.1.4"
+  update_at: "2026-11-27"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/busnes-app/kypost-server 0.6.1.4
+      - Needs an https reverse proxy to sign in; set SERVER_BASE_URL to its address.
+      - Port 6877; data in /DATA/AppData/kypost (config, private, state, logs, ollama-models).
+      - Its own mail receiving stays off: KyPost uses your existing mailboxes.
+  repo: "https://github.com/Busnes-app/KyPost-Server"
+  support: "https://github.com/Busnes-app/KyPost-Server/issues"
+  docs: "https://github.com/Busnes-app/KyPost-Server/blob/main/INSTALL.md"
