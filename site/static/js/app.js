@@ -97,9 +97,27 @@
     input.onchange=()=>{input.value=clean(input.value)};
   };
 
+  /* Variables tab: the filter box (long lists only) hides rows that do not match, and any group left empty */
+  const varFilter=main=>{
+    const f=$('.vf input',main);if(!f)return;
+    const rows=[...main.querySelectorAll('.vg tbody tr')],groups=[...main.querySelectorAll('.vg')],none=$('.vnone',main);
+    f.oninput=()=>{
+      const words=f.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      let n=0;
+      rows.forEach(r=>{const hit=words.every(w=>r.dataset.q.includes(w));r.hidden=!hit;if(hit)n++});
+      groups.forEach(g=>{
+        const k=[...g.querySelectorAll('tbody tr')].filter(r=>!r.hidden).length,b=$('.vgh b',g);
+        g.hidden=!k;if(b)b.textContent=k;   /* the heading's count follows the filter */
+      });
+      none.hidden=n>0;
+    };
+    f.onkeydown=ev=>{if(ev.key==='Escape'&&f.value){ev.stopPropagation();f.value='';f.oninput()}};
+  };
+
   ICE.pages.app=main=>{
     gallery(main);
     services(main);
+    varFilter(main);
     /* compose highlighting (plain text stays readable without JS) */
     const code=$('code.yml',main);
     if(code)code.innerHTML=code.textContent.split('\n').map(yaml).join('\n');

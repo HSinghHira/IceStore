@@ -32,6 +32,9 @@ Site files:
   app-badge/                 badge picker page (built here); the badge SVGs come from
                              .github/scripts/app_badges.py, run after this script
   roadmap.json               apps planned for the store, shown on roadmap/ (icons in static/img/roadmap/)
+  bundles.json               app bundles, listed at bundles/ and each a page at bundles/<id>/: id, name,
+                             tagline, desc, keywords (for structured data), and apps (Apps/ folder
+                             slugs, in order) and/or match (a slug glob, e.g. "ky*")
   legacy-added.json          {Apps folder: UTC time} when apps moved over from HSinghHira/ZimaAppStore
                              were first added there; older than this repo's history, so it wins
   static/                    copied as-is: css/, js/, favicon/, img/
@@ -42,6 +45,7 @@ js/core.js only makes moving between them smoother.
 """
 import argparse
 import datetime
+import fnmatch
 import html
 import json
 import math
@@ -130,7 +134,26 @@ ICONS = {
     "rss": '<path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>',
     "download": '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
     "globe": '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/>',
+    "layers": '<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',
+    "briefcase": '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"/>',
+    "film": '<rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5M2 12h20"/>',
+    "network": '<rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/>',
+    "home": '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+    "sparkles": '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8zM5 2l.6 1.4L7 4l-1.4.6L5 6l-.6-1.4L3 4l1.4-.6z"/>',
+    "users": '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+    "wallet": '<path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+    "shapes": '<path d="M8.3 10a.7.7 0 0 1-.6-1.1l3.7-6a.7.7 0 0 1 1.2 0l3.7 6a.7.7 0 0 1-.6 1.1z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
 }
+# the icon shown next to each category name; anything not listed gets "tag"
+CAT_ICONS = {
+    "productivity": "briefcase", "media": "film", "developer": "code", "development": "code",
+    "networking": "network", "network": "network", "home": "home", "home automation": "home",
+    "ai": "sparkles", "social": "users", "finance": "wallet", "other": "shapes", "others": "shapes",
+}
+
+
+def cat_icon(c):
+    return icon(CAT_ICONS.get(c.lower(), "tag"))
 
 
 def os_logo(logo, root=""):
@@ -516,11 +539,13 @@ def marquee(apps):
     return "\n".join(out)
 
 
-def card(a, root=""):
+def card(a, root="", note=""):
     """App card with category, name and tagline. root leads back to the site root ("../../" on app pages).
-    data-q is what the home search matches: name, tagline and category."""
-    q = " ".join((a["name"], a["desc"], a["category"])).lower()
-    k = f'<span class="k">{e(a["category"])}</span>' if a["category"] else ""
+    note is raw HTML added after the category (a star count, a date). data-q is what the apps-page
+    search matches: name, tagline, category and the names of the bundles the app is in."""
+    q = " ".join((a["name"], a["desc"], a["category"], *(b["name"] for b in a.get("bundles", [])))).lower()
+    label = e(a["category"]) + (f" · {note}" if a["category"] and note else note)
+    k = f'<span class="k">{label}</span>' if label else ""
     p = f'<p>{e(a["desc"])}</p>' if a["desc"] else ""
     fallback = root + a["icon_url"] if a["icon_url"] else ""
     return (f'<a class="card" href="{root}app/{a["slug"]}/" data-name="{e(a["name"].lower())}" data-cat="{e(a["category"])}" '
@@ -547,39 +572,273 @@ def related_html(a, apps):
     return (
         '\n    <section class="sec rel" style="padding-left:0;padding-right:0" aria-labelledby="rel-h">\n'
         f'      <div class="rh"><h2 id="rel-h">More {e(cat)} apps</h2>'
-        f'<a class="btn" href="../../?{e(urlencode({"cat": cat}))}#apps">{icon("grid")}See all</a></div>\n'
+        f'<a class="btn" href="../../apps/?{e(urlencode({"cat": cat}))}">{icon("grid")}See all</a></div>\n'
         f'      <div class="grid">{"".join(card(x, "../../") for x in more)}</div>\n    </section>')
 
 
-def home_page(apps, cfg, tpl, layout):
-    base = cfg["base_url"]
-    cards = "".join(card(a) for a in apps)
-    # category filter: biggest first, "Others" last
+def categories(apps):
+    """{category: count}, biggest first, "Others" last."""
     counts = {}
     for a in apps:
         if a["category"]:
             counts[a["category"]] = counts.get(a["category"], 0) + 1
     order = sorted(counts, key=lambda c: (c.lower() in ("other", "others"), -counts[c], c.lower()))
-    cats = f'<button class="cat" type="button" data-cat="" aria-pressed="true">All<b>{len(apps)}</b></button>' + "".join(
-        f'<button class="cat" type="button" data-cat="{e(c)}" aria-pressed="false">{e(c)}<b>{counts[c]}</b></button>'
-        for c in order)
+    return {c: counts[c] for c in order}
+
+
+def load_bundles(apps):
+    """site/bundles.json -> [{id, name, tagline, desc, apps: [app, ...]}]. An entry lists its apps
+    by Apps/ folder slug (kept in that order) and/or matches them with a glob ("ky*", A-Z).
+    Each app gets a["bundles"], so its page and search know which bundles it is in."""
+    p = HERE / "bundles.json"
+    if not p.exists():
+        return []
+    by_slug = {a["slug"]: a for a in apps}
+    out = []
+    for b in json.loads(p.read_text(encoding="utf-8")):
+        picked = []
+        for s in b.get("apps") or []:
+            if s in by_slug:
+                picked.append(by_slug[s])
+            else:
+                warn(f"bundles.json {b['id']}: no app '{s}' in Apps/")
+        if b.get("match"):
+            picked += [a for a in apps if fnmatch.fnmatch(a["slug"], b["match"]) and a not in picked]
+        if len(picked) < 2:
+            warn(f"bundles.json {b['id']}: fewer than 2 apps, skipped")
+            continue
+        out.append({**b, "apps": picked})
+    for a in apps:
+        a["bundles"] = [b for b in out if a in b["apps"]]
+    return out
+
+
+def icon_stack(apps, root="", n=5):
+    """The first n app icons, overlapping, with "+3" for the rest."""
+    tiles = "".join(ph(a["name"], a["icon_cdn"], root + a["icon_url"] if a["icon_url"] else "") for a in apps[:n])
+    more = f'<span class="ph pl">+{len(apps) - n}</span>' if len(apps) > n else ""
+    return f'<span class="stk" aria-hidden="true">{tiles}{more}</span>'
+
+
+def bundle_card(b, root=""):
+    return (f'<a class="bcard" href="{root}bundles/{b["id"]}/">{icon_stack(b["apps"], root)}'
+            f'<span class="k">{icon("layers")}{len(b["apps"])} apps</span><h3>{e(b["name"])}</h3>'
+            f'<p>{e(b.get("tagline", ""))}</p></a>')
+
+
+def home_rows(apps, bundles, n=6):
+    """The home page's curated rows: featured (every app with `featured: true` in its README),
+    most popular, recently added, three bundles and recently updated.
+    Each "See all" opens apps/ with that sort picked."""
+    def row(id_, title, sub, sort, picks, note, cls="grid"):
+        if not picks:
+            return ""
+        more = f'<a class="btn" href="apps/?sort={sort}">{icon("grid")}See all</a>' if sort else ""
+        return (f'  <section class="wrap sec dsc" aria-labelledby="{id_}-h">\n'
+                f'    <div class="rh"><div><h2 id="{id_}-h">{title}</h2><p class="sub">{sub}</p></div>{more}</div>\n'
+                f'    <div class="{cls}">{"".join(card(a, note=note(a)) for a in picks)}</div>\n  </section>\n')
+
+    def top(k):
+        return sorted((a for a in apps if a.get(k)), key=lambda a: -a[k])[:n]
+
+    def date(ts):
+        label, iso = day_label(ts)
+        return f'<time datetime="{iso}">{label}</time>'
+
+    out = row("feat", "Featured", "Hand-picked apps worth a look", None, [a for a in apps if a["featured"]],
+              lambda a: "", "grid fgrid")
+    out += row("pop", "Most popular", "The apps with the most GitHub stars", "stars", top("stars"),
+              lambda a: f'{short_num(a["stars"])} stars')
+    out += row("new", "Recently added", "The newest apps in the store", "added", top("added"),
+               lambda a: "Added " + date(a["added"]))
+    if bundles:
+        out += ('  <section class="wrap sec dsc" id="bundles" aria-labelledby="bun-h">\n'
+                '    <div class="rh"><div><h2 id="bun-h">Bundles</h2>'
+                '<p class="sub">Apps that work well together, picked for one job</p></div>'
+                f'<a class="btn" href="bundles/">{icon("layers")}All {len(bundles)} bundles</a></div>\n'
+                f'    <div class="bgrid b3">{"".join(bundle_card(b) for b in bundles[:3])}</div>\n  </section>\n')
+    out += row("upd", "Recently updated", "Apps that just got a new version", "updated", top("updated"),
+               lambda a: "Updated " + date(a["updated"]))
+    return out
+
+
+def finder(apps, bundles):
+    """The home page's search panel: a stats line and quick-pick chips: every category (with its
+    icon and count), then a line of bundles. Live results come from search.json (see search_index)."""
+    cats = categories(apps)
+    stats = " · ".join(f"<b>{n}</b> {w}" for n, w in (
+        (len(apps), "apps"), (len(cats), "categories"), (len(bundles), "bundles"), (len(OSES), "systems")) if n)
+    line1 = f'<a class="pk" href="apps/">{icon("grid")}All apps<b>{len(apps)}</b></a>' + "".join(
+        f'<a class="pk" href="apps/?{e(urlencode({"cat": c}))}">{cat_icon(c)}{e(c)}<b>{k}</b></a>' for c, k in cats.items())
+    line2 = "".join(f'<a class="pk b" href="bundles/{b["id"]}/">{icon("layers")}{e(b["name"])}</a>' for b in bundles[:4])
+    if len(bundles) > 4:
+        line2 += f'<a class="pk b" href="bundles/">{icon("arrow-right")}All {len(bundles)} bundles</a>'
+    picks = f'<nav class="pkl" aria-label="Categories">{line1}</nav>'
+    if line2:
+        picks += f'<nav class="pkl" aria-label="Bundles">{line2}</nav>'
+    return {"finder_stats": stats, "finder_picks": picks}
+
+
+def search_index(apps):
+    """search.json for the home search box: name, slug, category, tagline, icon, stars and bundle
+    names (what an app card's data-q matches). Fetched the first time the box gets focus."""
+    # f is the icon's path; w=1 when the page should load it through wsrv.nl (as icon_cdn does)
+    return js([{"n": a["name"], "s": a["slug"], "c": a["category"], "d": a["desc"], "f": a["icon_url"],
+                "w": int(a["icon_cdn"].startswith("https://wsrv.nl/")), "k": a.get("stars") or 0,
+                **({"b": [b["name"] for b in a["bundles"]]} if a.get("bundles") else {})}
+               for a in apps])
+
+
+def home_page(apps, bundles, cfg, tpl, layout):
+    base = cfg["base_url"]
     tabs = "".join(
-        f'<button class="tab" role="tab" type="button" id="{i}" data-hash="{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}">'
-        f'<img src="{os_logo(logo)}" alt="" width="24" height="24" loading="lazy">{n}</button>'
+        f'<button class="tab" role="tab" type="button" id="{i}" data-hash="{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}" title="{n}">'
+        f'<img src="{os_logo(logo)}" alt="" width="24" height="24" loading="lazy"><span class="tl">{n}</span></button>'
         for j, (i, n, logo) in enumerate(OSES))
     values = {
-        **cfg, "app_count": len(apps), "marquee": marquee(apps), "cards": cards, "cats": cats, "os_tabs": tabs,
+        **cfg, "app_count": len(apps), "marquee": marquee(apps), "rows": home_rows(apps, bundles), "os_tabs": tabs,
+        **finder(apps, bundles),
         **{f"{i}_logo": os_logo(logo) for i, _, logo in OSES},
         **{f"{i}_url_wbr": wbr(cfg[f"{i}_url"]) for i, _, _ in OSES},
     }
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "WebSite", "@id": base + "#website", "url": base, "name": cfg["site_name"],
-         "description": cfg["tagline"], "inLanguage": "en", "publisher": {"@id": base + "#author"}},
+         "description": cfg["tagline"], "inLanguage": "en", "publisher": {"@id": base + "#author"},
+         # lets search engines offer a search box for the site, which opens the apps page
+         "potentialAction": {"@type": "SearchAction", "query-input": "required name=search_term_string",
+                             "target": {"@type": "EntryPoint", "urlTemplate": base + "apps/?q={search_term_string}"}}},
         {"@type": "Person", "@id": base + "#author", "name": cfg["author"], "url": cfg["author_url"]},
     ]}
     head = {**cfg, "root": "", "url": base, "og_image": base + "img/og.png",
             "og_alt": f'{cfg["site_name"]} – {cfg["tagline"]}', "jsonld": js(ld)}
     return page(layout, fill(tpl, values), head)
+
+
+def crumbs_ld(base, trail):
+    """BreadcrumbList for [(name, path), ...], starting at the site root."""
+    return {"@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": i, "name": n, "item": base + p} for i, (n, p) in enumerate(trail, 1)]}
+
+
+def crumbs_html(trail, root):
+    """The visible breadcrumb for [(name, path), ...]; the last one is this page."""
+    items = [f'<li><a href="{root}{p}">{e(n)}</a></li>' for n, p in trail[:-1]]
+    items.append(f'<li aria-current="page">{e(trail[-1][0])}</li>')
+    return f'<nav aria-label="Breadcrumb"><ol class="crumbs">{"".join(items)}</ol></nav>'
+
+
+def app_list_ld(base, apps):
+    """ItemList of the apps' pages, in order, for a collection page's structured data."""
+    return {"@type": "ItemList", "numberOfItems": len(apps), "itemListElement": [
+        {"@type": "ListItem", "position": i, "url": f'{base}app/{a["slug"]}/', "name": a["name"]}
+        for i, a in enumerate(apps, 1)]}
+
+
+def collection_ld(cfg, path, name, description, main):
+    base = cfg["base_url"]
+    return {"@type": "CollectionPage", "@id": base + path, "url": base + path, "name": name,
+            "description": description, "inLanguage": "en", "isPartOf": {"@id": base + "#website"},
+            "mainEntity": main}
+
+
+def sub_head(cfg, path, title, description, graph, root="../"):
+    """<head> values for a page below the site root; graph is its JSON-LD nodes."""
+    base = cfg["base_url"]
+    return {**cfg, "root": root, "url": base + path, "og_image": base + "img/og.png",
+            "title": title, "description": description, "og_alt": cfg["site_name"],
+            "jsonld": js({"@context": "https://schema.org", "@graph": graph})}
+
+
+def apps_page(apps, cfg, tpl, layout):
+    """apps/: every app, with search, category filter and sort. ?q=, ?cat= and ?sort= pick them
+    on load. All cards are in the HTML (no-JS and search engines); js/home.js reveals them a few
+    rows at a time as you scroll."""
+    base = cfg["base_url"]
+    cats = categories(apps)
+    chips = f'<button class="cat" type="button" data-cat="" aria-pressed="true">All<b>{len(apps)}</b></button>' + "".join(
+        f'<button class="cat" type="button" data-cat="{e(c)}" aria-pressed="false">{cat_icon(c)}{e(c)}<b>{k}</b></button>'
+        for c, k in cats.items())
+    values = {**cfg, "app_count": len(apps), "cats": chips, "cards": "".join(card(a, "../") for a in apps)}
+    desc = (f'Browse all {len(apps)} self-hosted apps for ZimaOS, CasaOS, ReCasaOS, Homeio and MOS. '
+            'Search, filter by category and sort by stars or date.')
+    graph = [collection_ld(cfg, "apps/", "All apps", desc, app_list_ld(base, apps)),
+             crumbs_ld(base, [(cfg["site_name"], ""), ("Apps", "apps/")])]
+    return page(layout, fill(tpl, values),
+                sub_head(cfg, "apps/", f'All {len(apps)} apps – {cfg["site_name"]}', desc, graph))
+
+
+def bundles_page(bundles, cfg, layout):
+    """bundles/: every bundle, as cards."""
+    base = cfg["base_url"]
+    n_apps = len({a["slug"] for b in bundles for a in b["apps"]})
+    desc = (f'{len(bundles)} bundles of self-hosted apps that work well together: '
+            f'{", ".join(b["name"] for b in bundles[:4])} and more, for ZimaOS, CasaOS and MOS.')
+    trail = [(cfg["site_name"], ""), ("Bundles", "bundles/")]
+    content = (
+        '<div class="wrap">\n'
+        f'  <div class="top"><a class="logo" href="../">{e(cfg["site_name"])}</a>'
+        f'<a class="back" href="../apps/">{icon("arrow-left")}All apps</a></div>\n'
+        '  <main id="main" tabindex="-1" data-page="bundles">\n'
+        '    <section class="bhero bnh" aria-labelledby="bs-h">\n'
+        f'      {crumbs_html(trail, "../")}\n'
+        '      <h1 id="bs-h">Bundles</h1>\n'
+        f'      <p class="lead">Apps picked for one job that work well together. {len(bundles)} bundles, '
+        f'{n_apps} apps.</p>\n'
+        f'      <p class="fn">{icon("info")}<span>A bundle is a starting point, not a package: each app installs '
+        'on its own from the App Store, so add only the ones you want.</span></p>\n'
+        '    </section>\n'
+        '    <section class="sec" style="padding-left:0;padding-right:0;padding-top:48px" aria-label="All bundles">\n'
+        f'      <div class="bgrid">{"".join(bundle_card(b, "../") for b in bundles)}</div>\n'
+        '    </section>\n'
+        '  </main>\n</div>')
+    items = {"@type": "ItemList", "numberOfItems": len(bundles), "itemListElement": [
+        {"@type": "ListItem", "position": i, "url": f'{base}bundles/{b["id"]}/', "name": b["name"]}
+        for i, b in enumerate(bundles, 1)]}
+    graph = [collection_ld(cfg, "bundles/", "Bundles", desc, items), crumbs_ld(base, trail)]
+    return page(layout, content, sub_head(cfg, "bundles/", f'App bundles: {len(bundles)} self-hosted app stacks – {cfg["site_name"]}', desc, graph))
+
+
+def bundle_page(b, bundles, cfg, layout):
+    """bundles/<id>/: a bundle's apps, in the order bundles.json lists them, and four other bundles."""
+    base, path = cfg["base_url"], f'bundles/{b["id"]}/'
+    i = bundles.index(b)
+    others = (bundles[i + 1:] + bundles[:i])[:4]  # the next ones, wrapping round, so each page links different ones
+    more = ""
+    if others:
+        more = ('    <section class="sec" style="padding-left:0;padding-right:0" aria-labelledby="ob-h">\n'
+                '      <div class="rh"><h2 id="ob-h">More bundles</h2>'
+                f'<a class="btn" href="../">{icon("layers")}All {len(bundles)} bundles</a></div>\n'
+                f'      <div class="bgrid">{"".join(bundle_card(x, "../../") for x in others)}</div>\n    </section>\n')
+    trail = [(cfg["site_name"], ""), ("Bundles", "bundles/"), (b["name"], path)]
+    content = (
+        '<div class="wrap">\n'
+        f'  <div class="top"><a class="logo" href="../../">{e(cfg["site_name"])}</a>'
+        f'<a class="back" href="../">{icon("arrow-left")}All bundles</a></div>\n'
+        '  <main id="main" tabindex="-1" data-page="bundle">\n'
+        '    <section class="bhero bnh" aria-labelledby="bn-h">\n'
+        f'      {crumbs_html(trail, "../../")}\n'
+        f'      {icon_stack(b["apps"], "../../", 8)}\n'
+        f'      <p class="k">{icon("layers")}Bundle · {len(b["apps"])} apps</p>\n'
+        f'      <h1 id="bn-h">{e(b["name"])}</h1>\n'
+        f'      <p class="lead">{e(b.get("tagline", ""))}</p>\n'
+        + (f'      <p class="sub">{e(b["desc"])}</p>\n' if b.get("desc") else "")
+        + f'      <p class="fn">{icon("info")}<span>Each app installs on its own from the App Store. '
+        'Add the ones you want, one by one.</span></p>\n'
+        '    </section>\n'
+        '    <section class="sec" style="padding-left:0;padding-right:0;padding-top:48px" aria-labelledby="ba-h">\n'
+        f'      <h2 class="sr" id="ba-h">Apps in {e(b["name"])}</h2>\n'
+        f'      <div class="grid">{"".join(card(a, "../../") for a in b["apps"])}</div>\n'
+        '    </section>\n'
+        + more +
+        '  </main>\n</div>')
+    names = [a["name"] for a in b["apps"]]
+    desc = (f'{b.get("tagline", "").rstrip(".")}. {len(names)} self-hosted apps, including '
+            f'{", ".join(names[:3])}, for ZimaOS, CasaOS and MOS.')
+    ld = collection_ld(cfg, path, f'{b["name"]} bundle', desc, app_list_ld(base, b["apps"]))
+    if b.get("keywords"):
+        ld["keywords"] = b["keywords"]
+    title = f'{b["name"]} – {len(names)} self-hosted apps | {cfg["site_name"]}'
+    return page(layout, content, sub_head(cfg, path, title, desc, [ld, crumbs_ld(base, trail)], "../../"))
 
 
 def enrich_index(out, apps):
@@ -782,6 +1041,8 @@ def app_page(a, apps, cfg, tpl, layout):
     if a["src"]:
         links.append(f'<a class="btn" href="{e(a["src"])}" rel="noopener">{icon("code")}View source</a>')
     links.append(f'<a class="btn" href="../../app-badge/?={e(a["slug"])}">{icon("tag")}Get badge</a>')
+    links += [f'<a class="btn" href="../../bundles/{b["id"]}/">{icon("layers")}Part of {e(b["name"])}</a>'
+              for b in a.get("bundles", [])]
 
     # screenshots: a row of thumbnails (3 in view) under the app details; a click opens the full image.
     # Thumbnails and the popup image come from wsrv.nl (resized WebP); the <a> links the original,
@@ -833,11 +1094,15 @@ def app_page(a, apps, cfg, tpl, layout):
     if a["env"] or a["more"]:
         def row(k, v, d):
             name = e(k).replace("_", "_<wbr>")  # break long names at underscores, not mid-word
-            return f'<tr><td><code>{name}</code></td><td><code>{e(v) or "—"}</code></td><td>{code_ticks(d)}</td></tr>'
+            val = f'<code>{e(v)}</code>' if v else '<span class="nil">not set</span>'
+            q = e(f"{k} {v} {d}".lower())
+            return (f'<tr data-q="{q}"><td data-l="Variable"><span class="vn"><code>{name}</code>'
+                    f'<button class="ic vc" type="button" data-copy="{e(k)}" aria-label="Copy {e(k)}" title="Copy name">{icon("copy")}</button></span></td>'
+                    f'<td data-l="Default">{val}</td><td data-l="Description">{code_ticks(d) or "—"}</td></tr>')
 
         def table(title, items):
             """One table per group; the same column widths keep the tables lined up."""
-            h = f'<h3 class="vgh">{e(title)}</h3>' if title else ""
+            h = f'<h3 class="vgh">{e(title)}<b>{len(items)}</b></h3>' if title else ""
             return (f'<div class="vg">{h}<div class="tw"><table>'
                     '<colgroup><col class="c1"><col class="c2"><col class="c3"></colgroup>'
                     '<thead><tr><th>Variable</th><th>Default value</th><th>Description</th></tr></thead>'
@@ -853,8 +1118,14 @@ def app_page(a, apps, cfg, tpl, layout):
             note = ('<p class="vnote">The settings in the first table are already in the app settings. To use any other one, '
                     'open the app settings, add the variable with your value, save, and the app restarts with it. '
                     'A setting you leave out uses its default.</p>')
+        total = sum(len(v) for v in groups.values())
+        find = ""
+        if total >= 8:  # long lists get a filter box (js/app.js)
+            find = (f'<label class="sf vf">{icon("search")}<span class="sr">Filter variables</span>'
+                    f'<input type="search" placeholder="Filter {total} variables" autocomplete="off"></label>'
+                    '<p class="none vnone" hidden>No variable matches that filter.</p>')
         tabs.append(("vars", "table", "Variables",
-                     f'{note}<div class="vgs">{"".join(table(g, items) for g, items in groups.items())}</div>'))
+                     f'{note}{find}<div class="vgs">{"".join(table(g, items) for g, items in groups.items())}</div>'))
     tabs.append(("compose", "file-code", "Docker Compose",
                  f'<div class="code"><div class="chrome"><i></i><i></i><i></i><span>docker-compose.yml</span>'
                  f'<a class="ic" href="docker-compose.yml" download="{e(a["slug"])}-docker-compose.yml" '
@@ -862,7 +1133,7 @@ def app_page(a, apps, cfg, tpl, layout):
                  f'<button class="ic" type="button" data-copy-from="#yml" aria-label="Copy docker-compose.yml" title="Copy">{icon("copy")}</button></div>'
                  f'<pre id="yml"><code class="yml">{e(a["compose"])}</code></pre></div>'))
     tab_html = "".join(
-        f'<button class="tab" role="tab" type="button" id="t-{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}">{icon(ic)}{n}</button>'
+        f'<button class="tab" role="tab" type="button" id="t-{i}" aria-controls="p-{i}" aria-selected="{str(j == 0).lower()}" title="{n}">{icon(ic)}<span class="tl">{n}</span></button>'
         for j, (i, ic, n, _) in enumerate(tabs))
     panels = "\n".join(
         f'      <div class="panel" role="tabpanel" id="p-{i}" aria-labelledby="t-{i}">{body}</div>'
@@ -899,7 +1170,7 @@ def app_page(a, apps, cfg, tpl, layout):
     }
     crumbs = {"@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": cfg["site_name"], "item": base},
-        {"@type": "ListItem", "position": 2, "name": "Apps", "item": base + "#apps"},
+        {"@type": "ListItem", "position": 2, "name": "Apps", "item": base + "apps/"},
         {"@type": "ListItem", "position": 3, "name": name, "item": url},
     ]}
     # link previews: the first screenshot cropped to 1200x630 (the size layout.html declares)
@@ -912,11 +1183,18 @@ def app_page(a, apps, cfg, tpl, layout):
     return page(layout, fill(tpl, values), head)
 
 
-def sitemap(apps, base):
-    urls = [f"  <url><loc>{e(base)}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>",
-            f"  <url><loc>{e(base)}roadmap/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>"]
-    urls += [f'  <url><loc>{e(base)}app/{a["slug"]}/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>'
-             for a in apps]
+def sitemap(apps, bundles, base):
+    """sitemap.xml. lastmod is when an app last changed (git); for a list page, the newest of its apps."""
+    def url(path, freq, prio, items=()):
+        ts = max((a.get("updated") or a.get("added") or 0 for a in items), default=0)
+        mod = f"<lastmod>{day_label(ts)[1]}</lastmod>" if ts else ""
+        return f"  <url><loc>{e(base)}{path}</loc>{mod}<changefreq>{freq}</changefreq><priority>{prio}</priority></url>"
+
+    urls = [url("", "weekly", "1.0", apps), url("apps/", "weekly", "0.9", apps), url("roadmap/", "weekly", "0.5")]
+    if bundles:
+        urls.append(url("bundles/", "weekly", "0.8", [a for b in bundles for a in b["apps"]]))
+        urls += [url(f'bundles/{b["id"]}/', "monthly", "0.7", b["apps"]) for b in bundles]
+    urls += [url(f'app/{a["slug"]}/', "monthly", "0.8", [a]) for a in apps]
     return ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
             + "\n".join(urls) + "\n</urlset>\n")
 
@@ -942,14 +1220,14 @@ def not_found_page(apps, cfg, layout):
     content = (
         '<div class="wrap">\n'
         f'  <div class="top"><a class="logo" href="{base}">{e(cfg["site_name"])}</a>'
-        f'<a class="back" href="{base}#apps">{icon("arrow-left")}All apps</a></div>\n'
+        f'<a class="back" href="{base}apps/">{icon("arrow-left")}All apps</a></div>\n'
         '  <main id="main" tabindex="-1" data-page="404">\n'
         '    <section class="sec nf" aria-labelledby="nf-h">\n'
         '      <p class="nf-code" aria-hidden="true">404</p>\n'
         '      <h1 id="nf-h">Page not found</h1>\n'
         '      <p class="lead">This page does not exist, or it moved. Try one of the apps below, or go back to the start.</p>\n'
         f'      <p class="nf-links"><a class="btn p" href="{base}">{icon("arrow-left")}Go to the homepage</a>'
-        f'<a class="btn" href="{base}#apps">{icon("grid")}Browse all apps</a></p>\n'
+        f'<a class="btn" href="{base}apps/">{icon("grid")}Browse all apps</a></p>\n'
         '    </section>\n'
         + (f'    <section class="sec" aria-label="Apps"><div class="grid">{cards}</div></section>\n' if cards else "")
         + '  </main>\n</div>')
@@ -982,7 +1260,7 @@ def badge_page(apps, cfg, layout):
     content = (
         '<div class="wrap">\n'
         f'  <div class="top"><a class="logo" href="../">{e(cfg["site_name"])}</a>'
-        f'<a class="back" href="../#apps">{icon("arrow-left")}All apps</a></div>\n'
+        f'<a class="back" href="../apps/">{icon("arrow-left")}All apps</a></div>\n'
         '  <main id="main" tabindex="-1" data-page="badge">\n'
         '    <section class="bhero" aria-labelledby="b-h">\n'
         '      <div class="btop">\n'
@@ -1067,7 +1345,7 @@ def roadmap_page(apps, cfg, layout):
     content = (
         '<div class="wrap">\n'
         f'  <div class="top"><a class="logo" href="../">{e(cfg["site_name"])}</a>'
-        f'<a class="back" href="../#apps">{icon("arrow-left")}All apps</a></div>\n'
+        f'<a class="back" href="../apps/">{icon("arrow-left")}All apps</a></div>\n'
         '  <main id="main" tabindex="-1" data-page="roadmap">\n'
         '    <section class="bhero" aria-labelledby="r-h">\n'
         '      <h1 id="r-h">Roadmap</h1>\n'
@@ -1146,6 +1424,8 @@ def main():
     layout = (TPL / "layout.html").read_text(encoding="utf-8")
     tpl_index = (TPL / "index.html").read_text(encoding="utf-8")
     tpl_app = (TPL / "app.html").read_text(encoding="utf-8")
+    tpl_apps = (TPL / "apps.html").read_text(encoding="utf-8")
+    bundles = load_bundles(apps)
 
     if out.exists() and not args.no_clean:
         shutil.rmtree(out)
@@ -1164,7 +1444,15 @@ def main():
         (dest / "docker-compose.yml").write_text(a["compose"] + "\n", encoding="utf-8", newline="\n")
         (dest / "index.html").write_text(app_page(a, apps, cfg, tpl_app, layout), encoding="utf-8")
 
-    (out / "index.html").write_text(home_page(apps, cfg, tpl_index, layout), encoding="utf-8")
+    (out / "index.html").write_text(home_page(apps, bundles, cfg, tpl_index, layout), encoding="utf-8")
+    (out / "apps").mkdir(parents=True, exist_ok=True)
+    (out / "apps" / "index.html").write_text(apps_page(apps, cfg, tpl_apps, layout), encoding="utf-8")
+    if bundles:
+        (out / "bundles").mkdir(parents=True, exist_ok=True)
+        (out / "bundles" / "index.html").write_text(bundles_page(bundles, cfg, layout), encoding="utf-8")
+    for b in bundles:
+        (out / "bundles" / b["id"]).mkdir(parents=True, exist_ok=True)
+        (out / "bundles" / b["id"] / "index.html").write_text(bundle_page(b, bundles, cfg, layout), encoding="utf-8")
     (out / "404.html").write_text(not_found_page(apps, cfg, layout), encoding="utf-8")
     (out / "app-badge").mkdir(parents=True, exist_ok=True)
     (out / "app-badge" / "index.html").write_text(badge_page(apps, cfg, layout), encoding="utf-8")
@@ -1177,12 +1465,13 @@ def main():
     host = re.match(r"https?://([^/]+)/$", cfg["base_url"])
     if host and not host.group(1).endswith("github.io"):
         (out / "CNAME").write_text(host.group(1) + "\n", encoding="utf-8")
-    (out / "sitemap.xml").write_text(sitemap(apps, cfg["base_url"]), encoding="utf-8")
+    (out / "sitemap.xml").write_text(sitemap(apps, bundles, cfg["base_url"]), encoding="utf-8")
     (out / "robots.txt").write_text(f'User-agent: *\nAllow: /\n\nSitemap: {cfg["base_url"]}sitemap.xml\n', encoding="utf-8")
     (out / "manifest.webmanifest").write_text(manifest(cfg), encoding="utf-8")
     # browsers ask for /favicon.ico on their own, so keep a copy at the root too
     shutil.copyfile(STATIC / "favicon" / "favicon.ico", out / "favicon.ico")
     (out / "feed.xml").write_text(feed(apps, cfg), encoding="utf-8")
+    (out / "search.json").write_text(search_index(apps), encoding="utf-8")
     (out / "sw.js").write_text(service_worker(time.strftime("%Y%m%d%H%M%S")), encoding="utf-8")
     print(f"Built {len(apps)} app page(s) into {out}")
 

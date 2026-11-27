@@ -1,0 +1,37 @@
+<div class="wrap">
+  <div class="top"><a class="logo" href="../">{{site_name}}</a><a class="back" href="../">{{icon:arrow-left}}Home</a></div>
+  <main id="main" tabindex="-1" data-page="apps">
+    <section class="bhero" aria-labelledby="apps-h">
+      <div class="srch">
+        <div>
+          <h1 id="apps-h">All apps</h1>
+          <p class="sub" id="count" aria-live="polite">{{app_count}} apps</p>
+        </div>
+        <div class="tools">
+          <div class="sf">
+            {{icon:search}}<input id="q" type="search" placeholder="Search apps" aria-label="Search apps"
+              autocomplete="off" /><kbd class="kb" aria-hidden="true">/</kbd>
+          </div>
+          <div class="so" id="sort">
+            <button class="so-b" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="sort-l sort-v"><span class="sr" id="sort-l">Sort apps:</span><span id="sort-v">Most stars</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+            <ul class="so-m" role="listbox" aria-labelledby="sort-l" tabindex="-1" hidden>
+              <li role="option" data-v="name" aria-selected="false">A–Z</li>
+              <li role="option" data-v="name-desc" aria-selected="false">Z–A</li>
+              <li role="option" data-v="added" aria-selected="false">Newest</li>
+              <li role="option" data-v="updated" aria-selected="false">Recently updated</li>
+              <li role="option" data-v="stars" aria-selected="true">Most stars</li>
+              <li role="option" data-v="forks" aria-selected="false">Most forks</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="cats" role="group" aria-label="Filter by category">{{{cats}}}</div>
+    </section>
+    <section aria-label="Apps">
+      <div class="grid" id="grid">{{{cards}}}</div>
+      <div class="more" id="more" hidden aria-hidden="true"><i class="skel"></i><i class="skel"></i><i class="skel"></i></div>
+      <p class="none" id="none" hidden><span id="none-t">No app matches that search.</span>
+        <a id="none-req" href="{{request_url}}" rel="noopener">Request it</a></p>
+    </section>
+  </main>
+</div>

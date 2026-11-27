@@ -23,7 +23,7 @@
     <p class="lead"><b>{{app_count}} self-hosted apps, one link to add them</b>A free, open source community app store for ZimaOS, CasaOS, ReCasaOS, Homeio and MOS</p>
     <div class="cta">
       <a class="btn p" href="#stores">{{icon:plus}}Add the store</a>
-      <a class="btn" href="#apps">{{icon:grid}}Browse apps</a>
+      <a class="btn" href="apps/">{{icon:grid}}Browse apps</a>
     </div>
     <nav class="cta cta2" aria-label="More">
       <a class="btn g" href="roadmap/">{{icon:calendar}}Roadmap</a>
@@ -307,35 +307,23 @@ curl -s -X POST http://localhost/api/v1/mos/hub/repositories \
     </div>
   </section>
 
-  <section class="wrap sec" id="apps" aria-labelledby="apps-h">
-    <div class="srch">
-      <div>
-        <h2 id="apps-h">All apps</h2>
-        <p class="sub" id="count">{{app_count}} apps</p>
-      </div>
-      <div class="tools">
-        <div class="sf">
-          {{icon:search}}<input id="q" type="search" placeholder="Search apps" aria-label="Search apps"
-            autocomplete="off" /><kbd class="kb" aria-hidden="true">/</kbd>
+  <section class="wrap sec dsc" id="apps" aria-labelledby="apps-h">
+    <div class="finder">
+      <h2 id="apps-h">Find your next app</h2>
+      <p class="sub">{{{finder_stats}}}</p>
+      <form class="fs" action="apps/" method="get" role="search" id="hq" data-base="{{base_url}}">
+        <div class="fs-box">
+          {{icon:search}}<input id="q" name="q" type="search" placeholder="Try “photos”, “notes” or “Jellyfin”"
+            aria-label="Search apps" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="fs-list"
+            aria-autocomplete="list" /><kbd class="kb" aria-hidden="true">/</kbd>
+          <button class="btn p s" type="submit">{{icon:search}}Search</button>
         </div>
-        <div class="so" id="sort">
-          <button class="so-b" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="sort-l sort-v"><span class="sr" id="sort-l">Sort apps:</span><span id="sort-v">Most stars</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-          <ul class="so-m" role="listbox" aria-labelledby="sort-l" tabindex="-1" hidden>
-            <li role="option" data-v="name" aria-selected="false">A–Z</li>
-            <li role="option" data-v="name-desc" aria-selected="false">Z–A</li>
-            <li role="option" data-v="added" aria-selected="false">Newest</li>
-            <li role="option" data-v="updated" aria-selected="false">Recently updated</li>
-            <li role="option" data-v="stars" aria-selected="true">Most stars</li>
-            <li role="option" data-v="forks" aria-selected="false">Most forks</li>
-          </ul>
-        </div>
-      </div>
+        <ul class="fs-list" id="fs-list" role="listbox" aria-label="Matching apps" hidden></ul>
+      </form>
+      <div class="picks" aria-label="Quick picks">{{{finder_picks}}}</div>
     </div>
-    <div class="cats" role="group" aria-label="Filter by category">{{{cats}}}</div>
-    <div class="grid">{{{cards}}}</div>
-    <p class="none" id="none" hidden><span id="none-t">No app matches that search.</span>
-      <a id="none-req" href="{{request_url}}" rel="noopener">Request it</a></p>  </section>
-
+  </section>
+{{{rows}}}
   <section class="wrap sec" aria-labelledby="help-h">
     <div class="help">
       <div>

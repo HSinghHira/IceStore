@@ -1,4 +1,4 @@
-/* IceStore core: cursor background, cookies, copy buttons, small-screen notice and the page router.
+/* IceStore core: cursor background, cookies, copy buttons, reveal on scroll and the page router.
    Every page is a real HTML file (good for SEO and no-JS). The router only makes moving between
    them smoother: it fetches the next page, swaps #app, updates <head> and the URL. */
 (()=>{
@@ -65,17 +65,6 @@
     }
   });
 
-  /* ---- "best viewed on desktop" notice, small phones only ---- */
-  (()=>{
-    let seen;try{seen=sessionStorage.getItem('ice-desk')}catch(_){}
-    if(innerWidth>480||seen)return;
-    const m=document.createElement('div');m.className='mob';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','mob-t');
-    m.innerHTML=`<div>${ICE.icon('monitor')}<h2 id="mob-t">Best viewed on desktop</h2><p>This site works best on a larger screen, like a desktop or laptop.</p><button class="btn p" type="button">View anyway</button></div>`;
-    document.body.append(m);document.body.style.overflow='hidden';
-    const b=$('button',m);b.focus();
-    b.onclick=()=>{m.remove();document.body.style.overflow='';try{sessionStorage.setItem('ice-desk','1')}catch(_){}};
-  })();
-
   /* ---- router ---- */
   const bar=$('#loadbar'),live=$('#live'),cache=new Map();
   const prog={
@@ -116,7 +105,23 @@
       if(h>-1)setTimeout(()=>ts[h].scrollIntoView({block:'center'}),60);
     });
   };
-  const init=()=>{const m=$('#app main'),f=m&&ICE.pages[m.dataset.page];tabs(m||document);if(f)f(m)};
+  /* ---- reveal on scroll: rows of cards and chips fade up one after another as they come into
+     view. The classes come off once it has played, so the cards' own hover transitions apply. ---- */
+  let rvio;
+  const reveal=root=>{
+    if(rvio)rvio.disconnect();
+    if(reduced||!('IntersectionObserver' in window))return;
+    rvio=new IntersectionObserver(es=>es.forEach(x=>{
+      if(!x.isIntersecting)return;
+      const el=x.target;rvio.unobserve(el);el.classList.add('on');
+      setTimeout(()=>{el.classList.remove('rv','on');[...el.children].forEach(c=>c.style.removeProperty('--i'))},Math.min(el.children.length,12)*55+600);
+    }),{rootMargin:'0px 0px -6% 0px'});
+    $$('.dsc .grid,.dsc .bgrid,.pkl,.bnh~section .grid,.bnh~section .bgrid,.rel .grid',root).forEach(el=>{
+      [...el.children].forEach((c,i)=>c.style.setProperty('--i',Math.min(i,12)));
+      el.classList.add('rv');rvio.observe(el);
+    });
+  };
+  const init=()=>{const m=$('#app main'),f=m&&ICE.pages[m.dataset.page];tabs(m||document);reveal(m||document);if(f)f(m)};
   ICE.init=init;
 
   async function go(u,push){
@@ -141,6 +146,9 @@
     }catch(_){location.href=u.href;return}
     prog.done();
   }
+
+  /* open a same-site page through the router (falls back to a normal load) */
+  ICE.go=u=>{u=new URL(u,location.href);if(u.pathname+u.search===cur)return;go(u,true)};
 
   document.addEventListener('click',e=>{
     if(e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;

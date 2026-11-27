@@ -1,0 +1,107 @@
+[
+  {
+    "id": "ky-suite",
+    "name": "Ky Suite",
+    "tagline": "Drive, mail, calendar, notes and sign-in that work together",
+    "desc": "The Ky apps share one sign-in (KyIdentity), one backup store (KyRecovery) and one health monitor (KyPulse). Start with KyIdentity, since the other Ky apps sign in through it, then add the ones you need.",
+    "keywords": "self-hosted office suite, private drive, webmail, CalDAV calendar, encrypted notes",
+    "apps": ["kyidentity"],
+    "match": "ky*"
+  },
+  {
+    "id": "arr-stack",
+    "name": "*arr Stack",
+    "tagline": "Find, download, organise and stream your media on autopilot",
+    "desc": "Sonarr, Radarr and Lidarr watch for new shows, movies and music, hand them to a download client and file them for your media server. Seerr takes requests from your family, Tracearr shows who is watching, and Byparr gets past anti-bot pages for your indexers.",
+    "keywords": "Sonarr, Radarr, Lidarr, arr stack, media automation, Jellyfin, qBittorrent",
+    "apps": ["sonarr", "radarr", "lidarr", "youtarr", "holyarrs", "dispatcharr", "byparr", "seerr", "tracearr", "qbittorrent", "jellyfin"]
+  },
+  {
+    "id": "private-ai",
+    "name": "Private AI",
+    "tagline": "Run AI models and chat with them on your own hardware",
+    "desc": "Ollama runs open models on your server. Open WebUI, NextChat, big-AGI and OvertChat give you a chat window for them, Langflow builds agents and workflows, OmniRoute puts hundreds of hosted providers behind one gateway, and LibreTranslate translates without sending text anywhere.",
+    "keywords": "local LLM, Ollama, Open WebUI, self-hosted ChatGPT, private AI chat",
+    "apps": ["ollama", "open-webui", "nextchat", "big-agi", "overtchat", "odysseus", "langflow", "omniroute", "libretranslate"]
+  },
+  {
+    "id": "youtube-toolkit",
+    "name": "YouTube Toolkit",
+    "tagline": "Save, archive and watch YouTube your way",
+    "desc": "MeTube and Cobalt grab single videos, Pinchflat, Youtarr and yt-dlp-z keep whole channels in sync on a schedule, Poke is a private YouTube front-end, and iSponsorBlockTV skips sponsor segments in the YouTube app on your TV.",
+    "keywords": "YouTube downloader, yt-dlp, archive YouTube channels, skip sponsors",
+    "apps": ["metube", "pinchflat", "youtarr", "yt-dlp-z", "cobalt", "poke", "isponsorblocktv"]
+  },
+  {
+    "id": "reading-room",
+    "name": "Reading Room",
+    "tagline": "Your own library for ebooks, comics, manga and audiobooks",
+    "desc": "Kavita and Komga serve ebooks, comics and manga to any reader, Suwayomi adds a manga reader with extensions, Audiobookshelf streams audiobooks and podcasts to your phone, BookOrbit keeps every format in one library, and Kovi charts your KOReader reading stats.",
+    "keywords": "ebook server, comic server, manga reader, audiobook server, Calibre alternative",
+    "apps": ["kavita", "komga", "suwayomi", "audiobookshelf", "bookorbit", "kovi"]
+  },
+  {
+    "id": "paperless-office",
+    "name": "Paperless Office",
+    "tagline": "Scan, sign, edit and search every document you have",
+    "desc": "Paperless-ngx scans and indexes your paper documents, Stirling-PDF and BentoPDF edit and convert PDFs, DocuSeal and Documenso collect signatures, Gotenberg turns Office files into PDF, and Lemmary makes a searchable library from scans and office files.",
+    "keywords": "paperless office, document management, PDF editor, e-signature, DocuSign alternative",
+    "apps": ["paperless-ngx", "stirling-pdf", "bentopdf", "docuseal", "documenso", "gotenberg", "lemmary"]
+  },
+  {
+    "id": "homelab-monitoring",
+    "name": "Homelab Monitoring",
+    "tagline": "Know when something breaks, before anyone else does",
+    "desc": "Uptime Kuma and Gatus watch your sites and services, Beszel tracks server and Docker stats, Healthchecks notices when a cron job stops, Speedtest Tracker charts your internet speed, Disk Monitor checks your drives, and ntfy, Gotify and Apprise send the alerts to your phone.",
+    "keywords": "uptime monitoring, server monitoring, homelab alerts, status page, push notifications",
+    "apps": ["uptime-kuma", "gatus", "beszel", "healthchecks", "speedtest-tracker", "disk-monitor", "portracker", "watchyourlan", "ntfy", "gotify", "apprise"]
+  },
+  {
+    "id": "backup-kit",
+    "name": "Backup Kit",
+    "tagline": "Keep copies of everything, in more than one place",
+    "desc": "Backrest and Kopia make encrypted, deduplicated backups on a schedule, KopiaLens shows what is inside them, Rclone copies files to over 70 cloud services, Syncthing keeps folders in sync between your devices, and GitSave backs up your Git repositories.",
+    "keywords": "self-hosted backup, restic, Kopia, rclone, Syncthing, 3-2-1 backup",
+    "apps": ["backrest", "kopia", "kopialens", "rclone", "syncthing", "gitsave"]
+  },
+  {
+    "id": "household",
+    "name": "Household",
+    "tagline": "Recipes, groceries, chores and the things you own",
+    "desc": "Mealie, Tandoor and Norish keep your recipes and meal plans, KitchenOwl shares the grocery list, Kitchen Board puts the family schedule on a wall screen, Homebox tracks what you own and where it is, and Warracker remembers when warranties run out.",
+    "keywords": "recipe manager, meal planner, grocery list, home inventory, family organiser",
+    "apps": ["mealie", "tandoor", "norish", "kitchenowl", "kitchen-board", "homebox", "warracker", "homi"]
+  },
+  {
+    "id": "money",
+    "name": "Money Manager",
+    "tagline": "Budgets, investments, subscriptions and shared bills",
+    "desc": "Firefly III and Trackie keep your budget, Ghostfolio tracks stocks, ETFs and crypto, Wallos shows what your subscriptions cost each month, Spliit splits bills with friends, and Cartvibe turns household receipts into spending insights.",
+    "keywords": "personal finance, budgeting app, portfolio tracker, subscription tracker, Splitwise alternative",
+    "apps": ["firefly-iii", "trackie", "ghostfolio", "wallos", "spliit", "cartvibe"]
+  },
+  {
+    "id": "developer-workbench",
+    "name": "Developer Workbench",
+    "tagline": "Code, ship and debug from any browser",
+    "desc": "Gitea hosts your code with issues and CI, Coder, VSCodium and VS Code give you an editor in the browser, Dokploy deploys apps and databases, Semaphore runs Ansible and Terraform, Termix opens SSH sessions, and IT-Tools, CyberChef and Opengist cover the small jobs.",
+    "keywords": "self-hosted Git, browser IDE, VS Code server, deploy platform, developer tools",
+    "apps": ["gitea", "coder", "vscodium", "vscode", "dokploy", "semaphore", "termix", "it-tools", "cyberchef", "opengist"]
+  },
+  {
+    "id": "database-toolkit",
+    "name": "Database Toolkit",
+    "tagline": "Manage, design and share your databases",
+    "desc": "Adminer and CloudBeaver manage MySQL, PostgreSQL, SQLite and more from the browser, Bytebase reviews schema changes, ChartDB and drawDB draw your schema, and NocoDB and Baserow turn tables into spreadsheets your team can use.",
+    "keywords": "database manager, phpMyAdmin alternative, database diagram, Airtable alternative",
+    "apps": ["adminer", "cloudbeaver", "bytebase", "chartdb", "drawdb", "nocodb", "baserow"]
+  },
+  {
+    "id": "website-kit",
+    "name": "Website Kit",
+    "tagline": "Publish a site and see how it does, without big tech",
+    "desc": "Ghost publishes your blog and newsletter, LinkStack makes a link-in-bio page, Umami and OpenPanel count visitors without tracking them across the web, Kutt shortens links, Open SEO researches keywords, and Changedetection watches pages for changes.",
+    "keywords": "self-hosted blog, Google Analytics alternative, link shortener, SEO tools",
+    "apps": ["ghost", "linkstack", "umami", "openpanel", "kutt", "open-seo", "changedetection"]
+  }
+]
