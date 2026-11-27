@@ -1,0 +1,199 @@
+name: homi
+
+services:
+  homi:
+    image: ghcr.io/hsinghhira/homi:latest
+    container_name: homi
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUBLIC_URL=https://homi.example.com
+      - HOMI_BOOTSTRAP_EMAIL=admin@example.com
+      - HOMI_BOOTSTRAP_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6879"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 256M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homi/icon.png
+    x-casaos:
+      id: com.icestore.homi
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone, and
+              the first household uses it.
+        - container: PUBLIC_URL
+          description:
+            en_US: >-
+              Required. Replace https://homi.example.com with the https
+              address of your reverse proxy (like Nginx Proxy Manager) that
+              points at http://[ZIMAOS-IP-ADDRESS]:6879. Homi needs https: on
+              plain http the browser can't save changes or add events. Homi
+              only accepts sign-ins from this exact address.
+        - container: HOMI_BOOTSTRAP_EMAIL
+          description:
+            en_US: >-
+              The email you sign in with as the household's first
+              administrator. Used once, on the first start.
+        - container: HOMI_BOOTSTRAP_PASSWORD
+          description:
+            en_US: >-
+              The first administrator's password (8 to 128 characters). Leave
+              it empty to have one made for you: it is shown in the app's logs
+              (CREDENTIALS). Used once, on the first start.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Homi web app and API, published on host as 6879. Plain http, for
+              your https reverse proxy to point at: Homi only works fully
+              through the proxy's https address.
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Everything Homi keeps: the PostgreSQL database, the installed
+              modules and their backups, and state/ with the secrets made on
+              first start and the first password. Back up the whole folder.
+
+x-casaos:
+  id: com.icestore.homi
+  architectures:
+    - amd64
+    - arm64
+  main: homi
+  author: HSinghHira
+  category: Home
+  developer: thecybermacgyver
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homi/icon.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homi/screenshot-1.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homi/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homi/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homi/screenshot-3.png
+  title:
+    en_US: Homi
+  tagline:
+    en_US: Shared household calendar and chequebook for your family, with installable modules.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/homi/](https://icestore.hsinghhira.me/app/homi/) for full details
+
+
+      Homi is a private home for your household: a shared family calendar, a
+      household chequebook and more modules you can add, used in the browser
+      and as an app on your phone. Everything runs on your ZimaOS.
+
+
+      Homi needs https: put it behind a reverse proxy (like Nginx Proxy
+      Manager or a Cloudflare tunnel) with your own domain. On plain
+      http://[ZIMAOS-IP-ADDRESS]:6879 the pages open, but the browser can't
+      register the device, save changes or add events, and phone install
+      and offline use don't work.
+
+
+      **Features**
+
+
+      - Shared household calendar
+
+      - Household chequebook to track money in and out
+
+      - Members with their own accounts, added by the administrator
+
+      - Installable modules, managed in the app
+
+      - Works as an app on your phone (add it to the home screen)
+
+
+      **How to use?**
+
+
+      1. Set up an https reverse proxy for Homi and set PUBLIC_URL to its
+         https address, before you install.
+
+
+      2. Find the first email and password in the app's logs, in the box
+         marked CREDENTIALS.
+
+
+      3. Open your https address and sign in. Change your password in Homi.
+
+
+      4. Open Settings, Manage modules and turn on Calendar and Chequebook.
+
+
+      5. Add your family in Settings, Members, Add member.
+  tips:
+    before_install:
+      en_US: >-
+        1. Homi needs https. Set up a reverse proxy first (like Nginx Proxy
+           Manager or a Cloudflare tunnel) with your own domain, like
+           https://homi.example.com, pointed at
+           http://[ZIMAOS-IP-ADDRESS]:6879 on your ZimaOS. On that http
+           address the pages open, but saving changes and adding events fail.
+
+
+        2. Open the app configuration and set PUBLIC_URL to your https
+           address. You must do this, or sign-in won't work.
+
+
+        3. Set HOMI_BOOTSTRAP_EMAIL to your email. Leave
+           HOMI_BOOTSTRAP_PASSWORD empty to get a made-up password, or type
+           your own. Both are only used on the first start.
+
+
+        4. More settings, like the household name and language, are listed
+           on the Homi page at https://icestore.hsinghhira.me/app/homi/
+           (Variables tab). Add those before the first start.
+
+
+        5. Start the installation. The first start sets up the database and
+           modules and takes a minute or two.
+
+
+        6. Open the app's logs and find the box marked CREDENTIALS. It shows
+           your email and password.
+
+
+        7. Open your https address, sign in and change your password.
+  index: /
+  port_map: "6879"
+  scheme: http
+  is_uncontrolled: false
+  version: "v1.9.3"
+  update_at: "2026-11-27"
+  release_notes:
+    en_US: |-
+      - First IceStore version: Homi v1.9.3, built from upstream's source (upstream publishes no image)
+      - Needs an https reverse proxy; set PUBLIC_URL to its address
+      - One container with PostgreSQL 18, the module manager, the API and the web app; port 6879, data in /DATA/AppData/homi/data
+      - The database roles, migrations, first account and the calendar and chequebook modules are set up on the first start
+      - Secrets and the first password are made on first start and kept in the data folder
+  repo: "https://github.com/thecybermacgyver/homi"
+  support: "https://github.com/thecybermacgyver/homi/issues"
+  docs: "https://github.com/thecybermacgyver/homi/blob/main/README.md"
