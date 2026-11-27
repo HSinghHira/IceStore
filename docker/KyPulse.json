@@ -1,0 +1,82 @@
+{
+  "name": "KyPulse",
+  "repo": "ghcr.io/hsinghhira/kypulse:latest",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/hsinghhira/kypulse/pkgs/container/kypulse",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --init --stop-timeout=30 --memory=512m --cpus=1.00 --memory-reservation=64m --health-cmd=\"wget -q -O /dev/null http://127.0.0.1:8080/healthz\" --health-interval=30s --health-timeout=5s --health-start-period=30s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypulse/icon.png",
+  "project": "https://busnes.app/kypulse.html",
+  "support": "https://github.com/Busnes-app/KyPulse-server/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/kypulse/",
+  "description": "Health checks, alerts and an audit log for your Ky Suite and other apps.",
+  "architecture": [
+    "amd64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/kypulse/data",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "The database, the session key (session.key, made on first start) and initial-admin-password until you delete it. Back up the whole folder."
+    },
+    {
+      "name": "Backups",
+      "host": "/mnt/cache/appdata/kypulse/backups",
+      "container": "/app/backups",
+      "mode": "rw",
+      "description": "Sealed backup capsules. KyPulse makes them (daily) only after you pair it with KyRecovery or add a recovery key on the Backup page."
+    },
+    {
+      "name": "Secrets",
+      "host": "/mnt/cache/appdata/kypulse/secrets",
+      "container": "/app/secrets",
+      "mode": "rw",
+      "description": "The audit key (audit.key, made on first start) that signs the audit log. Back it up with the data folder."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6878",
+      "container": "8080",
+      "description": "KyPulse web app, published on host as 6878. Plain http, for your https reverse proxy to point at: sign-in only works through the proxy's https address."
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "KYPULSE_APP_URL",
+      "key": "KYPULSE_APP_URL",
+      "value": "https://pulse.example.com",
+      "mask": false,
+      "description": "Required. Replace https://pulse.example.com with the https address of your reverse proxy (like Nginx Proxy Manager) that points at http://YOUR-SERVER-IP:6878. KyPulse needs https to sign in: its sign-in check only runs on an https page. It must be the exact address you open in the browser."
+    },
+    {
+      "name": "KYPULSE_ADMIN_PASSWORD",
+      "key": "KYPULSE_ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "The first password of the admin account. Leave it empty to have one made for you: it is shown in the app's logs (CREDENTIALS) and saved as initial-admin-password in the data folder. Change it after your first sign-in."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
