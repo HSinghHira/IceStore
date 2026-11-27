@@ -108,6 +108,12 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    or on the user's computer, write them there; otherwise zip them in that layout.
    Tell the user which port you used, which images to add, what the MOS report
    said, and what to verify on first install (below).
+   To push with the repo script, run `bash tools/ship_app.sh <app>`: the
+   `tools/*.sh` files are committed without the executable bit (100644), so a
+   direct call in a fresh worktree says Permission denied. It also needs no
+   uncommitted changes to tracked files outside that app: it commits first, then
+   `git pull --rebase` refuses and the commit stays unpushed. For a fix across
+   several apps, edit and ship one app at a time.
 
 ### Porting an app from the old ZimaAppStore
 
