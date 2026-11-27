@@ -78,6 +78,8 @@ x-casaos:
   category: Productivity
   developer: AppFlowy-IO
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/appflowy/screenshot-1.png
   title:
     en_US: AppFlowy
   tagline:
