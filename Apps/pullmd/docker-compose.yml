@@ -192,9 +192,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "3.22.0"
-  update_at: "2026-11-26"
+  update_at: "2026-11-27"
   release_notes:
     en_US: |-
+      - Added the PULLMD_IMAGE_HOSTING and PULLMD_UPLOAD_STORE settings from PullMD 3.22.0
       - Updated pullmd 3.21.0 to 3.22.0, pullmd-trafilatura 3.21.0 to 3.22.0, pullmd-markitdown 3.21.0 to 3.22.0
       - Updated pullmd 3.16.0 to 3.21.0, pullmd-trafilatura 3.16.0 to 3.21.0, pullmd-markitdown 3.16.0 to 3.21.0
       - Single-container PullMD with one port (6132) and one data folder

@@ -142,6 +142,20 @@ variables:
     default: "4"
     description: >-
       The most images described per post, 1 to 20.
+  - name: PULLMD_IMAGE_HOSTING
+    group: Documents
+    default: "false"
+    description: >-
+      Set to true to keep the pictures from OCR-read PDFs and link to them.
+      Anyone with a picture's link can open it. Needs PUBLIC_URL set to your
+      ZimaOS IP or domain.
+  - name: PULLMD_UPLOAD_STORE
+    group: Documents
+    default: "true"
+    description: >-
+      Lets people keep the result of an uploaded file in the history. With
+      sign-in off, everyone who can reach PullMD may see it. Set to false to
+      never keep uploads.
   - name: MARKITDOWN_YOUTUBE
     group: YouTube
     default: "true"
