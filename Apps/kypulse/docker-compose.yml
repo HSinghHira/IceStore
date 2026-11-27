@@ -1,0 +1,216 @@
+name: kypulse
+
+services:
+  kypulse:
+    image: ghcr.io/hsinghhira/kypulse:latest
+    container_name: kypulse
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    init: true
+    environment:
+      - TZ=$TZ
+      - KYPULSE_APP_URL=https://pulse.example.com
+      - KYPULSE_ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6878"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/backups
+        target: /app/backups
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/secrets
+        target: /app/secrets
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypulse/icon.png
+    x-casaos:
+      id: com.icestore.kypulse
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: KYPULSE_APP_URL
+          description:
+            en_US: >-
+              Required. Replace https://pulse.example.com with the https
+              address of your reverse proxy (like Nginx Proxy Manager) that
+              points at http://[ZIMAOS-IP-ADDRESS]:6878. KyPulse needs https
+              to sign in: its sign-in check only runs on an https page. It
+              must be the exact address you open in the browser.
+        - container: KYPULSE_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The first password of the admin account. Leave it empty to have
+              one made for you: it is shown in the app's logs (CREDENTIALS)
+              and saved as initial-admin-password in the data folder. Change
+              it after your first sign-in.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              KyPulse web app, published on host as 6878. Plain http, for your
+              https reverse proxy to point at: sign-in only works through the
+              proxy's https address.
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              The database, the session key (session.key, made on first start)
+              and initial-admin-password until you delete it. Back up the
+              whole folder.
+        - container: /app/backups
+          description:
+            en_US: >-
+              Sealed backup capsules. KyPulse makes them (daily) only after you
+              pair it with KyRecovery or add a recovery key on the Backup
+              page.
+        - container: /app/secrets
+          description:
+            en_US: >-
+              The audit key (audit.key, made on first start) that signs the
+              audit log. Back it up with the data folder.
+
+x-casaos:
+  id: com.icestore.kypulse
+  architectures:
+    - amd64
+  main: kypulse
+  author: HSinghHira
+  category: Networking
+  developer: Busnes-app
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypulse/icon.png
+  title:
+    en_US: KyPulse
+  tagline:
+    en_US: Health checks, alerts and an audit log for your Ky Suite and other apps.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kypulse/](https://icestore.hsinghhira.me/app/kypulse/) for full details
+
+
+      KyPulse is the health board of the Busnes Ky Suite: it checks the
+      health address of each Ky app (and any other service you add), shows
+      what is broken first and sends alerts. Local accounts work on their
+      own; KyIdentity (also in IceStore) sign-in is optional.
+
+
+      KyPulse needs https: you can only sign in on an https address, so put
+      it behind a reverse proxy (like Nginx Proxy Manager or a Cloudflare
+      tunnel) with your own domain. Opening http://[ZIMAOS-IP-ADDRESS]:6878
+      directly shows the sign-in page, but sign-in fails.
+
+
+      **Features**
+
+
+      - Health checks for every Ky app and any service with a health address
+
+      - Broken services first, with alerts
+
+      - A signed audit log
+
+      - Local accounts or KyIdentity sign-in
+
+      - Sealed backups, daily once you set up a recovery key
+
+
+      **How to use?**
+
+
+      1. Set up an https reverse proxy for KyPulse and set KYPULSE_APP_URL
+         to its https address, before you install.
+
+
+      2. Find the admin password in the app's logs, in the box marked
+         CREDENTIALS.
+
+
+      3. Open your https address, sign in as admin and change the password.
+
+
+      4. On Status, press Add app and enter a name and health address, like
+         http://[ZIMAOS-IP-ADDRESS]:6875/healthz for KyDrive. Use your
+         ZimaOS IP, not localhost.
+
+
+      5. For alerts, fill in the Alert webhook under Settings, Server and
+         press Send test.
+  tips:
+    before_install:
+      en_US: >-
+        1. KyPulse needs https. You can only sign in on an https address, so
+           set up a reverse proxy first (like Nginx Proxy Manager or a
+           Cloudflare tunnel) with your own domain, like
+           https://pulse.example.com, pointed at
+           http://[ZIMAOS-IP-ADDRESS]:6878 on your ZimaOS. Opening that http
+           address directly shows the sign-in page, but sign-in fails.
+
+
+        2. Open the app configuration and set KYPULSE_APP_URL to your https
+           address. You must do this, or sign-in won't work. Also add the
+           setting KYPULSE_TRUSTED_PROXIES with your proxy's address, like
+           172.17.0.5/32 (never 0.0.0.0/0), so sign-in limits count each
+           person, not the proxy.
+
+
+        3. Leave KYPULSE_ADMIN_PASSWORD empty to get a made-up password, or
+           type your own.
+
+
+        4. More settings, like KyIdentity sign-in, alerts and backups, are
+           listed on the KyPulse page at
+           https://icestore.hsinghhira.me/app/kypulse/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation. It is ready in a few seconds.
+
+
+        6. Open the app's logs and find the box marked CREDENTIALS. It shows
+           the admin user name and password.
+
+
+        7. Open your https address, sign in as admin and change the
+           password.
+  index: /
+  port_map: "6878"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.6.1.2"
+  update_at: "2026-11-27"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/busnes-app/kypulse-server 0.6.1.2
+      - Needs an https reverse proxy to sign in; set KYPULSE_APP_URL to its address.
+      - Port 6878; data in /DATA/AppData/kypulse (data, backups and secrets folders).
+      - The session and audit keys are made by KyPulse on first start and kept in those folders.
+  repo: "https://github.com/Busnes-app/KyPulse-server"
+  support: "https://github.com/Busnes-app/KyPulse-server/issues"
+  docs: "https://github.com/Busnes-app/KyPulse-server/blob/master/INSTALL.md"

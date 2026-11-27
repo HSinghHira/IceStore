@@ -1,0 +1,13 @@
+#!/bin/sh
+# `docker exec -it kypulse kypulse <command>`: runs /app/kypulse with the
+# address icestore-init saved, as the app user, so upstream's operator
+# commands load the same configuration as the running server.
+set -eu
+# A blank true/false setting stops KyPulse ("is not true or false"); ZimaOS
+# passes settings left empty as empty strings. Drop every blank KYPULSE_ one.
+for v in $(env | sed -n 's/^\(KYPULSE_[A-Z0-9_]*\)=$/\1/p'); do unset "$v"; done
+if [ -s /app/data/.icestore-env ]; then set -a; . /app/data/.icestore-env; set +a; fi
+if [ "$(id -u)" = 0 ]; then
+  exec setpriv --reuid=10001 --regid=10001 --clear-groups /app/kypulse "$@"
+fi
+exec /app/kypulse "$@"

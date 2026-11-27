@@ -1,0 +1,24 @@
+name: Build kypulse
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/kypulse/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-kypulse.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app). Upstream's
+# image is amd64 only. The image version is in docker/kypulse/VERSION.
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: kypulse
+      kind: wrapper
+      platforms: linux/amd64
