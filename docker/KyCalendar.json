@@ -43,7 +43,7 @@
       "protocol": "tcp",
       "host": "6876",
       "container": "8080",
-      "description": "KyCalendar web app and CalDAV for calendar apps, published on host as 6876. Phone and desktop calendar apps need an https address and an everyday account with an app password; the admin account is refused on CalDAV."
+      "description": "KyCalendar web app and CalDAV for calendar apps, published on host as 6876. Plain http, for your https reverse proxy to point at: sign-in only works through the proxy's https address. Calendar apps use that https address and an everyday account with an app password; the admin account is refused on CalDAV."
     }
   ],
   "variables": [
@@ -57,9 +57,9 @@
     {
       "name": "KY_APP_URL",
       "key": "KY_APP_URL",
-      "value": "http://YOUR-SERVER-IP:6876",
+      "value": "https://calendar.example.com",
       "mask": false,
-      "description": "Required. Replace YOUR-SERVER-IP with your server IP, like http://192.168.1.20:6876, or use your https address behind a reverse proxy, like https://calendar.example.com. It must be the exact address you open in the browser, or sign-in and changes are refused. Sign-in with KyIdentity and access from outside your home need the https address."
+      "description": "Required. Replace https://calendar.example.com with the https address of your reverse proxy (like Nginx Proxy Manager) that points at http://YOUR-SERVER-IP:6876. KyCalendar needs https to sign in: its sign-in check only runs on an https page. It must be the exact address you open in the browser, or sign-in and changes are refused."
     },
     {
       "name": "KY_ADMIN_PASSWORD",
