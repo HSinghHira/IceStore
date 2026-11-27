@@ -75,6 +75,11 @@ x-casaos:
   category: Productivity
   developer: maathimself
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mailflow/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mailflow/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mailflow/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mailflow/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mailflow/screenshot-4.png
   title:
     en_US: MailFlow
   tagline:
