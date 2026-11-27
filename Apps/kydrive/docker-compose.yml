@@ -1,0 +1,214 @@
+name: kydrive
+
+services:
+  kydrive:
+    image: ghcr.io/hsinghhira/kydrive:latest
+    container_name: kydrive
+    restart: unless-stopped
+    stop_grace_period: 120s
+    network_mode: bridge
+    init: true
+    environment:
+      - TZ=$TZ
+      - KY_APP_URL=http://[ZIMAOS-IP-ADDRESS]:6875
+      - KY_ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6875"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/backups
+        target: /app/backups
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/bulk
+        target: /app/bulk
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/readyz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.00"
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kydrive/icon.png
+    x-casaos:
+      id: com.icestore.kydrive
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: KY_APP_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6875, or use your https address behind a
+              reverse proxy, like https://drive.example.com. It must be the
+              exact address you open in the browser, or sign-in and uploads
+              are refused. Sign-in with KyIdentity and access from outside
+              your home need the https address.
+        - container: KY_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The first password of the admin account. Leave it empty to have
+              one made for you: it is shown in the app's logs (CREDENTIALS)
+              and saved as initial-admin-password in the data folder. Change
+              it after your first sign-in.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              KyDrive web app, WebDAV (/dav) and MCP for AI agents (/mcp),
+              published on host as 6875. WebDAV and MCP only work over https,
+              through a reverse proxy listed in KY_TRUSTED_PROXIES.
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              The database, the encrypted files and the keys: encryption.key,
+              identity.key and the session secret and SCIM token in .icestore/
+              (made on first start). Back up the whole folder; without the
+              keys the files can't be read.
+        - container: /app/backups
+          description:
+            en_US: >-
+              Sealed backup capsules of the database and keys that KyDrive
+              makes every day.
+        - container: /app/bulk
+          description:
+            en_US: >-
+              The file backup repository (Restic) that the capsules point to.
+              Set up by itself on first start. For real protection, copy it to
+              another disk or machine.
+
+x-casaos:
+  id: com.icestore.kydrive
+  architectures:
+    - amd64
+  main: kydrive
+  author: HSinghHira
+  category: Productivity
+  developer: Busnes-app
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kydrive/icon.png
+  title:
+    en_US: KyDrive
+  tagline:
+    en_US: Private drive for files, sharing, versions and WebDAV, part of the Ky Suite.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kydrive/](https://icestore.hsinghhira.me/app/kydrive/) for full details
+
+
+      KyDrive is the file drive of the Busnes Ky Suite: upload, organize,
+      share and version files in workspaces, encrypted on disk. KyIdentity
+      (also in IceStore) signs in everyday users; the built-in admin account
+      manages the drive.
+
+
+      The web app works at home over http. WebDAV and AI-agent access (MCP)
+      are refused over plain http: they need an https reverse proxy, and
+      KY_TRUSTED_PROXIES set to that proxy's address so KyDrive believes it
+      is https.
+
+
+      **Features**
+
+
+      - Workspaces with permissions, share links, versions and trash
+
+      - Search by file name and by the words inside documents
+
+      - WebDAV for desktop and phone file apps (https only)
+
+      - MCP access for AI agents, read only or read and write, per folder
+        (https only)
+
+      - Sign-in and user provisioning with KyIdentity (OpenID Connect and SCIM)
+
+      - Daily sealed backups of the database and keys, plus a file backup
+        repository
+
+
+      **How to use?**
+
+
+      1. Set KY_APP_URL to the address you will open, before you install.
+
+
+      2. Find the admin password in the app's logs, in the box marked
+         CREDENTIALS.
+
+
+      3. Open KyDrive, sign in as admin and change the password.
+
+
+      4. Connect KyIdentity so your everyday users can sign in.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration and set KY_APP_URL. Replace
+           [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6875 for use at home. You must do this, or
+           sign-in won't work from your other devices.
+
+
+        2. For use from outside your home, or sign-in with KyIdentity, put
+           KyDrive behind a reverse proxy (like Nginx Proxy Manager or a
+           Cloudflare tunnel) with your own domain. Then set KY_APP_URL to
+           that https address, like https://drive.example.com, and add the
+           setting KY_TRUSTED_PROXIES with your proxy's address, like
+           172.17.0.5/32 (never 0.0.0.0/0). Without it KyDrive still sees
+           http, and WebDAV and AI-agent access (MCP) are refused.
+
+
+        3. Leave KY_ADMIN_PASSWORD empty to get a made-up password, or type
+           your own.
+
+
+        4. More settings, like KyIdentity sign-in, your proxy's address and
+           backups, are listed on the KyDrive page at
+           https://icestore.hsinghhira.me/app/kydrive/ (Variables tab). You
+           can add them now or later in the app settings.
+
+
+        5. Start the installation. It is ready in a few seconds.
+
+
+        6. Open the app's logs and find the box marked CREDENTIALS. It shows
+           the admin user name and password.
+
+
+        7. Open KyDrive, sign in as admin and change the password.
+  index: /
+  port_map: "6875"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.6.1.2"
+  update_at: "2026-11-27"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/busnes-app/kydrive-server 0.6.1.2
+      - Port 6875; data in /DATA/AppData/kydrive (data, backups and bulk folders).
+      - The session secret and SCIM token are made on first start and kept in the data folder.
+      - The file backup repository is set up by itself on first start.
+  repo: "https://github.com/Busnes-app/kydrive-server"
+  support: "https://github.com/Busnes-app/kydrive-server/issues"
+  docs: "https://github.com/Busnes-app/kydrive-server/blob/master/INSTALL.md"

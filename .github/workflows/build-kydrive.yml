@@ -1,0 +1,24 @@
+name: Build kydrive
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/kydrive/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-kydrive.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app). Upstream's
+# image is amd64 only. The image version is in docker/kydrive/VERSION.
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: kydrive
+      kind: wrapper
+      platforms: linux/amd64

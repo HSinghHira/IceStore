@@ -1,0 +1,15 @@
+#!/bin/sh
+# `docker exec -it kydrive kydrive <command>`: runs /app/kydrive-server with
+# the settings icestore-init saved (secrets, address), as the app user, so
+# upstream's operator commands (bulk-init, rename-local-admin, version, ...)
+# load the same configuration as the running server.
+set -eu
+DIR=/app/data/.icestore
+for f in ky-session-secret:KY_SESSION_SECRET ky-scim-token:KY_SCIM_TOKEN; do
+  [ -s "$DIR/${f%%:*}" ] && export "${f#*:}=$(cat "$DIR/${f%%:*}")"
+done
+[ -s "$DIR/env" ] && { set -a; . "$DIR/env"; set +a; }
+if [ "$(id -u)" = 0 ]; then
+  exec setpriv --reuid=1000 --regid=1000 --clear-groups /app/kydrive-server "$@"
+fi
+exec /app/kydrive-server "$@"
