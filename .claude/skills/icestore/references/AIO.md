@@ -366,6 +366,12 @@ still has to happen.
 1. Check every upstream image's releases. Change the `FROM` tags.
 2. Read upstream's changelog and compose diff for new env vars, ports, services
    or migrations, and mirror them in aio-init.sh / run-svc.sh / nginx.conf.tpl.
+   A new env var people might set needs both, in the same change: wire it into
+   aio-init.sh (§3.5; it only reaches the service if named there, usually in a
+   `pass_env` pattern) and add it to the README `variables:` list (`COMPOSE.md`
+   §8), or people can't set it in the app settings. The checker can't spot one
+   missing from both (Tianji `AI_GATEWAY_ALLOW_PRIVATE_URL`, PullMD
+   `PULLMD_IMAGE_HOSTING`).
 3. Raise the version in `docker/<app>/VERSION`.
 4. Update `x-casaos.version`, `update_at`, `release_notes` (new tags) in the compose.
 5. Run the checker and the dry run.
