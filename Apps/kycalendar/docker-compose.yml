@@ -1,0 +1,203 @@
+name: kycalendar
+
+services:
+  kycalendar:
+    image: ghcr.io/hsinghhira/kycalendar:latest
+    container_name: kycalendar
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    init: true
+    environment:
+      - TZ=$TZ
+      - KY_APP_URL=http://[ZIMAOS-IP-ADDRESS]:6876
+      - KY_ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "6876"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/backups
+        target: /app/backups
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.00"
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kycalendar/icon.png
+    x-casaos:
+      id: com.icestore.kycalendar
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS time zone.
+              Leave it unless you need another.
+        - container: KY_APP_URL
+          description:
+            en_US: >-
+              Required. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+              http://192.168.1.20:6876, or use your https address behind a
+              reverse proxy, like https://calendar.example.com. It must be the
+              exact address you open in the browser, or sign-in and changes
+              are refused. Sign-in with KyIdentity and access from outside
+              your home need the https address.
+        - container: KY_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              The first password of the admin account. Leave it empty to have
+              one made for you: it is shown in the app's logs (CREDENTIALS)
+              and saved as initial-admin-password in the data folder. Change
+              it after your first sign-in.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              KyCalendar web app and CalDAV for calendar apps, published on
+              host as 6876. Phone and desktop calendar apps need an https
+              address and an everyday account with an app password; the
+              admin account is refused on CalDAV.
+      volumes:
+        - container: /app/data
+          description:
+            en_US: >-
+              The database, the encryption key and the session secret in
+              .icestore/ (made on first start), and initial-admin-password
+              until you delete it. Back up the whole folder.
+        - container: /app/backups
+          description:
+            en_US: >-
+              Sealed backup capsules that KyCalendar makes every day.
+
+x-casaos:
+  id: com.icestore.kycalendar
+  architectures:
+    - amd64
+  main: kycalendar
+  author: HSinghHira
+  category: Productivity
+  developer: Busnes-app
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kycalendar/icon.png
+  title:
+    en_US: KyCalendar
+  tagline:
+    en_US: Calendars, scheduling and CalDAV sync for teams, part of the Ky Suite.
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/kycalendar/](https://icestore.hsinghhira.me/app/kycalendar/) for full details
+
+
+      KyCalendar is the calendar of the Busnes Ky Suite: personal and group
+      calendars in the browser and in your phone or desktop calendar app over
+      CalDAV. Local accounts work on their own; KyIdentity (also in IceStore)
+      sign-in is optional.
+
+
+      The web app works at home over http. Phone and desktop calendar apps
+      need an https address (a reverse proxy with your domain) and an
+      everyday account with an app password: the admin account is refused
+      on CalDAV.
+
+
+      **Features**
+
+
+      - Personal and group calendars, events and shared schedules
+
+      - CalDAV for iOS and macOS Calendar, DAVx5 and Thunderbird, with an app
+        password per device (https address and an everyday account)
+
+      - Local administrator and everyday accounts, or KyIdentity sign-in and
+        SCIM provisioning
+
+      - Daily sealed backups and a recovery procedure
+
+
+      **How to use?**
+
+
+      1. Set KY_APP_URL to the address you will open, before you install.
+
+
+      2. Find the admin password in the app's logs, in the box marked
+         CREDENTIALS.
+
+
+      3. Open KyCalendar, sign in as admin and change the password.
+
+
+      4. Add an everyday account, sign in with it and make calendars. For
+         a phone or desktop calendar app, make an app password there
+         (Settings, Phones & apps) and connect the app to your https address.
+  tips:
+    before_install:
+      en_US: >-
+        1. Open the app configuration and set KY_APP_URL. Replace
+           [ZIMAOS-IP-ADDRESS] with your ZimaOS IP, like
+           http://192.168.1.20:6876 for use at home. You must do this, or
+           sign-in won't work from your other devices.
+
+
+        2. For use from outside your home, or sign-in with KyIdentity, put
+           KyCalendar behind a reverse proxy (like Nginx Proxy Manager or a
+           Cloudflare tunnel) with your own domain. Then set KY_APP_URL to
+           that https address, like https://calendar.example.com. Phone and
+           desktop calendar apps also need this https address.
+
+
+        3. Leave KY_ADMIN_PASSWORD empty to get a made-up password, or type
+           your own.
+
+
+        4. More settings, like KyIdentity sign-in, your proxy's address and
+           backups, are listed on the KyCalendar page at
+           https://icestore.hsinghhira.me/app/kycalendar/ (Variables tab).
+           You can add them now or later in the app settings.
+
+
+        5. Start the installation. It is ready in a few seconds.
+
+
+        6. Open the app's logs and find the box marked CREDENTIALS. It shows
+           the admin user name and password.
+
+
+        7. Open KyCalendar, sign in as admin and change the password.
+
+
+        8. Add an everyday account for yourself. Phone and desktop calendar
+           apps need your https address and that account with an app
+           password (Settings, Phones & apps); the admin account is refused
+           there.
+  index: /
+  port_map: "6876"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.6.1.3"
+  update_at: "2026-11-27"
+  release_notes:
+    en_US: |-
+      - First IceStore version: ghcr.io/busnes-app/kycalendar 0.6.1.3
+      - Port 6876; data in /DATA/AppData/kycalendar (data and backups folders).
+      - The session secret is made on first start and kept in the data folder.
+  repo: "https://github.com/Busnes-app/KyCalendar"
+  support: "https://github.com/Busnes-app/KyCalendar/issues"
+  docs: "https://github.com/Busnes-app/KyCalendar/blob/main/INSTALL.md"

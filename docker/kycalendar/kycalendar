@@ -1,0 +1,15 @@
+#!/bin/sh
+# `docker exec -it kycalendar kycalendar <command>`: runs /app/kycalendar
+# with the settings icestore-init saved (session secret, address), as the
+# app user, so upstream's operator commands (create-user, reset-password,
+# version, ...) load the same configuration as the running server.
+set -eu
+DIR=/app/data/.icestore
+if [ -s "$DIR/ky-session-secret" ]; then
+  KY_SESSION_SECRET=$(cat "$DIR/ky-session-secret"); export KY_SESSION_SECRET
+fi
+if [ -s "$DIR/env" ]; then set -a; . "$DIR/env"; set +a; fi
+if [ "$(id -u)" = 0 ]; then
+  exec setpriv --reuid=10001 --regid=10001 --clear-groups /app/kycalendar "$@"
+fi
+exec /app/kycalendar "$@"
