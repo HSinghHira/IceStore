@@ -1,6 +1,7 @@
 ---
 site: https://answer.apache.org
 source: https://github.com/apache/answer
+screenshots: [Questions, Question page, User profile]
 services:
   - { name: Web App, path: /, icon: globe }
 ---
