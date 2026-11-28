@@ -1,6 +1,7 @@
 ---
 site: https://www.commafeed.com
 source: https://github.com/Athou/commafeed
+screenshots: [Dark mode, Light mode]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

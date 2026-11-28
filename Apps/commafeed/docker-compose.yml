@@ -76,6 +76,10 @@ x-casaos:
   category: Productivity
   developer: "Athou"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/commafeed/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/commafeed/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/commafeed/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/commafeed/screenshot-1.png
   title:
     en_US: CommaFeed
   tagline:
