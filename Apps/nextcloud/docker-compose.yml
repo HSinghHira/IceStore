@@ -76,6 +76,12 @@ x-casaos:
   category: Productivity
   developer: "Nextcloud GmbH"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/nextcloud/screenshot-1.png
   title:
     en_US: Nextcloud
   tagline:

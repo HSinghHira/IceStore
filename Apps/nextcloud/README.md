@@ -1,6 +1,7 @@
 ---
 site: https://nextcloud.com
 source: https://github.com/nextcloud/server
+screenshots: [Files, Calendar, Assistant, Office]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
