@@ -75,6 +75,9 @@ x-casaos:
   category: Developer
   developer: "Jordan Dalby"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytestash/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytestash/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytestash/screenshot-1.png
   title:
     en_US: ByteStash
   tagline:

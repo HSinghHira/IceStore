@@ -1,6 +1,7 @@
 ---
 site: https://github.com/jordan-dalby/ByteStash
 source: https://github.com/jordan-dalby/ByteStash
+screenshots: [Snippet grid]
 services:
   - { name: Web App, path: /, icon: globe }
   - { name: API, path: /api, icon: code }
