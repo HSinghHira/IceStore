@@ -443,6 +443,12 @@ still has to happen.
   `write_env api "${STOAT_ENV[@]}"`.
 - Writing these files from a Python heredoc mangles `\` (line continuations,
   `\n`, regex escapes). Write them with the editor tool, or check every `\` after.
+- Built-in Mailpit, blank SMTP login: AppFlowy 0.22.1+ API and worker send no
+  email while the SMTP user name or password is blank. When their mail host is
+  the built-in viewer, give those services stand-ins for the blank values (it
+  accepts any login). Not GoTrue: Go refuses to send a password over an
+  unencrypted connection, so keep its login blank there. Copy
+  `docker/appflowy/aio-init.sh` in the repo (d2058fc; `examples/` predates it).
 
 ## 6. Testing without Docker
 
