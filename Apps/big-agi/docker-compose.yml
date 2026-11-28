@@ -50,6 +50,9 @@ x-casaos:
   category: AI
   developer: "enricoros"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/big-agi/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/big-agi/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/big-agi/screenshot-1.png
   title:
     en_US: big-AGI
   tagline:

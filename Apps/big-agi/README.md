@@ -1,6 +1,7 @@
 ---
 site: https://big-agi.com
 source: https://github.com/enricoros/big-AGI
+screenshots: [Beam mode]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
