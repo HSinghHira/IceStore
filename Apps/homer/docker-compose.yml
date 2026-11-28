@@ -1,0 +1,134 @@
+name: homer
+
+services:
+  homer:
+    image: b4bz/homer:v26.11.4
+    container_name: homer
+    restart: unless-stopped
+    stop_grace_period: 10s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+      - INIT_ASSETS=1
+    ports:
+      - target: 8080
+        published: "6884"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/assets
+        target: /www/assets
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-Y", "off", "--spider", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homer/icon.png
+    x-casaos:
+      id: com.icestore.homer
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: INIT_ASSETS
+          description:
+            en_US: >-
+              1 copies the example config.yml and icons into the
+              assets folder on first start, when there is no
+              config.yml yet. 0 leaves the folder alone.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Homer dashboard, published on host as 6884
+      volumes:
+        - container: /www/assets
+          description:
+            en_US: >-
+              config.yml, your icons and any custom CSS. Edit
+              config.yml here to change the dashboard.
+
+x-casaos:
+  id: com.icestore.homer
+  architectures:
+    - amd64
+    - arm64
+  main: homer
+  author: HSinghHira
+  category: Productivity
+  developer: "Bastien Wirtz"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/homer/icon.png
+  title:
+    en_US: Homer
+  tagline:
+    en_US: A simple static start page for your server, set up with one YAML file
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/homer/](https://icestore.hsinghhira.me/app/homer/) for full details
+
+
+      Homer is a very simple static home page for your server. You list
+      your apps and links in one config.yml file and Homer shows them as
+      tidy cards, grouped the way you like.
+
+
+      **Features**
+
+
+      - One YAML file, no database and no sign-in
+
+      - Groups, tags, icons and Font Awesome logos
+
+      - Quick search and keyboard shortcuts
+
+      - Light and dark themes, custom colors and CSS
+
+      - Smart cards that show live status for many apps
+
+
+      **How to use?**
+
+
+      1. Open the Files app and go to AppData/homer/assets.
+
+      2. Edit config.yml: change the title and add your apps under
+         services.
+
+      3. Reload Homer in your browser to see the changes.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. Homer is ready in a few seconds.
+
+
+        2. You change Homer by editing config.yml in the Files app, in
+           AppData/homer/assets. There is no settings page.
+
+
+        3. Homer has no sign-in, so anyone on your network can see the
+           page. Don't put passwords in config.yml.
+  index: /
+  port_map: "6884"
+  scheme: http
+  is_uncontrolled: false
+  version: "v26.11.4"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: b4bz/homer v26.11.4 on port 6884
+  repo: "https://github.com/bastienwirtz/homer"
+  support: "https://github.com/bastienwirtz/homer/issues"
+  docs: "https://github.com/bastienwirtz/homer/tree/main/docs"
