@@ -1,6 +1,7 @@
 ---
 site: https://papra.app
 source: https://github.com/papra-hq/papra
+screenshots: [Home, Tagging rule, Auto tagging]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
