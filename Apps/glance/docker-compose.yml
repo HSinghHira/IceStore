@@ -62,6 +62,12 @@ x-casaos:
   category: Productivity
   developer: glanceapp
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/glance/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/glance/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/glance/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/glance/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/glance/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/glance/screenshot-1.png
   title:
     en_US: Glance
   tagline:

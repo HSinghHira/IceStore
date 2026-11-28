@@ -1,5 +1,6 @@
 ---
 source: https://github.com/glanceapp/glance
+screenshots: [Home, Dashboard, Markets, Themes]
 services:
   - { name: Dashboard, path: /, icon: grid }
 variables:
