@@ -1,6 +1,7 @@
 ---
 site: https://sonarr.tv
 source: https://github.com/Sonarr/Sonarr
+screenshots: [Series details]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

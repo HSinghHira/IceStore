@@ -85,6 +85,9 @@ x-casaos:
   category: Media
   developer: "Sonarr team"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sonarr/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sonarr/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sonarr/screenshot-1.png
   title:
     en_US: Sonarr
   tagline:
