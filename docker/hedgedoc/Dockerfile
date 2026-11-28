@@ -6,7 +6,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM quay.io/hedgedoc/hedgedoc:1.12.0
+FROM quay.io/hedgedoc/hedgedoc:1.12.3
 
 COPY icestore-init.sh /usr/local/bin/icestore-init
 RUN chmod +x /usr/local/bin/icestore-init

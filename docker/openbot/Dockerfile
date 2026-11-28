@@ -5,7 +5,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/nightly-labs/openbot:0.80.0
+FROM ghcr.io/nightly-labs/openbot:0.81.0
 USER root
 
 COPY icestore-init.sh /usr/local/bin/icestore-init

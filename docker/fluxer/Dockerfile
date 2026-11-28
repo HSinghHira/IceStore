@@ -34,24 +34,24 @@
 # Every Fluxer image is versioned on its own (year.monthday.build). The
 # release's compose file pins them by digest; these are the same images.
 
-FROM ghcr.io/fluxerapp/fluxer-api:2026.1126.202147 AS img-api
-FROM ghcr.io/fluxerapp/fluxer-gateway:2026.1126.202137 AS img-realtime
-FROM ghcr.io/fluxerapp/fluxer-media-proxy:2026.1124.71304 AS img-media
-FROM ghcr.io/fluxerapp/fluxer-push:2026.1124.71316 AS img-push
+FROM ghcr.io/fluxerapp/fluxer-api:2026.1128.25912 AS img-api
+FROM ghcr.io/fluxerapp/fluxer-gateway:2026.1128.32346 AS img-realtime
+FROM ghcr.io/fluxerapp/fluxer-media-proxy:2026.1127.154308 AS img-media
+FROM ghcr.io/fluxerapp/fluxer-push:2026.1127.154308 AS img-push
 FROM ghcr.io/fluxerapp/fluxer-app-proxy-self-hosted:2026.1124.195247 AS img-app
-FROM ghcr.io/fluxerapp/fluxer-admin:2026.1124.71257 AS img-admin
-FROM ghcr.io/fluxerapp/fluxer-snowflakes:2026.1124.71334 AS img-snowflakes
-FROM ghcr.io/fluxerapp/fluxer-users:2026.1124.71321 AS img-users
-FROM ghcr.io/fluxerapp/fluxer-gifs:2026.1124.71229 AS img-gifs
-FROM ghcr.io/fluxerapp/fluxer-messages:2026.1124.71305 AS img-messages
-FROM ghcr.io/fluxerapp/fluxer-unfurl:2026.1124.71340 AS img-unfurl
+FROM ghcr.io/fluxerapp/fluxer-admin:2026.1127.154232 AS img-admin
+FROM ghcr.io/fluxerapp/fluxer-snowflakes:2026.1127.154309 AS img-snowflakes
+FROM ghcr.io/fluxerapp/fluxer-users:2026.1127.154331 AS img-users
+FROM ghcr.io/fluxerapp/fluxer-gifs:2026.1127.154259 AS img-gifs
+FROM ghcr.io/fluxerapp/fluxer-messages:2026.1127.154310 AS img-messages
+FROM ghcr.io/fluxerapp/fluxer-unfurl:2026.1127.154318 AS img-unfurl
 FROM livekit/livekit-server:v1.13.11 AS img-livekit
 FROM getmeili/meilisearch:v1.58 AS img-meilisearch
 FROM chrislusf/seaweedfs:4.55 AS img-seaweedfs
 FROM nats:2.15.3-alpine AS img-nats
 
 # fluxer-static is only files (avatars, emoji, web assets); nginx serves them.
-FROM ghcr.io/fluxerapp/fluxer-static:2026.1124.71336 AS static-files
+FROM ghcr.io/fluxerapp/fluxer-static:2026.1127.154314 AS static-files
 
 FROM debian:trixie-slim
 

@@ -146,13 +146,14 @@ x-casaos:
   port_map: "6873"
   scheme: http
   is_uncontrolled: false
-  version: "0.80.0"
-  update_at: "2026-11-27"
+  version: "0.81.0"
+  update_at: "2026-11-28"
   release_notes:
     en_US: |-
+      - Updated openbot 0.80.0 to 0.81.0
       - Updated openbot 0.79.0 to 0.80.0
       - Updated openbot 0.78.0 to 0.79.0
-      - First IceStore release: ghcr.io/nightly-labs/openbot 0.80.0 with its sign-in page on port 6873
+      - First IceStore release: ghcr.io/nightly-labs/openbot 0.81.0 with its sign-in page on port 6873
       - A start script gives the data folder to OpenBot's own user (uid 1000) and starts it as that user, like upstream's Umbrel app
       - Runs with seccomp unconfined instead of upstream's seccomp.json, which a store app cannot ship; the Electron sandbox needs those calls
   repo: "https://github.com/nightly-labs/openbot"

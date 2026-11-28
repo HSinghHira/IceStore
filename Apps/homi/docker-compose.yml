@@ -186,9 +186,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "v1.9.3"
-  update_at: "2026-11-27"
+  update_at: "2026-11-28"
   release_notes:
     en_US: |-
+      - Updated node 24.21.0-bookworm-slim to 24.22.3-bookworm-slim
       - First IceStore version: Homi v1.9.3, built from upstream's source (upstream publishes no image)
       - Needs an https reverse proxy; set PUBLIC_URL to its address
       - One container with PostgreSQL 18, the module manager, the API and the web app; port 6879, data in /DATA/AppData/homi/data

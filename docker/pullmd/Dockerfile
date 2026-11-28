@@ -12,9 +12,9 @@
 # Left out: the Playwright sidecar (headless Chromium, about 3.7 GB). Without it
 # JavaScript-heavy pages fall back to static extraction, as upstream documents.
 
-FROM aeternalabshq/pullmd:3.22.0 AS img-pullmd
-FROM aeternalabshq/pullmd-trafilatura:3.22.0 AS img-trafilatura
-FROM aeternalabshq/pullmd-markitdown:3.22.0 AS img-markitdown
+FROM aeternalabshq/pullmd:3.22.2 AS img-pullmd
+FROM aeternalabshq/pullmd-trafilatura:3.22.2 AS img-trafilatura
+FROM aeternalabshq/pullmd-markitdown:3.22.2 AS img-markitdown
 
 FROM debian:trixie-slim
 

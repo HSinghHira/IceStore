@@ -19,7 +19,7 @@ ARG HOMI_REF=v1.9.3
 
 # Homi requires Node 24 (.nvmrc, Dockerfile.core): take its patches, not a new major.
 # auto-update: keep-major
-FROM node:24.21.0-bookworm-slim
+FROM node:24.22.3-bookworm-slim
 ARG HOMI_REF
 ENV DEBIAN_FRONTEND=noninteractive
 

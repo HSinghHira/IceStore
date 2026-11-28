@@ -11,7 +11,7 @@
 #                        install's password instead of "admin")
 #   gateway    built-in (nginx on 8080)
 
-FROM moonrailgun/tianji:1.34.6 AS img-tianji
+FROM moonrailgun/tianji:1.34.8 AS img-tianji
 
 FROM debian:trixie-slim
 

@@ -7,7 +7,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM ghcr.io/xlollx/trackhop:2.2.5
+FROM ghcr.io/xlollx/trackhop:2.2.6
 
 USER root
 COPY --from=busybox:1.38.0-musl /bin/busybox /bin/busybox

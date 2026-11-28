@@ -8,7 +8,7 @@
 #
 # The daily bumper (update-upstream.yml) moves the tag below.
 
-FROM nexterm/server:1.2.2-BETA
+FROM nexterm/server:1.2.3-BETA
 
 # openssl makes the encryption key (the upstream image has none).
 RUN apk add --no-cache openssl
