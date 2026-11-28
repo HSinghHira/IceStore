@@ -1,0 +1,179 @@
+name: gonic
+
+services:
+  gonic:
+    image: ghcr.io/hsinghhira/gonic:latest
+    container_name: gonic
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - GONIC_ADMIN_PASSWORD=
+      - GONIC_SCAN_INTERVAL=60
+      - GONIC_SCAN_AT_START_ENABLED=true
+    ports:
+      - target: 80
+        published: "7005"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/cache
+        target: /cache
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/podcasts
+        target: /podcasts
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/Media/Music
+        target: /music
+        read_only: true
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/admin/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gonic/icon.png
+    x-casaos:
+      id: com.icestore.gonic
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: GONIC_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              Leave blank and IceStore makes an admin password on
+              first start and shows it in the app's log under
+              CREDENTIALS. Type one here to use your own; it is set
+              again on every start.
+        - container: GONIC_SCAN_INTERVAL
+          description:
+            en_US: >-
+              Minutes between scans for new music. Leave blank to
+              scan only by hand.
+        - container: GONIC_SCAN_AT_START_ENABLED
+          description:
+            en_US: >-
+              true scans your music each time gonic starts.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              gonic admin page and Subsonic API, published on host
+              as 7005
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              gonic's database (library, users, play counts) and
+              playlists. Back it up.
+        - container: /cache
+          description:
+            en_US: >-
+              Transcoded audio and cover art. Safe to empty.
+        - container: /podcasts
+          description:
+            en_US: >-
+              Podcast episodes gonic downloads.
+        - container: /music
+          description:
+            en_US: >-
+              Your music, read only. Point it at the folder with
+              your albums; /DATA/Media/Music by default.
+
+x-casaos:
+  id: com.icestore.gonic
+  architectures:
+    - amd64
+    - arm64
+  main: gonic
+  author: HSinghHira
+  category: Media
+  developer: "sentriz"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gonic/icon.png
+  title:
+    en_US: gonic
+  tagline:
+    en_US: A light music server for Subsonic apps on your phone and desktop
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/gonic/](https://icestore.hsinghhira.me/app/gonic/) for full details
+
+
+      gonic is a small, fast music streaming server. It reads your music
+      folders and serves them over the Subsonic API, so you can listen
+      with apps like Symfonium, DSub, Feishin, Supersonic or
+      Sonixd.
+
+
+      **Features**
+
+
+      - Browse by folders or by tags (artists, albums, genres)
+
+      - Transcoding on the fly with ffmpeg
+
+      - Podcasts, playlists, starred tracks and play counts
+
+      - Several users, Last.fm and ListenBrainz scrobbling
+
+      - Jukebox mode and internet radio
+
+
+      **How to use?**
+
+
+      1. Put your music in /DATA/Media/Music (or change the music
+         folder).
+
+      2. Open the app's log and find the admin password under
+         CREDENTIALS.
+
+      3. In your Subsonic app, add a server with your ZimaOS address,
+         port 7005, user admin and that password.
+  tips:
+    before_install:
+      en_US: >-
+        1. Put your music in /DATA/Media/Music, or change the music
+           folder in the app settings.
+
+
+        2. Leave GONIC_ADMIN_PASSWORD blank to get a new password. It is
+           in the app's log under CREDENTIALS. The user name is admin.
+
+
+        3. gonic has no player of its own. Use a Subsonic app on your
+           phone or computer.
+  index: /admin/
+  port_map: "7005"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.23.0"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: sentriz/gonic v0.23.0 on port 7005, with an admin password made for each install instead of admin/admin
+  repo: "https://github.com/sentriz/gonic"
+  support: "https://github.com/sentriz/gonic/issues"
+  docs: "https://github.com/sentriz/gonic#configuration-options"
