@@ -1,0 +1,134 @@
+name: slash
+
+services:
+  slash:
+    image: yourselfhosted/slash:0.5.3
+    container_name: slash
+    restart: unless-stopped
+    stop_grace_period: 10s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - SLASH_METRIC=false
+    ports:
+      - target: 5231
+        published: "6892"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /var/opt/slash
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "5231"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slash/icon.png
+    x-casaos:
+      id: com.icestore.slash
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: SLASH_METRIC
+          description:
+            en_US: >-
+              false stops Slash from sending usage numbers to its
+              makers. true turns that back on.
+      ports:
+        - container: "5231"
+          description:
+            en_US: >-
+              Slash web app and short links, published on host as
+              6892
+      volumes:
+        - container: /var/opt/slash
+          description:
+            en_US: >-
+              Slash's SQLite database with your users, links and
+              collections. Back it up.
+
+x-casaos:
+  id: com.icestore.slash
+  architectures:
+    - amd64
+    - arm64
+  main: slash
+  author: HSinghHira
+  category: Productivity
+  developer: "yourselfhosted"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slash/icon.png
+  title:
+    en_US: Slash
+  tagline:
+    en_US: Short links and shared bookmarks, like s/meeting for your team
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/slash/](https://icestore.hsinghhira.me/app/slash/) for full details
+
+
+      Slash turns long addresses into short, easy names like
+      s/handbook, so you and your family or team can share and open
+      links fast. Group links into collections and see how often each
+      one is opened.
+
+
+      **Features**
+
+
+      - Short links with your own names
+
+      - Tags, collections and full search
+
+      - Public, workspace-only or private links
+
+      - Visit counts for each link
+
+      - Browser extension to open s/name from the address bar
+
+
+      **How to use?**
+
+
+      1. Open Slash and sign up. The first account becomes the admin.
+
+      2. Click Create to make a short link, like handbook.
+
+      3. Open it at your Slash address plus /s/handbook, or install the
+         browser extension to type s/handbook.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. Slash is ready in a few seconds.
+
+
+        2. Open it right away and sign up. The first account becomes the
+           admin.
+
+
+        3. Then, in the admin settings, turn off sign-up so strangers
+           can't make accounts.
+  index: /
+  port_map: "6892"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.5.3"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: yourselfhosted/slash 0.5.3 on port 6892
+  repo: "https://github.com/yourselfhosted/slash"
+  support: "https://github.com/yourselfhosted/slash/issues"
+  docs: "https://github.com/yourselfhosted/slash/tree/main/docs"
