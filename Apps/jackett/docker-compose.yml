@@ -1,0 +1,144 @@
+name: jackett
+
+services:
+  jackett:
+    image: lscr.io/linuxserver/jackett:v0.25.48-ls49
+    container_name: jackett
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - AUTO_UPDATE=false
+    ports:
+      - target: 9117
+        published: "6881"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:9117/UI/Login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/jackett/icon.png
+    x-casaos:
+      id: com.icestore.jackett
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for sync times and the history. It
+              is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns Jackett's files. It is filled
+              in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns Jackett's files. It is filled
+              in by ZimaOS.
+        - container: AUTO_UPDATE
+          description:
+            en_US: >-
+              Leave false. IceStore updates Jackett for you with
+              a new image; true lets Jackett update itself inside
+              the container instead.
+      ports:
+        - container: "9117"
+          description:
+            en_US: >-
+              Jackett web app and API, published on host as 6881
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Jackett's indexers, settings, API key and
+              logs. Back it up.
+
+x-casaos:
+  id: com.icestore.jackett
+  architectures:
+    - amd64
+    - arm64
+  main: jackett
+  author: HSinghHira
+  category: Media
+  developer: "Jackett team"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/jackett/icon.png
+  title:
+    en_US: Jackett
+  tagline:
+    en_US: Turns your torrent trackers into one search API for Sonarr and Radarr
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/jackett/](https://icestore.hsinghhira.me/app/jackett/) for full details
+
+
+      Jackett is a proxy for your torrent trackers. It turns hundreds of
+      tracker sites into one Torznab API that Sonarr, Radarr, Lidarr,
+      qBittorrent search and other apps can use.
+
+
+      **Features**
+
+
+      - Over 500 public and private trackers built in
+
+      - Torznab and TorrentPotato feeds for each tracker, or all at once
+
+      - Manual search across every tracker from the web page
+
+      - FlareSolverr and proxy support for protected sites
+
+
+      **How to use?**
+
+
+      1. Open Jackett and set an admin password at the bottom of the
+         page.
+
+      2. Click Add indexer and pick your trackers.
+
+      3. Copy a tracker's Torznab feed and the API key into Sonarr or
+         Radarr as a Torznab indexer.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Jackett has no password at first. Open it and set an admin
+           password at the bottom of the page right away.
+
+
+        3. In Sonarr or Radarr, use your ZimaOS IP address in the
+           Jackett feed address, not localhost.
+  index: /
+  port_map: "6881"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.25.48-ls49"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: lscr.io/linuxserver/jackett v0.25.48-ls49 on port 6881
+  repo: "https://github.com/Jackett/Jackett"
+  support: "https://github.com/Jackett/Jackett/issues"
+  docs: "https://github.com/Jackett/Jackett/wiki"
