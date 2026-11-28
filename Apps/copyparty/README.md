@@ -1,5 +1,6 @@
 ---
 source: https://github.com/9001/copyparty
+screenshots: [Grid view, Music player, Uploads]
 services:
   - { name: Files, path: /, icon: globe }
 variables:

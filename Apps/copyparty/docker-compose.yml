@@ -76,6 +76,11 @@ x-casaos:
   category: Others
   developer: "9001"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/copyparty/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/copyparty/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/copyparty/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/copyparty/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/copyparty/screenshot-1.png
   title:
     en_US: copyparty
   tagline:
