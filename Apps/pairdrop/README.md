@@ -1,5 +1,6 @@
 ---
 source: https://github.com/schlagmichdoch/PairDrop
+screenshots: [Pair devices, Transfer request, Pair permanently]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
