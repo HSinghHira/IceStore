@@ -1,0 +1,192 @@
+name: mediarium
+
+services:
+  mediarium:
+    image: ghcr.io/rdborg/mediarium:4.1.2
+    container_name: mediarium
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - DOWNLOADS_DIR=/DATA/Downloads
+      - MOVIES_DIR=/DATA/Media/Movies
+      - TV_DIR=/DATA/Media/TV
+    ports:
+      - target: 8264
+        published: "6882"
+        protocol: tcp
+      - target: 6883
+        published: "6883"
+        protocol: tcp
+      - target: 6883
+        published: "6883"
+        protocol: udp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA
+        target: /DATA
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1:8264/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mediarium/icon.png
+    x-casaos:
+      id: com.icestore.mediarium
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for schedules, download hours and the
+              calendar. It is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns your media files. It is filled
+              in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns your media files. It is filled
+              in by ZimaOS.
+        - container: DOWNLOADS_DIR
+          description:
+            en_US: >-
+              Where downloads go while they finish. Keep it under
+              /DATA, on the same disk as your library, so finished
+              files move in at once.
+        - container: MOVIES_DIR
+          description:
+            en_US: >-
+              Your movie library folder, like /DATA/Media/Movies.
+        - container: TV_DIR
+          description:
+            en_US: >-
+              Your TV show library folder, like /DATA/Media/TV.
+      ports:
+        - container: "8264"
+          description:
+            en_US: >-
+              Mediarium web app and API, published on host as 6882
+        - container: "6883"
+          description:
+            en_US: >-
+              Torrent connections from other peers (TCP and UDP),
+              published on host as 6883. Set Mediarium's torrent
+              Listen port to 6883 to use it.
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Mediarium's database, settings, API key and logs.
+              Back it up.
+        - container: /DATA
+          description:
+            en_US: >-
+              Your ZimaOS storage at the same path, so Mediarium
+              can download into /DATA/Downloads and move files into
+              your library without copying.
+
+x-casaos:
+  id: com.icestore.mediarium
+  architectures:
+    - amd64
+    - arm64
+  main: mediarium
+  author: HSinghHira
+  category: Media
+  developer: "rdborg"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mediarium/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mediarium/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mediarium/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mediarium/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/mediarium/screenshot-4.png
+  title:
+    en_US: Mediarium
+  tagline:
+    en_US: Movies, TV, music and books from search to library in one app
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/mediarium/](https://icestore.hsinghhira.me/app/mediarium/) for full details
+
+
+      Mediarium finds a movie or show on your Usenet and torrent indexers,
+      downloads the best release, unpacks it, names it and puts it in your
+      library for Plex, Jellyfin or Emby. It does the jobs of Radarr,
+      Sonarr, Prowlarr, SABnzbd, a torrent client and Bazarr in one app.
+
+
+      **Features**
+
+
+      - Movies and TV, plus music, ebooks and audiobooks if you switch
+        them on
+
+      - Built-in Usenet and torrent downloaders, with repair and unpacking
+
+      - Quality profiles, custom formats and automatic upgrades
+
+      - Subtitles matched to your file, and a built-in book reader and
+        audiobook player
+
+      - Family accounts with requests, and a move-over tool for Radarr,
+        Sonarr, Prowlarr and SABnzbd
+
+
+      **How to use?**
+
+
+      1. Open Mediarium and follow the setup wizard to make your admin
+         account.
+
+      2. Add your indexers and Usenet servers, or bring them over from
+         Radarr, Sonarr and Prowlarr.
+
+      3. Search for a movie or show and add it.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Mediarium. A setup wizard makes your admin
+           account, so do this first.
+
+
+        3. Your library is in /DATA/Media/Movies and /DATA/Media/TV, and
+           downloads go to /DATA/Downloads. You can change these in the
+           app settings.
+
+
+        4. For torrents, set the Listen port to 6883 in Mediarium's
+           download settings so other peers can reach you.
+  index: /
+  port_map: "6882"
+  scheme: http
+  is_uncontrolled: false
+  version: "4.1.2"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/rdborg/mediarium 4.1.2 on port 6882, torrents on 6883
+      - /DATA is shared at the same path, so downloads move into your library without copying
+  repo: "https://github.com/rdborg/Mediarium"
+  support: "https://github.com/rdborg/Mediarium/issues"
+  docs: "https://github.com/rdborg/Mediarium/blob/main/docs/README.md"
