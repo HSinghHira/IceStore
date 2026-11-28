@@ -1,5 +1,6 @@
 ---
 source: https://github.com/sigoden/dufs
+screenshots: [File list]
 services:
   - { name: Files, path: /, icon: globe }
 variables:
