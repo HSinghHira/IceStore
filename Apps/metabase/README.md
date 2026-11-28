@@ -1,6 +1,7 @@
 ---
 site: https://www.metabase.com
 source: https://github.com/metabase/metabase
+screenshots: [Dashboard]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

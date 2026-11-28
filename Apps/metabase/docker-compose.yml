@@ -76,6 +76,9 @@ x-casaos:
   category: Others
   developer: "Metabase"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metabase/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metabase/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/metabase/screenshot-1.png
   title:
     en_US: Metabase
   tagline:
