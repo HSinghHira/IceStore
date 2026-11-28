@@ -83,6 +83,10 @@ x-casaos:
   category: Developer
   developer: thomiceli
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengist/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengist/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengist/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/opengist/screenshot-1.png
   title:
     en_US: Opengist
   tagline:

@@ -1,6 +1,7 @@
 ---
 site: https://opengist.io
 source: https://github.com/thomiceli/opengist
+screenshots: [Dark mode, Light mode]
 services:
   - { name: Web App, path: /, icon: globe }
   - { name: Admin panel, path: /admin-panel, icon: grid }
