@@ -3,7 +3,7 @@ site: https://busnes.app/kydrive.html
 source: https://github.com/Busnes-app/kydrive-server
 services:
   - { name: Web App, path: /, icon: globe }
-screenshots: []
+screenshots: [My files]
 variables:
   - name: KY_SESSION_SECRET
     group: Keys
