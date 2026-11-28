@@ -1,6 +1,7 @@
 ---
 site: https://github.com/Jackett/Jackett
 source: https://github.com/Jackett/Jackett
+screenshots: [Indexers, Manual search, Configuration]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
