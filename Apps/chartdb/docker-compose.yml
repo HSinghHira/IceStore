@@ -50,6 +50,11 @@ x-casaos:
   category: Developer
   developer: "ChartDB"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/chartdb/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/chartdb/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/chartdb/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/chartdb/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/chartdb/screenshot-1.png
   title:
     en_US: ChartDB
   tagline:

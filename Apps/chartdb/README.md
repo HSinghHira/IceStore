@@ -1,6 +1,7 @@
 ---
 site: https://chartdb.io
 source: https://github.com/chartdb/chartdb
+screenshots: [Diagram editor, Dark mode, Light mode]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
