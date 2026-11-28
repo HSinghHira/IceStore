@@ -1,6 +1,7 @@
 ---
 site: https://docs.fluidd.xyz
 source: https://github.com/fluidd-core/fluidd
+screenshots: [Dashboard, Thermals, Bed mesh, Tool controls]
 services:
   - { name: Web App, path: /, icon: monitor }
 ---

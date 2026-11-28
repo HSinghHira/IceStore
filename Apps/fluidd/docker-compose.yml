@@ -51,6 +51,12 @@ x-casaos:
   category: Home
   developer: "Fluidd team"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluidd/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluidd/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluidd/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluidd/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluidd/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluidd/screenshot-1.png
   title:
     en_US: Fluidd
   tagline:
