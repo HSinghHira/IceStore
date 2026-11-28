@@ -2,12 +2,11 @@ name: homer
 
 services:
   homer:
-    image: b4bz/homer:v26.11.4
+    image: ghcr.io/hsinghhira/homer:latest
     container_name: homer
     restart: unless-stopped
     stop_grace_period: 10s
     network_mode: bridge
-    user: "0:0"
     environment:
       - TZ=$TZ
       - INIT_ASSETS=1
@@ -128,6 +127,7 @@ x-casaos:
   update_at: "2026-11-28"
   release_notes:
     en_US: |-
+      - Fix: Homer stopped at start with "opening log '/dev/fd/3' failed: Permission denied". The IceStore image now gives the assets folder and the log to Homer's own user and runs Homer as that user, not root.
       - First IceStore release: b4bz/homer v26.11.4 on port 6884
   repo: "https://github.com/bastienwirtz/homer"
   support: "https://github.com/bastienwirtz/homer/issues"

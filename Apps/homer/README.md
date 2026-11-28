@@ -36,4 +36,4 @@ Homer is a very simple static home page for your server. You list your apps and 
 
 ## Before you install
 
-Homer has no settings page and no sign-in. On first start it copies an example config.yml and some icons into AppData/homer/assets; you change the dashboard by editing that file. Anyone on your network who opens http://[ZIMAOS-IP-ADDRESS]:6884 can see the page, so keep passwords out of it. Use your ZimaOS IP address in links, not localhost, so they work from other devices.
+Homer has no settings page and no sign-in. This IceStore image only adds one step to upstream's: it gives the assets folder to Homer's own user so the example config can be copied there. On first start it copies an example config.yml and some icons into AppData/homer/assets; you change the dashboard by editing that file. Anyone on your network who opens http://[ZIMAOS-IP-ADDRESS]:6884 can see the page, so keep passwords out of it. Use your ZimaOS IP address in links, not localhost, so they work from other devices.
