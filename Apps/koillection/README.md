@@ -1,6 +1,7 @@
 ---
 site: https://koillection.github.io
 source: https://github.com/benjaminjonard/koillection
+screenshots: [Collection, Item page, Signs, Wishlist]
 services:
   - { name: Web App, path: /, icon: globe }
   - { name: API, path: /api, icon: code }

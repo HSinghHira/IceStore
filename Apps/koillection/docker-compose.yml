@@ -92,6 +92,12 @@ x-casaos:
   category: Productivity
   developer: "Benjamin Jonard"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/koillection/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/koillection/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/koillection/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/koillection/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/koillection/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/koillection/screenshot-1.png
   title:
     en_US: Koillection
   tagline:
