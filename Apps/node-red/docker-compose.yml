@@ -64,6 +64,9 @@ x-casaos:
   category: Home
   developer: "OpenJS Foundation"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/node-red/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/node-red/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/node-red/screenshot-1.png
   title:
     en_US: Node-RED
   tagline:

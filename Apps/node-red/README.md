@@ -1,6 +1,7 @@
 ---
 site: https://nodered.org
 source: https://github.com/node-red/node-red
+screenshots: [Flow editor]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
