@@ -73,6 +73,11 @@ x-casaos:
   category: Networking
   developer: "TwiN"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gatus/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gatus/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gatus/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gatus/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gatus/screenshot-1.png
   title:
     en_US: Gatus
   tagline:

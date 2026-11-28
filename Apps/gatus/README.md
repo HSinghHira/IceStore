@@ -1,6 +1,7 @@
 ---
 site: https://gatus.io
 source: https://github.com/TwiN/gatus
+screenshots: [Health dashboard, Grouped endpoints, Announcements]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
