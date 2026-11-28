@@ -69,6 +69,11 @@ x-casaos:
   category: Productivity
   developer: "Donetick"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/donetick/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/donetick/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/donetick/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/donetick/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/donetick/screenshot-1.png
   title:
     en_US: Donetick
   tagline:

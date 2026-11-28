@@ -1,6 +1,7 @@
 ---
 site: https://donetick.com
 source: https://github.com/donetick/donetick
+screenshots: [Chores, Chore details, Mobile overview]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
