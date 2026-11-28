@@ -1,6 +1,7 @@
 ---
 site: https://kutt.it
 source: https://github.com/thedevs-network/kutt
+screenshots: [Shorten links, Admin users, Log in]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
