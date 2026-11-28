@@ -1,0 +1,115 @@
+name: fluidd
+
+services:
+  fluidd:
+    image: ghcr.io/fluidd-core/fluidd:v1.38.1
+    container_name: fluidd
+    restart: unless-stopped
+    stop_grace_period: 10s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "7006"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "-T", "2", "http://127.0.0.1:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 8M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluidd/icon.png
+    x-casaos:
+      id: com.icestore.fluidd
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              Fluidd web page, published on host as 7006
+
+x-casaos:
+  id: com.icestore.fluidd
+  architectures:
+    - amd64
+    - arm64
+  main: fluidd
+  author: HSinghHira
+  category: Home
+  developer: "Fluidd team"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/fluidd/icon.png
+  title:
+    en_US: Fluidd
+  tagline:
+    en_US: A clean web interface for Klipper 3D printers
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/fluidd/](https://icestore.hsinghhira.me/app/fluidd/) for full details
+
+
+      Fluidd is a web interface for 3D printers that run Klipper. It
+      talks to Moonraker on your printer, so you can watch and control
+      prints, edit config files and see your camera from one page.
+
+
+      **Features**
+
+
+      - Print status, temperatures and graphs
+
+      - Upload and start G-code files, with previews
+
+      - Edit Klipper config files in the browser
+
+      - Webcams, console, macros and bed mesh view
+
+      - Several printers from one page
+
+
+      **How to use?**
+
+
+      1. Your printer needs Klipper and Moonraker running.
+
+      2. Open Fluidd and add your printer with its address, like
+         http://192.168.1.50.
+
+      3. If it can't connect, add the Fluidd address to cors_domains
+         in Moonraker's settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. Fluidd is ready in a few seconds.
+
+
+        2. It needs a printer with Klipper and Moonraker. Add the printer's
+           address when Fluidd asks.
+
+
+        3. In moonraker.conf, add your Fluidd address to cors_domains, or
+           the browser can't reach the printer.
+  index: /
+  port_map: "7006"
+  scheme: http
+  is_uncontrolled: false
+  version: "v1.38.1"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/fluidd-core/fluidd v1.38.1 on port 7006
+  repo: "https://github.com/fluidd-core/fluidd"
+  support: "https://github.com/fluidd-core/fluidd/issues"
+  docs: "https://docs.fluidd.xyz"
