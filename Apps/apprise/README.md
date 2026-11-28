@@ -1,5 +1,6 @@
 ---
 source: https://github.com/caronc/apprise-api
+screenshots: [Configuration, Review services]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
