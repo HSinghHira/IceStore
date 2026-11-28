@@ -1,6 +1,7 @@
 ---
 site: https://www.openproject.org
 source: https://github.com/opf/openproject
+screenshots: [Work package, Portfolios, Meetings]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
