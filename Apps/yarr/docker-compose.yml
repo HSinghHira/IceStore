@@ -82,6 +82,9 @@ x-casaos:
   category: Productivity
   developer: "nkanaev"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yarr/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yarr/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yarr/screenshot-1.png
   title:
     en_US: yarr
   tagline:

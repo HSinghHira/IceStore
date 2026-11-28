@@ -1,6 +1,7 @@
 ---
 site: https://github.com/nkanaev/yarr
 source: https://github.com/nkanaev/yarr
+screenshots: [Reader]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
