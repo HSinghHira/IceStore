@@ -75,6 +75,9 @@ x-casaos:
   category: Media
   developer: "Prowlarr team"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/prowlarr/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/prowlarr/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/prowlarr/screenshot-1.png
   title:
     en_US: Prowlarr
   tagline:

@@ -1,6 +1,7 @@
 ---
 site: https://prowlarr.com
 source: https://github.com/Prowlarr/Prowlarr
+screenshots: [Indexers]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
