@@ -1,6 +1,7 @@
 ---
 site: https://wakapi.dev
 source: https://github.com/muety/wakapi
+screenshots: [Dashboard]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
