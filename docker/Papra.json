@@ -1,0 +1,69 @@
+{
+  "name": "Papra",
+  "repo": "ghcr.io/hsinghhira/papra:latest",
+  "category": [
+    "Productivity"
+  ],
+  "registry": "https://github.com/hsinghhira/papra/pkgs/container/papra",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=20 --memory=1g --memory-reservation=128m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:1221]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/papra/icon.png",
+  "project": "https://papra.app",
+  "support": "https://github.com/papra-hq/papra/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/papra/",
+  "description": "A simple document archive for your receipts, bills and papers",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "App Data",
+      "host": "/mnt/cache/appdata/papra/data",
+      "container": "/app/app-data",
+      "mode": "rw",
+      "description": "Papra's database, your uploaded documents and the auth secret. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6890",
+      "container": "1221",
+      "description": "Papra web app and API, published on host as 6890"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "APP_BASE_URL",
+      "key": "APP_BASE_URL",
+      "value": "http://YOUR-SERVER-IP:6890",
+      "mask": false,
+      "description": "The address you open Papra at. Replace YOUR-SERVER-IP with your server IP address, like http://192.168.1.20:6890, or sign-in fails. Behind a reverse proxy, use your https address."
+    },
+    {
+      "name": "AUTH_IS_REGISTRATION_ENABLED",
+      "key": "AUTH_IS_REGISTRATION_ENABLED",
+      "value": "true",
+      "mask": false,
+      "description": "true lets anyone who can open Papra make an account. Make your own account first, then set false."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
