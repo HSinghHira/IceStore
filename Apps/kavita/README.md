@@ -1,6 +1,7 @@
 ---
 site: https://www.kavitareader.com
 source: https://github.com/Kareadita/Kavita
+screenshots: [Home]
 services:
   - { name: Reader, path: /, icon: globe }
 ---

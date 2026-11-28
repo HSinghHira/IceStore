@@ -70,6 +70,9 @@ x-casaos:
   category: Media
   developer: Kareadita
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kavita/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kavita/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kavita/screenshot-1.png
   title:
     en_US: Kavita
   tagline:
