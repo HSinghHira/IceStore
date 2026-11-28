@@ -1,6 +1,7 @@
 ---
 site: https://github.com/yourselfhosted/slash
 source: https://github.com/yourselfhosted/slash
+screenshots: [Shortcuts, Workspace settings]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

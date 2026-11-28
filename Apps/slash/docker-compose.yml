@@ -70,6 +70,10 @@ x-casaos:
   category: Productivity
   developer: "yourselfhosted"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slash/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slash/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slash/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/slash/screenshot-1.png
   title:
     en_US: Slash
   tagline:
