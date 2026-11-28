@@ -2,7 +2,7 @@ name: nexterm
 
 services:
   nexterm:
-    image: ghcr.io/hsinghhira/nexterm:1.0.1
+    image: ghcr.io/hsinghhira/nexterm:1.0.2
     container_name: nexterm
     restart: unless-stopped
     stop_grace_period: 30s
