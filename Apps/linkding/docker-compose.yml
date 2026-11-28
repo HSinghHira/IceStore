@@ -72,6 +72,10 @@ x-casaos:
   category: Productivity
   developer: "sissbruecker"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/linkding/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/linkding/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/linkding/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/linkding/screenshot-1.png
   title:
     en_US: linkding
   tagline:

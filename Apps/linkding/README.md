@@ -1,6 +1,7 @@
 ---
 site: https://linkding.link
 source: https://github.com/sissbruecker/linkding
+screenshots: [Bookmarks, Dark mode]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
