@@ -1,6 +1,7 @@
 ---
 site: https://www.openhab.org
 source: https://github.com/openhab/openhab-distro
+screenshots: [Locations, Settings, Floor plan]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

@@ -100,6 +100,11 @@ x-casaos:
   category: Home
   developer: "openHAB Foundation"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openhab/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openhab/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openhab/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openhab/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openhab/screenshot-1.png
   title:
     en_US: openHAB
   tagline:
