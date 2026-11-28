@@ -1,5 +1,6 @@
 ---
 source: https://github.com/ChatGPTNextWeb/NextChat
+screenshots: [Masks and chat, Prompt templates, Settings]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
