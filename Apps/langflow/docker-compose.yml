@@ -71,6 +71,11 @@ x-casaos:
   category: AI
   developer: "Langflow"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/langflow/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/langflow/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/langflow/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/langflow/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/langflow/screenshot-1.png
   title:
     en_US: Langflow
   tagline:

@@ -1,6 +1,7 @@
 ---
 site: https://www.langflow.org
 source: https://github.com/langflow-ai/langflow
+screenshots: [Agent flow, Simple flow, API access]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
