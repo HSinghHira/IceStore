@@ -1,0 +1,22 @@
+name: Build donetick
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/donetick/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-donetick.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: donetick
+      kind: wrapper

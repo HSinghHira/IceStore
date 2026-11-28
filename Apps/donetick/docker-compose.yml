@@ -1,0 +1,133 @@
+name: donetick
+
+services:
+  donetick:
+    image: ghcr.io/hsinghhira/donetick:latest
+    container_name: donetick
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - DONETICK_DISABLE_SIGNUP=false
+    ports:
+      - target: 2021
+        published: "6899"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /donetick-data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:2021/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/donetick/icon.png
+    x-casaos:
+      id: com.icestore.donetick
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for due dates and reminders. It is
+              filled in from your ZimaOS time zone.
+        - container: DONETICK_DISABLE_SIGNUP
+          description:
+            en_US: >-
+              true stops new sign-ups. Make accounts for your
+              household first, then set true.
+      ports:
+        - container: "2021"
+          description:
+            en_US: >-
+              Donetick web app and API, published on host as 6899
+      volumes:
+        - container: /donetick-data
+          description:
+            en_US: >-
+              Donetick's SQLite database with your chores, users
+              and history, plus the sign-in secret. Back it up.
+
+x-casaos:
+  id: com.icestore.donetick
+  architectures:
+    - amd64
+    - arm64
+  main: donetick
+  author: HSinghHira
+  category: Productivity
+  developer: "Donetick"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/donetick/icon.png
+  title:
+    en_US: Donetick
+  tagline:
+    en_US: Share chores and tasks with your household, with smart repeats
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/donetick/](https://icestore.hsinghhira.me/app/donetick/) for full details
+
+
+      Donetick is a task and chore manager for families and small
+      groups. Make chores that repeat, hand them out in turns, and get
+      reminders when something is due.
+
+
+      **Features**
+
+
+      - Repeating chores by day, week, month or after they are done
+
+      - Take turns: assign to the next person, randomly or by least done
+
+      - Reminders by Telegram, Pushover, ntfy and more
+
+      - Points and history for who did what
+
+      - Phone apps, an API and Home Assistant support
+
+
+      **How to use?**
+
+
+      1. Open Donetick and sign up. Make a circle (group) for your
+         household.
+
+      2. Invite the others, or have them sign up and join your circle.
+
+      3. Set DONETICK_DISABLE_SIGNUP to true, then add your first
+         chores.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. Donetick is ready in a few seconds.
+
+
+        2. Open it and sign up. Everyone in your home can sign up and join
+           your circle.
+
+
+        3. When everyone has an account, set DONETICK_DISABLE_SIGNUP to
+           true so strangers can't sign up.
+  index: /
+  port_map: "6899"
+  scheme: http
+  is_uncontrolled: false
+  version: "v0.1.89"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: donetick/donetick v0.1.89 on port 6899, with a JWT secret made for each install
+  repo: "https://github.com/donetick/donetick"
+  support: "https://github.com/donetick/donetick/issues"
+  docs: "https://docs.donetick.com"
