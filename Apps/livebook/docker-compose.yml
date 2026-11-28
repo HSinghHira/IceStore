@@ -77,6 +77,10 @@ x-casaos:
   category: Developer
   developer: "Livebook"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/livebook/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/livebook/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/livebook/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/livebook/screenshot-1.png
   title:
     en_US: Livebook
   tagline:

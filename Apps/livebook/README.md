@@ -1,6 +1,7 @@
 ---
 site: https://livebook.dev
 source: https://github.com/livebook-dev/livebook
+screenshots: [Notebook, Apps]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
