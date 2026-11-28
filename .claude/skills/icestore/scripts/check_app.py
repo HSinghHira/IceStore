@@ -32,6 +32,12 @@ PORT_LOW, PORT_HIGH = 6101, 6199
 # Apps with many ports get a block of 30 here instead (Ente: 6600, 6630, 6660).
 # Once 61xx filled up (Nov 2026), single apps continue from 6690 to 6899.
 BLOCK_LOW, BLOCK_HIGH = 6600, 6899
+# 6600-6899 filled up too (Nov 2026); the user opened 7000-7099 next.
+THEN_LOW, THEN_HIGH = 7000, 7099
+# Ports Chrome, Edge and Firefox refuse to open (ERR_UNSAFE_PORT), from
+# Chromium's kRestrictedPorts list. KyDNS on 6697 hit this in Nov 2026.
+BROWSER_BLOCKED = {1719, 1720, 1723, 2049, 3659, 4045, 4190, 5060, 5061, 6000, 6566,
+                   6665, 6666, 6667, 6668, 6669, 6679, 6697, 10080}
 # Ports a protocol fixes, which clients can't be told to change (DNS servers: KyDNS).
 FIXED_PORTS = {"53"}
 AIO_FILES = ["Dockerfile", "aio-init.sh", "run-svc.sh", "capture-meta.sh", "supervisord.conf",
@@ -206,8 +212,11 @@ def check_compose(root, slug, app_dir):
             continue
         if pub in FIXED_PORTS:
             pass
-        elif not (PORT_LOW <= int(pub) <= PORT_HIGH or BLOCK_LOW <= int(pub) <= BLOCK_HIGH):
-            err(f"service '{name}': port {pub} is outside {PORT_LOW}-{PORT_HIGH} and {BLOCK_LOW}-{BLOCK_HIGH}")
+        elif not (PORT_LOW <= int(pub) <= PORT_HIGH or BLOCK_LOW <= int(pub) <= BLOCK_HIGH
+                  or THEN_LOW <= int(pub) <= THEN_HIGH):
+            err(f"service '{name}': port {pub} is outside {PORT_LOW}-{PORT_HIGH}, {BLOCK_LOW}-{BLOCK_HIGH} and {THEN_LOW}-{THEN_HIGH}")
+        if pub.isdigit() and int(pub) in BROWSER_BLOCKED:
+            err(f"service '{name}': port {pub} is blocked by Chrome, Edge and Firefox (ERR_UNSAFE_PORT); pick another")
         if pub in taken:
             err(f"port {pub} is already used by Apps/{taken[pub]}")
 

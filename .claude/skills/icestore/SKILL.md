@@ -54,8 +54,13 @@ If unsure, ask the user. Do not turn a simple app into an AIO build.
    **6101–6199 is full (Nov 2026).** New apps take the next free numbers in
    6690–6899 (Reelsaw 6690, Lemmary 6691, Fluxer 6692–6694, KyIdentity
    6695, ...); `ports.py` falls through to that range by itself and the
-   checker accepts it. A port a protocol fixes (DNS on 53, KyDNS) is
-   published as itself; it is in `FIXED_PORTS` in both scripts.
+   checker accepts it. **6690–6899 filled up too (Nov 2026); the user
+   opened 7000–7099 next**, and `ports.py` falls through to it. A port a
+   protocol fixes (DNS on 53, KyDNS) is published as itself; it is in
+   `FIXED_PORTS` in both scripts. Never publish a web page on a port
+   browsers block (ERR_UNSAFE_PORT: 6000, 6566, 6665–6669, 6679, 6697,
+   10080 and a few below 6000); `BROWSER_BLOCKED` in both scripts skips and
+   flags them. KyDNS on 6697 and Ente SeaweedFS on 6665–6669 shipped that way.
 2. **Gather upstream facts first**: every image and pinned tag, ports, env vars
    (the full list of settings people can change, from upstream's `.env`
    example, config reference and docs — not just what its compose file sets;

@@ -53,8 +53,12 @@ def main():
     held, p = held_ports(), int(m.group(1))
     while any(q in held for q in range(p, p + a.count)):
         p += 1
-    if p + a.count - 1 > 6899:
-        sys.exit("6800-6899 is full: open a new range in ports.py and check_app.py first")
+    if 6899 < p + a.count - 1 < 7000:
+        p = 7000
+        while any(q in held for q in range(p, p + a.count)):
+            p += 1
+    if p + a.count - 1 > 7099:
+        sys.exit("7000-7099 is full: open a new range in ports.py and check_app.py first")
     ports = list(range(p, p + a.count))
     if a.claim:
         os.makedirs(os.path.dirname(QUEUE), exist_ok=True)

@@ -29,9 +29,14 @@ REPO = "HSinghHira/IceStore"
 LOW, HIGH = 6101, 6199
 BLOCK_LOW, BLOCK_HIGH, BLOCK = 6600, 6699, 30
 # 61xx is full (Nov 2026): single apps continue here, after the Ente blocks,
-# then on into 6800-6899.
+# then on into 6800-6899. When that filled up (Nov 2026) the user opened 7000-7099.
 NEXT_LOW, NEXT_HIGH = 6690, 6899
+THEN_LOW, THEN_HIGH = 7000, 7099
 FIXED_PORTS = {"53"}  # DNS servers (KyDNS): clients can't use another port
+# Ports Chrome, Edge and Firefox refuse to open (ERR_UNSAFE_PORT), from
+# Chromium's kRestrictedPorts list. KyDNS on 6697 hit this in Nov 2026.
+BROWSER_BLOCKED = {1719, 1720, 1723, 2049, 3659, 4045, 4190, 5060, 5061, 6000, 6566,
+                   6665, 6666, 6667, 6668, 6669, 6679, 6697, 10080}
 SOURCES = [
     f"https://codeload.github.com/{REPO}/tar.gz/refs/heads/main",
     f"https://github.com/{REPO}/archive/refs/heads/main.tar.gz",
@@ -109,37 +114,43 @@ def main():
             if not p.isdigit():
                 problems.append(f"{app}: port '{p}' is not a number (a $PORT variable?)")
                 continue
-            if p not in FIXED_PORTS and not (LOW <= int(p) <= HIGH or BLOCK_LOW <= int(p) <= NEXT_HIGH):
-                problems.append(f"{app}: port {p} is outside {LOW}-{HIGH} and {BLOCK_LOW}-{BLOCK_HIGH}")
+            if p not in FIXED_PORTS and not (LOW <= int(p) <= HIGH or BLOCK_LOW <= int(p) <= NEXT_HIGH
+                                             or THEN_LOW <= int(p) <= THEN_HIGH):
+                problems.append(f"{app}: port {p} is outside {LOW}-{HIGH}, {BLOCK_LOW}-{NEXT_HIGH} and {THEN_LOW}-{THEN_HIGH}")
+            if int(p) in BROWSER_BLOCKED:
+                problems.append(f"{app}: port {p} is blocked by browsers (ERR_UNSAFE_PORT)")
             if p in owner and owner[p] != app:
                 problems.append(f"port {p} is used by both {owner[p]} and {app}")
             owner.setdefault(p, app)
 
     used = {int(p) for p in owner if p.isdigit()}
+    free = lambda p: all(q not in used and q not in BROWSER_BLOCKED for q in range(p, p + args.count))
     if args.block:
         print()
         for msg in problems:
             print(f"WARNING: {msg}")
         for b in range(BLOCK_LOW, BLOCK_HIGH + 1, BLOCK):
-            if not any(b <= q < b + BLOCK for q in used):
+            if not any(b <= q < b + BLOCK for q in used | BROWSER_BLOCKED):
                 print(f"Next free block: {b}-{min(b + BLOCK - 1, BLOCK_HIGH)}")
                 return
         sys.exit(f"no free block left in {BLOCK_LOW}-{BLOCK_HIGH}; ask the user which range to use next")
     start = None
     for p in range(LOW, HIGH - args.count + 2):
-        if all(q not in used for q in range(p, p + args.count)):
+        if free(p):
             start = p
             break
     print()
     for msg in problems:
         print(f"WARNING: {msg}")
-    if start is None:
-        for p in range(NEXT_LOW, NEXT_HIGH - args.count + 2):
-            if all(q not in used for q in range(p, p + args.count)):
+    for lo, hi in ((NEXT_LOW, NEXT_HIGH), (THEN_LOW, THEN_HIGH)):
+        if start is not None:
+            break
+        for p in range(lo, hi - args.count + 2):
+            if free(p):
                 start = p
                 break
     if start is None:
-        sys.exit(f"no {args.count} free port(s) in a row left in {LOW}-{HIGH} or {NEXT_LOW}-{NEXT_HIGH}; ask the user which range to use next")
+        sys.exit(f"no {args.count} free port(s) in a row left in {LOW}-{HIGH}, {NEXT_LOW}-{NEXT_HIGH} or {THEN_LOW}-{THEN_HIGH}; ask the user which range to use next")
     block = ", ".join(str(p) for p in range(start, start + args.count))
     print(f"Next free: {block}")
 
