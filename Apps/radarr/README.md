@@ -1,6 +1,7 @@
 ---
 site: https://radarr.video
 source: https://github.com/Radarr/Radarr
+screenshots: [Calendar, Manual search, Movie details]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
