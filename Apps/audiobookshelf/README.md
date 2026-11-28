@@ -1,6 +1,7 @@
 ---
 site: https://www.audiobookshelf.org
 source: https://github.com/advplyr/audiobookshelf
+screenshots: [Library, Bookshelf view]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
