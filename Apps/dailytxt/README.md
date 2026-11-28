@@ -1,6 +1,7 @@
 ---
 site: https://github.com/PhiTux/DailyTxT
 source: https://github.com/PhiTux/DailyTxT
+screenshots: [Journal]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
