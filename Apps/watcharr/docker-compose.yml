@@ -1,0 +1,133 @@
+name: watcharr
+
+services:
+  watcharr:
+    image: ghcr.io/sbondco/watcharr:v4.4.0
+    container_name: watcharr
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - WATCHARR_DATA=/data
+    ports:
+      - target: 3080
+        published: "6898"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3080/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watcharr/icon.png
+    x-casaos:
+      id: com.icestore.watcharr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: WATCHARR_DATA
+          description:
+            en_US: >-
+              Where Watcharr keeps its database and settings. Leave
+              it as /data.
+      ports:
+        - container: "3080"
+          description:
+            en_US: >-
+              Watcharr web app, published on host as 6898
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Watcharr's database, settings file and sign-in key.
+              Back it up.
+
+x-casaos:
+  id: com.icestore.watcharr
+  architectures:
+    - amd64
+    - arm64
+  main: watcharr
+  author: HSinghHira
+  category: Media
+  developer: "sbondCo"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watcharr/icon.png
+  title:
+    en_US: Watcharr
+  tagline:
+    en_US: Keep a watched list of your movies, shows, anime and games
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/watcharr/](https://icestore.hsinghhira.me/app/watcharr/) for full details
+
+
+      Watcharr is a watched list for everything you watch and play. Add
+      movies, TV shows, anime and games, rate them, mark episodes as
+      watched and see what your friends think.
+
+
+      **Features**
+
+
+      - Movies, shows, anime and (with an IGDB key) games
+
+      - Ratings, thoughts and episode-by-episode progress
+
+      - Follow friends and see their lists
+
+      - Import from Trakt, Letterboxd, MyAnimeList, IMDb and more
+
+      - Sign in with Jellyfin or Plex, and sync your watched items
+
+
+      **How to use?**
+
+
+      1. Open Watcharr and create an account. The first account is the
+         admin.
+
+      2. Search for a movie or show and add it to your list.
+
+      3. Rate it and mark what you've watched.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. Watcharr is ready in about half a
+           minute.
+
+
+        2. Open it right away and create your account. The first account
+           becomes the admin.
+
+
+        3. Then turn off sign-up in the server settings, so strangers
+           can't make accounts.
+  index: /
+  port_map: "6898"
+  scheme: http
+  is_uncontrolled: false
+  version: "v4.4.0"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/sbondco/watcharr v4.4.0 on port 6898
+  repo: "https://github.com/sbondCo/Watcharr"
+  support: "https://github.com/sbondCo/Watcharr/issues"
+  docs: "https://watcharr.app/docs/introduction"
