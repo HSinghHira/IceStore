@@ -1,0 +1,69 @@
+{
+  "name": "ByteStash",
+  "repo": "ghcr.io/jordan-dalby/bytestash:1.6.2",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/jordan-dalby/bytestash/pkgs/container/bytestash",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=15 --memory=512m --memory-reservation=32m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:5000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytestash/icon.png",
+  "project": "https://github.com/jordan-dalby/ByteStash",
+  "support": "https://github.com/jordan-dalby/ByteStash/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/bytestash/",
+  "description": "Store, organize and share your code snippets",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Snippets",
+      "host": "/mnt/cache/appdata/bytestash/data",
+      "container": "/data/snippets",
+      "mode": "rw",
+      "description": "ByteStash's database with your snippets and users, plus its sign-in secret. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "7004",
+      "container": "5000",
+      "description": "ByteStash web app, API (/api) and MCP endpoint (/mcp), published on host as 7004"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "ALLOW_NEW_ACCOUNTS",
+      "key": "ALLOW_NEW_ACCOUNTS",
+      "value": "true",
+      "mask": false,
+      "description": "true lets anyone who can open ByteStash make an account. Make yours first, then set false."
+    },
+    {
+      "name": "TOKEN_EXPIRY",
+      "key": "TOKEN_EXPIRY",
+      "value": "24h",
+      "mask": true,
+      "description": "How long a sign-in lasts, like 24h, 7d or 30d."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
