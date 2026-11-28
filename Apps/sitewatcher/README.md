@@ -1,6 +1,7 @@
 ---
 site: https://monitoring.kurkov.dev/demo
 source: https://github.com/NikKurkov/sitewatcher
+screenshots: [Domains, Domain details, Signal room]
 services:
   - { name: Dashboard, path: /login/, icon: globe }
 variables:
