@@ -1,6 +1,7 @@
 ---
 site: https://www.bentopdf.com
 source: https://github.com/alam00000/bentopdf
+screenshots: [Home]
 services:
   - { name: PDF tools, path: /, icon: globe }
 ---
