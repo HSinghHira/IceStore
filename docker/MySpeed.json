@@ -1,0 +1,55 @@
+{
+  "name": "MySpeed",
+  "repo": "germannewsmaker/myspeed:1.0.9",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://hub.docker.com/r/germannewsmaker/myspeed",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=15 --memory=512m --memory-reservation=64m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:5216]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/icon.png",
+  "project": "https://myspeed.dev",
+  "support": "https://github.com/gnmyt/myspeed/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/myspeed/",
+  "description": "Runs internet speed tests on a schedule and charts the results",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/myspeed/data",
+      "container": "/myspeed/data",
+      "mode": "rw",
+      "description": "MySpeed's database with every test result and your settings. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6889",
+      "container": "5216",
+      "description": "MySpeed web app, published on host as 6889"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
