@@ -1,0 +1,142 @@
+name: papra
+
+services:
+  papra:
+    image: ghcr.io/hsinghhira/papra:latest
+    container_name: papra
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - APP_BASE_URL=http://[ZIMAOS-IP-ADDRESS]:6890
+      - AUTH_IS_REGISTRATION_ENABLED=true
+    ports:
+      - target: 1221
+        published: "6890"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /app/app-data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:1221/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/papra/icon.png
+    x-casaos:
+      id: com.icestore.papra
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: APP_BASE_URL
+          description:
+            en_US: >-
+              The address you open Papra at. Replace
+              [ZIMAOS-IP-ADDRESS] with your ZimaOS IP address, like
+              http://192.168.1.20:6890, or sign-in fails. Behind a
+              reverse proxy, use your https address.
+        - container: AUTH_IS_REGISTRATION_ENABLED
+          description:
+            en_US: >-
+              true lets anyone who can open Papra make an account.
+              Make your own account first, then set false.
+      ports:
+        - container: "1221"
+          description:
+            en_US: >-
+              Papra web app and API, published on host as 6890
+      volumes:
+        - container: /app/app-data
+          description:
+            en_US: >-
+              Papra's database, your uploaded documents and the
+              auth secret. Back it up.
+
+x-casaos:
+  id: com.icestore.papra
+  architectures:
+    - amd64
+    - arm64
+  main: papra
+  author: HSinghHira
+  category: Productivity
+  developer: "Corentin Thomasset"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/papra/icon.png
+  title:
+    en_US: Papra
+  tagline:
+    en_US: A simple document archive for your receipts, bills and papers
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/papra/](https://icestore.hsinghhira.me/app/papra/) for full details
+
+
+      Papra is a minimal document archive. Upload or email your receipts,
+      bills, contracts and letters, and find them again later with
+      full-text search and tags.
+
+
+      **Features**
+
+
+      - Upload by drag and drop, by email or from a watched folder
+
+      - Text from PDFs and images (OCR) for full-text search
+
+      - Tags and rules that tag new documents for you
+
+      - Organizations to share documents with your family or team
+
+      - API, SDK and a phone app
+
+
+      **How to use?**
+
+
+      1. Set APP_BASE_URL to your ZimaOS IP address before you start.
+
+      2. Open Papra and create an account. The first account is the
+         admin.
+
+      3. Set AUTH_IS_REGISTRATION_ENABLED to false so nobody else can
+         sign up, then drop your first documents in.
+  tips:
+    before_install:
+      en_US: >-
+        1. Before you start, change APP_BASE_URL. Put your ZimaOS IP
+           address in place of [ZIMAOS-IP-ADDRESS], or you can't sign in.
+
+
+        2. Open Papra and create your account. The first account is the
+           admin.
+
+
+        3. Then set AUTH_IS_REGISTRATION_ENABLED to false, so strangers
+           can't make accounts.
+  index: /
+  port_map: "6890"
+  scheme: http
+  is_uncontrolled: false
+  version: "26.7.1-root"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/papra-hq/papra 26.7.1-root on port 6890, with an auth secret made for each install
+  repo: "https://github.com/papra-hq/papra"
+  support: "https://github.com/papra-hq/papra/issues"
+  docs: "https://docs.papra.app"
