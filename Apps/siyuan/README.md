@@ -1,6 +1,7 @@
 ---
 site: https://b3log.org/siyuan/en/
 source: https://github.com/siyuan-note/siyuan
+screenshots: [Editor, Dark mode, Graph view]
 services:
   - { name: Notes, path: /, icon: globe }
 variables:
