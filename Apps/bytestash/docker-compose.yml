@@ -1,0 +1,137 @@
+name: bytestash
+
+services:
+  bytestash:
+    image: ghcr.io/jordan-dalby/bytestash:1.6.2
+    container_name: bytestash
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - ALLOW_NEW_ACCOUNTS=true
+      - TOKEN_EXPIRY=24h
+    ports:
+      - target: 5000
+        published: "7004"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data/snippets
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:5000/', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytestash/icon.png
+    x-casaos:
+      id: com.icestore.bytestash
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: ALLOW_NEW_ACCOUNTS
+          description:
+            en_US: >-
+              true lets anyone who can open ByteStash make an
+              account. Make yours first, then set false.
+        - container: TOKEN_EXPIRY
+          description:
+            en_US: >-
+              How long a sign-in lasts, like 24h, 7d or 30d.
+      ports:
+        - container: "5000"
+          description:
+            en_US: >-
+              ByteStash web app, API (/api) and MCP endpoint (/mcp),
+              published on host as 7004
+      volumes:
+        - container: /data/snippets
+          description:
+            en_US: >-
+              ByteStash's database with your snippets and users,
+              plus its sign-in secret. Back it up.
+
+x-casaos:
+  id: com.icestore.bytestash
+  architectures:
+    - amd64
+    - arm64
+  main: bytestash
+  author: HSinghHira
+  category: Developer
+  developer: "Jordan Dalby"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytestash/icon.png
+  title:
+    en_US: ByteStash
+  tagline:
+    en_US: Store, organize and share your code snippets
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/bytestash/](https://icestore.hsinghhira.me/app/bytestash/) for full details
+
+
+      ByteStash is a home for your code snippets. Save them with syntax
+      highlighting, sort them with categories, find them with search and
+      share them with a link.
+
+
+      **Features**
+
+
+      - Snippets with one or more files and syntax highlighting
+
+      - Categories, search and favorites
+
+      - Public or private share links, with an expiry
+
+      - Several users, with sign-in by password or your own SSO (OIDC)
+
+      - REST API and an MCP endpoint for AI assistants
+
+
+      **How to use?**
+
+
+      1. Open ByteStash and register your account.
+
+      2. Click New snippet, paste your code and pick the language.
+
+      3. Set ALLOW_NEW_ACCOUNTS to false so nobody else can sign up.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. ByteStash is ready in about half a
+           minute.
+
+
+        2. Open it and register your account right away.
+
+
+        3. Then set ALLOW_NEW_ACCOUNTS to false, so strangers can't make
+           accounts.
+  index: /
+  port_map: "7004"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.6.2"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/jordan-dalby/bytestash 1.6.2 on port 7004
+  repo: "https://github.com/jordan-dalby/ByteStash"
+  support: "https://github.com/jordan-dalby/ByteStash/issues"
+  docs: "https://github.com/jordan-dalby/ByteStash#readme"
