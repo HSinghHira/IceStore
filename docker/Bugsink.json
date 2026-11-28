@@ -1,0 +1,76 @@
+{
+  "name": "Bugsink",
+  "repo": "ghcr.io/hsinghhira/bugsink:latest",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://github.com/hsinghhira/bugsink/pkgs/container/bugsink",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=1g --memory-reservation=128m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8000]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bugsink/icon.png",
+  "project": "https://www.bugsink.com",
+  "support": "https://github.com/bugsink/bugsink/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/bugsink/",
+  "description": "Error tracking for your apps that works with the Sentry SDKs",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/bugsink/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Bugsink's SQLite databases with your projects, issues and events, plus the secret key. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "7008",
+      "container": "8000",
+      "description": "Bugsink web app and the error ingest API, published on host as 7008"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "BASE_URL",
+      "key": "BASE_URL",
+      "value": "http://YOUR-SERVER-IP:7008",
+      "mask": false,
+      "description": "The address you open Bugsink at. Replace YOUR-SERVER-IP with your server IP address, like http://192.168.1.20:7008, or the page shows 400 Bad Request. It is also the address in your DSNs."
+    },
+    {
+      "name": "ADMIN_EMAIL",
+      "key": "ADMIN_EMAIL",
+      "value": "admin@example.com",
+      "mask": false,
+      "description": "The email you sign in with as the first admin."
+    },
+    {
+      "name": "ADMIN_PASSWORD",
+      "key": "ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "Leave blank and IceStore makes a password on first start and shows it in the app's log under CREDENTIALS. Only used for the first account."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
