@@ -50,6 +50,9 @@ x-casaos:
   category: Networking
   developer: "OpenSpeedTest"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openspeedtest/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openspeedtest/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openspeedtest/screenshot-1.png
   title:
     en_US: OpenSpeedTest
   tagline:

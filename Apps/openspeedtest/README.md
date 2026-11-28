@@ -1,6 +1,7 @@
 ---
 site: https://openspeedtest.com
 source: https://github.com/openspeedtest/Speed-Test
+screenshots: [Speed test]
 services:
   - { name: Web App, path: /, icon: globe }
 ---
