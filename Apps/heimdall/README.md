@@ -1,6 +1,7 @@
 ---
 site: https://heimdall.site
 source: https://github.com/linuxserver/Heimdall
+screenshots: [All devices, Dashboard, Add application]
 services:
   - { name: Web App, path: /, icon: globe }
 ---

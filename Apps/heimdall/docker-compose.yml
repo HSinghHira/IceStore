@@ -74,6 +74,11 @@ x-casaos:
   category: Productivity
   developer: "linuxserver.io"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heimdall/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heimdall/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heimdall/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heimdall/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/heimdall/screenshot-1.png
   title:
     en_US: Heimdall
   tagline:
