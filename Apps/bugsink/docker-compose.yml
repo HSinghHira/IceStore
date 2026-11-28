@@ -1,0 +1,148 @@
+name: bugsink
+
+services:
+  bugsink:
+    image: ghcr.io/hsinghhira/bugsink:latest
+    container_name: bugsink
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - BASE_URL=http://[ZIMAOS-IP-ADDRESS]:7008
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 8000
+        published: "7008"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health/ready').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bugsink/icon.png
+    x-casaos:
+      id: com.icestore.bugsink
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: BASE_URL
+          description:
+            en_US: >-
+              The address you open Bugsink at. Replace
+              [ZIMAOS-IP-ADDRESS] with your ZimaOS IP address, like
+              http://192.168.1.20:7008, or the page shows 400 Bad
+              Request. It is also the address in your DSNs.
+        - container: ADMIN_EMAIL
+          description:
+            en_US: >-
+              The email you sign in with as the first admin.
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              Leave blank and IceStore makes a password on first
+              start and shows it in the app's log under CREDENTIALS.
+              Only used for the first account.
+      ports:
+        - container: "8000"
+          description:
+            en_US: >-
+              Bugsink web app and the error ingest API, published on
+              host as 7008
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Bugsink's SQLite databases with your projects, issues
+              and events, plus the secret key. Back it up.
+
+x-casaos:
+  id: com.icestore.bugsink
+  architectures:
+    - amd64
+    - arm64
+  main: bugsink
+  author: HSinghHira
+  category: Developer
+  developer: "Bugsink"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bugsink/icon.png
+  title:
+    en_US: Bugsink
+  tagline:
+    en_US: Error tracking for your apps that works with the Sentry SDKs
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/bugsink/](https://icestore.hsinghhira.me/app/bugsink/) for full details
+
+
+      Bugsink collects the errors and crashes from your apps and groups
+      them into issues, with stack traces and the details you need to fix
+      them. Your apps send errors with the normal Sentry SDKs.
+
+
+      **Features**
+
+
+      - Works with the Sentry SDKs for Python, JavaScript, Go, PHP and more
+
+      - Errors grouped into issues, with stack traces and source context
+
+      - Email alerts and webhooks (Slack, Mattermost, Discord)
+
+      - Teams, projects and users
+
+      - Light: one container and SQLite
+
+
+      **How to use?**
+
+
+      1. Set BASE_URL to your ZimaOS IP address before you start.
+
+      2. Open the app's log and find the admin password under
+         CREDENTIALS, then sign in with ADMIN_EMAIL.
+
+      3. Make a project and put its DSN into your app's Sentry SDK.
+  tips:
+    before_install:
+      en_US: >-
+        1. Before you start, change BASE_URL. Put your ZimaOS IP address
+           in place of [ZIMAOS-IP-ADDRESS], or the page shows Bad Request.
+
+
+        2. Leave ADMIN_PASSWORD blank to get a new password. It is in the
+           app's log under CREDENTIALS. Sign in with ADMIN_EMAIL.
+
+
+        3. Apps on the internet can only send errors here through a
+           reverse proxy with your own domain.
+  index: /
+  port_map: "7008"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.7.1"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: bugsink/bugsink 2.7.1 on port 7008, with a secret key and admin login made for each install
+  repo: "https://github.com/bugsink/bugsink"
+  support: "https://github.com/bugsink/bugsink/issues"
+  docs: "https://www.bugsink.com/docs/"
