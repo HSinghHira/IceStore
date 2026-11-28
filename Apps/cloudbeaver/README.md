@@ -1,6 +1,7 @@
 ---
 site: https://dbeaver.com/cloudbeaver
 source: https://github.com/dbeaver/cloudbeaver
+screenshots: [SQL editor, Map view, Export data, New connection]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
