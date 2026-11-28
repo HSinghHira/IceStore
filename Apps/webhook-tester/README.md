@@ -1,6 +1,7 @@
 ---
 site: https://github.com/tarampampam/webhook-tester
 source: https://github.com/tarampampam/webhook-tester
+screenshots: [Webhook URL]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
