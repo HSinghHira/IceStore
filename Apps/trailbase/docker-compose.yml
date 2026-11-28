@@ -1,0 +1,134 @@
+name: trailbase
+
+services:
+  trailbase:
+    image: trailbase/trailbase:0.37.2
+    container_name: trailbase
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+      - RUST_BACKTRACE=1
+    ports:
+      - target: 4000
+        published: "6893"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/traildepot
+        target: /app/traildepot
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:4000/api/healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trailbase/icon.png
+    x-casaos:
+      id: com.icestore.trailbase
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: RUST_BACKTRACE
+          description:
+            en_US: >-
+              1 adds more detail to error messages in the log.
+      ports:
+        - container: "4000"
+          description:
+            en_US: >-
+              TrailBase APIs, admin dashboard (/_/admin) and your
+              static files, published on host as 6893
+      volumes:
+        - container: /app/traildepot
+          description:
+            en_US: >-
+              The traildepot folder: SQLite databases, config,
+              migrations, uploaded files and secrets. Back it up.
+
+x-casaos:
+  id: com.icestore.trailbase
+  architectures:
+    - amd64
+    - arm64
+  main: trailbase
+  author: HSinghHira
+  category: Developer
+  developer: "TrailBase"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trailbase/icon.png
+  title:
+    en_US: TrailBase
+  tagline:
+    en_US: A fast, single-file app backend with SQLite, auth and an admin UI
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/trailbase/](https://icestore.hsinghhira.me/app/trailbase/) for full details
+
+
+      TrailBase is an open app backend in one small program, like
+      Firebase or Supabase. It gives you type-safe REST and realtime APIs
+      over SQLite, user accounts, file uploads and an admin dashboard.
+
+
+      **Features**
+
+
+      - REST and realtime APIs straight from your SQLite tables
+
+      - Built-in sign-up, sign-in and OAuth providers
+
+      - Admin dashboard with a table editor and SQL editor
+
+      - Server-side code in TypeScript or WebAssembly
+
+      - Client libraries for JS/TS, Dart, Rust, Go, C#, Swift, Kotlin
+        and Python
+
+
+      **How to use?**
+
+
+      1. Open the app's log. On first start TrailBase prints the admin
+         email and password.
+
+      2. Open the admin dashboard at /_/admin and sign in.
+
+      3. Make tables, then turn on a Record API for each one your app
+         should use.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. TrailBase is ready in a few seconds.
+
+
+        2. Open the app's log right away. The admin email and password are
+           printed there only on the first start.
+
+
+        3. The admin dashboard is at your TrailBase address plus /_/admin.
+  index: /_/admin/
+  port_map: "6893"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.37.2"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: trailbase/trailbase 0.37.2 on port 6893
+  repo: "https://github.com/trailbaseio/trailbase"
+  support: "https://github.com/trailbaseio/trailbase/issues"
+  docs: "https://trailbase.io/getting-started/install"
