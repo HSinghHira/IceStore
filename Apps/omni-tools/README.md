@@ -1,6 +1,7 @@
 ---
 site: https://omnitools.app
 source: https://github.com/iib0011/omni-tools
+screenshots: [Home]
 services:
   - { name: Tools, path: /, icon: grid }
 ---
