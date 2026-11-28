@@ -1,6 +1,7 @@
 ---
 site: https://www.bugsink.com
 source: https://github.com/bugsink/bugsink
+screenshots: [Issue page, Stacktrace]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
