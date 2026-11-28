@@ -1,0 +1,140 @@
+name: commafeed
+
+services:
+  commafeed:
+    image: ghcr.io/hsinghhira/commafeed:latest
+    container_name: commafeed
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - COMMAFEED_USERS_ALLOW_REGISTRATIONS=false
+      - COMMAFEED_HTTP_CLIENT_BLOCK_LOCAL_ADDRESSES=true
+    ports:
+      - target: 8082
+        published: "6887"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /commafeed/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/8082"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/commafeed/icon.png
+    x-casaos:
+      id: com.icestore.commafeed
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: COMMAFEED_USERS_ALLOW_REGISTRATIONS
+          description:
+            en_US: >-
+              true lets anyone who can open CommaFeed make their
+              own account. false means only the admin adds users.
+        - container: COMMAFEED_HTTP_CLIENT_BLOCK_LOCAL_ADDRESSES
+          description:
+            en_US: >-
+              true stops CommaFeed from fetching feeds on your home
+              network (a safety rule). Set false to read feeds from
+              other apps on your ZimaOS, like FreshRSS or RSS-Bridge.
+      ports:
+        - container: "8082"
+          description:
+            en_US: >-
+              CommaFeed web app and API, published on host as 6887
+      volumes:
+        - container: /commafeed/data
+          description:
+            en_US: >-
+              CommaFeed's H2 database with users, feeds and
+              articles, plus the session key. Back it up.
+
+x-casaos:
+  id: com.icestore.commafeed
+  architectures:
+    - amd64
+    - arm64
+  main: commafeed
+  author: HSinghHira
+  category: Productivity
+  developer: "Athou"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/commafeed/icon.png
+  title:
+    en_US: CommaFeed
+  tagline:
+    en_US: A fast Google Reader style RSS reader for your server
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/commafeed/](https://icestore.hsinghhira.me/app/commafeed/) for full details
+
+
+      CommaFeed is a bloat-free feed reader inspired by Google Reader. It
+      is a native program with a small built-in database, so it starts in
+      a second and uses little memory.
+
+
+      **Features**
+
+
+      - Four layouts, light and dark themes, keyboard shortcuts
+
+      - Categories, starred items, filters and full-text search
+
+      - OPML import and export
+
+      - Fever API for phone apps like Reeder and ReadKit
+
+      - Several users, each with their own feeds
+
+      - Translated into over 25 languages
+
+
+      **How to use?**
+
+
+      1. Open CommaFeed. On the first visit, make the admin account.
+
+      2. Click Subscribe and paste a site or feed address.
+
+      3. Or import your old reader's OPML file under Settings.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. CommaFeed is ready in a few seconds.
+
+
+        2. Open it right away and make the admin account on the setup
+           page. The first person to open it gets admin.
+
+
+        3. Feeds on your home network are blocked at first. Set
+           COMMAFEED_HTTP_CLIENT_BLOCK_LOCAL_ADDRESSES to false to read them.
+  index: /
+  port_map: "6887"
+  scheme: http
+  is_uncontrolled: false
+  version: "7.5.3-h2"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: athou/commafeed 7.5.3-h2 on port 6887, with a session key made for each install
+  repo: "https://github.com/Athou/commafeed"
+  support: "https://github.com/Athou/commafeed/issues"
+  docs: "https://athou.github.io/commafeed/documentation"
