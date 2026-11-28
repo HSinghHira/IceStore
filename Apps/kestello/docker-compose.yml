@@ -65,6 +65,11 @@ x-casaos:
   category: Developer
   developer: kestellohq
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kestello/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kestello/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kestello/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kestello/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kestello/screenshot-1.png
   title:
     en_US: Kestello
   tagline:

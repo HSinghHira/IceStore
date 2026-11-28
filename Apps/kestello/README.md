@@ -2,6 +2,7 @@
 name: Kestello
 site: https://kestello.com
 source: https://github.com/kestellohq/cms
+screenshots: [Page editor, Styles, Site health]
 services:
   - { name: Site, path: /, icon: globe }
   - { name: Admin, path: /admin, icon: server }
