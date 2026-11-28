@@ -1,4 +1,5 @@
 ---
+screenshots: [Inbox, Compose]
 site: https://snappymail.eu/
 services:
   - { name: Webmail, path: /, icon: mail }

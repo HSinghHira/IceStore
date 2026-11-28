@@ -75,6 +75,10 @@ x-casaos:
   category: Social
   developer: the-djmaze
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/snappymail/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/snappymail/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/snappymail/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/snappymail/screenshot-1.png
   title:
     en_US: SnappyMail
   tagline:
