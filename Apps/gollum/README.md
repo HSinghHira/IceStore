@@ -1,5 +1,6 @@
 ---
 source: https://github.com/gollum/gollum
+screenshots: [Wiki page, Editor, Overview]
 services:
   - { name: Web App, path: /, icon: globe }
 ---

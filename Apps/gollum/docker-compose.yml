@@ -73,6 +73,11 @@ x-casaos:
   category: Productivity
   developer: "Gollum"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gollum/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gollum/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gollum/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gollum/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gollum/screenshot-1.png
   title:
     en_US: Gollum
   tagline:
