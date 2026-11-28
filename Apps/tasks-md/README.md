@@ -1,6 +1,7 @@
 ---
 site: https://github.com/BaldissaraMatheus/Tasks.md
 source: https://github.com/BaldissaraMatheus/Tasks.md
+screenshots: [Board, Card editor]
 services:
   - { name: Board, path: /, icon: grid }
 variables:
