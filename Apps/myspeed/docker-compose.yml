@@ -64,6 +64,12 @@ x-casaos:
   category: Networking
   developer: "Mathias Wagner (gnmyt)"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/screenshot-1.png
   title:
     en_US: MySpeed
   tagline:

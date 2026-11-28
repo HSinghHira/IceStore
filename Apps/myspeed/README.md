@@ -1,6 +1,7 @@
 ---
 site: https://myspeed.dev
 source: https://github.com/gnmyt/myspeed
+screenshots: [Statistics, Test history, Servers, Settings]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
