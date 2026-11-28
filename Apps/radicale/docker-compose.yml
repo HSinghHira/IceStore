@@ -1,0 +1,140 @@
+name: radicale
+
+services:
+  radicale:
+    image: ghcr.io/hsinghhira/radicale:latest
+    container_name: radicale
+    restart: unless-stopped
+    stop_grace_period: 10s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - RADICALE_USER=admin
+      - RADICALE_PASSWORD=
+    ports:
+      - target: 5232
+        published: "6886"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:5232/.web/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/radicale/icon.png
+    x-casaos:
+      id: com.icestore.radicale
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: RADICALE_USER
+          description:
+            en_US: >-
+              The user name for the Radicale login.
+        - container: RADICALE_PASSWORD
+          description:
+            en_US: >-
+              Leave blank and IceStore makes a password on first
+              start and shows it in the app's log under
+              CREDENTIALS. Type one here to use your own.
+      ports:
+        - container: "5232"
+          description:
+            en_US: >-
+              Radicale web page and CalDAV/CardDAV server,
+              published on host as 6886
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Your calendars and address books (collections),
+              plus the users file with the login. Back it up.
+
+x-casaos:
+  id: com.icestore.radicale
+  architectures:
+    - amd64
+    - arm64
+  main: radicale
+  author: HSinghHira
+  category: Productivity
+  developer: "Kozea"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/radicale/icon.png
+  title:
+    en_US: Radicale
+  tagline:
+    en_US: A small CalDAV and CardDAV server for your calendars and contacts
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/radicale/](https://icestore.hsinghhira.me/app/radicale/) for full details
+
+
+      Radicale is a small server that keeps your calendars, to-do lists
+      and contacts, and syncs them with your phone and computer using the
+      standard CalDAV and CardDAV protocols.
+
+
+      **Features**
+
+
+      - Calendars, to-do lists and address books
+
+      - Works with Thunderbird, DAVx5, iOS, macOS and Evolution
+
+      - Plain files on disk, easy to back up
+
+      - Simple web page to make, import and share collections
+
+      - Login made for each IceStore install
+
+
+      **How to use?**
+
+
+      1. Open the app's log and find the password under CREDENTIALS.
+
+      2. Open Radicale, sign in with admin and that password, and make a
+         calendar or address book.
+
+      3. In your phone or mail app, add a CalDAV or CardDAV account with
+         your ZimaOS address and port 6886 and the same login.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. Radicale is ready in a few seconds.
+
+
+        2. Leave RADICALE_PASSWORD blank to get a new password. It is in
+           the app's log under CREDENTIALS. The user name is admin.
+
+
+        3. In your phone, use your ZimaOS IP address and port 6886 as the
+           server, not localhost.
+  index: /.web/
+  port_map: "6886"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.9.2.0"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: tomsquest/docker-radicale 3.9.2.0 on port 6886, with a login made for each install
+  repo: "https://github.com/Kozea/Radicale"
+  support: "https://github.com/Kozea/Radicale/issues"
+  docs: "https://radicale.org/v3.html"
