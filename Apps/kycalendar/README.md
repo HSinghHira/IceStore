@@ -3,7 +3,7 @@ site: https://busnes.app/kycalendar.html
 source: https://github.com/Busnes-app/KyCalendar
 services:
   - { name: Web App, path: /, icon: globe }
-screenshots: []
+screenshots: [Month view]
 variables:
   - name: KY_SESSION_SECRET
     group: Keys
