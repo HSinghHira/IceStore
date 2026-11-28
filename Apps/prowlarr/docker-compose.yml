@@ -1,0 +1,140 @@
+name: prowlarr
+
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:3.1.0.5799-ls170
+    container_name: prowlarr
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 9696
+        published: "6880"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:9696/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/prowlarr/icon.png
+    x-casaos:
+      id: com.icestore.prowlarr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for sync times and the history. It
+              is filled in from your ZimaOS time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns Prowlarr's files. It is filled
+              in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns Prowlarr's files. It is filled
+              in by ZimaOS.
+      ports:
+        - container: "9696"
+          description:
+            en_US: >-
+              Prowlarr web app and API, published on host as 6880
+      volumes:
+        - container: /config
+          description:
+            en_US: >-
+              Prowlarr's database, indexers, settings, API key
+              and logs. Back it up.
+
+x-casaos:
+  id: com.icestore.prowlarr
+  architectures:
+    - amd64
+    - arm64
+  main: prowlarr
+  author: HSinghHira
+  category: Media
+  developer: "Prowlarr team"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/prowlarr/icon.png
+  title:
+    en_US: Prowlarr
+  tagline:
+    en_US: One place to manage indexers for Sonarr, Radarr and Lidarr
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/prowlarr/](https://icestore.hsinghhira.me/app/prowlarr/) for full details
+
+
+      Prowlarr manages your torrent trackers and Usenet indexers in one
+      place. Add an indexer once and Prowlarr sends it to Sonarr, Radarr,
+      Lidarr and your other apps, and keeps them in sync.
+
+
+      **Features**
+
+
+      - Hundreds of built-in torrent and Usenet indexers
+
+      - Syncs indexers to Sonarr, Radarr, Lidarr, Readarr and more
+
+      - Search every indexer at once and send results to your download
+        client
+
+      - Indexer health, stats and history
+
+      - FlareSolverr and proxy support for protected sites
+
+
+      **How to use?**
+
+
+      1. Open Prowlarr right away and set up the login it asks for (Forms
+         login).
+
+      2. In Indexers, add the trackers and indexers you use.
+
+      3. In Settings, Apps, add Sonarr, Radarr or Lidarr with their API
+         keys, and Prowlarr fills in their indexers for you.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. It is ready in about a minute.
+
+
+        2. Right away, open Prowlarr. It asks you to choose how to sign
+           in; pick Forms and set a user name and password.
+
+
+        3. To connect Sonarr or Radarr, copy each one's API key from its
+           Settings, General page into Prowlarr's Settings, Apps.
+  index: /
+  port_map: "6880"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.1.0.5799-ls170"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: lscr.io/linuxserver/prowlarr 3.1.0.5799-ls170 on port 6880
+  repo: "https://github.com/Prowlarr/Prowlarr"
+  support: "https://github.com/Prowlarr/Prowlarr/issues"
+  docs: "https://wiki.servarr.com/prowlarr"
