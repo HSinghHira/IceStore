@@ -1,4 +1,5 @@
 ---
+screenshots: [Home, Files, URLs, Metrics]
 site: https://zipline.diced.sh/
 services:
   - { name: Web UI, path: /, icon: globe }

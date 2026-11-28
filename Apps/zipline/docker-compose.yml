@@ -64,6 +64,12 @@ x-casaos:
   category: Others
   developer: diced
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/zipline/screenshot-1.png
   title:
     en_US: Zipline
   tagline:
