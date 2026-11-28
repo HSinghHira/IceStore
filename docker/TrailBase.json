@@ -1,0 +1,62 @@
+{
+  "name": "TrailBase",
+  "repo": "trailbase/trailbase:0.37.2",
+  "category": [
+    "Utilities"
+  ],
+  "registry": "https://hub.docker.com/r/trailbase/trailbase",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=15 --memory=512m --memory-reservation=32m --user=0:0 --health-cmd=\"curl -fsS -o /dev/null http://127.0.0.1:4000/api/healthcheck\" --health-interval=30s --health-timeout=5s --health-start-period=30s --health-retries=3",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:4000]/_/admin/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/trailbase/icon.png",
+  "project": "https://trailbase.io",
+  "support": "https://github.com/trailbaseio/trailbase/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/trailbase/",
+  "description": "A fast, single-file app backend with SQLite, auth and an admin UI",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Traildepot",
+      "host": "/mnt/cache/appdata/trailbase/traildepot",
+      "container": "/app/traildepot",
+      "mode": "rw",
+      "description": "The traildepot folder: SQLite databases, config, migrations, uploaded files and secrets. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6893",
+      "container": "4000",
+      "description": "TrailBase APIs, admin dashboard (/_/admin) and your static files, published on host as 6893"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "RUST_BACKTRACE",
+      "key": "RUST_BACKTRACE",
+      "value": "1",
+      "mask": false,
+      "description": "1 adds more detail to error messages in the log."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
