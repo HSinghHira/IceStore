@@ -1,6 +1,7 @@
 ---
 site: https://beszel.dev
 source: https://github.com/henrygd/beszel
+screenshots: [All systems, System details, Notifications]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
