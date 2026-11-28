@@ -105,6 +105,10 @@ x-casaos:
   category: Media
   developer: "PhotoPrism"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/photoprism/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/photoprism/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/photoprism/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/photoprism/screenshot-1.png
   title:
     en_US: PhotoPrism
   tagline:

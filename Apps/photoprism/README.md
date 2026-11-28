@@ -1,6 +1,7 @@
 ---
 site: https://www.photoprism.app
 source: https://github.com/photoprism/photoprism
+screenshots: [Library, Wallpapers album]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
