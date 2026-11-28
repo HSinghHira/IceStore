@@ -1,6 +1,7 @@
 ---
 site: https://github.com/Donkie/Spoolman
 source: https://github.com/Donkie/Spoolman
+screenshots: [Library, Dashboard, Label designer]
 services:
   - { name: Web App, path: /, icon: globe }
   - { name: API docs, path: /api/v1/docs, icon: code }
