@@ -1,0 +1,110 @@
+name: omni-tools
+
+services:
+  omni-tools:
+    image: iib0011/omni-tools:0.7.0
+    container_name: omni-tools
+    restart: unless-stopped
+    stop_grace_period: 10s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 80
+        published: "6895"
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omni-tools/icon.png
+    x-casaos:
+      id: com.icestore.omni-tools
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              OmniTools web page, published on host as 6895
+
+x-casaos:
+  id: com.icestore.omni-tools
+  architectures:
+    - amd64
+    - arm64
+  main: omni-tools
+  author: HSinghHira
+  category: Productivity
+  developer: "iib0011"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/omni-tools/icon.png
+  title:
+    en_US: OmniTools
+  tagline:
+    en_US: Everyday tools for images, PDFs, video, text and numbers, in your browser
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/omni-tools/](https://icestore.hsinghhira.me/app/omni-tools/) for full details
+
+
+      OmniTools is a set of handy tools for everyday jobs: resize or
+      convert images, merge and split PDFs, trim videos, change text,
+      work with lists, JSON, CSV, dates and numbers. Files are handled
+      in your browser, so they never leave your computer.
+
+
+      **Features**
+
+
+      - Image tools: resize, crop, compress, convert, remove background
+
+      - PDF tools: merge, split, rotate, compress, protect
+
+      - Video and audio tools: trim, convert, change speed
+
+      - Text, list, JSON, CSV, date and math tools
+
+      - No ads, no tracking, no sign-in
+
+
+      **How to use?**
+
+
+      1. Open OmniTools.
+
+      2. Search for a tool or pick a group, like Image or PDF.
+
+      3. Drop in your file or text and download the result.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. OmniTools is ready in a few seconds.
+
+
+        2. There is no sign-in and nothing is saved on the server. Your
+           files are worked on inside your browser.
+  index: /
+  port_map: "6895"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.7.0"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: iib0011/omni-tools 0.7.0 on port 6895
+  repo: "https://github.com/iib0011/omni-tools"
+  support: "https://github.com/iib0011/omni-tools/issues"
+  docs: "https://github.com/iib0011/omni-tools#readme"
