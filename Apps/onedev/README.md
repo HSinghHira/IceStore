@@ -1,6 +1,7 @@
 ---
 site: https://onedev.io
 source: https://github.com/theonedev/onedev
+screenshots: [Dashboard, Issue boards, Pull request, Wiki]
 services:
   - { name: Web App, path: /, icon: globe }
 ---

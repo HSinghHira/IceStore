@@ -71,6 +71,12 @@ x-casaos:
   category: Developer
   developer: "OneDev"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/onedev/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/onedev/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/onedev/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/onedev/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/onedev/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/onedev/screenshot-1.png
   title:
     en_US: OneDev
   tagline:
