@@ -1,5 +1,6 @@
 ---
 source: https://github.com/seerr-team/seerr
+screenshots: [Discover, Settings]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

@@ -67,6 +67,10 @@ x-casaos:
   category: Media
   developer: "Seerr team"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/seerr/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/seerr/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/seerr/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/seerr/screenshot-1.png
   title:
     en_US: Seerr
   tagline:
