@@ -1,4 +1,5 @@
 ---
+screenshots: [Page layout, Navigation admin, Choose editor]
 site: https://js.wiki/
 services:
   - { name: Wiki, path: /, icon: globe }

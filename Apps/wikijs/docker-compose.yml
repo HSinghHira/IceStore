@@ -98,6 +98,11 @@ x-casaos:
   category: Productivity
   developer: Requarks
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wikijs/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wikijs/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wikijs/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wikijs/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wikijs/screenshot-1.png
   title:
     en_US: Wiki.js
   tagline:
