@@ -112,6 +112,9 @@ x-casaos:
   category: Media
   developer: "sentriz"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gonic/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gonic/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gonic/screenshot-1.png
   title:
     en_US: gonic
   tagline:

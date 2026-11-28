@@ -1,6 +1,7 @@
 ---
 site: https://github.com/sentriz/gonic
 source: https://github.com/sentriz/gonic
+screenshots: [Admin page]
 services:
   - { name: Admin page, path: /admin/, icon: server }
   - { name: Subsonic API, path: /rest/, icon: plug }
