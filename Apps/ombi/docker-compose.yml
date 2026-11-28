@@ -71,6 +71,9 @@ x-casaos:
   category: Media
   developer: "Ombi"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ombi/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ombi/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/ombi/screenshot-1.png
   title:
     en_US: Ombi
   tagline:

@@ -1,6 +1,7 @@
 ---
 site: https://ombi.io
 source: https://github.com/Ombi-app/Ombi
+screenshots: [Discover]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
