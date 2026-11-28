@@ -1,6 +1,7 @@
 ---
 site: https://github.com/seriousm4x/UpSnap
 source: https://github.com/seriousm4x/UpSnap
+screenshots: [Devices, Light theme, Settings]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
