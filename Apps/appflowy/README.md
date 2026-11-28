@@ -38,7 +38,8 @@ variables:
     group: Email (SMTP)
     default: ""
     description: >-
-      The username for your email server.
+      The username for your email server. AppFlowy sends invite emails only
+      when both the username and password are set.
   - name: SMTP_PASS
     group: Email (SMTP)
     default: ""
@@ -62,6 +63,12 @@ variables:
     description: >-
       Set to true to send people email notifications (mentions, invites).
       Needs SMTP_HOST.
+  - name: APPFLOWY_PDF_EXPORT_REMOTE_IMAGES_ENABLED
+    group: Privacy
+    default: 'false'
+    description: >-
+      Set to true to let PDF export download images from web addresses. When
+      off, those images show as placeholders.
   - name: GOTRUE_EXTERNAL_GOOGLE_ENABLED
     group: Sign in with Google, GitHub or Discord
     default: 'false'

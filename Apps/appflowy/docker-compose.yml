@@ -152,9 +152,12 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "0.22.2"
-  update_at: "2026-11-27"
+  update_at: "2026-11-28"
   release_notes:
     en_US: |-
+      - Fixed invite and export emails not reaching the built-in mail viewer since AppFlowy 0.22.1
+      - Added the APPFLOWY_PDF_EXPORT_REMOTE_IMAGES_ENABLED setting. AppFlowy now leaves web images out of PDF exports unless it is true
+      - If you use your own email server, set both SMTP_USER and SMTP_PASS or AppFlowy sends no invite emails
       - Updated appflowy_cloud 0.22.0 to 0.22.2, appflowy_worker 0.22.0 to 0.22.2, appflowy_search 0.22.0 to 0.22.2, gotrue 0.22.0 to 0.22.2, admin_frontend 0.20.5 to 0.21.0
       - Updated appflowy_cloud 0.21.9 to 0.22.0, appflowy_worker 0.21.9 to 0.22.0, appflowy_search 0.21.9 to 0.22.0, gotrue 0.20.6 to 0.22.0, admin_frontend 0.20.4 to 0.20.5, appflowy_web 0.20.15 to 0.21.0
       - Updated appflowy_cloud 0.19.2 to 0.21.9, appflowy_worker 0.18.8 to 0.21.9, appflowy_search 0.18.8 to 0.21.9, gotrue 0.18.8 to 0.20.6, admin_frontend 0.18.1 to 0.20.4, appflowy_web 0.19.8 to 0.20.15, mailpit v1.31.4 to v1.34.0, silo RELEASE.2026-09-16T00-00-00Z to RELEASE.2026-11-12T00-00-00Z
