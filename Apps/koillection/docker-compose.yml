@@ -1,0 +1,159 @@
+name: koillection
+
+services:
+  koillection:
+    image: ghcr.io/hsinghhira/koillection:latest
+    container_name: koillection
+    restart: unless-stopped
+    stop_grace_period: 60s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - HTTPS_ENABLED=0
+    ports:
+      - target: 80
+        published: "7001"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/uploads
+        target: /uploads
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 128M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/koillection/icon.png
+    x-casaos:
+      id: com.icestore.koillection
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns your uploaded pictures. It is
+              filled in by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns your uploaded pictures. It is
+              filled in by ZimaOS.
+        - container: HTTPS_ENABLED
+          description:
+            en_US: >-
+              0 for plain http at your ZimaOS address. Set 1 only
+              behind a reverse proxy with https, or sign-in stops
+              working.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              Koillection web app and API, published on host as 7001
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              The built-in PostgreSQL database, the secrets and the
+              API keys. Back it up.
+        - container: /uploads
+          description:
+            en_US: >-
+              Pictures and files you add to your collections.
+              Back it up.
+
+x-casaos:
+  id: com.icestore.koillection
+  architectures:
+    - amd64
+    - arm64
+  main: koillection
+  author: HSinghHira
+  category: Productivity
+  developer: "Benjamin Jonard"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/koillection/icon.png
+  title:
+    en_US: Koillection
+  tagline:
+    en_US: Keep track of your collections, from books and games to stamps
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/koillection/](https://icestore.hsinghhira.me/app/koillection/) for full details
+
+
+      Koillection is a collection manager for anything you collect:
+      books, video games, vinyl, figures, coins, stamps, cards. Each
+      collection can have its own fields, pictures and wishlists.
+
+
+      **Features**
+
+
+      - Collections and sub-collections with pictures
+
+      - Your own fields: text, numbers, dates, ratings, prices, links
+
+      - Wishlists and loans (who has what)
+
+      - Tags, templates, search and statistics
+
+      - Share collections publicly or keep them private
+
+      - Fill items from a web page with scrapers, and a full API
+
+
+      **How to use?**
+
+
+      1. Open Koillection and create your account. The first account
+         becomes the admin.
+
+      2. Make a collection, like Books, and add your first items.
+
+      3. Use templates to give every item in a collection the same
+         fields.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. The first start takes a minute or two
+           while the database is set up.
+
+
+        2. Open Koillection and create your account. The first account
+           becomes the admin.
+
+
+        3. Back up both the data and uploads folders. Pictures live in
+           uploads.
+  index: /
+  port_map: "7001"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.8.6"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: koillection/koillection 1.8.6 on port 7001, with PostgreSQL 18 inside and secrets made for each install
+  repo: "https://github.com/benjaminjonard/koillection"
+  support: "https://github.com/benjaminjonard/koillection/issues"
+  docs: "https://github.com/benjaminjonard/koillection/wiki"
