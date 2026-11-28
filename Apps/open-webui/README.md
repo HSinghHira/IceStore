@@ -1,6 +1,7 @@
 ---
 site: https://openwebui.com
 source: https://github.com/open-webui/open-webui
+screenshots: [New chat, Agent chat, Built-in browser]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

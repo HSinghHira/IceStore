@@ -65,6 +65,11 @@ x-casaos:
   category: AI
   developer: "Open WebUI"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-webui/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-webui/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-webui/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-webui/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/open-webui/screenshot-1.png
   title:
     en_US: Open WebUI
   tagline:
