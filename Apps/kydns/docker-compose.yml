@@ -2,7 +2,7 @@ name: kydns
 
 services:
   kydns:
-    image: ghcr.io/busnes-app/kydns-server:0.6.0.1
+    image: ghcr.io/hsinghhira/kydns:latest
     container_name: kydns
     restart: unless-stopped
     stop_grace_period: 20s
@@ -12,7 +12,7 @@ services:
       - TZ=$TZ
     ports:
       - target: 8053
-        published: "6697"
+        published: "7000"
         protocol: tcp
       - target: 53
         published: "53"
@@ -47,7 +47,7 @@ services:
       ports:
         - container: "8053"
           description:
-            en_US: KyDNS admin web page and API, published on host as 6697
+            en_US: KyDNS admin web page and API, published on host as 7000
         - container: "53"
           description:
             en_US: >-
@@ -112,7 +112,7 @@ x-casaos:
       1. Copy the setup token from the app's logs.
 
 
-      2. Open http://[ZIMAOS-IP-ADDRESS]:6697/setup, enter the token and
+      2. Open http://[ZIMAOS-IP-ADDRESS]:7000/setup, enter the token and
          choose your admin password.
 
 
@@ -136,7 +136,7 @@ x-casaos:
            folder (AppData, kydns, data).
 
 
-        4. Open http://[ZIMAOS-IP-ADDRESS]:6697/setup, paste the token and
+        4. Open http://[ZIMAOS-IP-ADDRESS]:7000/setup, paste the token and
            choose your admin password.
 
 
@@ -149,15 +149,18 @@ x-casaos:
            (Variables tab). You can add them now or later in the app
            settings.
   index: /
-  port_map: "6697"
+  port_map: "7000"
   scheme: http
   is_uncontrolled: false
-  version: "0.6.0.1"
-  update_at: "2026-11-09"
+  version: "0.6.1.2"
+  update_at: "2026-11-28"
   release_notes:
     en_US: |-
+      - The admin page moved from port 6697 to 7000. Chrome and Edge refuse to open 6697 (ERR_UNSAFE_PORT), so the page never loaded. Open http://[ZIMAOS-IP-ADDRESS]:7000 now.
+      - Fix: KyDNS stopped with "setup socket directory has an ancestor other users can modify". The IceStore image (ghcr.io/hsinghhira/kydns) now takes group/other write access off the data folder before KyDNS starts.
+      - KyDNS 0.6.1.2.
       - First IceStore version: ghcr.io/busnes-app/kydns-server 0.6.0.1
-      - Admin page on port 6697 and DNS on port 53 (UDP and TCP); the data folder is /DATA/AppData/kydns/data. Runs as root so it can use port 53 and write to that folder.
+      - Admin page on port 6697 (now 7000) and DNS on port 53 (UDP and TCP); the data folder is /DATA/AppData/kydns/data. Runs as root so it can use port 53 and write to that folder.
       - Uses the image's built-in config (data in /var/lib/kydns, admin on 0.0.0.0:8053). DHCP is not available in this setup.
   repo: "https://github.com/Busnes-app/KyDNS-server"
   support: "https://github.com/Busnes-app/KyDNS-server/issues"

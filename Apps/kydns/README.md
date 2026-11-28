@@ -58,12 +58,12 @@ KyDNS is a DNS server and service directory for homes, homelabs and small teams.
 ## How to use
 
 1. Copy the setup token from the app's logs.
-2. Open `http://[ZIMAOS-IP-ADDRESS]:6697/setup`, enter the token and choose your admin password.
+2. Open `http://[ZIMAOS-IP-ADDRESS]:7000/setup`, enter the token and choose your admin password.
 3. Add your services and names.
 4. Point a test device's DNS at your ZimaOS IP. When it works, set it in your router for every device.
 
 ## Before you install
 
-KyDNS answers DNS on **port 53** of your ZimaOS box (UDP and TCP), so nothing else there may use it: stop AdGuard Home, Pi-hole or any other DNS app first. The admin page is on port 6697.
+KyDNS answers DNS on **port 53** of your ZimaOS box (UDP and TCP), so nothing else there may use it: stop AdGuard Home, Pi-hole or any other DNS app first. The admin page is on port 7000 (it was 6697, which browsers refuse to open).
 
-On the first start KyDNS prints a setup token in its logs and also writes it to `setup-token` in `/DATA/AppData/kydns/data`. Open `http://[ZIMAOS-IP-ADDRESS]:6697/setup`, enter it and choose a password. Test with one device before you change your router's DNS. Most settings (upstream resolvers, block lists, names) are changed on the admin page; the few others are in the Variables tab and are added in the app settings. The built-in DHCP server needs host networking, so it is not available here.
+On the first start KyDNS prints a setup token in its logs and also writes it to `setup-token` in `/DATA/AppData/kydns/data`. Open `http://[ZIMAOS-IP-ADDRESS]:7000/setup`, enter it and choose a password. Test with one device before you change your router's DNS. Most settings (upstream resolvers, block lists, names) are changed on the admin page; the few others are in the Variables tab and are added in the app settings. The built-in DHCP server needs host networking, so it is not available here.
