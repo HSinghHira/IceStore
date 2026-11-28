@@ -1,0 +1,22 @@
+name: Build sitewatcher
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/sitewatcher/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-sitewatcher.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: sitewatcher
+      kind: wrapper

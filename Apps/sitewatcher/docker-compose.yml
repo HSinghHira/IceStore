@@ -1,0 +1,153 @@
+name: sitewatcher
+
+services:
+  sitewatcher:
+    image: ghcr.io/hsinghhira/sitewatcher:latest
+    container_name: sitewatcher
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - SITEWATCHER_WEB_ALLOWED_HOSTS=[ZIMAOS-IP-ADDRESS]
+      - SITEWATCHER_ADMIN_USER=admin
+      - SITEWATCHER_ADMIN_PASSWORD=
+    ports:
+      - target: 8080
+        published: "7002"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sitewatcher/icon.png
+    x-casaos:
+      id: com.icestore.sitewatcher
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for check times and history. It is
+              filled in from your ZimaOS time zone.
+        - container: SITEWATCHER_WEB_ALLOWED_HOSTS
+          description:
+            en_US: >-
+              Your ZimaOS IP address, like 192.168.1.20. SiteWatcher
+              only answers to names listed here, so replace
+              [ZIMAOS-IP-ADDRESS] or the page shows 400 Bad Request.
+              Add your domain too, comma separated, if you use one.
+        - container: SITEWATCHER_ADMIN_USER
+          description:
+            en_US: >-
+              The user name of the owner account, made on the first
+              start.
+        - container: SITEWATCHER_ADMIN_PASSWORD
+          description:
+            en_US: >-
+              Leave blank and IceStore makes a password on the first
+              start and shows it in the app's log under CREDENTIALS.
+              Type one here to use your own; it is set again on every
+              start.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              SiteWatcher dashboard and status pages, published on
+              host as 7002
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              SiteWatcher's SQLite database with your sites, check
+              history and settings, plus the owner password file.
+              Back it up.
+
+x-casaos:
+  id: com.icestore.sitewatcher
+  architectures:
+    - amd64
+    - arm64
+  main: sitewatcher
+  author: HSinghHira
+  category: Networking
+  developer: "Nik Kurkov"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sitewatcher/icon.png
+  title:
+    en_US: SiteWatcher
+  tagline:
+    en_US: Watches your websites and tells you when something goes wrong
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/sitewatcher/](https://icestore.hsinghhira.me/app/sitewatcher/) for full details
+
+
+      SiteWatcher checks your websites from one dashboard: whether they
+      open, how fast they answer, and when their HTTPS certificates and
+      domain names expire. It alerts you by email or Telegram and can
+      share public status pages.
+
+
+      **Features**
+
+
+      - Uptime, HTTP status and response time for each site
+
+      - HTTPS certificate and domain registration expiry
+
+      - Expected words on a page and signs of defacement
+
+      - IP, blocklist, open port and route changes
+
+      - Alerts by email and Telegram, and public or private status pages
+
+
+      **How to use?**
+
+
+      1. Set SITEWATCHER_WEB_ALLOWED_HOSTS to your ZimaOS IP address.
+
+      2. Open the app's log and find the password under CREDENTIALS.
+
+      3. Sign in with admin and that password, then click + to add a
+         site.
+  tips:
+    before_install:
+      en_US: >-
+        1. Before you start, change SITEWATCHER_WEB_ALLOWED_HOSTS. Put
+           your ZimaOS IP address in place of [ZIMAOS-IP-ADDRESS], like
+           192.168.1.20.
+
+
+        2. Leave SITEWATCHER_ADMIN_PASSWORD blank to get a new password.
+           It is in the app's log under CREDENTIALS. The user name is
+           admin.
+
+
+        3. Keep the app running. Checks only happen while it runs.
+  index: /login/
+  port_map: "7002"
+  scheme: http
+  is_uncontrolled: false
+  version: "e2bae0f"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/nikkurkov/sitewatcher sha-e2bae0f on port 7002, with the web dashboard and worker in one container and an owner login made for each install
+  repo: "https://github.com/NikKurkov/sitewatcher"
+  support: "https://github.com/NikKurkov/sitewatcher/issues"
+  docs: "https://github.com/NikKurkov/sitewatcher/blob/main/docs/usage.en.md"
