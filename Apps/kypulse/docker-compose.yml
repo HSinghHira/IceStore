@@ -106,6 +106,9 @@ x-casaos:
   category: Networking
   developer: Busnes-app
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypulse/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypulse/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypulse/screenshot-1.png
   title:
     en_US: KyPulse
   tagline:

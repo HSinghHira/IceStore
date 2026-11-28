@@ -3,7 +3,7 @@ site: https://busnes.app/kypulse.html
 source: https://github.com/Busnes-app/KyPulse-server
 services:
   - { name: Web App, path: /, icon: monitor }
-screenshots: []
+screenshots: [Status]
 variables:
   - name: KYPULSE_TRUSTED_PROXIES
     group: Reverse proxy
