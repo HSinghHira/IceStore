@@ -1,0 +1,130 @@
+name: myspeed
+
+services:
+  myspeed:
+    image: germannewsmaker/myspeed:1.0.9
+    container_name: myspeed
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+    ports:
+      - target: 5216
+        published: "6889"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /myspeed/data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5216/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/icon.png
+    x-casaos:
+      id: com.icestore.myspeed
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone, for the test schedule and the
+              times in the charts. It is filled in from your
+              ZimaOS time zone.
+      ports:
+        - container: "5216"
+          description:
+            en_US: >-
+              MySpeed web app, published on host as 6889
+      volumes:
+        - container: /myspeed/data
+          description:
+            en_US: >-
+              MySpeed's database with every test result and
+              your settings. Back it up.
+
+x-casaos:
+  id: com.icestore.myspeed
+  architectures:
+    - amd64
+    - arm64
+  main: myspeed
+  author: HSinghHira
+  category: Networking
+  developer: "Mathias Wagner (gnmyt)"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/myspeed/icon.png
+  title:
+    en_US: MySpeed
+  tagline:
+    en_US: Runs internet speed tests on a schedule and charts the results
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/myspeed/](https://icestore.hsinghhira.me/app/myspeed/) for full details
+
+
+      MySpeed runs internet speed tests for you on a schedule and keeps
+      the results for up to 30 days, with charts for download, upload and
+      ping.
+
+
+      **Features**
+
+
+      - Automatic tests on a schedule you pick (cron)
+
+      - Ookla, LibreSpeed and Cloudflare test servers
+
+      - Charts and averages for each day
+
+      - Alerts by Discord, Gotify, Telegram, email and more
+
+      - Prometheus and Home Assistant integration
+
+      - Optional password for the web page
+
+
+      **How to use?**
+
+
+      1. Open MySpeed and pick a test provider and server.
+
+      2. Set how often it should test, or start a test by hand.
+
+      3. Under Settings, set a password so others on your network can't
+         change it.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. MySpeed is ready in about half a
+           minute.
+
+
+        2. MySpeed has no password at first. Open it and set one in the
+           settings right away.
+
+
+        3. Each test uses your internet. Don't test too often on a
+           metered plan.
+  index: /
+  port_map: "6889"
+  scheme: http
+  is_uncontrolled: false
+  version: "1.0.9"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: germannewsmaker/myspeed 1.0.9 on port 6889
+  repo: "https://github.com/gnmyt/myspeed"
+  support: "https://github.com/gnmyt/myspeed/issues"
+  docs: "https://docs.myspeed.dev"
