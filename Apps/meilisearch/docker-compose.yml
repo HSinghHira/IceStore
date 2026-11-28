@@ -74,6 +74,9 @@ x-casaos:
   category: Developer
   developer: Meilisearch
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/meilisearch/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/meilisearch/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/meilisearch/screenshot-1.png
   title:
     en_US: Meilisearch
   tagline:

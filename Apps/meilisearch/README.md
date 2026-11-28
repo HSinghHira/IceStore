@@ -1,6 +1,7 @@
 ---
 site: https://www.meilisearch.com
 source: https://github.com/meilisearch/meilisearch
+screenshots: [Mini dashboard]
 services:
   - { name: Search preview, path: /, icon: search }
 variables:
