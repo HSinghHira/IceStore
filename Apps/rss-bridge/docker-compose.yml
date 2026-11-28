@@ -64,6 +64,11 @@ x-casaos:
   category: Productivity
   developer: "RSS-Bridge community"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rss-bridge/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rss-bridge/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rss-bridge/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rss-bridge/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/rss-bridge/screenshot-1.png
   title:
     en_US: RSS-Bridge
   tagline:

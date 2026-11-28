@@ -1,5 +1,6 @@
 ---
 source: https://github.com/RSS-Bridge/rss-bridge
+screenshots: [Home, Filter bridge, Feed formats]
 services:
   - { name: Web App, path: /, icon: globe }
 ---
