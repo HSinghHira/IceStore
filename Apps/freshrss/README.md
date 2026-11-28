@@ -1,6 +1,7 @@
 ---
 site: https://freshrss.org
 source: https://github.com/FreshRSS/FreshRSS
+screenshots: [Main stream, Dark theme]
 services:
   - { name: Reader, path: /, icon: globe }
   - { name: Reader-app API, path: /api/, icon: plug }
