@@ -1,0 +1,76 @@
+{
+  "name": "SiteWatcher",
+  "repo": "ghcr.io/hsinghhira/sitewatcher:latest",
+  "category": [
+    "Network"
+  ],
+  "registry": "https://github.com/hsinghhira/sitewatcher/pkgs/container/sitewatcher",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=30 --memory=512m --memory-reservation=64m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/login/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/sitewatcher/icon.png",
+  "project": "https://monitoring.kurkov.dev/demo",
+  "support": "https://github.com/NikKurkov/sitewatcher/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/sitewatcher/",
+  "description": "Watches your websites and tells you when something goes wrong",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/sitewatcher/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "SiteWatcher's SQLite database with your sites, check history and settings, plus the owner password file. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "7002",
+      "container": "8080",
+      "description": "SiteWatcher dashboard and status pages, published on host as 7002"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "SITEWATCHER_WEB_ALLOWED_HOSTS",
+      "key": "SITEWATCHER_WEB_ALLOWED_HOSTS",
+      "value": "YOUR-SERVER-IP",
+      "mask": false,
+      "description": "Your server IP address, like 192.168.1.20. SiteWatcher only answers to names listed here, so replace YOUR-SERVER-IP or the page shows 400 Bad Request. Add your domain too, comma separated, if you use one."
+    },
+    {
+      "name": "SITEWATCHER_ADMIN_USER",
+      "key": "SITEWATCHER_ADMIN_USER",
+      "value": "admin",
+      "mask": false,
+      "description": "The user name of the owner account, made on the first start."
+    },
+    {
+      "name": "SITEWATCHER_ADMIN_PASSWORD",
+      "key": "SITEWATCHER_ADMIN_PASSWORD",
+      "value": "",
+      "mask": true,
+      "description": "Leave blank and IceStore makes a password on the first start and shows it in the app's log under CREDENTIALS. Type one here to use your own; it is set again on every start."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
