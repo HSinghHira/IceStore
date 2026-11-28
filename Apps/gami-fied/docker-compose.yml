@@ -72,6 +72,12 @@ x-casaos:
   category: Developer
   developer: gami-fied
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gami-fied/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gami-fied/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gami-fied/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gami-fied/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gami-fied/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/gami-fied/screenshot-1.png
   title:
     en_US: Gami.Fied
   tagline:

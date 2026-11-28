@@ -1,6 +1,7 @@
 ---
 name: Gami.Fied
 source: https://github.com/gami-fied/gami.fied
+screenshots: [Leaderboard, Achievements, Store, Player profile]
 services:
   - { name: Dashboard, path: /, icon: globe }
   - { name: Platform admin, path: /admin, icon: server }
