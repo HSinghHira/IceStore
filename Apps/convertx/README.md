@@ -1,5 +1,6 @@
 ---
 source: https://github.com/C4illin/ConvertX
+screenshots: [Convert files]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

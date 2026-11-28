@@ -75,6 +75,9 @@ x-casaos:
   category: Others
   developer: "C4illin"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/convertx/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/convertx/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/convertx/screenshot-1.png
   title:
     en_US: ConvertX
   tagline:
