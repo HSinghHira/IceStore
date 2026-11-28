@@ -1,6 +1,7 @@
 ---
 site: https://dagu.cloud
 source: https://github.com/dagucloud/dagu
+screenshots: [Workflow editor, Overview, Start workflow]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
