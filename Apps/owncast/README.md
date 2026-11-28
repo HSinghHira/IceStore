@@ -1,6 +1,7 @@
 ---
 site: https://owncast.online
 source: https://github.com/owncast/owncast
+screenshots: [Stream page, Follow, Notifications]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
