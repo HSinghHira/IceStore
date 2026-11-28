@@ -134,6 +134,9 @@ x-casaos:
   category: Productivity
   developer: Busnes-app
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypost/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypost/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/kypost/screenshot-1.png
   title:
     en_US: KyPost
   tagline:

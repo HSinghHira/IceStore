@@ -3,7 +3,7 @@ site: https://busnes.app/kypost.html
 source: https://github.com/Busnes-app/KyPost-Server
 services:
   - { name: Web App, path: /, icon: mail }
-screenshots: []
+screenshots: [New message]
 variables:
   - name: TRUSTED_PROXY_CIDRS
     group: Reverse proxy
