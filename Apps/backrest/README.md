@@ -1,5 +1,6 @@
 ---
 source: https://github.com/garethgeorge/backrest
+screenshots: [Dashboard, Snapshot browser, Add plan]
 services:
   - { name: Web App, path: /, icon: globe }
 ---

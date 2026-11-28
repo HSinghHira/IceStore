@@ -119,6 +119,11 @@ x-casaos:
   category: Others
   developer: "garethgeorge"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/backrest/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/backrest/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/backrest/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/backrest/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/backrest/screenshot-1.png
   title:
     en_US: Backrest
   tagline:
