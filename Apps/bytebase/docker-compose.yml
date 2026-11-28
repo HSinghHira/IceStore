@@ -65,6 +65,10 @@ x-casaos:
   category: Developer
   developer: "Bytebase"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytebase/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytebase/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytebase/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/bytebase/screenshot-1.png
   title:
     en_US: Bytebase
   tagline:

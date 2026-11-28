@@ -1,6 +1,7 @@
 ---
 site: https://www.bytebase.com
 source: https://github.com/bytebase/bytebase
+screenshots: [SQL editor, Change review]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
