@@ -1,0 +1,134 @@
+name: wastebin
+
+services:
+  wastebin:
+    image: ghcr.io/hsinghhira/wastebin:latest
+    container_name: wastebin
+    restart: unless-stopped
+    stop_grace_period: 10s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - WASTEBIN_BASE_URL=http://[ZIMAOS-IP-ADDRESS]:6896
+      - WASTEBIN_MAX_BODY_SIZE=1048576
+    ports:
+      - target: 8088
+        published: "6896"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8088/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wastebin/icon.png
+    x-casaos:
+      id: com.icestore.wastebin
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: WASTEBIN_BASE_URL
+          description:
+            en_US: >-
+              The address you open wastebin at, used for the QR
+              codes. Replace [ZIMAOS-IP-ADDRESS] with your ZimaOS IP
+              address, like http://192.168.1.20:6896.
+        - container: WASTEBIN_MAX_BODY_SIZE
+          description:
+            en_US: >-
+              Largest paste or upload in bytes. 1048576 is 1 MB.
+      ports:
+        - container: "8088"
+          description:
+            en_US: >-
+              wastebin web page and API, published on host as 6896
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              wastebin's SQLite database with every paste, plus
+              the signing key and salt. Back it up.
+
+x-casaos:
+  id: com.icestore.wastebin
+  architectures:
+    - amd64
+    - arm64
+  main: wastebin
+  author: HSinghHira
+  category: Developer
+  developer: "Matthias Vogelgesang (matze)"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wastebin/icon.png
+  title:
+    en_US: wastebin
+  tagline:
+    en_US: A minimal pastebin for code and text, with highlighting and expiry
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/wastebin/](https://icestore.hsinghhira.me/app/wastebin/) for full details
+
+
+      wastebin is a small, fast pastebin. Paste code or text, pick a
+      language and an expiry time, and share the link. Pastes can be
+      password protected or deleted after the first read.
+
+
+      **Features**
+
+
+      - Syntax highlighting for many languages, with nine color themes
+
+      - Expiry times and burn after reading
+
+      - Optional password per paste, encrypted on the server
+
+      - QR codes and raw or download links
+
+      - Upload files, or paste from the command line with curl
+
+
+      **How to use?**
+
+
+      1. Set WASTEBIN_BASE_URL to your ZimaOS IP address.
+
+      2. Open wastebin, paste your text and pick the language.
+
+      3. Click Paste and share the link.
+  tips:
+    before_install:
+      en_US: >-
+        1. Before you start, change WASTEBIN_BASE_URL. Put your ZimaOS IP
+           address in place of [ZIMAOS-IP-ADDRESS].
+
+
+        2. wastebin has no sign-in, so anyone on your network can paste.
+           Keep it off the internet, or put it behind a login.
+  index: /
+  port_map: "6896"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.9.0"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: quxfoo/wastebin 3.9.0 on port 6896, with a signing key and password salt made for each install
+  repo: "https://github.com/matze/wastebin"
+  support: "https://github.com/matze/wastebin/issues"
+  docs: "https://github.com/matze/wastebin#configuration"
