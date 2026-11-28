@@ -1,6 +1,7 @@
 ---
 site: https://www.goatcounter.com
 source: https://github.com/arp242/goatcounter
+screenshots: [Pages, Referrers and systems, Text view]
 services:
   - { name: Dashboard, path: /, icon: globe }
   - { name: API, path: /api/v0, icon: code }

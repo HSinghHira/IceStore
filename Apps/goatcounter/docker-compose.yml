@@ -84,6 +84,11 @@ x-casaos:
   category: Others
   developer: "Martin Tournoij (arp242)"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/goatcounter/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/goatcounter/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/goatcounter/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/goatcounter/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/goatcounter/screenshot-1.png
   title:
     en_US: GoatCounter
   tagline:
