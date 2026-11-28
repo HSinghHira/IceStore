@@ -1,6 +1,7 @@
 ---
 site: https://watcharr.app
 source: https://github.com/sbondCo/Watcharr
+screenshots: [Overview, Watch list, Movie details, Discover]
 services:
   - { name: Web App, path: /, icon: globe }
 ---
