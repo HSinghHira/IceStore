@@ -1,6 +1,7 @@
 ---
 site: https://www.adminer.org
 source: https://github.com/vrana/adminer
+screenshots: [Table data, Table structure]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

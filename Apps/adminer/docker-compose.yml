@@ -56,6 +56,10 @@ x-casaos:
   category: Developer
   developer: "Jakub Vrána"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/adminer/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/adminer/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/adminer/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/adminer/screenshot-1.png
   title:
     en_US: Adminer
   tagline:
