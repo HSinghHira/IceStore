@@ -1,0 +1,17 @@
+{
+  "name": "UpSnap",
+  "category": [
+    "Network"
+  ],
+  "web_ui_url": "http://[IP]:6894/",
+  "website": "https://github.com/seriousm4x/UpSnap",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/upsnap/icon.png",
+  "project": "https://github.com/seriousm4x/UpSnap",
+  "support": "https://github.com/seriousm4x/UpSnap/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/upsnap/",
+  "description": "Wake your computers with one click from a simple dashboard",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ]
+}

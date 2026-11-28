@@ -1,0 +1,44 @@
+# Generated from Apps/upsnap/docker-compose.yml by platforms/generate.py.
+# Do not edit here; change the master file or platforms/mos/overrides/upsnap.yml.
+name: upsnap
+services:
+  upsnap:
+    image: ghcr.io/seriousm4x/upsnap:5.7.3
+    container_name: upsnap
+    restart: unless-stopped
+    stop_grace_period: 10s
+    network_mode: host
+    cap_add:
+    - NET_RAW
+    command:
+    - serve
+    - --http
+    - 0.0.0.0:6894
+    environment:
+    - TZ=$TZ
+    - UPSNAP_INTERVAL=*/10 * * * * *
+    - UPSNAP_SCAN_RANGE=
+    volumes:
+    - type: bind
+      source: ${APPDATA}/data
+      target: /app/pb_data
+      bind:
+        create_host_path: true
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - -o
+      - /dev/null
+      - http://127.0.0.1:6894/api/health
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
