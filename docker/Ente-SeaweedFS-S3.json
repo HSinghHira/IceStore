@@ -70,37 +70,37 @@
     {
       "name": "Port 8105",
       "protocol": "tcp",
-      "host": "6665",
+      "host": "6673",
       "container": "8105",
-      "description": "Accounts app (passkeys and family invites), published on host as 6665"
+      "description": "Accounts app (passkeys and family invites), published on host as 6673"
     },
     {
       "name": "Port 8106",
       "protocol": "tcp",
-      "host": "6666",
+      "host": "6674",
       "container": "8106",
-      "description": "Ente Auth web app (your two-factor codes), published on host as 6666"
+      "description": "Ente Auth web app (your two-factor codes), published on host as 6674"
     },
     {
       "name": "Port 8107",
       "protocol": "tcp",
-      "host": "6667",
+      "host": "6675",
       "container": "8107",
-      "description": "Cast app (show albums on a TV), published on host as 6667"
+      "description": "Cast app (show albums on a TV), published on host as 6675"
     },
     {
       "name": "Port 8108",
       "protocol": "tcp",
-      "host": "6668",
+      "host": "6676",
       "container": "8108",
-      "description": "Public Locker (shared Locker links), published on host as 6668"
+      "description": "Public Locker (shared Locker links), published on host as 6676"
     },
     {
       "name": "Port 8109",
       "protocol": "tcp",
-      "host": "6669",
+      "host": "6677",
       "container": "8109",
-      "description": "Embed app (albums inside other web pages), published on host as 6669"
+      "description": "Embed app (albums inside other web pages), published on host as 6677"
     },
     {
       "name": "Port 8110",
@@ -137,7 +137,7 @@
       "key": "PUBLIC_URL",
       "value": "http://localhost:6660",
       "mask": false,
-      "description": "The address of the Web App, like http://your-server-ip:6660. Change localhost to your server IP, or phones and other computers cannot use Ente. The other apps use the same address with the next ports: 6661 API, 6662 Public Albums, 6663 photo storage, 6664 mail viewer, and 6665 to 6672 for Accounts, Auth, Cast, Public Locker, Embed, Paste, Locker and Public Memories. If PUBLIC_URL is your own domain with no port, like https://photos.example.com, set ENTE_API_URL, ENTE_S3_URL and the other addresses below too, or uploads, Locker and shared links will not work."
+      "description": "The address of the Web App, like http://your-server-ip:6660. Change localhost to your server IP, or phones and other computers cannot use Ente. The other apps use the same address with the next ports: 6661 API, 6662 Public Albums, 6663 photo storage, 6664 mail viewer, 6670 to 6672 for Paste, Locker and Public Memories, and 6673 to 6677 for Accounts, Auth, Cast, Public Locker and Embed. If PUBLIC_URL is your own domain with no port, like https://photos.example.com, set ENTE_API_URL, ENTE_S3_URL and the other addresses below too, or uploads, Locker and shared links will not work."
     },
     {
       "name": "ENTE_API_URL",
@@ -165,28 +165,28 @@
       "key": "ENTE_APPS_ACCOUNTS",
       "value": "",
       "mask": false,
-      "description": "The Accounts app address (passkeys, family invites). Leave it blank to use PUBLIC_URL's host with port 6665. If you use your own domain, set it, like https://accounts.example.com."
+      "description": "The Accounts app address (passkeys, family invites). Leave it blank to use PUBLIC_URL's host with port 6673. If you use your own domain, set it, like https://accounts.example.com."
     },
     {
       "name": "ENTE_APPS_CAST",
       "key": "ENTE_APPS_CAST",
       "value": "",
       "mask": false,
-      "description": "The Cast app address. Leave it blank to use PUBLIC_URL's host with port 6667. If you use your own domain, set it, like https://cast.example.com."
+      "description": "The Cast app address. Leave it blank to use PUBLIC_URL's host with port 6675. If you use your own domain, set it, like https://cast.example.com."
     },
     {
       "name": "ENTE_APPS_PUBLIC_LOCKER",
       "key": "ENTE_APPS_PUBLIC_LOCKER",
       "value": "",
       "mask": false,
-      "description": "The Public Locker address for shared Locker links. Leave it blank to use PUBLIC_URL's host with port 6668. If you use your own domain, set it, like https://share.example.com."
+      "description": "The Public Locker address for shared Locker links. Leave it blank to use PUBLIC_URL's host with port 6676. If you use your own domain, set it, like https://share.example.com."
     },
     {
       "name": "ENTE_APPS_EMBED_ALBUMS",
       "key": "ENTE_APPS_EMBED_ALBUMS",
       "value": "",
       "mask": false,
-      "description": "The Embed app address. Leave it blank to use PUBLIC_URL's host with port 6669. If you use your own domain, set it, like https://embed.example.com."
+      "description": "The Embed app address. Leave it blank to use PUBLIC_URL's host with port 6677. If you use your own domain, set it, like https://embed.example.com."
     },
     {
       "name": "ENTE_APPS_PUBLIC_PASTE",
