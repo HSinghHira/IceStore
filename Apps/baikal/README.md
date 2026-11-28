@@ -1,6 +1,7 @@
 ---
 site: https://sabre.io/baikal/
 source: https://github.com/sabre-io/Baikal
+screenshots: [Dashboard]
 services:
   - { name: Web App, path: /, icon: globe }
 ---
