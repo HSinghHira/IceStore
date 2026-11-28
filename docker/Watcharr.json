@@ -1,0 +1,62 @@
+{
+  "name": "Watcharr",
+  "repo": "ghcr.io/sbondco/watcharr:v4.4.0",
+  "category": [
+    "Media"
+  ],
+  "registry": "https://github.com/sbondco/watcharr/pkgs/container/watcharr",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --stop-timeout=15 --memory=512m --memory-reservation=32m",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3080]/",
+  "icon": "https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/watcharr/icon.png",
+  "project": "https://watcharr.app",
+  "support": "https://github.com/sbondCo/Watcharr/issues",
+  "readme_url": "https://icestore.hsinghhira.me/app/watcharr/",
+  "description": "Keep a watched list of your movies, shows, anime and games",
+  "architecture": [
+    "amd64",
+    "arm64"
+  ],
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/watcharr/data",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Watcharr's database, settings file and sign-in key. Back it up."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Web UI",
+      "protocol": "tcp",
+      "host": "6898",
+      "container": "3080",
+      "description": "Watcharr web app, published on host as 6898"
+    }
+  ],
+  "variables": [
+    {
+      "name": "TZ",
+      "key": "TZ",
+      "value": "Etc/UTC",
+      "mask": false,
+      "description": "Your time zone, like Europe/London or America/New_York."
+    },
+    {
+      "name": "WATCHARR_DATA",
+      "key": "WATCHARR_DATA",
+      "value": "/data",
+      "mask": false,
+      "description": "Where Watcharr keeps its database and settings. Leave it as /data."
+    }
+  ],
+  "devices": [],
+  "labels": [],
+  "gpus": []
+}
