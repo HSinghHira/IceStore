@@ -1,4 +1,5 @@
 ---
+screenshots: [Wiki page]
 site: https://www.dokuwiki.org/
 services:
   - { name: Wiki, path: /, icon: globe }
