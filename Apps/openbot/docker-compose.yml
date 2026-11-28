@@ -76,6 +76,12 @@ x-casaos:
   category: AI
   developer: "Synthetify Labs"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openbot/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openbot/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openbot/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openbot/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openbot/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/openbot/screenshot-1.png
   title:
     en_US: OpenBot
   tagline:

@@ -1,6 +1,7 @@
 ---
 site: https://openbot.run
 source: https://github.com/nightly-labs/openbot
+screenshots: [Agent chat, Launch plan, Marketplace, Import agents]
 services:
   - { name: Web App, path: /, icon: globe }
 ---
