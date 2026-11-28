@@ -63,6 +63,11 @@ x-casaos:
   category: Developer
   developer: "LukeGus"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/termix/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/termix/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/termix/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/termix/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/termix/screenshot-1.png
   title:
     en_US: Termix
   tagline:

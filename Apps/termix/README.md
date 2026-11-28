@@ -1,6 +1,7 @@
 ---
 site: https://termix.site
 source: https://github.com/Termix-SSH/Termix
+screenshots: [Hosts dashboard, Split view, Settings]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
