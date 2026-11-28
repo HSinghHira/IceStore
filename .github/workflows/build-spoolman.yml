@@ -1,0 +1,22 @@
+name: Build spoolman
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/spoolman/**"
+      - "docker/_common/**"
+      - ".github/workflows/build-spoolman.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# The build steps are in build-image.yml (shared by every app).
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      app: spoolman
+      kind: wrapper

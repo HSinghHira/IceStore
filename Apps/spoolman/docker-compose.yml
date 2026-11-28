@@ -1,0 +1,144 @@
+name: spoolman
+
+services:
+  spoolman:
+    image: ghcr.io/hsinghhira/spoolman:latest
+    container_name: spoolman
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    ports:
+      - target: 8000
+        published: "6888"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /home/app/.local/share/spoolman
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/spoolman/icon.png
+    x-casaos:
+      id: com.icestore.spoolman
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns Spoolman's files. It is filled
+              in by ZimaOS. It can't be 0.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns Spoolman's files. It is filled
+              in by ZimaOS.
+      ports:
+        - container: "8000"
+          description:
+            en_US: >-
+              Spoolman web app and API, published on host as 6888
+      volumes:
+        - container: /home/app/.local/share/spoolman
+          description:
+            en_US: >-
+              Spoolman's SQLite database and its nightly
+              backups. Back it up.
+
+x-casaos:
+  id: com.icestore.spoolman
+  architectures:
+    - amd64
+    - arm64
+  main: spoolman
+  author: HSinghHira
+  category: Home
+  developer: "Donkie"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/spoolman/icon.png
+  title:
+    en_US: Spoolman
+  tagline:
+    en_US: Keep track of your 3D printer filament spools and how much is left
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/spoolman/](https://icestore.hsinghhira.me/app/spoolman/) for full details
+
+
+      Spoolman keeps a list of your 3D printing filament: makers,
+      filaments and every spool, with how much is left on each. Klipper
+      (Moonraker), OctoPrint and Home Assistant can update it as you
+      print.
+
+
+      **Features**
+
+
+      - Spools, filaments and makers with colors, weights and prices
+
+      - Filament used is subtracted as you print
+
+      - Built-in catalog of common filaments (SpoolmanDB)
+
+      - QR code labels for each spool
+
+      - Works with Moonraker, Fluidd, Mainsail, OctoPrint and Home
+        Assistant
+
+      - REST API and live updates over websockets
+
+
+      **How to use?**
+
+
+      1. Open Spoolman and add a maker and a filament, or pick one from
+         the catalog.
+
+      2. Add your spools and print labels for them.
+
+      3. In Moonraker or OctoPrint, set the Spoolman server to your
+         ZimaOS address and port 6888.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. Spoolman is ready in about half a
+           minute.
+
+
+        2. Spoolman has no login, so anyone on your network can open it.
+           Keep it off the internet.
+
+
+        3. In Moonraker or OctoPrint, use your ZimaOS IP address and port
+           6888 as the Spoolman server, not localhost.
+  index: /
+  port_map: "6888"
+  scheme: http
+  is_uncontrolled: false
+  version: "0.27.1"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: ghcr.io/donkie/spoolman 0.27.1 on port 6888
+  repo: "https://github.com/Donkie/Spoolman"
+  support: "https://github.com/Donkie/Spoolman/issues"
+  docs: "https://github.com/Donkie/Spoolman/wiki"
