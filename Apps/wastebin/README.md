@@ -1,6 +1,7 @@
 ---
 site: https://bin.bloerg.net
 source: https://github.com/matze/wastebin
+screenshots: [Paste view]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:

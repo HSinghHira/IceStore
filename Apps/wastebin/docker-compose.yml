@@ -75,6 +75,9 @@ x-casaos:
   category: Developer
   developer: "Matthias Vogelgesang (matze)"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wastebin/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wastebin/screenshot-1.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/wastebin/screenshot-1.png
   title:
     en_US: wastebin
   tagline:
