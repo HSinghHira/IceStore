@@ -1,6 +1,7 @@
 ---
 site: https://homer-demo.netlify.app
 source: https://github.com/bastienwirtz/homer
+screenshots: [Demo dashboard]
 services:
   - { name: Dashboard, path: /, icon: globe }
 variables:
