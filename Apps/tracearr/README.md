@@ -1,4 +1,5 @@
 ---
+screenshots: [Dashboard, Stats, Stream map, Automations]
 site: https://tracearr.com
 services:
   - { name: Web App, path: /, icon: globe }

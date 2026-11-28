@@ -93,6 +93,12 @@ x-casaos:
   category: Media
   developer: Connor Gallopo
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/screenshot-3.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/screenshot-4.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tracearr/screenshot-1.png
   title:
     en_US: Tracearr
   tagline:
