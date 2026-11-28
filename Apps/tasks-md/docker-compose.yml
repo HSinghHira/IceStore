@@ -1,0 +1,151 @@
+name: tasks-md
+
+services:
+  tasks-md:
+    image: baldissaramatheus/tasks.md:3.3.0
+    container_name: tasks-md
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - TITLE=
+    ports:
+      - target: 8080
+        published: "7003"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/tasks
+        target: /tasks
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /DATA/AppData/$AppID/config
+        target: /config
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:8080/', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 64M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tasks-md/icon.png
+    x-casaos:
+      id: com.icestore.tasks-md
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: PUID
+          description:
+            en_US: >-
+              The user that owns your task files. It is filled in
+              by ZimaOS.
+        - container: PGID
+          description:
+            en_US: >-
+              The group that owns your task files. It is filled in
+              by ZimaOS.
+        - container: TITLE
+          description:
+            en_US: >-
+              A name shown under the header and in the browser tab.
+              Leave blank for none.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Tasks.md board, published on host as 7003
+      volumes:
+        - container: /tasks
+          description:
+            en_US: >-
+              Your boards: one folder per lane and one Markdown
+              file per card. Back it up.
+        - container: /config
+          description:
+            en_US: >-
+              Your theme (custom.css), card images and the sort
+              order.
+
+x-casaos:
+  id: com.icestore.tasks-md
+  architectures:
+    - amd64
+    - arm64
+  main: tasks-md
+  author: HSinghHira
+  category: Productivity
+  developer: "Matheus Baldissara"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/tasks-md/icon.png
+  title:
+    en_US: Tasks.md
+  tagline:
+    en_US: A kanban board that keeps every card as a Markdown file
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/tasks-md/](https://icestore.hsinghhira.me/app/tasks-md/) for full details
+
+
+      Tasks.md is a simple kanban board. Every lane is a folder and every
+      card is a Markdown file, so your tasks stay readable and you can
+      edit them with any text editor or sync them anywhere.
+
+
+      **Features**
+
+
+      - Lanes and cards you drag and drop
+
+      - Cards are plain Markdown files with tags and due dates
+
+      - Images in cards
+
+      - Light and dark themes (Adwaita, Nord, Catppuccin) and your own
+        CSS
+
+      - Installs as a phone or desktop app (PWA)
+
+
+      **How to use?**
+
+
+      1. Open Tasks.md and add a lane, like To do.
+
+      2. Add cards and drag them between lanes.
+
+      3. Find the files in AppData/tasks-md/tasks in the Files app.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. The first start takes a minute or two,
+           because Tasks.md builds its page on every start.
+
+
+        2. Tasks.md has no sign-in, so anyone on your network can change
+           your boards. Keep it off the internet.
+  index: /
+  port_map: "7003"
+  scheme: http
+  is_uncontrolled: false
+  version: "3.3.0"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: baldissaramatheus/tasks.md 3.3.0 on port 7003
+  repo: "https://github.com/BaldissaraMatheus/Tasks.md"
+  support: "https://github.com/BaldissaraMatheus/Tasks.md/issues"
+  docs: "https://github.com/BaldissaraMatheus/Tasks.md#readme"
