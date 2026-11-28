@@ -64,6 +64,11 @@ x-casaos:
   category: Home
   developer: "Domoticz"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domoticz/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domoticz/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domoticz/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domoticz/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/domoticz/screenshot-1.png
   title:
     en_US: Domoticz
   tagline:

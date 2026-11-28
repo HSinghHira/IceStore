@@ -1,6 +1,7 @@
 ---
 site: https://www.domoticz.com
 source: https://github.com/domoticz/domoticz
+screenshots: [Dashboard, Switches, Energy usage]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
