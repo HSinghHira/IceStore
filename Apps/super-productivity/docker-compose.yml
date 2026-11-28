@@ -51,6 +51,11 @@ x-casaos:
   category: Productivity
   developer: "johannesjo"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/super-productivity/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/super-productivity/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/super-productivity/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/super-productivity/screenshot-3.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/super-productivity/screenshot-1.png
   title:
     en_US: Super Productivity
   tagline:

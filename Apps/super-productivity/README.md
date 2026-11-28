@@ -1,6 +1,7 @@
 ---
 site: https://super-productivity.com
 source: https://github.com/super-productivity/super-productivity
+screenshots: [Today, Light theme, Task list]
 services:
   - { name: Web App, path: /, icon: globe }
 ---
