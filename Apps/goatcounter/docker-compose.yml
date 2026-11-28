@@ -1,0 +1,149 @@
+name: goatcounter
+
+services:
+  goatcounter:
+    image: arp242/goatcounter:2.7.0
+    container_name: goatcounter
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+      - GOATCOUNTER_LISTEN=:8080
+      - GOATCOUNTER_TLS=http
+      - GOATCOUNTER_PUBLIC_PORT=6891
+    ports:
+      - target: 8080
+        published: "6891"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /home/goatcounter/goatcounter-data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 32M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/goatcounter/icon.png
+    x-casaos:
+      id: com.icestore.goatcounter
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: GOATCOUNTER_LISTEN
+          description:
+            en_US: >-
+              Where GoatCounter listens inside the container. Leave
+              it as it is.
+        - container: GOATCOUNTER_TLS
+          description:
+            en_US: >-
+              http serves plain http. Leave it; put a reverse proxy
+              with https in front when your websites are public.
+        - container: GOATCOUNTER_PUBLIC_PORT
+          description:
+            en_US: >-
+              The port people reach GoatCounter on, used in links
+              and the tracking code. Set 443 behind a reverse proxy
+              with https.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              GoatCounter dashboard and counter, published on host
+              as 6891
+      volumes:
+        - container: /home/goatcounter/goatcounter-data
+          description:
+            en_US: >-
+              GoatCounter's SQLite database with your sites and
+              all visits. Back it up.
+
+x-casaos:
+  id: com.icestore.goatcounter
+  architectures:
+    - amd64
+    - arm64
+  main: goatcounter
+  author: HSinghHira
+  category: Others
+  developer: "Martin Tournoij (arp242)"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/goatcounter/icon.png
+  title:
+    en_US: GoatCounter
+  tagline:
+    en_US: Simple, privacy-friendly web analytics without cookies
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/goatcounter/](https://icestore.hsinghhira.me/app/goatcounter/) for full details
+
+
+      GoatCounter counts the visitors on your websites without tracking
+      people: no cookies, no personal data, and a small script. It shows
+      pages, referrers, browsers, screen sizes and countries on a clean
+      dashboard.
+
+
+      **Features**
+
+
+      - No cookies and no personal data, so no cookie banner needed
+
+      - Tiny tracking script, or count from your server logs
+
+      - Pages, referrers, campaigns, browsers, systems and countries
+
+      - Several sites and users in one install
+
+      - Export to CSV and a full API
+
+
+      **How to use?**
+
+
+      1. Open GoatCounter. The setup page asks for a domain, your
+         email and a password.
+
+      2. For the domain, type your ZimaOS IP address (or the domain you
+         will use), then sign in.
+
+      3. Copy the tracking script from Settings into your website.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. GoatCounter is ready in a few seconds.
+
+
+        2. Open it and fill in the setup page. For the domain, type your
+           ZimaOS IP address, the same one you open GoatCounter with.
+
+
+        3. Visitors of a public website must be able to reach GoatCounter
+           too. For that, put it behind a reverse proxy with your domain.
+  index: /
+  port_map: "6891"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.7.0"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: arp242/goatcounter 2.7.0 on port 6891
+  repo: "https://github.com/arp242/goatcounter"
+  support: "https://github.com/arp242/goatcounter/issues"
+  docs: "https://www.goatcounter.com/help"
