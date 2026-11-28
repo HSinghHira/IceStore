@@ -5,11 +5,11 @@ services:
   - { name: API Server, path: /, icon: server, port: 6661 }
   - { name: Public Albums, path: /, icon: external-link, port: 6662 }
   - { name: Mail Server, path: /mail/, icon: mail, port: 6664 }
-  - { name: Accounts, path: /, icon: check, port: 6665 }
-  - { name: Auth, path: /, icon: tag, port: 6666 }
-  - { name: Cast, path: /, icon: monitor, port: 6667 }
-  - { name: Public Locker, path: /, icon: external-link, port: 6668 }
-  - { name: Embed, path: /, icon: code, port: 6669 }
+  - { name: Accounts, path: /, icon: check, port: 6673 }
+  - { name: Auth, path: /, icon: tag, port: 6674 }
+  - { name: Cast, path: /, icon: monitor, port: 6675 }
+  - { name: Public Locker, path: /, icon: external-link, port: 6676 }
+  - { name: Embed, path: /, icon: code, port: 6677 }
   - { name: Paste, path: /, icon: copy, port: 6670 }
   - { name: Locker, path: /, icon: package, port: 6671 }
   - { name: Public Memories, path: /, icon: grid, port: 6672 }
@@ -144,11 +144,11 @@ Every app has its own port on your ZimaOS address, counted up from the Web App's
 | 6662 | Public Albums (shared album links) |
 | 6663 | Photo storage (SeaweedFS S3) |
 | 6664 | Mail viewer for sign-up codes and other Ente emails |
-| 6665 | Accounts app (passkeys and family invites) |
-| 6666 | Ente Auth web app (your two-factor codes) |
-| 6667 | Cast app (show albums on a TV) |
-| 6668 | Public Locker (shared Locker links) |
-| 6669 | Embed app (albums inside other web pages) |
+| 6673 | Accounts app (passkeys and family invites) |
+| 6674 | Ente Auth web app (your two-factor codes) |
+| 6675 | Cast app (show albums on a TV) |
+| 6676 | Public Locker (shared Locker links) |
+| 6677 | Embed app (albums inside other web pages) |
 | 6670 | Ente Paste (share text that deletes itself) |
 | 6671 | Ente Locker web app (store important documents) |
 | 6672 | Public Memories (shared memory links) |

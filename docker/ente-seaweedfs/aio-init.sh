@@ -20,8 +20,11 @@ GATEWAY_PORT=8080
 # PUBLIC_URL is the Web App. Every other app has its own port on the same
 # host, counted up from PUBLIC_URL's port (6660 by default):
 #   +1 API            +2 Public Albums   +3 photo storage (S3)  +4 mail viewer
-#   +5 Accounts       +6 Auth            +7 Cast                +8 Public Locker
-#   +9 Embed          +10 Paste          +11 Locker             +12 Public Memories
+#   +10 Paste         +11 Locker         +12 Public Memories
+#   +13 Accounts      +14 Auth           +15 Cast               +16 Public Locker
+#   +17 Embed
+# +5 to +9 are skipped: from 6660 they land on 6665-6669, which Chrome, Edge
+# and Firefox refuse to open (ERR_UNSAFE_PORT, the IRC ports).
 # Counting from PUBLIC_URL keeps older installs (Web App, API, Albums, S3 on
 # four ports in a row) working. Each address can be set to your own domain
 # instead with the variables below (README variables: list).
@@ -45,11 +48,11 @@ API_URL=${ENTE_API_URL:-$(at 1)}
 ALBUMS_URL=${ENTE_APPS_PUBLIC_ALBUMS:-${ENTE_ALBUMS_URL:-$(at 2)}}
 S3_URL=${ENTE_S3_URL:-$(at 3)}
 MAIL_URL=$(at 4)
-ACCOUNTS_URL=${ENTE_APPS_ACCOUNTS:-$(at 5)}
-AUTH_URL=$(at 6)
-CAST_URL=${ENTE_APPS_CAST:-$(at 7)}
-LOCKER_SHARE_URL=${ENTE_APPS_PUBLIC_LOCKER:-$(at 8)}
-EMBED_URL=${ENTE_APPS_EMBED_ALBUMS:-$(at 9)}
+ACCOUNTS_URL=${ENTE_APPS_ACCOUNTS:-$(at 13)}
+AUTH_URL=$(at 14)
+CAST_URL=${ENTE_APPS_CAST:-$(at 15)}
+LOCKER_SHARE_URL=${ENTE_APPS_PUBLIC_LOCKER:-$(at 16)}
+EMBED_URL=${ENTE_APPS_EMBED_ALBUMS:-$(at 17)}
 PASTE_URL=${ENTE_APPS_PUBLIC_PASTE:-$(at 10)}
 LOCKER_URL=$(at 11)
 MEMORIES_URL=${ENTE_APPS_PUBLIC_MEMORIES:-$(at 12)}

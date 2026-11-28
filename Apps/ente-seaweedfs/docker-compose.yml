@@ -36,19 +36,19 @@ services:
         published: "6664"
         protocol: tcp
       - target: 8105
-        published: "6665"
+        published: "6673"
         protocol: tcp
       - target: 8106
-        published: "6666"
+        published: "6674"
         protocol: tcp
       - target: 8107
-        published: "6667"
+        published: "6675"
         protocol: tcp
       - target: 8108
-        published: "6668"
+        published: "6676"
         protocol: tcp
       - target: 8109
-        published: "6669"
+        published: "6677"
         protocol: tcp
       - target: 8110
         published: "6670"
@@ -97,8 +97,8 @@ services:
               IP, or phones and other computers cannot use Ente. The other
               apps use the same address with the next ports: 6661 API,
               6662 Public Albums, 6663 photo storage, 6664 mail viewer,
-              and 6665 to 6672 for Accounts, Auth, Cast, Public Locker,
-              Embed, Paste, Locker and Public Memories. If PUBLIC_URL is your own
+              6670 to 6672 for Paste, Locker and Public Memories, and
+              6673 to 6677 for Accounts, Auth, Cast, Public Locker and Embed. If PUBLIC_URL is your own
               domain with no port, like https://photos.example.com, set
               ENTE_API_URL, ENTE_S3_URL and the other addresses below too,
               or uploads, Locker and shared links will not work.
@@ -124,25 +124,25 @@ services:
           description:
             en_US: >-
               The Accounts app address (passkeys, family invites). Leave it blank to use PUBLIC_URL's host with
-              port 6665. If you use your own domain, set it, like
+              port 6673. If you use your own domain, set it, like
               https://accounts.example.com.
         - container: ENTE_APPS_CAST
           description:
             en_US: >-
               The Cast app address. Leave it blank to use PUBLIC_URL's host with
-              port 6667. If you use your own domain, set it, like
+              port 6675. If you use your own domain, set it, like
               https://cast.example.com.
         - container: ENTE_APPS_PUBLIC_LOCKER
           description:
             en_US: >-
               The Public Locker address for shared Locker links. Leave it blank to use PUBLIC_URL's host with
-              port 6668. If you use your own domain, set it, like
+              port 6676. If you use your own domain, set it, like
               https://share.example.com.
         - container: ENTE_APPS_EMBED_ALBUMS
           description:
             en_US: >-
               The Embed app address. Leave it blank to use PUBLIC_URL's host with
-              port 6669. If you use your own domain, set it, like
+              port 6677. If you use your own domain, set it, like
               https://embed.example.com.
         - container: ENTE_APPS_PUBLIC_PASTE
           description:
@@ -176,19 +176,19 @@ services:
             en_US: Mail viewer for sign-up codes and other Ente emails, published on host as 6664
         - container: "8105"
           description:
-            en_US: Accounts app (passkeys and family invites), published on host as 6665
+            en_US: Accounts app (passkeys and family invites), published on host as 6673
         - container: "8106"
           description:
-            en_US: Ente Auth web app (your two-factor codes), published on host as 6666
+            en_US: Ente Auth web app (your two-factor codes), published on host as 6674
         - container: "8107"
           description:
-            en_US: Cast app (show albums on a TV), published on host as 6667
+            en_US: Cast app (show albums on a TV), published on host as 6675
         - container: "8108"
           description:
-            en_US: Public Locker (shared Locker links), published on host as 6668
+            en_US: Public Locker (shared Locker links), published on host as 6676
         - container: "8109"
           description:
-            en_US: Embed app (albums inside other web pages), published on host as 6669
+            en_US: Embed app (albums inside other web pages), published on host as 6677
         - container: "8110"
           description:
             en_US: Ente Paste (share text that deletes itself), published on host as 6670
@@ -322,9 +322,10 @@ x-casaos:
   scheme: http
   is_uncontrolled: false
   version: "c2e571c"
-  update_at: "2026-11-25"
+  update_at: "2026-11-28"
   release_notes:
     en_US: |-
+      - Fix: Accounts, Auth, Cast, Public Locker and Embed moved from ports 6665-6669 to 6673-6677. Chrome, Edge and Firefox refuse to open 6665-6669 (ERR_UNSAFE_PORT), so those apps never loaded. Reinstall (or update) to get the new ports; passkeys made on the old Accounts address must be added again
       - Updated web ce7e41f to b665538
       - Updated server 20fb631 to c2e571c, web 817ce84 to ce7e41f, mailpit v1.32.0 to v1.34.0, seaweedfs 4.48 to 4.55
       - Every address (ENTE_API_URL, ENTE_S3_URL, ENTE_APPS_*) is now in the app settings, for people
