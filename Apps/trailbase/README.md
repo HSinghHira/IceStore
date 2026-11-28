@@ -1,6 +1,7 @@
 ---
 site: https://trailbase.io
 source: https://github.com/trailbaseio/trailbase
+screenshots: [Admin dashboard]
 services:
   - { name: Admin Dashboard, path: /_/admin/, icon: grid }
   - { name: Record APIs, path: /api/records/v1/, icon: code }
