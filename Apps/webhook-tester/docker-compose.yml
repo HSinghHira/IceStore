@@ -1,0 +1,143 @@
+name: webhook-tester
+
+services:
+  webhook-tester:
+    image: tarampampam/webhook-tester:2.3.0
+    container_name: webhook-tester
+    restart: unless-stopped
+    stop_grace_period: 20s
+    network_mode: bridge
+    user: "0:0"
+    environment:
+      - TZ=$TZ
+      - STORAGE_DRIVER=fs
+      - FS_STORAGE_DIR=/data
+      - LOG_FORMAT=console
+    ports:
+      - target: 8080
+        published: "6897"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "/bin/app", "start", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/webhook-tester/icon.png
+    x-casaos:
+      id: com.icestore.webhook-tester
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: STORAGE_DRIVER
+          description:
+            en_US: >-
+              fs keeps sessions and requests in the data folder, so
+              they survive restarts. memory forgets them on restart.
+        - container: FS_STORAGE_DIR
+          description:
+            en_US: >-
+              Where fs storage keeps its files. Leave it as /data.
+        - container: LOG_FORMAT
+          description:
+            en_US: >-
+              console for readable logs, json for log tools.
+      ports:
+        - container: "8080"
+          description:
+            en_US: >-
+              Webhook Tester web page and webhook URLs, published on
+              host as 6897
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Saved sessions and the requests they caught.
+
+x-casaos:
+  id: com.icestore.webhook-tester
+  architectures:
+    - amd64
+    - arm64
+  main: webhook-tester
+  author: HSinghHira
+  category: Developer
+  developer: "tarampampam"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/webhook-tester/icon.png
+  title:
+    en_US: Webhook Tester
+  tagline:
+    en_US: Catch and inspect webhooks and HTTP requests in real time
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/webhook-tester/](https://icestore.hsinghhira.me/app/webhook-tester/) for full details
+
+
+      Webhook Tester gives you a unique URL that catches every HTTP
+      request sent to it. Point a webhook or your own app at it and see
+      each request's headers, body and query live in the browser.
+
+
+      **Features**
+
+
+      - A new catch URL in one click, with live updates
+
+      - Full headers, body and query of every request
+
+      - Set the status code, headers, body and delay it answers with
+
+      - Download a request as a file, or copy it as curl
+
+      - No sign-in and no database
+
+
+      **How to use?**
+
+
+      1. Open Webhook Tester. It makes a new session URL for you.
+
+      2. Send a webhook or a request to that URL.
+
+      3. Watch it show up on the page and click it to see the details.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. Webhook Tester is ready in a few
+           seconds.
+
+
+        2. It has no sign-in, so anyone on your network can see the
+           requests. Don't send passwords to it.
+
+
+        3. Services on the internet can only reach it through a reverse
+           proxy or tunnel.
+  index: /
+  port_map: "6897"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.3.0"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: tarampampam/webhook-tester 2.3.0 on port 6897
+  repo: "https://github.com/tarampampam/webhook-tester"
+  support: "https://github.com/tarampampam/webhook-tester/issues"
+  docs: "https://github.com/tarampampam/webhook-tester#readme"
