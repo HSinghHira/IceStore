@@ -1,0 +1,139 @@
+name: dailytxt
+
+services:
+  dailytxt:
+    image: ghcr.io/hsinghhira/dailytxt:latest
+    container_name: dailytxt
+    restart: unless-stopped
+    stop_grace_period: 15s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - ALLOW_REGISTRATION=true
+      - ADMIN_PASSWORD=
+    ports:
+      - target: 80
+        published: "7007"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dailytxt/icon.png
+    x-casaos:
+      id: com.icestore.dailytxt
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: ALLOW_REGISTRATION
+          description:
+            en_US: >-
+              true lets anyone who can open DailyTxT make an
+              account. Register yours first, then set false (or
+              switch it in the admin panel when you need it).
+        - container: ADMIN_PASSWORD
+          description:
+            en_US: >-
+              Password for the admin panel. Leave blank and IceStore
+              makes one on first start and shows it in the app's
+              log under CREDENTIALS.
+      ports:
+        - container: "80"
+          description:
+            en_US: >-
+              DailyTxT web app, published on host as 7007
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              Your encrypted diary entries, files and users, plus
+              the secret token. Back it up.
+
+x-casaos:
+  id: com.icestore.dailytxt
+  architectures:
+    - amd64
+    - arm64
+  main: dailytxt
+  author: HSinghHira
+  category: Productivity
+  developer: "PhiTux"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/dailytxt/icon.png
+  title:
+    en_US: DailyTxT
+  tagline:
+    en_US: An encrypted diary for one entry a day
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/dailytxt/](https://icestore.hsinghhira.me/app/dailytxt/) for full details
+
+
+      DailyTxT is a private diary. Write one entry for each day, add
+      tags and files, and find old days again with search and the
+      calendar. Every entry is encrypted with your password.
+
+
+      **Features**
+
+
+      - One entry a day, with Markdown and a calendar
+
+      - Everything encrypted with a key from your password
+
+      - Tags, file uploads, templates and full search
+
+      - Read your entries from this day in past years
+
+      - Export to HTML and backups, and installs as a phone app
+
+
+      **How to use?**
+
+
+      1. Open DailyTxT and register your account.
+
+      2. Write today's entry. It saves as you type.
+
+      3. Set ALLOW_REGISTRATION to false so nobody else can sign up.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. DailyTxT is ready in a few seconds.
+
+
+        2. Open it and register your account right away. Then set
+           ALLOW_REGISTRATION to false.
+
+
+        3. Write down your password. Your entries are encrypted with it,
+           and nobody can recover them without it or your backup keys.
+  index: /
+  port_map: "7007"
+  scheme: http
+  is_uncontrolled: false
+  version: "2.7.2"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: phitux/dailytxt 2.7.2 on port 7007, with a secret token and admin password made for each install
+  repo: "https://github.com/PhiTux/DailyTxT"
+  support: "https://github.com/PhiTux/DailyTxT/issues"
+  docs: "https://github.com/PhiTux/DailyTxT#readme"
