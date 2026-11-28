@@ -1,0 +1,143 @@
+name: yarr
+
+services:
+  yarr:
+    image: nkanaev/yarr:v2.9
+    container_name: yarr
+    restart: unless-stopped
+    stop_grace_period: 10s
+    network_mode: bridge
+    environment:
+      - TZ=$TZ
+      - YARR_ADDR=0.0.0.0:7070
+      - YARR_DB=/data/yarr.db
+      - YARR_AUTH=
+    ports:
+      - target: 7070
+        published: "6885"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/$AppID/data
+        target: /data
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:7070/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 16M
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yarr/icon.png
+    x-casaos:
+      id: com.icestore.yarr
+      envs:
+        - container: TZ
+          description:
+            en_US: >-
+              Your time zone. It is filled in from your ZimaOS
+              time zone.
+        - container: YARR_ADDR
+          description:
+            en_US: >-
+              Where yarr listens inside the container. Leave it
+              as it is.
+        - container: YARR_DB
+          description:
+            en_US: >-
+              yarr's database file, inside the data folder.
+        - container: YARR_AUTH
+          description:
+            en_US: >-
+              A login as username:password. Leave blank when you
+              use yarr at http://[ZIMAOS-IP-ADDRESS]:6885, because
+              yarr's login cookie only works over https. Set it
+              only behind a reverse proxy with your own domain.
+      ports:
+        - container: "7070"
+          description:
+            en_US: >-
+              yarr web app, published on host as 6885
+      volumes:
+        - container: /data
+          description:
+            en_US: >-
+              yarr's database with your feeds and articles.
+              Back it up.
+
+x-casaos:
+  id: com.icestore.yarr
+  architectures:
+    - amd64
+    - arm64
+  main: yarr
+  author: HSinghHira
+  category: Productivity
+  developer: "nkanaev"
+  icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/yarr/icon.png
+  title:
+    en_US: yarr
+  tagline:
+    en_US: Yet another RSS reader, small and fast with a clean three-pane look
+  description:
+    en_US: >-
+      Visit: [https://icestore.hsinghhira.me/app/yarr/](https://icestore.hsinghhira.me/app/yarr/) for full details
+
+
+      yarr (yet another rss reader) is a small web feed reader in one
+      program. It keeps everything in one SQLite file and shows your
+      feeds, the article list and the article side by side.
+
+
+      **Features**
+
+
+      - RSS, Atom and JSON Feed, with folders
+
+      - Import and export OPML
+
+      - Full-text view for short feeds
+
+      - Keyboard shortcuts and a light, sepia and dark theme
+
+      - Fever API for phone apps like Reeder (needs a login)
+
+
+      **How to use?**
+
+
+      1. Open yarr.
+
+      2. Click the plus button to add a feed, or import an OPML file
+         from the menu.
+  tips:
+    before_install:
+      en_US: >-
+        1. Start the installation. yarr is ready in a few seconds.
+
+
+        2. yarr has no login over plain http, so anyone on your network
+           can open it. Keep it off the internet.
+
+
+        3. Want a login? Put yarr behind a reverse proxy with https and
+           your own domain, then set YARR_AUTH to username:password.
+  index: /
+  port_map: "6885"
+  scheme: http
+  is_uncontrolled: false
+  version: "v2.9"
+  update_at: "2026-11-28"
+  release_notes:
+    en_US: |-
+      - First IceStore release: nkanaev/yarr v2.9 on port 6885
+  repo: "https://github.com/nkanaev/yarr"
+  support: "https://github.com/nkanaev/yarr/issues"
+  docs: "https://github.com/nkanaev/yarr/tree/master/doc"
