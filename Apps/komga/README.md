@@ -1,6 +1,7 @@
 ---
 site: https://komga.org
 source: https://github.com/gotson/komga
+screenshots: [Series, Book details, EPUB reader]
 services:
   - { name: Web App, path: /, icon: globe }
 variables:
