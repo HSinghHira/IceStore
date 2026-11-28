@@ -72,6 +72,10 @@ x-casaos:
   category: Media
   developer: "kieraneglin"
   icon: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pinchflat/icon.png
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pinchflat/screenshot-1.png
+    - https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pinchflat/screenshot-2.png
+  thumbnail: https://cdn.jsdelivr.net/gh/HSinghHira/IceStore@main/Apps/pinchflat/screenshot-1.png
   title:
     en_US: Pinchflat
   tagline:
